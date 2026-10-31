@@ -1,0 +1,24 @@
+Subject: [PATCH] tensilelite: allow gfx906 (vega20) in SUPPORTED_ARCHITECTURES
+
+Upstream excludes gfx906 from both lists, so `-DGPU_TARGETS=gfx906` is
+rejected by `tensilelite_validate_gpu_targets()` before any code generation
+starts.  This patch only opens the gate; it does NOT make gfx906 kernels
+correct -- there is still no vega20 logic, and the asm generator emits
+gfx90a+ directives (`.amdhsa_accum_offset`) that gfx906 cannot assemble.
+
+Keep this as its own commit so `git revert` cleanly returns to upstream
+behaviour if the P0 probe fails.
+
+Apply from the `tensilelite/` directory:
+    git apply patches/0001-supported-architectures-add-gfx906.patch
+or, if the context has drifted:
+    bash probe_tensilelite.sh        # it patches idempotently with python
+
+--- a/cmake/tensilelite_supported_architectures.cmake
++++ b/cmake/tensilelite_supported_architectures.cmake
+@@ set(SUPPORTED_ARCHITECTURES
++    "gfx906"
+     "gfx908"
+@@     set(BASE_ARCHITECTURES
++        "gfx906"
+         "gfx908"
