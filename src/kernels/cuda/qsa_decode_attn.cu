@@ -966,8 +966,10 @@ void launch_chunks_batch(const float* q, const QsaAttnPools& pools, const int32_
     static const bool query_swizzle = [] {
         const char* v = std::getenv("STRATA_GFX906_ATTN_QUERY_SWIZZLE"); return v && v[0] == '1';
     }();
-    const bool use_query_swizzle = kernel < 0 && query_swizzle && !lane_cell && kv_mode == 1 &&
-                                   query_swizzle_gfx906_device();
+    // W794: the permutation is a q-side LDS bijection, independent of the KV format, so KV_MODE 3
+    // (k8v4: int8 K + q4_0 V) takes it too (upstream #1661 measured it on int8 only).
+    const bool use_query_swizzle = kernel < 0 && query_swizzle && !lane_cell &&
+                                   (kv_mode == 1 || kv_mode == 3) && query_swizzle_gfx906_device();
     static const bool query_swizzle_trace = std::getenv("STRATA_GFX906_ATTN_QUERY_SWIZZLE_TRACE") != nullptr;
     static thread_local bool query_swizzle_said = false;
     if (query_swizzle_trace && !query_swizzle_said) {
@@ -996,6 +998,10 @@ void launch_chunks_batch(const float* q, const QsaAttnPools& pools, const int32_
             return v && v[0] == '1' && v[1] == '\0';
         }();
         if (reduce12) {
+            if (kv_mode == 3)
+                attn_chunk_kernel<3, false, true, true><<<grid, THREADS, 0, st>>>(q, pools, ids, steps,
+                    (int) s.n_head_kv, (int) s.page_size, scale, part_acc, part_m, part_l, n_chunks, (int) cap, stride);
+            else
             attn_chunk_kernel<1, false, true, true><<<grid, THREADS, 0, st>>>(q, pools, ids, steps,
                 (int) s.n_head_kv, (int) s.page_size, scale, part_acc, part_m, part_l, n_chunks, (int) cap, stride);
             static const bool trace = [] {
@@ -1009,6 +1015,10 @@ void launch_chunks_batch(const float* q, const QsaAttnPools& pools, const int32_
                              (long long) n_q, (long long) cap);
             }
         } else {
+            if (kv_mode == 3)
+                attn_chunk_kernel<3, false, true><<<grid, THREADS, 0, st>>>(q, pools, ids, steps,
+                    (int) s.n_head_kv, (int) s.page_size, scale, part_acc, part_m, part_l, n_chunks, (int) cap, stride);
+            else
             attn_chunk_kernel<1, false, true><<<grid, THREADS, 0, st>>>(q, pools, ids, steps,
                 (int) s.n_head_kv, (int) s.page_size, scale, part_acc, part_m, part_l, n_chunks, (int) cap, stride);
         }
