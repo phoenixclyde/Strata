@@ -207,6 +207,16 @@ if(STRATA_HIP_GFX906)
   set(_strata_gpu_runtime_target CUDA::cudart)
   set(_strata_gpu_blas_target CUDA::cublas)
   set(_strata_gpu_include_directories ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+  # W793: this branch never includes cmake/hip_backend.cmake, so STRATA_ROCBLAS_AVAILABLE was never defined and
+  # the prompt path's rocBLAS solution table (STRATA_ROCBLAS_TUNING) compiled to nothing on gfx906.  The package
+  # is present in the ROCm image; wire it exactly as the hip_backend path does.
+  find_package(rocblas CONFIG QUIET)
+  if(TARGET roc::rocblas)
+    set(STRATA_ROCBLAS_AVAILABLE ON)
+  else()
+    set(STRATA_ROCBLAS_AVAILABLE OFF)
+    message(STATUS "Strata: gfx906 rocBLAS package not found; the solution table is unavailable")
+  endif()
 elseif(STRATA_ENABLE_CUDA)
   # #585: CMake links CUDA code with the STATIC runtime by default, and the targets below also link CUDA::cudart (the
   # DLL's import library).  MSVC with a CUDA 12.x toolkit - the experimental Pascal/Volta build - then fails with
@@ -688,6 +698,13 @@ if(STRATA_ENABLE_CUDA OR STRATA_ENABLE_HIP)
     src/core/arch_defaults.cpp src/core/nv_defaults.cpp src/core/vmm.cpp src/core/conversation_file.cpp)
   target_include_directories(strata_engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
   target_link_libraries(strata_engine PUBLIC strata_core strata_kernels strata_kernels_cpu ${_strata_gpu_runtime_target})
+
+  # [W776 local] gfx906 (STRATA_HIP_GFX906) does not define STRATA_USE_HIP, but dflash2.cpp keys its
+  # CUDA-vs-HIP branches on it (stream priority + the fork default). Scope the definition to that one
+  # file: a global STRATA_USE_HIP would switch CUDA-only paths elsewhere (W717/P23 measured that).
+  if(STRATA_HIP_GFX906)
+    set_source_files_properties(src/core/dflash2.cpp PROPERTIES COMPILE_DEFINITIONS "STRATA_USE_HIP=1")
+  endif()
   if(STRATA_BUILD_TESTS AND STRATA_ENABLE_CUDA AND NOT STRATA_HIP_GFX906)
     add_executable(host_graph_launch_test tests/core/host_graph_launch_test.cu)
     target_include_directories(host_graph_launch_test PRIVATE include)
@@ -835,7 +852,7 @@ if(STRATA_ENABLE_CUDA OR STRATA_ENABLE_HIP)
     add_executable(tune_hipblaslt tools/hip/tune_hipblaslt.cpp)
     target_link_libraries(tune_hipblaslt PRIVATE hip::host roc::hipblas roc::hipblaslt)
   endif()
-  if(STRATA_ENABLE_HIP AND STRATA_ROCBLAS_AVAILABLE)
+  if((STRATA_ENABLE_HIP OR STRATA_HIP_GFX906) AND STRATA_ROCBLAS_AVAILABLE)
     # the prompt path's rocBLAS solution table (STRATA_ROCBLAS_TUNING; tools/hip/tune_rocblas makes one)
     target_compile_definitions(strata_prefill PRIVATE STRATA_ROCBLAS_AVAILABLE=1)
     target_link_libraries(strata_prefill PRIVATE roc::rocblas)
