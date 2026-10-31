@@ -52,6 +52,26 @@ std::vector<std::pair<std::string, std::string>> arch_default_env(const char* gc
         t.push_back({"STRATA_EXPDEC", "1"});
         return t;
     }
+    // gfx906 (MI50 / MI60 / Radeon VII, Vega 20): the two switches on this branch that are measured BYTE-IDENTICAL
+    // here, so they are on by default on this card and nowhere else.  Everything else this card's recipe uses changes
+    // bits and lives in gfx906_tuned_env() below (STRATA_GFX906_TUNED=1) -- the same exact/rounding split the gfx1151
+    // table makes, and the reason this table has two entries instead of fourteen.
+    if (strata::kernels::gfx_arch_is_gfx906(gcn_arch)) {
+        const char* off906 = std::getenv("STRATA_GFX906_DEFAULTS");
+        if (off906 != nullptr && off906[0] == '0') return t;
+        if (defaults026) return t;   // STRATA_DEFAULTS=026: 0.2.6 had no gfx906 table, so there is nothing to restore
+        t = {
+            // The GDN recurrence with four lanes a column plus the grid-stride norm (S23; the same kernel the gfx11
+            // table takes first).  Measured on one MI50 with the teacher-forced LOGPOS gate: KL mean 0.0000,
+            // median 0, argmax agreement 100%, top-10 1.00, mean |dlp| 0.00000 -- bitwise.
+            {"STRATA_GDN_HEAD", "1"},
+            // The 12 query heads' lane sums reduced with 16 shuffle exchanges instead of 60 (the gfx906 kernel that
+            // upstream #1661 gated to kv_mode 1).  Three whole LOGPOS dumps of the same prompts are byte-identical
+            // with it on and off (md5 equal), so this is an exact reordering, not a rounding change.
+            {"STRATA_GFX906_ATTN_REDUCE12", "1"},
+        };
+        return t;
+    }
     if (!strata::kernels::gfx_arch_is_gfx1151(gcn_arch)) return t;
     const char* off = std::getenv("STRATA_GFX1151_DEFAULTS");
     if (off != nullptr && off[0] == '0') return t;
@@ -164,6 +184,37 @@ std::vector<std::pair<std::string, std::string>> igpu_default_env(const char* gc
     return t;
 }
 
+// gfx906's rounding-level recipe: the switches the production MI50 build runs that are NOT byte-identical, so they
+// cannot be defaults.  Opt-in as a set (STRATA_GFX906_TUNED=1) because they interact: the KL figures below are the
+// teacher-forced LOGPOS measurement of each switch against this same engine, not a claim that they add up.
+std::vector<std::pair<std::string, std::string>> gfx906_tuned_env(const char* gcn_arch) {
+    std::vector<std::pair<std::string, std::string>> t;
+    if (!strata::kernels::gfx_arch_is_gfx906(gcn_arch)) return t;
+    const char* off = std::getenv("STRATA_GFX906_DEFAULTS");
+    if (off != nullptr && off[0] == '0') return t;
+    const char* on = std::getenv("STRATA_GFX906_TUNED");
+    if (on == nullptr || on[0] != '1') return t;
+    t = {
+        // the q-side LDS bijection: permutes whole 16-dimension groups of the query rows inside LDS, so every
+        // reduction sums the same values in the same order.  Not yet md5-gated here (it is on in production).
+        {"STRATA_GFX906_ATTN_QUERY_SWIZZLE", "1"},
+        // two columns per lane in the GDN recurrence (the gfx1151 table's second entry).  Not separately gated here.
+        {"STRATA_GDN_PP", "2"},
+        // the hyper-connection projections read as the GGUF's own Q8_0 bytes: KL 0.0011, argmax 100%
+        {"STRATA_HC_Q8", "1"},
+        // the FP32 tiled block scorer: KL 0.0004, argmax 100%
+        {"STRATA_SELECT_SIMT", "1"},
+        // skip the experts that rank below 7 in a window nobody routes to: KL 0.0008, argmax 100%
+        {"STRATA_ROUTE_TAIL_SKIP", "7"},
+        // the K-quant prompt kernels.  KL 0.0171 with argmax still 100%, and worth +68% prompt throughput here
+        // (the largest single lever found on this card): opt-in for the KLD reason, not the speed reason.
+        {"STRATA_MMQ_KQ", "1"},
+        // the prompt's 16-bit GEMMs run FP16 in and out: KL 0.0026, and about 1.6x the prompt throughput
+        {"STRATA_HIP_PROMPT_F16", "1"},
+    };
+    return t;
+}
+
 static void set_default(const std::pair<std::string, std::string>& kv) {
 #if defined(_WIN32)
     _putenv_s(kv.first.c_str(), kv.second.c_str());
@@ -181,11 +232,24 @@ std::vector<std::string> apply_arch_defaults(const char* gcn_arch, bool integrat
     }
     if (!set.empty()) {
         const bool g12 = strata::kernels::gfx_arch_is_gfx12(gcn_arch);
+        const bool g9 = strata::kernels::gfx_arch_is_gfx906(gcn_arch);
         std::fprintf(stderr, "strata: %s: %zu exact speed switches on by default (%s=0 turns "
                              "them off; a switch you set is kept): ",
-                     g12 ? "gfx12 (RDNA4)" : "gfx1151 (Strix Halo)", set.size(),
-                     g12 ? "STRATA_GFX12_DEFAULTS" : "STRATA_GFX1151_DEFAULTS");
+                     g9 ? "gfx906 (MI50-class)" : g12 ? "gfx12 (RDNA4)" : "gfx1151 (Strix Halo)", set.size(),
+                     g9 ? "STRATA_GFX906_DEFAULTS" : g12 ? "STRATA_GFX12_DEFAULTS" : "STRATA_GFX1151_DEFAULTS");
         for (size_t i = 0; i < set.size(); ++i) std::fprintf(stderr, "%s%s", i ? " " : "", set[i].c_str() + 7);
+        std::fprintf(stderr, "\n");
+    }
+    std::vector<std::string> tuned;
+    for (const auto& kv : gfx906_tuned_env(gcn_arch)) {
+        if (std::getenv(kv.first.c_str()) != nullptr) continue;   // the user's setting wins, whatever it is
+        set_default(kv);
+        tuned.push_back(kv.first);
+    }
+    if (!tuned.empty()) {
+        std::fprintf(stderr, "strata: gfx906 (MI50-class): the rounding-level recipe is on (STRATA_GFX906_TUNED=0 turns it off; "
+                             "each switch of it is separate): ");
+        for (size_t i = 0; i < tuned.size(); ++i) std::fprintf(stderr, "%s%s", i ? " " : "", tuned[i].c_str() + 7);
         std::fprintf(stderr, "\n");
     }
     std::vector<std::string> igpu;
