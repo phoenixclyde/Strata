@@ -3938,6 +3938,35 @@ int main(int argc, char** argv) {
     }
 #endif
 #if defined(STRATA_HIP_GFX906)
+    {   // [W839 local] The per-architecture defaults table never reached a gfx906 build.  The call in the
+        // HIP block above sits under `#if defined(STRATA_USE_HIP)`, and this build defines only
+        // STRATA_HIP_GFX906 (W717/P23: a global STRATA_USE_HIP switches CUDA-only paths elsewhere, so it
+        // stays scoped to dflash2.cpp).  Consequence: arch_defaults.cpp was linked into no executable, and
+        // neither STRATA_GFX906_ATTN_REDUCE12 nor the rest of the table could ever apply.  Same contract as
+        // the other builds: every visible card is the same architecture, and a switch the user set is kept.
+        // STRATA_GFX906_DEFAULTS=0 turns the table off (arch_defaults.cpp reads it).
+        // STRATA_W839_TRACE=1 prints the device probe, which is how "the call never ran" was told apart
+        // from "it ran and set nothing".
+        cudaDeviceProp ad{};
+        const cudaError_t rc = cudaGetDeviceProperties(&ad, 0);
+        if (std::getenv("STRATA_W839_TRACE") != nullptr)
+            std::fprintf(stderr, "strata: [W839] device probe rc=%d name=%s\n", (int) rc,
+                         rc == cudaSuccess ? ad.gcnArchName : "-");
+        if (rc == cudaSuccess) {
+            bool all_igpu = ad.integrated != 0;   // a discrete MI50: false
+            int ndev = 0;
+            if (all_igpu && cudaGetDeviceCount(&ndev) == cudaSuccess) {
+                for (int d = 1; d < ndev && d < 64; ++d) {
+                    cudaDeviceProp od{};
+                    if (cudaGetDeviceProperties(&od, d) != cudaSuccess || od.integrated == 0 ||
+                        std::strncmp(od.gcnArchName, ad.gcnArchName, 7) != 0) { all_igpu = false; (void) cudaGetLastError(); break; }
+                }
+            }
+            strata::core::apply_arch_defaults(ad.gcnArchName, all_igpu);
+        } else (void) cudaGetLastError();
+    }
+#endif
+#if defined(STRATA_HIP_GFX906)
     {   // #1728: the gfx906 build's kernels assume 64-lane waves; on a wave32 card they would fault or give wrong
         // numbers, so say so before the first launch (the ready-made wave32 engine is the one for those cards)
         int n_dev = 0;
