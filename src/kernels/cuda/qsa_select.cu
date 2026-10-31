@@ -2213,13 +2213,33 @@ bool qsa_block_scores_tc(const float* pooled, const float* dead, const float* q_
     }();
     // any HIP card: the FP32 tiled scorer, opt-in as on CUDA (STRATA_SELECT_SIMT=1; another summation order than the
     // warp kernel, so the default keeps the warp kernel).  RX 6900 XT, 256 queries at 128K: 2.71 -> 0.587 ms
-    static const bool simt_on = [] {
+    // W842 local (ports upstream #3073): the HIP branch used to read only '1', so STRATA_SELECT_SIMT=2
+    // silently kept the warp kernel.  Now 0/1/2, and 2 takes block_scores_simt2_kernel (same bits as 1).
+    static const int simt_level = [] {
         const char* v = std::getenv("STRATA_SELECT_SIMT");
-        return v != nullptr && v[0] == '1';
+        return v == nullptr ? 0 : v[0] == '1' ? 1 : v[0] == '2' ? 2 : 0;
     }();
+    const bool simt_on = simt_level != 0;
     if (simt_on && !(wmma_on && sel_gfx12_device())) {
         const int64_t reach = active_blocks > 0 && active_blocks < max_blocks ? active_blocks : max_blocks;
         const bool rdna2 = sel_gfx103_device();
+        if (simt_level >= 2) {
+            static std::atomic<bool> said2{false};
+            if (!said2.exchange(true))
+                std::fprintf(stderr, "qsa select: FP32 tiled scorer (STRATA_SELECT_SIMT=2), tiles 32/128\n");
+            const dim3 grid2((unsigned) ((reach + 127) / 128), (unsigned) ((nq + 31) / 32));
+            if (grid2.y > 65535) return false;
+            block_scores_simt2_kernel<32, 128><<<grid2, 256, 0, (cudaStream_t) stream>>>(pooled, q_idx, steps, nq,
+                                                                                        max_blocks, reach, scores);
+            block_scores_tail_kernel<<<(unsigned) nq, 32, 0, (cudaStream_t) stream>>>(dead, q_idx, steps, max_blocks,
+                                                                                      scores);
+            const cudaError_t e2 = cudaGetLastError();
+            if (e2 != cudaSuccess) {
+                std::fprintf(stderr, "qsa_block_scores (simt2): %s\n", cudaGetErrorString(e2));
+                std::exit(1);
+            }
+            return true;
+        }
         static std::atomic<bool> said{false};
         if (!said.exchange(true))
             std::fprintf(stderr, "qsa select: FP32 tiled scorer (STRATA_SELECT_SIMT=1), tiles %s\n",
