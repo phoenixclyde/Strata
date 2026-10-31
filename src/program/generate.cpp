@@ -3488,7 +3488,11 @@ int main(int argc, char** argv) {
         // the other builds: every visible card is the same architecture, and a switch the user set is kept.
         // STRATA_GFX906_DEFAULTS=0 turns the table off (arch_defaults.cpp reads it).
         cudaDeviceProp ad{};
-        if (cudaGetDeviceProperties(&ad, 0) == cudaSuccess) {
+        const cudaError_t rc = cudaGetDeviceProperties(&ad, 0);
+        if (std::getenv("STRATA_W839_TRACE") != nullptr)
+            std::fprintf(stderr, "strata: [W839] device probe rc=%d name=%s\n", (int) rc,
+                         rc == cudaSuccess ? ad.gcnArchName : "-");
+        if (rc == cudaSuccess) {
             bool all_igpu = ad.integrated != 0;   // a discrete MI50: false
             int ndev = 0;
             if (all_igpu && cudaGetDeviceCount(&ndev) == cudaSuccess) {
