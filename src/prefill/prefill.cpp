@@ -1379,6 +1379,17 @@ const MmqPlan& mmq_plan() {
             p.gu_max = std::max(p.gu_max, mmq::matrix_bytes(gt, 1280, N));
             p.d_max = std::max(p.d_max, mmq::matrix_bytes(dt, N, 640));
         }
+        {   // W856 / R17: which layers take which expert path (one unconditional line; the plan is taken once)
+            int64_t n_mmq = 0, n_fo = 0, n_fp16 = 0;
+            for (int64_t l = 0; l < layers; ++l) {
+                if (p.layer[(size_t) l]) ++n_mmq;
+                else if (p.fo[(size_t) l]) ++n_fo;
+                else ++n_fp16;
+            }
+            std::fprintf(stderr, "strata: prompt experts: MMQ %lld / fused %lld / FP16 %lld of %lld layers%s\n",
+                         (long long) n_mmq, (long long) n_fo, (long long) n_fp16, (long long) layers,
+                         p.fallback ? " (some layer falls back)" : " (no fallback)");
+        }
         // STRATA_MMQ_DIRECT=1: a native layer's resident experts are read in place when the pointer-table MMQ covers
         // both products, gate/up reads nothing past its matrix, the down over-read fits the slot guard, and the blob
         // is exactly [gate | up | down] in MMQ's matrix sizes (the bytes a gather would copy)
