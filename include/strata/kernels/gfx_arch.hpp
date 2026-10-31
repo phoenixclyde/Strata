@@ -29,6 +29,12 @@ inline bool gfx_arch_is_gfx11_wmma(const char* gcn) {
 /// defined(__gfx1201__)`): the R9700 / 9070 (XT) are gfx1201, the 9060 (XT) gfx1200.
 inline bool gfx_arch_is_gfx12_wmma(const char* gcn) { return gfx_arch_is(gcn, "gfx1200") || gfx_arch_is(gcn, "gfx1201"); }
 
+/// gfx906 (MI50 / MI60 / Radeon VII, Vega 20): 64-lane waves, no MFMA, no native bf16.  The part the gfx906 default
+/// table, the 12-head attention reduction and the q-side swizzle are written for.  Note that `v_dot2_f32_f16`,
+/// `v_dot4_i32_i8` and `v_dot8_i32_i4` ARE available here (verified with llvm-mc --mcpu=gfx906); only the
+/// saturating forms (*c) and v_mfma are not.
+inline bool gfx_arch_is_gfx906(const char* gcn) { return gfx_arch_is(gcn, "gfx906"); }
+
 /// Strix Halo (Ryzen AI Max, RDNA3.5): the part the gfx1151 defaults (docs/STRIX_HALO.md) are measured on.
 inline bool gfx_arch_is_gfx1151(const char* gcn) { return gfx_arch_is(gcn, "gfx1151"); }
 
