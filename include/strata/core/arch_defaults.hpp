@@ -36,6 +36,11 @@ std::vector<std::pair<std::string, std::string>> arch_default_env(const char* gc
 bool gfx12_prefill_share_default(const char* gcn_arch, bool defaults026);
 bool gfx12_prefill_share_default(const char* gcn_arch);
 
+/// gfx906 (MI50 / MI60 / Radeon VII): the switches this card's measured recipe uses that DO change bits, so they
+/// cannot sit in the exact table -- the same split gfx1151 makes.  Empty unless STRATA_GFX906_TUNED=1, and empty when
+/// STRATA_GFX906_DEFAULTS=0.  A switch the user set is never overridden (apply_arch_defaults checks first).
+std::vector<std::pair<std::string, std::string>> gfx906_tuned_env(const char* gcn_arch);
+
 /// The integrated Radeons (Phoenix / Hawk Point 780M gfx1103, Strix Point 890M / 880M gfx1150, Strix Halo gfx1151) whose
 /// matrix-core prompt set is offered (opt-in; 021-minipc).  Pure architecture-name test; the caller adds the UMA test.
 bool igpu_prompt_defaults_arch(const char* gcn_arch);

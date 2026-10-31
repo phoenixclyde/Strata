@@ -23,6 +23,7 @@ import threading
 import time
 
 HISTORY = 60
+BW_REFRESH_S = 5.0            # how often the AMD PCIe bandwidth is re-read (a `pcie_bw` read costs a second)
 
 
 # ------------------------------------------------------------------------------------------------ NVML
@@ -166,9 +167,17 @@ class _Amd:
     def name(self):
         try:
             with open(os.path.join(self.dev, "product_name"), encoding="utf-8") as f:
-                return f.read().strip() or "AMD Radeon"
+                nm = f.read().strip() or "AMD Radeon"
         except (OSError, TypeError):
             return "AMD Radeon"
+        # [ours] the FRU string can disagree with the memory that is fitted (a re-badged card, a FRU
+        # left at the wrong SKU); the card's own configuration wins for the capacity in the name.
+        m = re.search(r"\b(\d+)\s?GB\b", nm, re.I)
+        total = self._int(os.path.join(self.dev, "mem_info_vram_total"))
+        if not m or not total:
+            return nm
+        want = int(round(total / float(1 << 30)))
+        return nm if int(m.group(1)) == want else nm[:m.start()] + "%dGB" % want + nm[m.end():]
 
     @staticmethod
     def _gen(text):
@@ -231,6 +240,22 @@ class _Amd:
         width = min(widths) if (whole and widths) else self._int(os.path.join(own, "current_link_width"))
         return {"pcie_gen": gen, "pcie_gen_max": gen, "pcie_own_gen": own_gen, "pcie_width": width,
                 "pcie_path": "%d/%d" % (read, len(hops))}
+
+    def bw(self):
+        """[ours] The card's PCIe bandwidth in MB/s over the driver's last counting second, or None.
+
+        amdgpu's `pcie_bw` is "<received msgs> <posted requests sent> <mps>"; the documented estimate is
+        `(received + sent) * mps`.  A read blocks for about a second, so the caller must not put it on the
+        1 Hz sampling path - see Telemetry._bw_loop.  None on APUs/older cards (no such file).
+        """
+        txt = _Amd._read(self.dev or "", "pcie_bw")
+        if not txt:
+            return None
+        try:
+            c0, c1, mps = (int(x) for x in txt.split()[:3])
+        except (ValueError, TypeError):
+            return None
+        return (c0 + c1) * mps / 1e6
 
 
     def read(self):
@@ -584,9 +609,13 @@ class Telemetry:
             "psutil": self.ps is not None,
         }
         self._disk_prev = None
+        # [ours] AMD sysfs cards: `pcie_bw` costs a second per read, so it is read off the 1 Hz path.
+        self._bw_cards = [g for _, g in self.gpus if hasattr(g, "bw")]
+        self._bw = None                              # (time, [MB/s per card]), see _bw_loop
         self._stop = threading.Event()
-        self._thread = threading.Thread(target=self._loop, daemon=True)
-        self._thread.start()
+        threading.Thread(target=self._loop, daemon=True).start()
+        if self._bw_cards and len(self._bw_cards) == len(self.gpus):
+            threading.Thread(target=self._bw_loop, daemon=True).start()
 
     def _disk(self):
         if not self.ps:
@@ -634,6 +663,11 @@ class Telemetry:
             s["cpu"] = self.fallback.cpu()
             s["ram_used"], s["ram_total"] = self.fallback.ram()
         s["disk_read_mb"], s["disk_write_mb"] = self._disk()
+        with self.lock:                              # [ours] the AMD cards' PCIe bandwidth
+            if self._bw:
+                v = [x for x in self._bw[1] if x is not None]
+                if v:
+                    s["gpu_pcie_rx_mb"] = round(sum(v), 2)
         if self.extra:
             try:
                 s.update(self.extra())
@@ -644,6 +678,20 @@ class Telemetry:
     def close(self):
         """Ends the sampler thread (a server that stops, a test's service): it used to run for the life of the process."""
         self._stop.set()
+
+    def _bw_loop(self):
+        """[ours] The AMD cards' PCIe bandwidth, read away from the 1 Hz sampler: `pcie_bw` counts over a
+        one-second window and blocks for that second, so reading it in sample() would halve every series."""
+        while not self._stop.is_set():
+            vals = []
+            for g in self._bw_cards:
+                try:
+                    vals.append(g.bw())
+                except Exception:  # noqa: BLE001 - telemetry must never take the server down
+                    vals.append(None)
+            with self.lock:
+                self._bw = (time.time(), vals)
+            self._stop.wait(BW_REFRESH_S)
 
     def _loop(self):
         """One sample a second, for as long as the server lives.

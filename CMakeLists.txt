@@ -219,6 +219,15 @@ endif()
 
 if(STRATA_HIP_GFX906)
   strata_hip_gfx906_toolchain()
+  # W793 (fork-only): the gfx906 branch does not include cmake/hip_backend.cmake,
+  # so the rocBLAS solution table would compile to nothing without this wiring.
+  find_package(rocblas CONFIG QUIET)
+  if(TARGET roc::rocblas)
+    set(STRATA_ROCBLAS_AVAILABLE ON)
+  else()
+    set(STRATA_ROCBLAS_AVAILABLE OFF)
+    message(STATUS "Strata: gfx906 rocBLAS package not found; the solution table is unavailable")
+  endif()
 elseif(STRATA_ENABLE_CUDA)
   strata_cuda_toolchain()
 elseif(STRATA_ENABLE_HIP)
