@@ -16374,6 +16374,7 @@ int main(int argc, char** argv) {
                                  k + 1, (long long) (k < now.size() ? now[k].start : -1));
                 }
             }
+            tr("before best");
             const auto parked = conversations.best(ids, req_imgs, want_cvec);
             std::optional<strata::core::SavedConversation> incoming;
             // A checkpoint inside ANOTHER parked conversation (a sibling subagent's system prompt and tools, say) is
@@ -16891,6 +16892,16 @@ int main(int argc, char** argv) {
             // STRATA_CKPT_REREAD compares a restored checkpoint with a batched re-read, so it keeps every read batched.
             static const bool no_short = std::getenv("STRATA_CKPT_REREAD") != nullptr;
             int64_t req_short_read = o.short_read;   // STRATA_PIPELINE_SWITCH may set it per request (short_read=)
+            if (std::FILE* sr = std::fopen("/data/strata-short-read", "r")) {
+                // a file with one number replaces --short-read for the next request: the window path and the
+                // batched path are then an A/B on one server, with no restart (args are fixed at create time).
+                // Delete the file to go back to the flag.
+                char buf[32] = {};
+                const size_t got = std::fread(buf, 1, sizeof buf - 1, sr);
+                std::fclose(sr);
+                buf[got] = 0;
+                if (got > 0) req_short_read = std::max<int64_t>(0, std::atoll(buf));
+            }
             if (short_read_off_once) {   // #3465: the request after non-finite logits in a prompt window
                 short_read_off_once = false;
                 req_short_read = 0;
