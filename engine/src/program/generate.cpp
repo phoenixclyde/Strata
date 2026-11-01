@@ -491,8 +491,9 @@ bool admit_merge_first_env() {
 // resizes nothing (no zero-fill of ~118 MB of fresh vectors) and a slot's copy reuses their pages.  Every byte is
 // overwritten by the copy, so the checkpoints are the same
 bool park_async_env() {   // STRATA_PARK_ASYNC (strata/core/conversation_snapshot.hpp)
-    static const bool on = [] { const char* v = std::getenv("STRATA_PARK_ASYNC"); return v != nullptr && v[0] == '1'; }();
-    return on;
+    if (const char* v = std::getenv("STRATA_PARK_ASYNC")) if (v[0] == '1') return true;
+    std::error_code ec;
+    return std::filesystem::exists("/data/strata-park-async", ec);
 }
 // STRATA_CKPT_POOL: unset = the engine's default (on in a single-stage serve with a conversation cache: park_pool_plan), 0 = off, any
 // other value = on.  -1 unset, 0 off, 1 on (read once)
