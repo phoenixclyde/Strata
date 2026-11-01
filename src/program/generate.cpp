@@ -19079,7 +19079,11 @@ int main(int argc, char** argv) {
                          prompt_ms > 0 ? 1000.0 * read_n / prompt_ms : 0.0, (long long) produced_n, decode_ms,
                          decode_ms > 0 ? 1000.0 * produced_n / decode_ms : 0.0, (long long) draft_accepted,
                          (long long) draft_offered, checks.size(), cancelled ? " (cancelled)" : "");
-            if (trace) {   // STRATA_TRACE: the same split the batch admission prints, for a solo request
+            // `trace` is resolved once, before the serve loop, so a marker file created on a live
+            // service would never be seen: re-check here (one stat per request).
+            const bool trace_now = trace || std::filesystem::exists("/data/strata-trace") ||
+                                   std::filesystem::exists(".strata-trace");
+            if (trace_now) {   // STRATA_TRACE: the same split the batch admission prints, for a solo request
                 const double ck = req_times.sync_ms + req_times.save_ms + req_times.evict_ms;
                 std::fprintf(stderr, "strata trace: prompt %lld tokens (%lld reused): read %.1f, windows %.1f, "
                                      "%zu checkpoint(s) %.1f (sync %.1f + save %.1f + evict %.1f), rest %.1f ms\n",
