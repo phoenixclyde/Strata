@@ -2346,6 +2346,51 @@ void launch_check() {
 // 2 KB row spent most of its time being launched and joined.  The SAME kernel serves every column count 1..8, so a
 // column's sums do not depend on how many columns (verify tokens) ride along.  STRATA_MMVQ_WAVE=0: the CUDA layout.
 bool g_wave_off = std::getenv("STRATA_MMVQ_WAVE") && std::string(std::getenv("STRATA_MMVQ_WAVE")) == "0";
+// W862 wave rows: one weight block's activation loads and dp4a work are shared by R rows.
+// R * NCOLS <= 12 keeps the accumulators in registers (ncols=6 with R=4 spilled and lost 40 %),
+// and n_out / (4*R) >= 120 keeps at least two block waves across the 60 CUs (below that a small
+// matrix gets slower, e.g. 640 rows at ncols=1: R=1 5.2 us vs R=4 10.8 us).
+int g_wave_rows = -1;
+// W863: MEASURED table (real kernel, production flags, gfx906, 2026-11-01).  It replaces the
+// W862 formula, which picked R = 4 at ncols = 1 and cost 0.982x there (out 6144->2560: 28.4 ->
+// 31.3 us).  Cell = the fastest of R in {1,2,4} that beat R = 1 by >= 3 % on that shape at that
+// column count; ncols = 1 stays at R = 1 (the differences there were not reproducible across
+// arms).  0 means R = 1.  An unmeasured shape keeps the old behaviour: R = 1.
+//   tool: albus/w862/q8_group_bench.cpp --group single --cols N --rows {1,2,4}
+static const struct { int n_in, n_out; unsigned char r[8]; } kWaveRows[] = {
+    {  2560, 10240, {0, 4, 4, 4, 2, 2, 2, 2}},   // GDN qkv
+    {  2560,  6144, {0, 2, 2, 2, 2, 2, 2, 2}},   // GDN gate
+    {  6144,  2560, {0, 2, 4, 4, 2, 2, 2, 2}},   // GDN/QSA out
+    {  2560, 12288, {0, 2, 2, 2, 2, 2, 2, 2}},   // QSA q
+    {  2560,   512, {0, 0, 2, 2, 2, 2, 2, 2}},   // QSA k/v
+    { 10240,   320, {0, 0, 2, 2, 2, 2, 2, 2}},   // HC down
+    {   320, 10240, {0, 2, 2, 2, 2, 0, 2, 0}},   // HC up
+    {  2560,   640, {0, 0, 2, 2, 2, 2, 2, 2}},   // shared g/u
+    {   640,  2560, {0, 0, 2, 2, 2, 2, 2, 2}},   // shared down
+};
+
+// STRATA_MMVQ_WAVE_ROWS: 0/unset = the measured table, 1 = the old one-row-per-wavefront
+// behaviour, 2 or 4 = that many rows for every call.  Read once per process.
+static int wave_rows_env() {
+    static const int v = [] {
+        const char* s = std::getenv("STRATA_MMVQ_WAVE_ROWS");
+        return s == nullptr ? 0 : std::atoi(s);
+    }();
+    return v < 0 ? 0 : v;
+}
+
+int wave_rows_for(int ncols, int n_in, int n_out) {
+    if (g_wave_rows > 0) return g_wave_rows;   // native_mmvq_set_wave_rows (the bench)
+    const int env = wave_rows_env();
+    if (env > 0) return env;                   // STRATA_MMVQ_WAVE_ROWS, no rebuild
+    if (ncols < 1 || ncols > 8) return 1;
+    for (const auto& e : kWaveRows)
+        if (e.n_in == n_in && e.n_out == n_out) {
+            const int R = e.r[ncols - 1];
+            return R == 0 ? 1 : R;
+        }
+    return 1;   // an unmeasured shape keeps the old behaviour
+}
 template<typename F, int NCOLS, int R>
 __launch_bounds__(256)
 __global__ void native_mmvq_wave_kernel(const typename F::Block* __restrict__ w, const Q81Block* __restrict__ x,
@@ -2380,13 +2425,20 @@ __global__ void native_mmvq_wave_kernel(const typename F::Block* __restrict__ w,
             if (lane == 0 && row0 + i < n_out) y[std::size_t(j) * n_out + row0 + i] = v;
         }
 }
-template<typename F, int NCOLS>
-void wave_launch_n(const void* weights, const void* x_q8_1, float* y, int n_in, int n_out, cudaStream_t s) {
+template<typename F, int NCOLS, int R>
+void wave_launch_r(const void* weights, const void* x_q8_1, float* y, int n_in, int n_out, cudaStream_t s) {
     const auto* w = static_cast<const typename F::Block*>(weights);
     const auto* x = static_cast<const Q81Block*>(x_q8_1);
-    constexpr int R = 1;
     const unsigned blocks = unsigned((std::size_t(n_out) + 4 * R - 1) / (4 * R));
     native_mmvq_wave_kernel<F, NCOLS, R><<<blocks, 256, 0, s>>>(w, x, y, n_in, n_out);
+}
+template<typename F, int NCOLS>
+void wave_launch_n(const void* weights, const void* x_q8_1, float* y, int n_in, int n_out, cudaStream_t s) {
+    switch (wave_rows_for(NCOLS, n_in, n_out)) {   // W862 wave rows
+        case 4: wave_launch_r<F, NCOLS, 4>(weights, x_q8_1, y, n_in, n_out, s); break;
+        case 2: wave_launch_r<F, NCOLS, 2>(weights, x_q8_1, y, n_in, n_out, s); break;
+        default: wave_launch_r<F, NCOLS, 1>(weights, x_q8_1, y, n_in, n_out, s); break;
+    }
 }
 template<typename F>
 void wave_launch(const void* weights, const void* x_q8_1, float* y, int n_in, int n_out, int ncols, void* stream) {
@@ -3051,6 +3103,9 @@ void native_q6_k_unpack(const void* weights) {
 void native_mmvq_set_multi_exact(bool exact) { g_multi_exact = exact; }
 bool native_mmvq_multi_exact() { return g_multi_exact; }
 void native_mmvq_set_b6_rows(int mode) { g_b6_rows = mode; }
+// W862 wave rows: 0 = the table above, 1 = the old one-row-per-wavefront behaviour.
+void native_mmvq_set_wave_rows(int n) { g_wave_rows = n; }
+int native_mmvq_wave_rows() { return g_wave_rows; }
 int native_mmvq_b6_rows() { return b6_rows_mode(); }
 
 std::size_t native_q8_1_bytes(int n_in, int ncols) {
