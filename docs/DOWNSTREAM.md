@@ -130,6 +130,29 @@ git rebase upstream/main                       # 薄补丁栈整体上移
 git tag -a mi50-<新版本>-r1 -m "..." && git push origin gfx906/mi50 --force-with-lease && git push origin --tags
 ```
 
+## 两笔已知欠账（AUDIT19）
+
+| # | 欠什么 | 影响 | 什么时候清 |
+|---|---|---|---|
+| **A11** | 镜像 `/src/serve/telemetry.py` 仍是旧版（缺 `self._thread` 的 CI 修复，提交 `c3574d42`） | 仅显示层的线程引用，**不影响推理** | 下次重建镜像（`0.2.9-102`）时随镜像带上；用 `docker exec strata166-407 md5sum /src/serve/telemetry.py` 与主线比对 |
+| **A12** | `deploy/params/gen_config.py` 的 `META` 停在旧部署，跑 `--write` 会写坏生产 config | 改 config 只能手工定点改 + 双备份 | 修 `META` 之前不要用它生成 |
+
+**为什么记在这里而不是只记在工作区文档**：这两条都是「clone 下来会踩到」的东西，
+跟着代码走才有人看得到。
+
+## 屋顶探针（R29 / AUDIT19）
+
+`ci/probe/stream_roof.cpp` 测这张卡的**可达读屋顶**，是所有「带宽利用率」的分母。
+
+实测（2026-11-01，gfx906，与生产同驻留）：**读 884 GB/s（86.3% 规格，1024）**、拷贝 752 GB/s；
+并行度曲线：1 block/CU 55% → **4 blocks/CU 86%（峰）** → 8 blocks/CU 82%。
+
+```bash
+bash ci/probe/stream_roof_run.sh      # 容器内编译+运行，~40 s，只用 <=256 MiB 显存
+```
+
+换卡或换 ROCm 大版本后重跑一次即可刷新分母；不要再用「约 700」这种没有出处的数。
+
 ## 已知限制
 
 ~~浅克隆~~ **已于 2026-11-01 16:0x 修复**：`git fetch --unshallow upstream` ⇒ `git rev-parse --is-shallow-repository` = `false`，
