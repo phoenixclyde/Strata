@@ -13611,14 +13611,17 @@ int main(int argc, char** argv) {
         // STRATA_TRACE=1, or a marker file (stat'ed once per request): the container's environment is
         // fixed at create time, so a file lets tracing be turned on and off on a live service instead of
         // costing a restart per experiment.  Same contract as the env: one line per step, stderr only.
-        const bool trace = [] {
+        // called at every tr(), not once: this block runs before the serve loop, so a value read
+        // here is fixed for the process and a marker file created later would never be seen.
+        const auto trace_on = [] {
             if (std::getenv("STRATA_TRACE") != nullptr) return true;
             std::error_code ec;
             return std::filesystem::exists("/data/strata-trace", ec) ||
                    std::filesystem::exists(".strata-trace", ec);
-        }();
+        };
+        const bool trace = trace_on();
         auto tr = [&](const char* what, long long a = -1, long long b = -1) {
-            if (!trace) return;
+            if (!trace_on()) return;
             static Clock::time_point t0;   // process-wide: the stages run on different threads
             static bool t0_set = false;
             if (!t0_set) { t0 = Clock::now(); t0_set = true; }
@@ -15870,6 +15873,7 @@ int main(int argc, char** argv) {
                 }
             }
             tr("kv ensured");
+            tr("kv ensured 2");
             nf_hit = false;
             // #879: an earlier window met non-finite logits.  The poison sits in a conversation's K/V and recurrent
             // state, so nothing that may hold it is continued: the live session, every checkpoint, every parked
@@ -15923,6 +15927,7 @@ int main(int argc, char** argv) {
             // session's while the main session holds its tokens (the cells below it are the ones it was taken over):
             // it is restored there as one of `checks` would be (lent_slot: the slot that keeps it).  moved_in: the length
             // of a slot's checkpoint this request moved into `checks` (from the slot it is admitted to), -1: none
+            tr("resume decided");
             int lent_slot = -1;
             int64_t moved_in = -1;
             if (slot_ckpt_move_env() && o.prompt_cache > 0 && want_cvec == cvec_cached && live_ok)
