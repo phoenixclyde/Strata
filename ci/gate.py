@@ -1,0 +1,268 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""strata-ci gate -- the checks a commit must pass before it may be built or deployed.
+
+Two classes of check, because they run in two places:
+
+  source   runs anywhere (a GitHub runner, the 166 host).  These catch the "config face"
+           mistakes we have actually made: a rollback switch that exists only in a
+           comment, a table entry that can never be hit, a fallback that is not 1.
+  build /  need the build tree or the production config; on a runner they report SKIP
+  prod     instead of failing.
+
+Exit 0 = deployable, 1 = stop.  Nothing here writes anything.
+
+Usage:
+  gate.py [--repo DIR] [--build DIR] [--config FILE] [--source-only] [--quiet]
+"""
+import argparse
+import json
+import os
+import re
+import subprocess
+import sys
+
+OK, FAIL, SKIP = "PASS", "FAIL", "SKIP"
+rows = []
+
+
+def add(level, name, detail=""):
+    rows.append((level, name, detail))
+
+
+def read(path):
+    try:
+        with open(path, encoding="utf-8", errors="replace") as f:
+            return f.read()
+    except OSError:
+        return None
+
+
+# --------------------------------------------------------------------------- source
+def check_source(repo):
+    mmvq = os.path.join(repo, "src/kernels/cuda/native_mmvq.cu")
+    src = read(mmvq)
+    if src is None:
+        add(FAIL, "native_mmvq.cu present", mmvq)
+        return
+    add(OK, "native_mmvq.cu present")
+
+    # 1. the table function must exist at all
+    m = re.search(r"wave_rows_for\s*\(([^)]*)\)\s*\{", src)
+    if not m:
+        add(FAIL, "wave_rows_for() exists", "not found -- the R table is gone")
+        return
+    add(OK, "wave_rows_for() exists")
+
+    # isolate the function body by brace matching
+    start = m.end() - 1
+    depth, i = 0, start
+    while i < len(src):
+        if src[i] == "{":
+            depth += 1
+        elif src[i] == "}":
+            depth -= 1
+            if depth == 0:
+                break
+        i += 1
+    body = src[start:i + 1]
+
+    # 2. the runtime switch must be a real getenv, not a comment
+    #    (this exact bug shipped once: the name appeared only in a comment)
+    has_getenv = bool(re.search(r'getenv\s*\(\s*"STRATA_MMVQ_WAVE_ROWS"', src))
+    mentions = "STRATA_MMVQ_WAVE_ROWS" in src
+    if has_getenv:
+        add(OK, "STRATA_MMVQ_WAVE_ROWS has a real getenv()")
+    elif mentions:
+        add(FAIL, "STRATA_MMVQ_WAVE_ROWS has a real getenv()",
+            "the name appears but no getenv() reads it -- the rollback switch is fake")
+    else:
+        add(FAIL, "STRATA_MMVQ_WAVE_ROWS has a real getenv()",
+            "not mentioned at all -- there is no runtime rollback path")
+
+    # 3. R must come from the table, never from a hardcoded literal in the function
+    #    (a literal 2/4 here would silently apply to every shape).
+    allowed = set(int(x) for x in os.environ.get("ALLOWED_WAVE_ROWS", "1 2 4").split())
+    hard = set(int(v) for v in re.findall(r"return\s+(\d+)\s*;", body)) - {1}
+    if hard:
+        add(FAIL, "wave_rows_for has no hardcoded R>1", "found return %s" % sorted(hard))
+    else:
+        add(OK, "wave_rows_for has no hardcoded R>1")
+
+    # 4. the table itself: every cell must be 0 (=R1) or an allowed row count,
+    #    and ncols=1 must be 0 everywhere (measured: no gain there, and R=4 lost 10%).
+    mtab = re.search(r"kWaveRows\[\]\s*=\s*\{(.*?)\n\};", src, re.S)
+    if not mtab:
+        add(FAIL, "kWaveRows[] table found", "the measured table is missing")
+    else:
+        entries = re.findall(r"\{\s*(\d+)\s*,\s*(\d+)\s*,\s*\{([^}]*)\}\s*\}", mtab.group(1))
+        if not entries:
+            add(FAIL, "kWaveRows[] entries parse", "found the array but no {n_in, n_out, {..}} rows")
+        else:
+            bad_cell, ncols1 = [], []
+            for n_in, n_out, cells in entries:
+                vals = [int(x) for x in re.findall(r"-?\d+", cells)]
+                if len(vals) != 8:
+                    bad_cell.append("%s->%s has %d columns" % (n_in, n_out, len(vals)))
+                    continue
+                bad_cell += ["%s->%s r[%d]=%d" % (n_in, n_out, i, v)
+                             for i, v in enumerate(vals) if v != 0 and v not in allowed]
+                ncols1.append(vals[0])
+            shapes = sorted({(int(a), int(b)) for a, b, _ in entries})
+            if bad_cell:
+                add(FAIL, "table cells are 0 or in %s" % sorted(allowed), "; ".join(bad_cell[:4]))
+            else:
+                add(OK, "table cells are 0 or in %s" % sorted(allowed),
+                    "%d shapes x 8 columns" % len(entries))
+            if any(ncols1):
+                add(FAIL, "ncols=1 stays at R=1", "found %s" % [v for v in ncols1 if v])
+            else:
+                add(OK, "ncols=1 stays at R=1")
+            add(OK, "table covers measured shapes", ", ".join("%d->%d" % s for s in shapes[:9]))
+
+    # 5. fail-safe: an unmatched shape must fall back to 1 row (the old behaviour).
+    #    Comments are stripped first -- the real code carries a trailing comment there.
+    stripped = re.sub(r"//[^\n]*", "", body)
+    stripped = re.sub(r"/\*.*?\*/", "", stripped, flags=re.S)
+    if re.search(r"return\s+1\s*;\s*\}\s*$", stripped.rstrip()):
+        add(OK, "unmatched shapes fall back to 1 row")
+    else:
+        add(FAIL, "unmatched shapes fall back to 1 row",
+            "no trailing `return 1;` -- an unmeasured shape would pick an unmeasured kernel")
+
+    # 6. the include that costs 45% if it is the wrong one
+    bad_inc = re.findall(r'#include\s*[<"]((?!include/strata)[^">]*platform/hip_compat)', src)
+    if bad_inc:
+        add(FAIL, "hip_compat include path in source",
+            "found %s -- the measured one is include/strata/platform/hip_compat" % bad_inc[0])
+    else:
+        add(OK, "hip_compat include path in source")
+
+    # 6. no backup files inside the tracked tree
+    junk = []
+    for root, dirs, files in os.walk(os.path.join(repo, "src")):
+        dirs[:] = [d for d in dirs if d != "__pycache__"]
+        junk += [os.path.relpath(os.path.join(root, f), repo)
+                 for f in files if f.endswith((".bak", ".orig", ".rej"))]
+    if junk:
+        add(FAIL, "no backup files under src/", ", ".join(junk[:4]))
+    else:
+        add(OK, "no backup files under src/")
+
+    # 7. the ledger that makes a rebase safe
+    nz = read(os.path.join(repo, "docs/DOWNSTREAM.md"))
+    if nz is None:
+        add(FAIL, "docs/DOWNSTREAM.md present", "the patch ledger is missing")
+    elif "v0.2.9" not in nz and "based on" not in nz.lower():
+        add(FAIL, "docs/DOWNSTREAM.md anchors the upstream version",
+            "no upstream version line -- a rebase would have nothing to check against")
+    else:
+        add(OK, "docs/DOWNSTREAM.md present and anchored")
+
+
+# --------------------------------------------------------------------------- build
+def check_build(build_dir):
+    nb = os.path.join(build_dir, "build.ninja")
+    txt = read(nb)
+    if txt is None:
+        add(SKIP, "build.ninja checks", "no build tree at %s" % build_dir)
+        return
+
+    # the single most expensive flag to lose: 47% slower without it
+    if "-DNDEBUG" in txt:
+        add(OK, "compile flags carry -DNDEBUG")
+    else:
+        add(FAIL, "compile flags carry -DNDEBUG", "missing -DNDEBUG costs ~47% (measured)")
+
+    incs = re.findall(r"-I\s*(\S*hip_compat\S*)", txt)
+    good = [i for i in incs if "include/strata/platform/hip_compat" in i]
+    if good:
+        add(OK, "hip_compat include path", good[0])
+    elif incs:
+        add(FAIL, "hip_compat include path",
+            "found %s -- the measured one is include/strata/platform/hip_compat (-45%% else)"
+            % incs[0])
+    else:
+        add(SKIP, "hip_compat include path", "no -I...hip_compat line found")
+
+    bin_path = os.path.join(build_dir, "strata")
+    if os.path.exists(bin_path):
+        add(OK, "engine binary built", "%d bytes" % os.path.getsize(bin_path))
+    else:
+        add(FAIL, "engine binary built", bin_path + " missing")
+
+
+# --------------------------------------------------------------------------- prod
+def check_prod(cfg_path, container, health_url):
+    d = read(cfg_path)
+    if d is None:
+        add(SKIP, "production config", "no config at %s" % cfg_path)
+        return
+    try:
+        cfg = json.loads(d)
+    except json.JSONDecodeError as e:
+        add(FAIL, "production config parses", str(e))
+        return
+    add(OK, "production config parses")
+
+    exe = cfg.get("exe", "")
+    # the container's /data is the host's <data dir of this config>
+    real = exe.replace("/data/", os.path.dirname(os.path.abspath(cfg_path)) + "/", 1)
+    if os.path.exists(real):
+        add(OK, "config exe points at an existing binary", exe)
+    else:
+        add(FAIL, "config exe points at an existing binary", "%s -> %s missing" % (exe, real))
+
+    env = cfg.get("env") or {}
+    v = env.get("STRATA_MMVQ_WAVE_ROWS")
+    if v is None:
+        add(OK, "wave-rows env unset (= table in use)")
+    elif str(v).strip() in ("0", "1"):
+        add(OK, "wave-rows env is a rollback value", str(v))
+    else:
+        add(FAIL, "wave-rows env is a rollback value", "got %r, expected 0/1/unset" % v)
+
+    try:
+        out = subprocess.run(["curl", "-s", "--max-time", "6", health_url],
+                             capture_output=True, text=True, timeout=12).stdout
+        if '"status": "ok"' in out and '"loaded": true' in out:
+            add(OK, "production /health ok and loaded")
+        elif out.strip():
+            add(FAIL, "production /health ok and loaded", out[:120])
+        else:
+            add(SKIP, "production /health ok and loaded", "no answer")
+    except Exception as e:                                    # noqa: BLE001
+        add(SKIP, "production /health ok and loaded", str(e))
+
+
+# --------------------------------------------------------------------------- main
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--repo", default=os.environ.get("REPO",
+                                                     "/home/albus/strata166/pr/strata-fork"))
+    ap.add_argument("--build", default=os.environ.get("BUILD",
+                                                      "/home/albus/strata166/gfx029-build"))
+    ap.add_argument("--config", default=os.environ.get("CFG", ""))
+    ap.add_argument("--health", default=os.environ.get("HEALTH", "http://127.0.0.1:8090/health"))
+    ap.add_argument("--source-only", action="store_true")
+    ap.add_argument("--quiet", action="store_true")
+    a = ap.parse_args()
+
+    check_source(a.repo)
+    if not a.source_only:
+        check_build(a.build)
+        if a.config:
+            check_prod(a.config, None, a.health)
+
+    fails = [r for r in rows if r[0] == FAIL]
+    if not a.quiet:
+        for lvl, name, detail in rows:
+            print("%-4s %-52s %s" % (lvl, name, detail))
+        print()
+    print("gate: %d checks, %d failed, %d skipped"
+          % (len(rows), len(fails), sum(1 for r in rows if r[0] == SKIP)))
+    return 1 if fails else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
