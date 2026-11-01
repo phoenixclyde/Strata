@@ -374,6 +374,15 @@ bool park_async_env() {   // STRATA_PARK_ASYNC (strata/core/conversation_snapsho
     std::error_code ec;
     return std::filesystem::exists("/data/strata-park-async", ec);
 }
+// The checkpoints a request drops move into its parked image instead of being copied (one 1900-token
+// checkpoint is ~260 MB of K/V, so this is tens of milliseconds per park).  It used to ride on
+// STRATA_PARK_ASYNC, which on this card cannot allocate its stage at all -- the gain therefore sat on a
+// path that never ran.  Own switch: STRATA_CKPT_MOVE_PARK=1, or the marker file, stat'ed per call.
+bool park_move_env() {
+    if (const char* v = std::getenv("STRATA_CKPT_MOVE_PARK")) return v[0] == '1';
+    std::error_code ec;
+    return std::filesystem::exists("/data/strata-ckpt-move", ec);
+}
 bool ckpt_pool_env() {
     static const bool on = [] {
         const char* v = std::getenv("STRATA_CKPT_POOL");
@@ -16498,7 +16507,7 @@ int main(int argc, char** argv) {
                 std::function<bool(const ConvCheckpoint&)>& f;
                 ~ParkDrops() { f = nullptr; }
             } park_drops_reset{park_drops};
-            if (park_async_env()) {
+            if (park_move_env()) {
                 const bool drops_all = incoming.has_value() || borrow || slot_source >= 0 || want_cvec != cvec_cached;
                 park_drops = [&, drops_all](const ConvCheckpoint& c) {
                     return drops_all || (int64_t) c.ids.size() > resume || !starts_with(c.ids, c.imgs);
