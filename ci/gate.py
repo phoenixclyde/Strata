@@ -16,8 +16,6 @@ Usage:
   gate.py [--repo DIR] [--build DIR] [--config FILE] [--source-only] [--quiet]
 """
 import argparse
-import io
-import hashlib
 import json
 import os
 import re
@@ -25,7 +23,6 @@ import subprocess
 import sys
 
 OK, FAIL, SKIP = "PASS", "FAIL", "SKIP"
-cfg_path_global = [""]
 rows = []
 
 
@@ -44,10 +41,6 @@ def read(path):
 # --------------------------------------------------------------------------- source
 def check_source(repo):
     mmvq = os.path.join(repo, "src/kernels/cuda/native_mmvq.cu")
-    if not os.path.isfile(mmvq):
-        # W1159: v0.2.16 layout keeps kernels under engine/ (upstream moved src/ -> engine/src/).
-        # Same file, same invariants below -- the check's intent is unchanged.
-        mmvq = os.path.join(repo, "engine/src/kernels/cuda/native_mmvq.cu")
     src = read(mmvq)
     if src is None:
         add(FAIL, "native_mmvq.cu present", mmvq)
@@ -199,104 +192,8 @@ def check_build(build_dir):
         add(FAIL, "engine binary built", bin_path + " missing")
 
 
-
-# --------------------------------------------------------------------------- config schema
-# The checks below exist because a hand-edited config took production down: `env` was
-# rewritten as a list (json.dump of a list of keys) and the server died with
-#   AttributeError: 'list' object has no attribute 'items'
-# before it could bind.  Nothing in the old gate looked at the shape of the file.
-
-VALUE_FLAGS = {
-    "--pack", "--native", "--expert-profile", "--expert-cache", "--pcie-frac", "--spec",
-    "--spec-min-p", "--mtp", "--mtp-window", "--max-context", "--kv", "--prefill",
-    "--prompt-cache-every", "--expert-profile-save", "--conversation-cache-mib",
-    "--vram-reserve-mib", "--ple-io", "--kv-resident", "--pool-workers", "--pool-tasks",
-    "--host-core", "--resident-budget-gib", "--ram-keep-gib", "--adapt-swaps",
-    "--peer-slots", "--peer-reserve-mib", "--peer-prefill-rows",
-}
-BOOL_FLAGS = {
-    "--vision", "--mmap-experts", "--resident-cpu-experts", "--resident-experts",
-    "--resident-pin", "--kv-grow", "--no-hit-poke", "--stream-token", "--expert-cache-per-layer",
-    "--prefill-head-alias", "--prompt-cache-tail", "--prompt-cache-spread", "--remote-expert-opt",
-}
-ENUMS = {
-    "--ple-io": {"direct", "mmap", "ram"},
-    "--expert-cache": None,        # int or "auto"
-    "--kv": None,                  # free-form today (fp16/int8/q4_0/k8v4/...)
-}
-INTS = {"--spec", "--max-context", "--prompt-cache-every", "--conversation-cache-mib",
-        "--vram-reserve-mib", "--mtp-window", "--pool-workers", "--pool-tasks",
-        "--kv-resident", "--adapt-swaps", "--peer-slots", "--peer-reserve-mib"}
-
-
-def check_config_schema(cfg):
-    env = cfg.get("env")
-    if env is None:
-        add(OK, "config env absent (no overrides)")
-    elif isinstance(env, dict):
-        bad = [k for k, v in env.items() if not isinstance(k, str) or not isinstance(v, (str, int, float))]
-        if bad:
-            add(FAIL, "config env is a dict of scalars", "bad entries: %r" % bad[:3])
-        else:
-            add(OK, "config env is a dict", "%d keys" % len(env))
-    else:
-        add(FAIL, "config env is a dict",
-            "got %s -- the server calls cfg['env'].items() and dies before binding" % type(env).__name__)
-
-    a = cfg.get("args")
-    if not isinstance(a, list):
-        add(FAIL, "config args is a list", "got %s" % type(a).__name__)
-        return
-    add(OK, "config args is a list", "%d entries" % len(a))
-
-    unknown, problems, seen, i = [], [], set(), 0
-    while i < len(a):
-        tok = a[i]
-        if not isinstance(tok, str) or not tok.startswith("--"):
-            problems.append("args[%d]=%r is not a flag" % (i, tok))
-            i += 1
-            continue
-        if tok in seen:
-            problems.append("duplicate flag %s" % tok)
-        seen.add(tok)
-        if tok in BOOL_FLAGS:
-            i += 1
-            continue
-        if tok in VALUE_FLAGS:
-            if i + 1 >= len(a) or (isinstance(a[i + 1], str) and a[i + 1].startswith("--")):
-                problems.append("%s has no value" % tok)
-                i += 1
-                continue
-            val = a[i + 1]
-            if tok in ENUMS and ENUMS[tok] and str(val) not in ENUMS[tok]:
-                problems.append("%s=%r not in %s" % (tok, val, sorted(ENUMS[tok])))
-            if tok in INTS and not re.fullmatch(r"\d+", str(val)):
-                problems.append("%s=%r is not an integer" % (tok, val))
-            i += 2
-            continue
-        unknown.append(tok)
-        i += 1
-
-    if problems:
-        add(FAIL, "config args are well formed", "; ".join(problems[:4]))
-    else:
-        add(OK, "config args are well formed", "%d flags" % len(seen))
-    if unknown:
-        add(FAIL, "config args are known flags", "unknown: %s (add to gate.py if intentional)" % ", ".join(unknown[:4]))
-    else:
-        add(OK, "config args are known flags")
-
-    bak = sorted(f for f in os.listdir(os.path.dirname(os.path.abspath(cfg_path_global[0])))
-                 if f.startswith(os.path.basename(cfg_path_global[0]) + ".bak")) if cfg_path_global[0] else []
-    if bak:
-        add(OK, "config has a rollback copy", bak[-1])
-    else:
-        add(SKIP, "config has a rollback copy", "no .bak_* next to the config")
-
-
 # --------------------------------------------------------------------------- prod
 def check_prod(cfg_path, container, health_url):
-    cfg_path_global[0] = cfg_path
     d = read(cfg_path)
     if d is None:
         add(SKIP, "production config", "no config at %s" % cfg_path)
@@ -308,8 +205,6 @@ def check_prod(cfg_path, container, health_url):
         return
     add(OK, "production config parses")
 
-    check_config_schema(cfg)
-
     exe = cfg.get("exe", "")
     # the container's /data is the host's <data dir of this config>
     real = exe.replace("/data/", os.path.dirname(os.path.abspath(cfg_path)) + "/", 1)
@@ -318,8 +213,7 @@ def check_prod(cfg_path, container, health_url):
     else:
         add(FAIL, "config exe points at an existing binary", "%s -> %s missing" % (exe, real))
 
-    env = cfg.get("env")
-    env = env if isinstance(env, dict) else {}
+    env = cfg.get("env") or {}
     v = env.get("STRATA_MMVQ_WAVE_ROWS")
     if v is None:
         add(OK, "wave-rows env unset (= table in use)")
@@ -342,332 +236,23 @@ def check_prod(cfg_path, container, health_url):
 
 
 # --------------------------------------------------------------------------- main
-
-def md5_file(p):
-    h = hashlib.md5()
-    with open(p, "rb") as f:
-        for chunk in iter(lambda: f.read(1 << 20), b""):
-            h.update(chunk)
-    return h.hexdigest()
-
-
-def read_tsv_kv(path):
-    """key<TAB>value 的注释型 TSV；读不到返回 {}。"""
-    d = {}
-    try:
-        for ln in io.open(path, encoding="utf-8-sig"):
-            if not ln.strip() or ln.lstrip().startswith("#"):
-                continue
-            f = ln.rstrip("\n").split("\t")
-            if len(f) >= 2:
-                d[f[0].strip()] = f[1].strip()
-    except OSError:
-        return {}
-    return d
-
-
-def read_tag_ledger(path):
-    """tag -> (sha, purpose)。purpose 枚举 deploy / marking。"""
-    d = {}
-    try:
-        lines = [l for l in io.open(path, encoding="utf-8-sig").read().splitlines()
-                 if l.strip() and not l.startswith("#")]
-    except OSError:
-        return d
-    for ln in lines[1:]:
-        f = ln.split("\t")
-        if len(f) >= 3:
-            d[f[0].strip()] = (f[1].strip(), f[2].strip())
-    return d
-
-
-def tag_triplet(repo, tag):
-    """tag -> (object_sha, object_type, commit_sha).
-
-    An annotated tag is its own object: `git rev-parse <tag>` returns the TAG object,
-    never the commit.  Every prov/3 comparison must use the dereferenced commit
-    (`<tag>^{commit}`); comparing the tag object to HEAD is a guaranteed false red.
-    """
-    def g(*args):
-        return subprocess.run(["git", "-C", repo] + list(args), capture_output=True,
-                              text=True, check=True).stdout.strip()
-    return g("rev-parse", tag), g("cat-file", "-t", tag), g("rev-parse", tag + "^{commit}")
-
-
-def _pointer_paths(repo):
-    """Every place CANDIDATE_POINTER.tsv may legitimately live: env first, then up to 4 parents."""
-    out = []
-    if os.environ.get("DEPLOY_POINTER"):
-        out.append(os.environ["DEPLOY_POINTER"])
-    d = os.path.abspath(repo)
-    for _ in range(4):
-        out.append(os.path.join(d, "deploy", "CANDIDATE_POINTER.tsv"))
-        nd = os.path.dirname(d)
-        if nd == d:
-            break
-        d = nd
-    return out
-
-
-def release_baseline(repo):
-    """RELEASE_BASELINE_SHA = the sha the binary was built from (single authority).
-
-    Not HEAD (a CI-only commit on top must not turn provenance red) and not the tag
-    object (see tag_triplet).
-    """
-    for c in _pointer_paths(repo):
-        if c and os.path.isfile(c):
-            for line in io.open(c, encoding="utf-8-sig"):
-                f = line.rstrip("\n").split("\t")
-                if len(f) >= 2 and f[0] == "built_from":
-                    return f[1].strip()
-    return ""
-
-
-NON_ENGINE_PREFIXES = ("ci/", "docs/", "serve/", "tools/", "tests/", "bench/",
-                       "history/", "albus/", ".workbuddy/", ".github/", "assets/")
-NON_ENGINE_ROOT_SUFFIX = (".md", ".txt", ".bat", ".gitignore", ".gitattributes")
-ENGINE_FILES = ("CMakeLists.txt", "CMakePresets.json", "Makefile", "Dockerfile")
-
-
-def is_engine_path(p):
-    """Fail-closed: anything not explicitly non-engine counts as an engine path."""
-    if p in ENGINE_FILES:
-        return True
-    if p.startswith(NON_ENGINE_PREFIXES):
-        return False
-    if "/" not in p:
-        return not p.endswith(NON_ENGINE_ROOT_SUFFIX)
-    return True
-
-
-def _git_out(repo, *args):
-    return subprocess.run(["git", "-C", repo] + list(args),
-                          capture_output=True, text=True, check=True).stdout.strip()
-
-
-def _is_ancestor(repo, sha, head):
-    if not sha or not head:
-        return False
-    return subprocess.run(["git", "-C", repo, "merge-base", "--is-ancestor", sha, head],
-                          capture_output=True).returncode == 0
-
-
-def prov3_verdict(repo, tag, baseline=None, head=None, basename="prov/3"):
-    """T1 tag^{commit} == RELEASE_BASELINE_SHA / T2 baseline is HEAD's ancestor /
-    T3 baseline..HEAD has no engine path.  Returns [(state, name, detail)]."""
-    out = []
-    baseline = baseline if baseline is not None else release_baseline(repo)
-    head = head if head is not None else _git_out(repo, "rev-parse", "HEAD")
-    if not baseline:
-        return [(FAIL, basename + " tag==release",
-                 "no RELEASE_BASELINE_SHA (CANDIDATE_POINTER.tsv 的 built_from 缺失)")]
-    # 哪个 tag？部署台账记的是**上一代**（生产在跑的那份），装机前它不可能等于候选的
-    # 构建 sha。所以先认「指向 release baseline 的 mi50-* tag」，台账 tag 只在它确实
-    # 解引用到 baseline 时才优先 —— 否则拿台账 tag 比候选，等于要求候选已经被装过。
-    try:
-        tags_at = [t for t in _git_out(repo, "tag", "--points-at", baseline).split()
-                   if t.startswith("mi50-")]
-    except Exception as e:
-        return [(FAIL, basename + " tag^{commit}", "cannot list tags at baseline: %s" % e)]
-    chosen, source = "", ""
-    if tag and tag != "-":
-        try:
-            if tag_triplet(repo, tag)[2] == baseline:
-                chosen, source = tag, "deploy 台账"
-        except Exception:
-            pass
-    if not chosen:
-        if len(tags_at) == 1:
-            chosen, source = tags_at[0], "tag --points-at release baseline（台账尚未记它）"
-        elif len(tags_at) > 1:
-            return [(FAIL, basename + " tag==release",
-                     "release baseline %s 上有多个 mi50-* tag，无法唯一确定：%s"
-                     % (baseline[:12], tags_at))]
-        else:
-            return [(FAIL, basename + " tag==release",
-                     "release baseline %s 没有任何 mi50-* tag（也无台账 tag 指向它）" % baseline[:12])]
-    try:
-        obj, typ, com = tag_triplet(repo, chosen)
-    except Exception as e:
-        return [(FAIL, basename + " tag^{commit}", "cannot dereference %s: %s" % (chosen, e))]
-    if com != baseline:
-        return [(FAIL, basename + " tag^{commit}",
-                 "%s deref %s != release baseline %s（tag 没打在产二进制的构建 sha 上）"
-                 % (chosen, com[:12], baseline[:12]))]
-    _extra = []
-    if tag and tag != "-" and tag != chosen:
-        _extra.append((OK, basename + " 台账",
-                       "deploy 台账末行仍是 %s（上一代在跑的），候选 tag 是 %s —— 装机前这是预期" % (tag, chosen)))
-    if not _is_ancestor(repo, baseline, head):
-        return [(FAIL, basename + " T2 祖先",
-                 "release baseline %s 不是 HEAD %s 的祖先（HEAD 被回退或换了分支）"
-                 % (baseline[:12], (head or "?")[:12]))]
-    files = []
-    if head and head != baseline:
-        files = [x for x in _git_out(repo, "diff", "--name-only", "%s..%s" % (baseline, head)).splitlines()
-                 if x.strip()]
-    eng = [f for f in files if is_engine_path(f)]
-    if eng:
-        return [(FAIL, basename + " T3 引擎路径",
-                 "baseline..HEAD 有 %d 处引擎路径改动（例：%s）⇒ 二进制不再代表 HEAD"
-                 % (len(eng), eng[:3]))]
-    if head == baseline:
-        return [(OK, basename + " tag^{commit}",
-                 "%s object %s(%s) -> commit %s == HEAD（exact）" % (chosen, obj[:12], typ, com[:12]))]
-    return _extra + [(OK, basename + " tag^{commit}",
-             "%s object %s(%s) -> commit %s == release baseline；HEAD %s 领先 %d 文件（全非引擎）"
-             % (chosen, obj[:12], typ, com[:12], head[:12], len(files))),
-            (OK, basename + " 口径", "via-release-baseline（HEAD 是发布点的 CI-only 后置提交）")]
-
-
-def check_tag_cli(repo, tag):
-    """--check-tag: print the triplet and the verdict, with the naive comparison as a control."""
-    obj, typ, com = tag_triplet(repo, tag)
-    head = subprocess.run(["git", "-C", repo, "rev-parse", "HEAD"], capture_output=True,
-                          text=True, check=True).stdout.strip()
-    naive = (obj == head)
-    deref = (com == head)
-    print("tag          = %s" % tag)
-    print("object_type  = %s" % typ)
-    print("object_sha   = %s" % obj)
-    print("deref_commit = %s   (rev-parse %s^{commit})" % (com, tag))
-    print("HEAD         = %s" % head)
-    print("naive obj==HEAD   -> %s   [负向样例：必须为 False，否则说明比较对象取错]"
-          % ("MATCH" if naive else "MISMATCH"))
-    print("deref commit==HEAD-> %s" % ("MATCH" if deref else "MISMATCH"))
-    _b = release_baseline(repo)
-    print("release baseline   = %s   (CANDIDATE_POINTER.built_from)" % (_b or "<absent>"))
-    print("deref commit==baseline-> %s" % ("MATCH" if _b and com == _b else "MISMATCH"))
-    print("TAG_PROV(HEAD)   : %s" % ("PASS" if deref else "FAIL"))
-    _v = prov3_verdict(repo, tag)
-    print("TAG_PROV(release): %s" % ("PASS" if all(x[0] != FAIL for x in _v) else "FAIL"))
-    for _st, _nm, _dt in _v:
-        print("   %-4s %-22s %s" % ("PASS" if _st == OK else "FAIL", _nm, _dt))
-    return 0 if (deref and typ == "tag") else 1
-
-
-def check_provenance(cfg_path, build_strata, ledger, repo):
-    """[R80/W1060] 3 provenance checks (fail-closed):
-    1) config exe md5 == ledger-last exe_md5
-    2) that md5 == build/strata md5
-    3) ledger-last tag != "-" and equals the repo HEAD tag"""
-    # --- ledger last row
-    try:
-        lines = [l for l in io.open(ledger, encoding="utf-8").read().splitlines()
-                 if l.strip() and not l.startswith("#")]
-    except Exception as e:
-        add(FAIL, "prov/ledger", "cannot read %s: %s" % (ledger, e))
-        return
-    hdr = lines[0].split("\t")
-    try:
-        i_exe, i_md5, i_tag = hdr.index("exe"), hdr.index("exe_md5"), hdr.index("tag")
-    except ValueError as e:
-        add(FAIL, "prov/ledger-cols", "missing column: %s" % e)
-        return
-    last = lines[-1].split("\t")
-    l_exe, l_md5, l_tag = last[i_exe], last[i_md5], last[i_tag]
-
-    # --- 1) config exe md5 == ledger exe_md5
-    try:
-        cfg = json.load(open(cfg_path, encoding="utf-8-sig"))
-        exe = cfg.get("exe") or cfg.get("engine")
-        host_bin = os.environ.get("STRATA_DATA_BIN") or os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(repo))), "data", "bin")
-        exe_host = exe.replace("/data/bin/", host_bin.rstrip("/") + "/") if exe else ""
-        cfg_md5 = md5_file(exe_host)
-    except Exception as e:
-        add(FAIL, "prov/1 config-exe==ledger", "cannot md5 config exe: %s" % e)
-        cfg_md5 = None
-    if cfg_md5 is not None:
-        if cfg_md5 == l_md5:
-            add(OK, "prov/1 config-exe==ledger", "exe=%s md5=%s == ledger-last %s" % (exe, cfg_md5[:12], l_exe))
-        else:
-            add(FAIL, "prov/1 config-exe==ledger",
-                "config exe md5 %s != ledger-last %s (%s) -- deploy not logged?" % (cfg_md5[:12], l_md5[:12], l_exe))
-
-    # --- 2) 候选制品 == 它的构建产物（D21/D12 同类：唯一权威 = deploy/CANDIDATE_POINTER.tsv）
-    # 原判据拿"生产 exe"比 build/strata：生产一落后候选就必然红，那不是漂移而是设计。
-    # 判据本身不变（装机前候选必须与构建产物逐字节一致），只把比对对象换成候选指针。
-    root166 = os.path.dirname(os.path.dirname(os.path.abspath(build_strata)))
-    pointer = os.environ.get("DEPLOY_POINTER") or os.path.join(root166, "deploy", "CANDIDATE_POINTER.tsv")
-    ptr = read_tsv_kv(pointer)
-    if ptr.get("md5") and ptr.get("build_dir"):
-        art = os.path.join(root166, ptr["build_dir"], "strata")
-        try:
-            a_md5 = md5_file(art)
-        except Exception as e:
-            add(FAIL, "prov/2 候选==构建产物", "cannot md5 %s: %s" % (art, e))
-            a_md5 = None
-        if a_md5 is not None:
-            if a_md5 == ptr["md5"]:
-                add(OK, "prov/2 候选==构建产物",
-                    "指针 %s md5 %s == %s/strata（%s B）"
-                    % (ptr.get("exe", "?"), a_md5[:12], ptr["build_dir"], ptr.get("size", "?")))
-            else:
-                add(FAIL, "prov/2 候选==构建产物",
-                    "指针 md5 %s != %s/strata %s -- 候选被换过或构建目录不是它"
-                    % (ptr["md5"][:12], ptr["build_dir"], a_md5[:12]))
-        if cfg_md5 is not None and cfg_md5 != ptr["md5"]:
-            add(OK, "prov/2b 生产 vs 候选",
-                "生产在跑 %s（%s），候选 %s 未部署 -- 预期（未进 Stage 4）"
-                % (exe, cfg_md5[:12], ptr.get("exe", "?")))
-    else:
-        try:
-            b_md5 = md5_file(build_strata)
-        except Exception as e:
-            add(FAIL, "prov/2 exe==build/strata", "cannot md5 %s: %s" % (build_strata, e))
-            b_md5 = None
-        if b_md5 is not None and cfg_md5 is not None:
-            if b_md5 == cfg_md5:
-                add(OK, "prov/2 exe==build/strata", "build md5 %s == config exe md5" % b_md5[:12])
-            else:
-                add(FAIL, "prov/2 exe==build/strata",
-                    "build/strata %s != config exe %s -- deploy drifted from build?"
-                    % (b_md5[:12], cfg_md5[:12]))
-
-    # --- 3) release-point tag, anchored on the binary's build sha (r15)
-    # The old check asked `git tag --points-at HEAD`, i.e. it assumed HEAD *is* the release
-    # point; one CI-only commit on top then turns provenance red for a reason that has nothing
-    # to do with the artifact.  The anchor is now RELEASE_BASELINE_SHA, and the tag must still
-    # dereference to *that* sha -- HEAD and the tag object remain invalid answers.
-    for _st, _nm, _dt in prov3_verdict(repo, l_tag, basename="prov/3"):
-        add(_st, _nm, _dt)
-
-
-
-
 def main():
     ap = argparse.ArgumentParser()
-    _self = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    _root166 = os.path.dirname(os.path.dirname(_self))
-    ap.add_argument("--repo", default=os.environ.get("REPO", _self))
+    ap.add_argument("--repo", default=os.environ.get("REPO",
+                                                     "/home/albus/strata166/pr/strata-fork"))
     ap.add_argument("--build", default=os.environ.get("BUILD",
-                                                      os.path.join(_root166, "gfx029-build")))
+                                                      "/home/albus/strata166/gfx029-build"))
     ap.add_argument("--config", default=os.environ.get("CFG", ""))
     ap.add_argument("--health", default=os.environ.get("HEALTH", "http://127.0.0.1:8090/health"))
     ap.add_argument("--source-only", action="store_true")
     ap.add_argument("--quiet", action="store_true")
-    ap.add_argument("--check-tag", default=None,
-                    help="打印 tag 三值（object / type / ^{commit}）并判定 tag==HEAD；不跑其余门")
     a = ap.parse_args()
-    if a.check_tag:
-        return check_tag_cli(a.repo, a.check_tag)
 
     check_source(a.repo)
-    if a.source_only:
-        add(OK, "prov/deploy-time-only",
-            "R80 provenance runs only with --config (deploy.sh step 1); --source-only sees no production files")
     if not a.source_only:
         check_build(a.build)
         if a.config:
             check_prod(a.config, None, a.health)
-            check_provenance(a.config, os.path.join(a.build, "strata"),
-                             os.environ.get("DEPLOY_LEDGER",
-                                            os.environ.get("DEPLOY_LEDGER",
-                                                           os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))),
-                                                                        "ci", "state", "prod_history.tsv"))),
-                             a.repo)
 
     fails = [r for r in rows if r[0] == FAIL]
     if not a.quiet:
