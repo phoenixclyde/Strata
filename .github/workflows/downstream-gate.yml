@@ -1,0 +1,48 @@
+name: Downstream gate
+
+# The checks that can run without a GPU, on every change that could break the engine.
+# Upstream's own workflows only look at serve/ and the CLI; nothing covered src/ until now,
+# so a commit could change the R table or drop the runtime rollback switch unobserved.
+#
+# This is deliberately not a build: compiling the engine needs ROCm and 8-10 minutes of a
+# self-hosted machine.  See deploy/CI_CD_BLUEPRINT.md for why that stays local.
+
+on:
+  push:
+    branches: [main, gfx906/mi50, 'ci/**']
+    paths:
+      - 'src/**'
+      - 'include/**'
+      - 'CMakeLists.txt'
+      - 'ci/**'
+      - '.github/workflows/downstream-gate.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'include/**'
+      - 'CMakeLists.txt'
+      - 'ci/**'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  static:
+    name: Static gate (no GPU)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Config-face checks
+        run: python3 ci/gate.py --repo . --source-only
