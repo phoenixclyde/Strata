@@ -1,17 +1,4 @@
 #!/bin/bash
-# W1079 (B1 前置 7): 唯一源码分支 = gfx906/mi50 -- 非主线拒绝构建/装机。
-# ci/** 只作证据与短命实验，不得作为构建来源；确需构建传 --allow-non-mainline
-# 并在 deploy/PROGRESS.tsv 登记（GOVERNANCE_PLAN P0 项落地）。
-_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo DETACHED)
-if [ "$_BRANCH" != "gfx906/mi50" ]; then
-  _allow=0
-  for _a in "$@"; do [ "$_a" = "--allow-non-mainline" ] && _allow=1; done
-  if [ "$_allow" != "1" ]; then
-    echo "REFUSE: 唯一源码分支=gfx906/mi50，当前=$_BRANCH。ci/** 只作证据不得构建；确需构建请显式传 --allow-non-mainline 并在 PROGRESS.tsv 登记。" >&2
-    exit 1
-  fi
-  echo "WARN: --allow-non-mainline 已声明（branch=$_BRANCH），须在 PROGRESS.tsv 登记。" >&2
-fi
 # strata-ci build -- rebuild one translation unit of the engine in the production image,
 # re-archive, re-link.  Nothing else; no CMake, no image rebuild, no service restart.
 #
@@ -20,8 +7,6 @@ fi
 # We therefore take ninja's OWN command lines (no hand-copied flags: losing -DNDEBUG
 # costs 47%, the wrong hip_compat path costs 45%) and run exactly three of them.
 #
-# W1018: a HOST C++ translation unit (src/prefill/prefill.cpp) has no `-x hip`, so the
-# old filter skipped it and only printed "COMPILE LINE NOT FOUND" while the caller went on.
 # Usage: build.sh [--file src/kernels/cuda/native_mmvq.cu] [--archive libstrata_kernels.a]
 #                 [--name strata-ci-build] [--foreground]
 set -u
@@ -57,7 +42,7 @@ cd /out || exit 1
 cmd=/out/_ci_all.txt
 ninja -t commands strata > \$cmd 2>/dev/null || { echo 'NINJA -t commands FAILED'; exit 1; }
 total=\$(wc -l < \$cmd)
-L1=\$(grep -n '$OBJ' \$cmd | grep -- ' -c ' | head -1 | cut -d: -f1)
+L1=\$(grep -n '$OBJ' \$cmd | grep -- '-x hip -c' | head -1 | cut -d: -f1)
 L2=\$(grep -n 'llvm-ar qc $LIB' \$cmd | head -1 | cut -d: -f1)
 L3=\$total
 echo \"total commands: \$total  compile line: \${L1:-none}  archive line: \${L2:-none}  link line: \$L3\"

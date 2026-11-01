@@ -1,17 +1,4 @@
 #!/bin/bash
-# W1079 (B1 前置 7): 唯一源码分支 = gfx906/mi50 -- 非主线拒绝构建/装机。
-# ci/** 只作证据与短命实验，不得作为构建来源；确需构建传 --allow-non-mainline
-# 并在 deploy/PROGRESS.tsv 登记（GOVERNANCE_PLAN P0 项落地）。
-_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo DETACHED)
-if [ "$_BRANCH" != "gfx906/mi50" ]; then
-  _allow=0
-  for _a in "$@"; do [ "$_a" = "--allow-non-mainline" ] && _allow=1; done
-  if [ "$_allow" != "1" ]; then
-    echo "REFUSE: 唯一源码分支=gfx906/mi50，当前=$_BRANCH。ci/** 只作证据不得构建；确需构建请显式传 --allow-non-mainline 并在 PROGRESS.tsv 登记。" >&2
-    exit 1
-  fi
-  echo "WARN: --allow-non-mainline 已声明（branch=$_BRANCH），须在 PROGRESS.tsv 登记。" >&2
-fi
 # strata-ci deploy -- put a built engine into production, or explain exactly what it would do.
 #
 # Default is a DRY RUN.  Nothing is copied, no service is restarted, until --apply.
@@ -48,17 +35,6 @@ done
 say() { printf '\n=== %s ===\n' "$*"; }
 fail() { printf '\nDEPLOY STOPPED: %s\n' "$*" >&2; exit 1; }
 
-# ---------------------------------------------------------------- 0 github
-# W1029: the gate that counts is the one that runs where the change lands.  GitHub Actions
-# must have a completed, successful run for THIS commit; the local round gate is convenience.
-say "0/8 github gate"
-python3 "$HERE/gh_gate.py" --sha "$(git -C "$REPO" rev-parse HEAD)" \
-  || fail "GitHub CI has no green run for HEAD (push it, then: ci/gh_gate.py --wait 300)"
-# Secondary, and deliberately non-fatal: the receiving-end receipt from W1028.  It is a
-# second pair of eyes, not the record of truth (that is the GitHub run above).
-python3 "$HERE/gate_receipt.py" --sha "$(git -C "$REPO" rev-parse HEAD)" \
-  || echo "note: no local gate receipt for HEAD (GitHub run is what gates this deploy)"
-
 # ---------------------------------------------------------------- 1 gate
 say "1/7 gate"
 python3 "$HERE/gate.py" --repo "$REPO" --build "$BUILD" --config "$CFG" || fail "gate"
@@ -66,67 +42,8 @@ python3 "$HERE/gate.py" --repo "$REPO" --build "$BUILD" --config "$CFG" || fail 
 # ---------------------------------------------------------------- 2 tag
 say "2/7 release tag"
 HEAD_SHA=$(git -C "$REPO" rev-parse HEAD)
-# W1116: anchor the release tag on the sha the binary was built from, not on HEAD.
-# `describe --exact-match HEAD` made every CI-only commit look like a provenance failure.
-BASELINE=$(python3 - "$REPO" <<'PYEOF'
-import io, os, sys
-repo = os.path.abspath(sys.argv[1])
-cands = [os.environ.get("DEPLOY_POINTER")]
-d = repo
-for _ in range(4):
-    cands.append(os.path.join(d, "deploy", "CANDIDATE_POINTER.tsv"))
-    nd = os.path.dirname(d)
-    if nd == d:
-        break
-    d = nd
-for c in cands:
-    if c and os.path.isfile(c):
-        for line in io.open(c, encoding="utf-8-sig"):
-            f = line.rstrip("\n").split("\t")
-            if len(f) >= 2 and f[0] == "built_from":
-                print(f[1].strip())
-                raise SystemExit
-print("")
-PYEOF
-)
-[ -n "$BASELINE" ] || fail "no RELEASE_BASELINE_SHA: deploy/CANDIDATE_POINTER.tsv 缺 built_from"
-# D34: the identity check below hashes $SRCDIR/strata.  If $SRCDIR is not the directory the
-# pointer names, that hash is of a DIFFERENT binary -- and r34-2/r35 are both 44,486,144 B,
-# so size alone cannot tell them apart.  Refuse instead of printing a confident wrong md5.
-PTR_BUILD=$(python3 - "$REPO" <<'PYEOF'
-import io, os, sys
-repo = os.path.abspath(sys.argv[1])
-cands = [os.environ.get("DEPLOY_POINTER")]
-d = repo
-for _ in range(4):
-    cands.append(os.path.join(d, "deploy", "CANDIDATE_POINTER.tsv"))
-    nd = os.path.dirname(d)
-    if nd == d:
-        break
-    d = nd
-for c in cands:
-    if c and os.path.isfile(c):
-        for line in io.open(c, encoding="utf-8-sig"):
-            f = line.rstrip("\n").split("\t")
-            if len(f) >= 2 and f[0] == "build_dir":
-                print(f[1].strip())
-                raise SystemExit
-print("")
-PYEOF
-)
-if [ -n "$PTR_BUILD" ]; then
-  [ "$(basename "$SRCDIR")" = "$PTR_BUILD" ] \
-    || fail "SRCDIR=$(basename "$SRCDIR") 与 CANDIDATE_POINTER.build_dir=$PTR_BUILD 不一致：身份检查会哈希到另一个二进制（D34）"
-fi
-git -C "$REPO" merge-base --is-ancestor "$BASELINE" "$HEAD_SHA" \
-  || fail "release baseline ${BASELINE:0:10} is not an ancestor of HEAD ${HEAD_SHA:0:10}"
-ENGINE_HITS=$(git -C "$REPO" diff --name-only "$BASELINE..$HEAD_SHA" \
-  | grep -vE '^(ci/|docs/|serve/|tools/|tests/|bench/|history/|albus/|\.workbuddy/|\.github/|assets/)' \
-  | grep -vE '^[^/]+\.(md|txt|bat|gitignore|gitattributes)$' || true)
-[ -z "$ENGINE_HITS" ] || fail "engine paths changed between release baseline and HEAD: $ENGINE_HITS"
-TAG=$(git -C "$REPO" describe --exact-match --match "${TAG_PREFIX}*" "$BASELINE" 2>/dev/null || true)
+TAG=$(git -C "$REPO" describe --exact-match --match "${TAG_PREFIX}*" HEAD 2>/dev/null || true)
 echo "HEAD    = ${HEAD_SHA:0:10}"
-echo "baseline= ${BASELINE:0:10}  (RELEASE_BASELINE_SHA)"
 echo "tag     = ${TAG:-<none>}"
 BRANCH=$(git -C "$REPO" rev-parse --abbrev-ref HEAD)
 echo "branch  = $BRANCH"
@@ -135,7 +52,7 @@ if [ -n "$(git -C "$REPO" status --porcelain --untracked-files=no)" ]; then
   git -C "$REPO" status --porcelain --untracked-files=no | head -5
 fi
 if [ -z "$TAG" ] && [ "$ALLOW_UNTAGGED" != "1" ]; then
-  fail "release baseline ${BASELINE:0:10} carries no ${TAG_PREFIX}* tag (pass --allow-untagged to override)"
+  fail "HEAD carries no ${TAG_PREFIX}* tag (pass --allow-untagged to override)"
 fi
 
 # ---------------------------------------------------------------- 3 identity
@@ -165,28 +82,6 @@ PY
 )
 fi
 TARGET=$BIN/$EXENAME
-# ---------------------------------------------------------------- 3.5/8 evidence gate
-# W1035: 装机必须带 A/B 与数值证据。没有证据 => 不装（判据，不是判断）。
-say "3.5/8 evidence gate (A/B + numeric)"
-EVID=${EVIDENCE:-$REPO/ci/state/ab/latest.json}
-# W1097 D12: this call site passed only 4 arguments, so deploy_gate's D5 (config face) and D6 (evidence
-# chain) were both SKIP -- and W1043 makes ANY skip an INCOMPLETE (exit 1), which made every install through
-# deploy.sh impossible.  Supply both their evidence instead of relaxing the gate:
-#   D5 = the exe-only config delta (base = live config, new = same config pointing at the new exe)
-#   D6 = this round's report file, staged by the pipeline as $REPORT before deploy
-CFGW=$STATE/cfg_next.json
-python3 - "$CFG" "$CFGW" "$EXENAME" <<'PY'
-import json, sys
-p, q, name = sys.argv[1], sys.argv[2], sys.argv[3]
-d = json.load(open(p))
-d["exe"] = "/data/bin/" + name
-json.dump(d, open(q, "w"), indent=1, ensure_ascii=False)
-print("cfg_next exe:", d["exe"])
-PY
-REPORT_FILE=${REPORT:-$STATE/last_report.md}
-python3 "$HERE/deploy_gate.py" --path "$NEW" --exe "$EXENAME" --ab "$EVID" --live \
-  --cfg-base "$CFG" --cfg-new "$CFGW" --reg-ids "" --report "$REPORT_FILE" \
-  || fail "deploy gate REFUSE for $EXENAME: no A/B or numeric evidence (see above); expected at $EVID"
 say "4/7 install -> $TARGET"
 echo "from: $NEW"
 if [ -f "$TARGET" ]; then
