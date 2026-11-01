@@ -12,7 +12,7 @@
 | 长期分支 | `gfx906/mi50`（版本号不进分支名） |
 | 发布 tag | `mi50-0.2.9-r1` |
 | 生产引擎 | `strata-0.1.55h`（md5 `9a2ff8742f9918f657a468a7baeb177c`） |
-| 与上游距离 | 落后 **0** / 领先 4（`git rev-list --left-right --count upstream/main...gfx906/mi50`） |
+| 与上游距离 | 落后 **0** / 领先 6（`git rev-list --left-right --count upstream/main...gfx906/mi50`） |
 
 ## 下游提交台账（rebase 时逐条重放；被上游吸收的立刻删）
 
@@ -22,6 +22,8 @@
 | 2 | `gfx906: replay the 0.2.8 local patches onto v0.2.9` | 0.2.8 线已验证的 gfx906 改动整体重放到 0.2.9（内容见下表） | 引擎起得来、48 层全 MMQ、decode 47 tok/s 量级 |
 | 3 | `gfx906: rows-per-wavefront table for the Q8_0 wave kernel` | 单请求 decode 走投机验证窗口（ncols>1），wave kernel 每波只算 1 行，激活与 dp4a 不跨行共享 | 9 形状 × ncols 1/6 逐位 `diff=0`；同镜像 A/B **+4.0%** |
 | 4 | `docs: downstream maintenance note` | 本文件 | 文档 |
+| 5 | `serve/telemetry: keep the sampler thread references` | 我们的 PCIe 带宽补丁把 `self._thread = Thread(...)` 改成了匿名线程；v0.2.9 新增的 `test_responses.NoLeakedSampler` 读这个属性判"停服后采样线程结束"，属性为 `None` ⇒ CI 在每条 `gfx906/*` 上红（`main` 绿）。`close()` 现在 join 两个采样线程 | 容器内两臂：`.w863bak` **FAIL**（报错与 CI 逐字一致）/ 修复版 **OK**；CI 见 run 41288894503 |
+| 6 | `ci: narrow the two push-triggered workflows` | 只在 `main` / `gfx906/mi50` / `ci/**` 上跑 push，加 `concurrency` 取消旧 run；tag push 不再触发（测的还是已测过的代码）。`paths` 未改，rebase 时最多 4 行冲突 | 见 `deploy/CI_CD_POLICY.md`；push 一次即可看到新触发生效 |
 
 ### 提交 2 里打包的历史通用修复（**已并入主线，来源分支已归档**）
 
@@ -58,6 +60,23 @@
 5. 二进制 / bench 副本 / `*.bak` **不进仓库**（放 `/home/albus/strata166/w863/`）。
 6. 生产只跑「发布 tag 对应的 HEAD」；未打 tag 的提交不进生产。
 7. **分支用完即归档删**：打 `archive/<名字>` tag 后删远端与本地，别让影子分支堆着。
+
+## CI（GitHub Actions）
+
+上游的 CI 是**租来的**：它替我们守"补丁有没有破坏上游行为"，代价是我们得让它跑得对。
+
+- **会冒烟的两条**：`terminal-minimal-server`（服务端 Python 套件，1298 个用例）和
+  `terminal-portable-monitor`（监控客户端，ubuntu + windows 矩阵）。
+- **触发收窄**：`push` 只在 `main` / `gfx906/mi50` / `ci/**` 上跑；`tag` 不触发；
+  `concurrency` 取消同分支的旧 run。要在一个实验分支上要 CI，就开 `ci/<名字>`。
+- **红灯判据**（按序）：① `main` 绿而本分支红 ⇒ 我们的补丁，必修；② 失败在
+  `Install pinned runtime requirements` ⇒ 依赖/网络，别改代码；③ 报错是
+  `AssertionError: unexpectedly None` ⇒ 优先怀疑我们删了上游新代码依赖的属性。
+- **不屏蔽、不 job 级重试、不删测试**：这个门是唯一能发现"改 `serve/` 改坏了"的机器证据。
+- **未覆盖**：`src/` / `CMakeLists.txt` 不在任何 workflow 的 `paths` 里 ⇒ **引擎内核改动零 CI**。
+  静态门（形状表 / `getenv` 存在性）可作为下一步；真机编译与逐位等价需要 self-hosted runner。
+
+完整过程与反证数据：`deploy/CI_CD_POLICY.md`（工作区文档，不进仓库）。
 
 ## 跟随上游（四步）
 
