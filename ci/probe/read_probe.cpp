@@ -157,6 +157,10 @@ int main() {
         {"HC up     320->10240",   320, 10240},
         {"GDN qkv  2560->10240",  2560, 10240},
         {"big     10240->8192 ", 10240, 8192},   // 85 MiB: far past the 4 MB L2
+        // The expert block: 3.13 MB per (layer, expert) slot, read as 8 of them (25 MB, one
+        // tensor's worth of a layer). Used to ask whether a 3.13 MB gather is a streaming read
+        // or something the kernel turns into a latency problem.
+        {"expert 3.13MB x8 ", 32 * 92206, 8},
     };
     const int threads = 64;
 
