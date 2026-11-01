@@ -19902,6 +19902,11 @@ int main(int argc, char** argv) {
                 const std::string pause_line = strata::core::gpu_pause_request_line(g_req_gpu_pause_ms.load(), gpu_pause_now());
                 if (!pause_line.empty()) std::fprintf(stderr, "%s\n", pause_line.c_str());
             if (trace) {   // STRATA_TRACE: the same split the batch admission prints, for a solo request
+            // `trace` is resolved once, before the serve loop, so a marker file created on a live
+            // service would never be seen: re-check here (one stat per request).
+            const bool trace_now = trace || std::filesystem::exists("/data/strata-trace") ||
+                                   std::filesystem::exists(".strata-trace");
+            if (trace_now) {   // STRATA_TRACE: the same split the batch admission prints, for a solo request
                 const double ck = req_times.sync_ms + req_times.save_ms + req_times.evict_ms;
                 std::fprintf(stderr, "strata trace: prompt %lld tokens (%lld reused): read %.1f, windows %.1f, "
                                      "%zu checkpoint(s) %.1f (sync %.1f + save %.1f + evict %.1f), rest %.1f ms\n",
