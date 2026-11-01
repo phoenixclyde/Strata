@@ -16174,6 +16174,7 @@ int main(int argc, char** argv) {
                 std::printf("ERR %s\n", err.c_str());
                 return 1;
             }
+            tr("previous commit joined");
             // STRATA_MTP_ROOM_MIN: this request points the prompt path's ring at the drafter's experts, if it reads
             // enough new tokens and the room applies here.  The open is below, once `read_from` is known: the
             // threshold counts the tokens the request reads, not the whole prompt (a reused conversation prefix buys
@@ -16237,6 +16238,7 @@ int main(int argc, char** argv) {
                     return 1;
                 }
             }
+            tr("kv ensured");
             nf_hit = false;
             // #879: an earlier window met non-finite logits.  The poison sits in a conversation's K/V and recurrent
             // state, so nothing that may hold it is continued: the live session, every checkpoint, every parked
@@ -19907,8 +19909,10 @@ int main(int argc, char** argv) {
             if (trace) {   // STRATA_TRACE: the same split the batch admission prints, for a solo request
             // `trace` is resolved once, before the serve loop, so a marker file created on a live
             // service would never be seen: re-check here (one stat per request).
-            const bool trace_now = trace || std::filesystem::exists("/data/strata-trace") ||
-                                   std::filesystem::exists(".strata-trace");
+            std::error_code ec_now;
+            const bool trace_now = std::getenv("STRATA_TRACE") != nullptr ||
+                                   std::filesystem::exists("/data/strata-trace", ec_now) ||
+                                   std::filesystem::exists(".strata-trace", ec_now);
             if (trace_now) {   // STRATA_TRACE: the same split the batch admission prints, for a solo request
                 const double ck = req_times.sync_ms + req_times.save_ms + req_times.evict_ms;
                 std::fprintf(stderr, "strata trace: prompt %lld tokens (%lld reused): read %.1f, windows %.1f, "
