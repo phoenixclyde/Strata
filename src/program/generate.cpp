@@ -16476,6 +16476,7 @@ int main(int argc, char** argv) {
                 std::printf("ERR the K/V cannot grow to the parked conversation: no VRAM is left\n");
                 return 1;
             }
+            tr("cache lookup done");
             if (borrow) {
                 const auto t0 = Clock::now();
                 const strata::core::SavedConversation* donor = conversations.find(parked.serial);   // still parked
@@ -16582,6 +16583,7 @@ int main(int argc, char** argv) {
             live_ok = false;   // until this request has finished, the session is in between
             // the elastic K/V: the outgoing session is parked and this request rewrites every cell from `resume` on,
             // so cells past this prompt's are no longer anyone's - far more than it needs go back to the cache
+            tr("mounted");
             if (kvg.on) {
                 kv_quiesce();
                 // STRATA_KV_GROW_HOLD=1 (opt-in): keep the K/V as long as the longest parked conversation; default: trim to this request alone, as 0.1.40
@@ -16678,6 +16680,7 @@ int main(int argc, char** argv) {
                     }
             // KV streaming: the drafter's ring may hold cells past `resume` from a longer turn; the main layers'
             // host copies and slots are always current (every writer writes both), so they need nothing
+            tr("checkpointed");
             if (use_mtp && resume > 0 && reread_to <= 0) mtp.kv_restore(resume);
             tr("request", n, geni ? 1 : 0);
             req_times = ReqTimes{};
