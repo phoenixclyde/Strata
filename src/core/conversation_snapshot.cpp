@@ -5,6 +5,8 @@
 #include <cuda_runtime.h>
 
 #include <array>
+#include <filesystem>
+#include <system_error>
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
@@ -229,11 +231,14 @@ struct ParkAsync {
 ParkAsync& park_async() { static ParkAsync a; return a; }
 constexpr size_t kParkPiece = (size_t) 4 << 20;
 bool park_async_on() {
-#if defined(STRATA_USE_HIP) || defined(STRATA_HIP_GFX906) || defined(STRATA_GPU_METAL)
+#if defined(STRATA_GPU_METAL)
     return false;
 #else
-    static const bool on = [] { const char* v = std::getenv("STRATA_PARK_ASYNC"); return v != nullptr && v[0] == '1'; }();
-    return on;
+    // Opt-in, and stat'ed per call: STRATA_PARK_ASYNC=1 or the marker file.  W869 measured the synchronous
+    // park inside the *next* request's prompt time (147-197 ms), so HIP is no longer excluded a priori.
+    if (const char* v = std::getenv("STRATA_PARK_ASYNC")) if (v[0] == '1') return true;
+    std::error_code ec;
+    return std::filesystem::exists("/data/strata-park-async", ec);
 #endif
 }
 bool on_device(const void* p) {
