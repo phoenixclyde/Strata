@@ -30,6 +30,7 @@
 // Run:   ./read_probe
 
 #include <hip/hip_runtime.h>
+#include <hip/hip_fp16.h>
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
@@ -46,6 +47,25 @@ __device__ inline unsigned int read_block_2b(const unsigned char* p) {
     return acc;
 }
 
+// mode 2: the same loads, then the arithmetic the HC down kernel actually does on them --
+// dequantise 32 int8 with the fp16 scale and accumulate against an activation vector held in LDS.
+// This isolates "the bytes cost X" from "the work per byte costs Y".
+__device__ inline float gemv_block(const unsigned char* p, const float* x) {
+    union { unsigned short u; __half h; } cv;
+    cv.u = *(const unsigned short*)p;
+    const float d = __half2float(cv.h);
+    float s = 0.f;
+    #pragma unroll
+    for (int i = 0; i < 16; ++i) {
+        const unsigned short two = *(const unsigned short*)(p + 2 + 2 * i);
+        const int q0 = (int)(signed char)(two & 0xFF);
+        const int q1 = (int)(signed char)(two >> 8);
+        s = fmaf((float) q0, x[2 * i], s);
+        s = fmaf((float) q1, x[2 * i + 1], s);
+    }
+    return d * s;
+}
+
 __global__ void probe(const unsigned char* __restrict__ w, int nblk, int S, int n_out,
                       size_t copy_stride, float* __restrict__ out, int mode) {
     const int gb  = blockIdx.x;
@@ -57,10 +77,27 @@ __global__ void probe(const unsigned char* __restrict__ w, int nblk, int S, int 
     const size_t row_bytes = (size_t)nblk * 34u;
     const unsigned char* rowp = w + (size_t)blockIdx.y * copy_stride + (size_t)row * row_bytes;
 
+    // activation tile in LDS, as the real kernel keeps it: 32 floats per lane.
+    // Only filled for the gemv mode -- filling it unconditionally charged every mode for the
+    // setup and moved the baselines (measured: GDN read fell 566 -> 238 GB/s for that reason alone).
+    extern __shared__ float xs[];
+    if (mode == 2 || mode == 3) {
+        const int per = (mode == 3) ? 33 : 32;
+        for (int i = threadIdx.x; i < per * (int)blockDim.x; i += blockDim.x)
+            xs[i] = (float) (i & 7) * 0.125f;
+    }
+
     unsigned int acc = 0u;
+    float facc = 0.f;
     if (mode == 0) {
         for (int b = lo + threadIdx.x; b < hi; b += blockDim.x)
             acc ^= read_block_2b(rowp + (size_t)b * 34u);
+    } else if (mode == 2) {
+        for (int b = lo + threadIdx.x; b < hi; b += blockDim.x)
+            facc += gemv_block(rowp + (size_t)b * 34u, xs + 32 * threadIdx.x);
+    } else if (mode == 3) {
+        for (int b = lo + threadIdx.x; b < hi; b += blockDim.x)
+            facc += gemv_block(rowp + (size_t)b * 34u, xs + 33 * threadIdx.x);
     } else {
         const int n16   = (int)(row_bytes / 16u);
         const int lo16  = (int)((long long)n16 * sp / S);
@@ -72,6 +109,7 @@ __global__ void probe(const unsigned char* __restrict__ w, int nblk, int S, int 
         }
     }
 
+    acc ^= __float_as_uint(facc);
     __shared__ unsigned int red[256];
     red[threadIdx.x] = acc;
     __syncthreads();
@@ -103,9 +141,9 @@ int main() {
     float* out = nullptr;
     CHECK(hipMalloc(&out, 1024 * sizeof(float))); CHECK(hipMemset(out, 0, 1024 * sizeof(float)));
 
-    printf("%-22s %5s %7s %9s %9s %9s %7s  %s\n",
-           "shape", "S", "blocks", "MiB/pass", "mode0 ms", "mode1 ms", "ratio", "mode0/mode1 GB/s");
-    printf("%s\n", "---------------------------------------------------------------------------------------");
+    printf("%-20s %3s %7s %8s %8s %8s %8s %8s | %5s %5s %5s %5s\n",
+           "shape", "S", "blocks", "MiB", "read ms", "wide ms", "gemv ms", "pad ms", "rd", "wide", "gemv", "pad");
+    printf("%s\n", "-----------------------------------------------------------------------------------------------");
 
     const double BUDGET = 360.0 * 1048576.0;   // keep the probe under 360 MiB next to production
 
@@ -129,8 +167,10 @@ int main() {
             const int blocks = sh.n_out * S;
             dim3 grid(blocks, copies);
 
+            const size_t lds = 33 * (size_t)threads * sizeof(float);   // padded: 33 floats per lane
             probe<<<grid, threads>>>(w, nblk, S, sh.n_out, tens, out, 0);
             if (can16) probe<<<grid, threads>>>(w, nblk, S, sh.n_out, tens, out, 1);
+            probe<<<grid, threads, lds>>>(w, nblk, S, sh.n_out, tens, out, 2);
             CHECK(hipDeviceSynchronize());
 
             hipEvent_t a, b;
@@ -148,16 +188,30 @@ int main() {
                 CHECK(hipEventRecord(b)); CHECK(hipEventSynchronize(b));
                 CHECK(hipEventElapsedTime(&ms1, a, b));
             }
+            CHECK(hipEventRecord(a));
+            probe<<<grid, threads, lds>>>(w, nblk, S, sh.n_out, tens, out, 2);
+            CHECK(hipEventRecord(b)); CHECK(hipEventSynchronize(b));
+            float ms2 = 0.f; CHECK(hipEventElapsedTime(&ms2, a, b));
+
+            CHECK(hipEventRecord(a));
+            probe<<<grid, threads, lds>>>(w, nblk, S, sh.n_out, tens, out, 3);
+            CHECK(hipEventRecord(b)); CHECK(hipEventSynchronize(b));
+            float ms3 = 0.f; CHECK(hipEventElapsedTime(&ms3, a, b));
+
             CHECK(hipEventDestroy(a)); CHECK(hipEventDestroy(b));
 
-            const double gb0 = (copies * mib * 1048576.0) / (ms0 / 1000.0) / 1e9;
+            const double by = copies * mib * 1048576.0;
+            const double gb0 = by / (ms0 / 1000.0) / 1e9;
+            const double gb2 = by / (ms2 / 1000.0) / 1e9;
             if (can16) {
-                const double gb1 = (copies * mib * 1048576.0) / (ms1 / 1000.0) / 1e9;
-                printf("%-22s %5d %7d %9.2f %9.2f %9.2f %6.2fx  %.0f / %.0f\n",
-                       S == 1 ? sh.name : "", S, blocks, mib, ms0, ms1, ms0 / ms1, gb0, gb1);
+                const double gb1 = by / (ms1 / 1000.0) / 1e9;
+                const double gb3 = by / (ms3 / 1000.0) / 1e9;
+                printf("%-20s %3d %7d %8.2f %8.2f %8.2f %8.2f %8.2f | %5.0f %5.0f %5.0f %5.0f\n",
+                       S == 1 ? sh.name : "", S, blocks, mib, ms0, ms1, ms2, ms3, gb0, gb1, gb2, gb3);
             } else {
-                printf("%-22s %5d %7d %9.2f %9.2f %9s %7s  %.0f\n",
-                       S == 1 ? sh.name : "", S, blocks, mib, ms0, "n/a", "-", gb0);
+                const double gb3 = by / (ms3 / 1000.0) / 1e9;
+                printf("%-20s %3d %7d %8.2f %8.2f %8s %8.2f %8.2f | %5.0f %5s %5.0f %5.0f\n",
+                       S == 1 ? sh.name : "", S, blocks, mib, ms0, "n/a", ms2, ms3, gb0, "-", gb2, gb3);
             }
         }
         CHECK(hipFree(w));
@@ -170,5 +224,6 @@ int main() {
     printf("mode0 = 17 x 2-byte loads per 34-byte Q8_0 block (what the HC kernel does today)\n");
     printf("mode1 = 16-byte streaming loads over the same bytes (ceiling if LDS staging works)\n");
     printf("S     = split-K factor: same bytes, S times as many blocks\n");
+    printf("gemv  = mode 2: the same 2-byte loads + dequant + FMA against an LDS activation tile\n");
     return 0;
 }
