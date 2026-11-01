@@ -44,5 +44,11 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.11'
+      - name: Syntax of the 166 tooling
+        # These scripts run on the GPU host, but they are code too: a typo in deploy.sh
+        # costs a service outage, and nothing else looks at them.
+        run: |
+          for f in ci/*.sh ci/strata-ci; do bash -n "$f" && echo "ok   $f"; done
+          python3 -m py_compile ci/*.py && echo "ok   ci/*.py"
       - name: Config-face checks
         run: python3 ci/gate.py --repo . --source-only
