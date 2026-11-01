@@ -4,13 +4,7 @@
 
 # --- repo / build ---------------------------------------------------------------
 REPO=/home/albus/strata166/pr/strata-fork
-# r15: BUILD must be the directory the CANDIDATE_POINTER points at.  It said r34-2 while the
-# pointer said build-pipeline-r35, so deploy.sh hashed the WRONG binary (631b5c97 = r34-2) and
-# printed it as "new binary identity" -- a false identity check that happened to agree in size.
-BUILD=/home/albus/strata166/build-pipeline-r35  # cmake build dir (container sees it as /out)
-# 2026-11-14: 必须等于 deploy/CANDIDATE_POINTER.tsv 的 build_dir —— 否则 deploy.sh 会把
-# 陈旧 build-r28 的 5e63174d 当成 "new binary"，与候选指针 631b5c97 不一致（D21/D12 同类）。
-# build-r28 只作历史归档。
+BUILD=/home/albus/strata166/gfx029-build          # cmake build dir (container sees it as /out)
 SRC_MOUNT=/src                                    # container path of $REPO
 
 # --- runtime / production ------------------------------------------------------
@@ -18,7 +12,7 @@ DATA=/home/albus/strata166/data
 BIN=$DATA/bin
 CFG=$DATA/strata-huihui-ud-iq4_xs.json
 CONTAINER=strata166-407
-IMG=strata-gfx906:0.2.10-101
+IMG=strata-gfx906:0.2.9-101
 HEALTH=http://127.0.0.1:8090/health
 ELOG=$DATA/strata-huihui-ud-iq4_xs.log
 
