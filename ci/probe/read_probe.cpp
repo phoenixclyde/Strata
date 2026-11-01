@@ -50,6 +50,21 @@ __device__ inline unsigned int read_block_2b(const unsigned char* p) {
 // mode 2: the same loads, then the arithmetic the HC down kernel actually does on them --
 // dequantise 32 int8 with the fp16 scale and accumulate against an activation vector held in LDS.
 // This isolates "the bytes cost X" from "the work per byte costs Y".
+__device__ inline float gemv_block_dp4a(const unsigned char* p, const int* xi) {
+    union { unsigned short u; __half h; } cv;
+    cv.u = *(const unsigned short*)p;
+    const float d = __half2float(cv.h);
+    int acc = 0;
+    #pragma unroll
+    for (int i = 0; i < 8; ++i) {
+        // 4 int8 weights per 32-bit word, exactly how the production kernel already packs q[r][s]
+        const int w = (int)(*(const unsigned short*)(p + 2 + 4 * i)) |
+                      ((int)(*(const unsigned short*)(p + 4 + 4 * i)) << 16);
+        acc = __builtin_amdgcn_sdot4(w, xi[i], acc, false);
+    }
+    return d * (float) acc;
+}
+
 __device__ inline float gemv_block(const unsigned char* p, const float* x) {
     union { unsigned short u; __half h; } cv;
     cv.u = *(const unsigned short*)p;
@@ -86,6 +101,10 @@ __global__ void probe(const unsigned char* __restrict__ w, int nblk, int S, int 
         for (int i = threadIdx.x; i < per * (int)blockDim.x; i += blockDim.x)
             xs[i] = (float) (i & 7) * 0.125f;
     }
+    int* xi = reinterpret_cast<int*>(xs);          // mode 4 reads the same tile as 8 int8 words
+    if (mode == 4)
+        for (int i = threadIdx.x; i < 32 * (int)blockDim.x; i += blockDim.x)
+            xi[i] = 0x01010101 * (i & 3);
 
     unsigned int acc = 0u;
     float facc = 0.f;
@@ -98,6 +117,9 @@ __global__ void probe(const unsigned char* __restrict__ w, int nblk, int S, int 
     } else if (mode == 3) {
         for (int b = lo + threadIdx.x; b < hi; b += blockDim.x)
             facc += gemv_block(rowp + (size_t)b * 34u, xs + 33 * threadIdx.x);
+    } else if (mode == 4) {
+        for (int b = lo + threadIdx.x; b < hi; b += blockDim.x)
+            facc += gemv_block_dp4a(rowp + (size_t)b * 34u, xi + 8 * threadIdx.x);
     } else {
         const int n16   = (int)(row_bytes / 16u);
         const int lo16  = (int)((long long)n16 * sp / S);
@@ -141,9 +163,9 @@ int main() {
     float* out = nullptr;
     CHECK(hipMalloc(&out, 1024 * sizeof(float))); CHECK(hipMemset(out, 0, 1024 * sizeof(float)));
 
-    printf("%-20s %3s %7s %8s %8s %8s %8s %8s | %5s %5s %5s %5s\n",
-           "shape", "S", "blocks", "MiB", "read ms", "wide ms", "gemv ms", "pad ms", "rd", "wide", "gemv", "pad");
-    printf("%s\n", "-----------------------------------------------------------------------------------------------");
+    printf("%-20s %3s %7s %8s %6s %6s %6s %6s %6s | %5s %5s %5s %5s %5s\n",
+           "shape", "S", "blocks", "MiB", "read", "wide", "gemv", "pad", "dp4a", "rd", "wide", "gemv", "pad", "dp4a");
+    printf("%s\n", "-------------------------------------------------------------------------------------------------------");
 
     const double BUDGET = 360.0 * 1048576.0;   // keep the probe under 360 MiB next to production
 
@@ -198,6 +220,11 @@ int main() {
             CHECK(hipEventRecord(b)); CHECK(hipEventSynchronize(b));
             float ms3 = 0.f; CHECK(hipEventElapsedTime(&ms3, a, b));
 
+            CHECK(hipEventRecord(a));
+            probe<<<grid, threads, lds>>>(w, nblk, S, sh.n_out, tens, out, 4);
+            CHECK(hipEventRecord(b)); CHECK(hipEventSynchronize(b));
+            float ms4 = 0.f; CHECK(hipEventElapsedTime(&ms4, a, b));
+
             CHECK(hipEventDestroy(a)); CHECK(hipEventDestroy(b));
 
             const double by = copies * mib * 1048576.0;
@@ -206,8 +233,10 @@ int main() {
             if (can16) {
                 const double gb1 = by / (ms1 / 1000.0) / 1e9;
                 const double gb3 = by / (ms3 / 1000.0) / 1e9;
-                printf("%-20s %3d %7d %8.2f %8.2f %8.2f %8.2f %8.2f | %5.0f %5.0f %5.0f %5.0f\n",
-                       S == 1 ? sh.name : "", S, blocks, mib, ms0, ms1, ms2, ms3, gb0, gb1, gb2, gb3);
+                const double gb4 = by / (ms4 / 1000.0) / 1e9;
+                printf("%-20s %3d %7d %8.2f %8.2f %8.2f %8.2f %8.2f %8.2f | %5.0f %5.0f %5.0f %5.0f %5.0f\n",
+                       S == 1 ? sh.name : "", S, blocks, mib, ms0, ms1, ms2, ms3, ms4,
+                       gb0, gb1, gb2, gb3, gb4);
             } else {
                 const double gb3 = by / (ms3 / 1000.0) / 1e9;
                 printf("%-20s %3d %7d %8.2f %8.2f %8s %8.2f %8.2f | %5.0f %5s %5.0f %5.0f\n",
