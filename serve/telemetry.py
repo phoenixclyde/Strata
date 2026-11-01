@@ -614,9 +614,13 @@ class Telemetry:
         self._bw_cards = [g for _, g in self.gpus if hasattr(g, "bw")]
         self._bw = None                              # (time, [MB/s per card]), see _bw_loop
         self._stop = threading.Event()
-        threading.Thread(target=self._loop, daemon=True).start()
+        # [ours] the references are kept: a stopped server joins them, and
+        # serve/test_responses.NoLeakedSampler reads `_thread` to prove the sampler ends.
+        self._thread = threading.Thread(target=self._loop, daemon=True)
+        self._thread.start()
         if self._bw_cards and len(self._bw_cards) == len(self.gpus):
-            threading.Thread(target=self._bw_loop, daemon=True).start()
+            self._bw_thread = threading.Thread(target=self._bw_loop, daemon=True)
+            self._bw_thread.start()
 
     def _disk(self):
         if not self.ps:
@@ -677,8 +681,11 @@ class Telemetry:
         return s
 
     def close(self):
-        """Ends the sampler thread (a server that stops, a test's service): it used to run for the life of the process."""
+        """Ends the sampler threads (a server that stops, a test's service): they used to run for the life of the process."""
         self._stop.set()
+        for t in (getattr(self, "_thread", None), getattr(self, "_bw_thread", None)):
+            if t is not None and t is not threading.current_thread():
+                t.join(timeout=5.0)
 
     def _bw_loop(self):
         """[ours] The AMD cards' PCIe bandwidth, read away from the 1 Hz sampler: `pcie_bw` counts over a
