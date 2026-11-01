@@ -13926,7 +13926,15 @@ int main(int argc, char** argv) {
             };
         }
         // STRATA_TRACE=1: one stderr line per step of a request (the log shows where a request stops)
-        const bool trace = std::getenv("STRATA_TRACE") != nullptr;
+        // STRATA_TRACE=1, or a marker file (stat'ed once per request): the container's environment is
+        // fixed at create time, so a file lets tracing be turned on and off on a live service instead of
+        // costing a restart per experiment.  Same contract as the env: one line per step, stderr only.
+        const bool trace = [] {
+            if (std::getenv("STRATA_TRACE") != nullptr) return true;
+            std::error_code ec;
+            return std::filesystem::exists("/data/strata-trace", ec) ||
+                   std::filesystem::exists(".strata-trace", ec);
+        }();
         auto tr = [&](const char* what, long long a = -1, long long b = -1) {
             if (!trace) return;
             static Clock::time_point t0;   // process-wide: the stages run on different threads
@@ -19893,6 +19901,13 @@ int main(int argc, char** argv) {
             {   // AMD on Linux: the time the driver kept the GPU paused inside this request, when it is worth a line
                 const std::string pause_line = strata::core::gpu_pause_request_line(g_req_gpu_pause_ms.load(), gpu_pause_now());
                 if (!pause_line.empty()) std::fprintf(stderr, "%s\n", pause_line.c_str());
+            if (trace) {   // STRATA_TRACE: the same split the batch admission prints, for a solo request
+                const double ck = req_times.sync_ms + req_times.save_ms + req_times.evict_ms;
+                std::fprintf(stderr, "strata trace: prompt %lld tokens (%lld reused): read %.1f, windows %.1f, "
+                                     "%zu checkpoint(s) %.1f (sync %.1f + save %.1f + evict %.1f), rest %.1f ms\n",
+                             (long long) n, (long long) resume, req_times.read_ms, req_times.windows_ms,
+                             checks.size(), ck, req_times.sync_ms, req_times.save_ms, req_times.evict_ms,
+                             prompt_ms - req_times.read_ms - req_times.windows_ms - ck);
             }
             if (serve_adapt_drain_ms >= 1.0)
                 std::fprintf(stderr, "strata serve: the request first waited %.0f ms for the adaptive tier's round in flight\n",
