@@ -33,6 +33,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
+          # schedule and workflow_dispatch only run a workflow that exists on the DEFAULT
+          # branch, so a copy of this file also lives on `main`.  The ref here is explicit
+          # so that copy still measures the trunk we deploy, not main itself.
+          ref: gfx906/mi50
           fetch-depth: 0
           persist-credentials: false
 
