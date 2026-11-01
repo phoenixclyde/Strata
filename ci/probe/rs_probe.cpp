@@ -102,6 +102,14 @@ __global__ void rs_kernel(const unsigned char* __restrict__ w, int nblk, int S, 
         #pragma unroll
         for (int i = 0; i < 8; ++i)  xi[i] = 0x01010101 * ((i + threadIdx.x) & 3);
     }
+    // mode 4 keeps the same 32 values in LDS instead, filled ONCE per launch (outside rep):
+    // that is production's layout, and the question is what the round trip costs per byte.
+    extern __shared__ float xsl[];
+    if (mode == 4) {
+        for (int i = threadIdx.x; i < 32 * (int)blockDim.x; i += blockDim.x)
+            xsl[i] = (float)(i & 7) * 0.125f;
+        __syncthreads();
+    }
 
     unsigned int acc = 0u;
     float facc = 0.f;
@@ -122,6 +130,9 @@ __global__ void rs_kernel(const unsigned char* __restrict__ w, int nblk, int S, 
         } else if (mode == 2) {
             for (int b = lo + threadIdx.x; b < hi; b += blockDim.x)
                 facc += gemv_block_dp4a(rowp + (size_t)b * 34u, xi);
+        } else if (mode == 4) {
+            for (int b = lo + threadIdx.x; b < hi; b += blockDim.x)
+                facc += gemv_block_fma(rowp + (size_t)b * 34u, xsl + 32 * threadIdx.x);
         } else {
             // mode 3: same arithmetic, ~96 extra live VGPRs. Production's gr_down_q8_kernel
             // uses 119 VGPR at T=2 which is only 25% occupancy on gfx906 (256 VGPR/SIMD,
@@ -182,8 +193,8 @@ int main(int argc, char** argv) {
     const int iters = quick ? 1 : 2;
     const int rep   = quick ? 40 : 120;
 
-    printf("%-19s %2s %2s %7s %7s | %6s %6s %6s %6s\n",
-           "shape", "R", "S", "blocks", "blk/CU", "read", "fma", "dp4a", "regpr");
+    printf("%-19s %2s %2s %7s %7s | %6s %6s %6s %6s %6s\n",
+           "shape", "R", "S", "blocks", "blk/CU", "read", "fma", "dp4a", "regpr", "lds");
     printf("%s\n", "-------------------------------------------------------------------------------");
 
     for (auto& sh : shapes) {
@@ -209,15 +220,16 @@ int main(int argc, char** argv) {
 
                 hipEvent_t a, b;
                 CHECK(hipEventCreate(&a)); CHECK(hipEventCreate(&b));
-                double gb[4] = {-1, -1, -1, -1};
+                double gb[5] = {-1, -1, -1, -1, -1};
 
-                for (int mode = 0; mode < 4; ++mode) {
+                for (int mode = 0; mode < 5; ++mode) {
                     // warm
-                    rs_kernel<<<grid, threads>>>(w, nblk, S, R, sh.n_out, tens, copies, 1, out, mode);
+                    const size_t lds = 32 * (size_t)threads * sizeof(float);
+                    rs_kernel<<<grid, threads, lds>>>(w, nblk, S, R, sh.n_out, tens, copies, 1, out, mode);
                     CHECK(hipDeviceSynchronize());
                     CHECK(hipEventRecord(a));
                     for (int i = 0; i < iters; ++i)
-                        rs_kernel<<<grid, threads>>>(w, nblk, S, R, sh.n_out, tens, copies, rep, out, mode);
+                        rs_kernel<<<grid, threads, lds>>>(w, nblk, S, R, sh.n_out, tens, copies, rep, out, mode);
                     CHECK(hipEventRecord(b)); CHECK(hipEventSynchronize(b));
                     float ms = 0.f; CHECK(hipEventElapsedTime(&ms, a, b));
                     ms /= (float)iters;                 // one launch now carries the rep loop
@@ -225,9 +237,9 @@ int main(int argc, char** argv) {
                 }
                 CHECK(hipEventDestroy(a)); CHECK(hipEventDestroy(b));
 
-                printf("%-19s %2d %2d %7d %7.1f | %6.0f %6.0f %6.0f %6.0f\n",
+                printf("%-19s %2d %2d %7d %7.1f | %6.0f %6.0f %6.0f %6.0f %6.0f\n",
                        (R == 1 && S == 1) ? sh.name : "", R, S, blocks,
-                       blocks / (double)p.multiProcessorCount, gb[0], gb[1], gb[2], gb[3]);
+                       blocks / (double)p.multiProcessorCount, gb[0], gb[1], gb[2], gb[3], gb[4]);
             }
         }
         printf("\n");
@@ -236,6 +248,7 @@ int main(int argc, char** argv) {
     CHECK(hipFree(out));
     printf("read  = pure 17x2B loads        fma = dequant+FMA (tile in registers)\n");
     printf("dp4a  = dequant+v_dot4_i32_i8   regpr = fma + 96 dummy VGPRs (production-like occupancy)\n");
+    printf("lds   = fma with the activation tile in LDS (production's layout), filled once per launch\n");
     printf("Compare ROWS WITH THE SAME block count to see whether R and S are interchangeable.\n");
     return 0;
 }
