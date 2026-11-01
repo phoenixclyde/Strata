@@ -2,6 +2,7 @@ name: Minimal serving runtime
 
 on:
   push:
+    branches: [main, gfx906/mi50, 'ci/**']
     paths:
       - .github/workflows/terminal-minimal-server.yml
       - requirements.txt
@@ -13,6 +14,7 @@ on:
       - tools/minimal_server_smoke.py
       - tools/strata_tokenizer.py
   pull_request:
+    branches: [main]
     paths:
       - .github/workflows/terminal-minimal-server.yml
       - requirements.txt
@@ -24,6 +26,10 @@ on:
       - tools/minimal_server_smoke.py
       - tools/strata_tokenizer.py
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
