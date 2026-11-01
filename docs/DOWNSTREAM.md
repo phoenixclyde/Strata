@@ -12,7 +12,7 @@
 | 长期分支 | `gfx906/mi50`（版本号不进分支名） |
 | 发布 tag | `mi50-0.2.9-r1` |
 | 生产引擎 | `strata-0.1.55h`（md5 `9a2ff8742f9918f657a468a7baeb177c`） |
-| 与上游距离 | 落后 **0** / 领先 6（`git rev-list --left-right --count upstream/main...gfx906/mi50`） |
+| 与上游距离 | 落后 **0** / 领先 10（`git rev-list --left-right --count upstream/main...gfx906/mi50`） |
 
 ## 下游提交台账（rebase 时逐条重放；被上游吸收的立刻删）
 
@@ -24,6 +24,8 @@
 | 4 | `docs: downstream maintenance note` | 本文件 | 文档 |
 | 5 | `serve/telemetry: keep the sampler thread references` | 我们的 PCIe 带宽补丁把 `self._thread = Thread(...)` 改成了匿名线程；v0.2.9 新增的 `test_responses.NoLeakedSampler` 读这个属性判"停服后采样线程结束"，属性为 `None` ⇒ CI 在每条 `gfx906/*` 上红（`main` 绿）。`close()` 现在 join 两个采样线程 | 容器内两臂：`.w863bak` **FAIL**（报错与 CI 逐字一致）/ 修复版 **OK**；CI 见 run 41288894503 |
 | 6 | `ci: narrow the two push-triggered workflows` | 只在 `main` / `gfx906/mi50` / `ci/**` 上跑 push，加 `concurrency` 取消旧 run；tag push 不再触发（测的还是已测过的代码）。`paths` 未改，rebase 时最多 4 行冲突 | 见 `deploy/CI_CD_POLICY.md`；push 一次即可看到新触发生效 |
+| 7 | `ci: add the downstream gate and the upstream watcher` | 新增 3 个文件（**不改上游任何文件**）：`ci/gate.py`（配置面检查）、`downstream-gate.yml`（每次改 `src/`/`include/`/`CMakeLists.txt` 就跑）、`upstream-watch.yml`（每日查上游差距，开/更新一个 issue） | `strata-ci check` 在 166 上 18 项全过；GitHub run 45cee350 **success** |
+| 8 | `ci(watch): check out gfx906/mi50 explicitly` | `schedule`/`workflow_dispatch` 只跑**默认分支上存在**的 workflow，所以 `main` 上放了一份副本；副本必须显式 checkout 主线，否则它比较的是 `main`（永远 0 落后） | 手动 dispatch run 41291722718 **success**，日志 `BEHIND: 0` |
 
 ### 提交 2 里打包的历史通用修复（**已并入主线，来源分支已归档**）
 
@@ -99,6 +101,23 @@
 > 这是"看起来更安全、实际把自己锁死"的选项。
 
 完整过程与反证数据：`deploy/CI_CD_POLICY.md`（工作区文档，不进仓库）。
+
+### 自动化在哪里（2026-11-01 建好）
+
+| 位置 | 做什么 | 入口 |
+|---|---|---|
+| GitHub（no GPU） | 配置面静态门：R 表形状/取值、`getenv` 真存在、`-DNDEBUG`、hip_compat 路径、备份文件、台账锚点 | `ci/gate.py --source-only`，workflow `Downstream gate` |
+| GitHub（no GPU） | 每日 09:23 CST 比较 `gfx906/mi50` 与 `upstream/main`，有差距就开（或更新）一个 `upstream-watch` issue，追平后自动关闭 | workflow `Upstream watch`（`main` 上有副本，因为 schedule 只认默认分支） |
+| 166 | 同一份门 + 构建树 + 生产 config，共 18 项 | `/home/albus/strata166/ci/strata-ci check` |
+| 166 | 单 TU 编译 → 部署 → 重启 → 健康门 → 台账 | `strata-ci build` / `deploy --apply` / `rollback --last` |
+
+**上游监视故意不自动 rebase**，三条理由都是硬约束：
+① 用 `GITHUB_TOKEN` 推的 commit **不会触发任何 workflow**，CI 不会跑，分支会"看着绿其实没测"；
+② 我们的 rebase 改写历史，推主线必须 force-push，无人值守做这件事就是在赌主线；
+③ rebase 之后必须重编 + 逐位等价，而云端 runner 没有 GPU。
+所以自动化只到"发现 + 提醒"，rebase 留给 `strata-ci watch && git rebase upstream/main`。
+
+> 部署门用工具强制，不靠记性：`strata-ci deploy` 在 `HEAD` 没有 `mi50-*` tag 时直接拒绝（已实测）。
 
 ## 跟随上游（四步）
 
