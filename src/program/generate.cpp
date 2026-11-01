@@ -17745,15 +17745,18 @@ int main(int argc, char** argv) {
                 pp_exact = false;   // a batched or pipelined part is in flight: a cancel may leave the state past pp_reached
                 const bool sp_ok = read_to <= at || (win ? read_windows(at, read_to, err) : read_part(at, to, err));
                 if (sp_ok) pp_exact = true;
-                if (trace) {
+                {   // the accumulators are two clock reads: keep them even when the trace flag was off at
+                    // startup, or the prompt split reports read/windows as 0 and dumps everything into `rest`
                     const double ms = std::chrono::duration<double, std::milli>(Clock::now() - tsp).count();
                     (win ? req_times.windows_ms : req_times.read_ms) += ms;
-                    std::fprintf(stderr, "strata trace: read %lld tokens (%s) in %.1f ms\n", (long long) (read_to - at),
-                                 win ? "windows" : "batched", ms);
-                    if (merge_at >= 0)
-                        std::fprintf(stderr, "strata trace: the first window takes the last %lld prompt tokens\n",
-                                     (long long) (n - merge_at));
-                    std::fflush(stderr);
+                    if (trace) {
+                        std::fprintf(stderr, "strata trace: read %lld tokens (%s) in %.1f ms\n", (long long) (read_to - at),
+                                     win ? "windows" : "batched", ms);
+                        if (merge_at >= 0)
+                            std::fprintf(stderr, "strata trace: the first window takes the last %lld prompt tokens\n",
+                                         (long long) (n - merge_at));
+                        std::fflush(stderr);
+                    }
                 }
                 if (!sp_ok && nf_hit) {   // #879: DONE nonfinite (the lent slots are refilled below)
                     cancelled = true;
