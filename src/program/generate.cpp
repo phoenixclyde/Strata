@@ -12401,9 +12401,27 @@ int main(int argc, char** argv) {
         std::fflush(stdout);
         std::string line;
         int64_t rounds = 0;
-        const int S = o.spec;
-        const int S_mtp = o.mtp_max_t > 0 ? std::min(o.mtp_max_t, S) : S;   // the MTP's windows; suffixes go up to S
-        if (use_mtp && S_mtp < S) mtp.set_max_drafts(S_mtp - 1);
+        int S = o.spec;
+        int S_mtp = o.mtp_max_t > 0 ? std::min(o.mtp_max_t, S) : S;   // the MTP's windows; suffixes go up to S
+        // /data/strata-spec "<S> <mtp>" (bench only): both windows per request, so one process sweeps the ladder.
+        // S is clamped to --spec, which sized every per-window buffer, the DraftPolicy and the captured graphs.
+        bool spec_override = false;
+        {
+            std::error_code ec;
+            if (std::filesystem::exists("/data/strata-spec", ec))
+                if (std::FILE* f = std::fopen("/data/strata-spec", "r")) {
+                    int a = 0, b = 0;
+                    const int got = std::fscanf(f, "%d %d", &a, &b);
+                    std::fclose(f);
+                    if (got >= 1 && a >= 2 && a <= o.spec) {
+                        S = a;
+                        S_mtp = got >= 2 && b >= 2 ? std::min(b, S) : std::min(S_mtp, S);
+                        spec_override = true;
+                    }
+                }
+        }
+        if (spec_override) { if (use_mtp) mtp.set_max_drafts(S_mtp - 1); }   // set, not just lower: an A/B may raise it
+        else if (use_mtp && S_mtp < S) mtp.set_max_drafts(S_mtp - 1);
         // --pipeline-windows 2 loads the drafter with 8 rows: the serial loop's chain keeps its own length
         else if (use_mtp && mtp.max_t() > S_mtp) mtp.set_max_drafts(S_mtp - 1);
         strata::spec::SuffixDrafter sfx(std::max(1, o.suffix_draft), 64, (size_t) o.max_context + 4096);
@@ -18476,7 +18494,17 @@ int main(int argc, char** argv) {
         // plan v0.3 P6: with a native pack the first window is the last prompt token alone (it produces the first
         // generated token and the MTP's first cell); otherwise the token loop already did that.
         bool first_window = native_pack;
-        const int S_mtp = o.mtp_max_t > 0 ? std::min(o.mtp_max_t, o.spec) : o.spec;
+        int S_mtp = o.mtp_max_t > 0 ? std::min(o.mtp_max_t, o.spec) : o.spec;
+        {   // the same bench override as the serve loop: the draft cap is what this window's rows follow
+            std::error_code ec;
+            if (std::filesystem::exists("/data/strata-spec", ec))
+                if (std::FILE* f = std::fopen("/data/strata-spec", "r")) {
+                    int a = 0, b = 0;
+                    const int got = std::fscanf(f, "%d %d", &a, &b);
+                    std::fclose(f);
+                    if (got >= 2 && a >= 2 && b >= 2 && a <= o.spec) S_mtp = std::min(a, b);
+                }
+        }
 #if defined(STRATA_HAVE_DFLASH2)
         const bool spec_uses_df2 = use_df2;
 #else
