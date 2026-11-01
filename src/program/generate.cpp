@@ -14183,13 +14183,34 @@ int main(int argc, char** argv) {
         std::fflush(stdout);
         std::string line;
         int64_t rounds = 0;
-        const int S = o.spec;
+        int S = o.spec;   // not const: /data/strata-spec may lower it for one request (bench only)
+        // /data/strata-spec "<S> <mtp>" (bench only): both windows per request, so one process sweeps the ladder.
+        // S is clamped to --spec, which sized every per-window buffer, the DraftPolicy and the captured graphs.
+        // Read BEFORE the derived values: S_mtp_wide / S_mtp_narrow / S_look all follow S, so an override applied
+        // afterwards would leave them on the old width.
+        bool spec_override = false;
+        int spec_mtp = 0;
+        {
+            std::error_code ec;
+            if (std::filesystem::exists("/data/strata-spec", ec))
+                if (std::FILE* f = std::fopen("/data/strata-spec", "r")) {
+                    int a = 0, b = 0;
+                    const int got = std::fscanf(f, "%d %d", &a, &b);
+                    std::fclose(f);
+                    if (got >= 1 && a >= 2 && a <= o.spec) {
+                        S = a;
+                        spec_override = true;
+                        if (got >= 2 && b >= 2) spec_mtp = b;
+                    }
+                }
+        }
         const int S_mtp_wide = o.mtp_max_t > 0 ? std::min(o.mtp_max_t, S) : S;   // the MTP's windows; suffixes go up to S
         // --draft auto: a request that drafts with the MTP layer has its own widest window (the MTP loses to itself above 4 on Blackwell), the DFlash2 requests S_mtp_wide
         const int S_mtp_narrow = o.draft_auto ? std::min(S_mtp_wide, std::max(2, o.draft_mtp_spec)) : S_mtp_wide;
-        int S_mtp = S_mtp_wide;   // this request's (set when it starts)
+        int S_mtp = (spec_override && spec_mtp > 0) ? std::min(spec_mtp, S) : S_mtp_wide;   // this request's (set when it starts)
         int S_look = S;   // --draft auto: the widest window a prompt-lookup draft may make for this request (the MTP requests keep the MTP's width, as without DFlash2)
-        if (use_mtp && S_mtp < S) mtp.set_max_drafts(S_mtp - 1);
+        if (spec_override) { if (use_mtp) mtp.set_max_drafts(S_mtp - 1); }   // set, not just lower: an A/B may raise it
+        else if (use_mtp && S_mtp < S) mtp.set_max_drafts(S_mtp - 1);
         // --pipeline-windows 2 loads the drafter with 8 rows: the serial loop's chain keeps its own length
         else if (use_mtp && mtp.max_t() > S_mtp) mtp.set_max_drafts(S_mtp - 1);
         strata::spec::SuffixDrafter sfx(std::max(1, o.suffix_draft), 64, (size_t) o.max_context + 4096);
@@ -20922,7 +20943,17 @@ int main(int argc, char** argv) {
         // plan v0.3 P6: with a native pack the first window is the last prompt token alone (it produces the first
         // generated token and the MTP's first cell); otherwise the token loop already did that.
         bool first_window = native_pack;
-        const int S_mtp = o.mtp_max_t > 0 ? std::min(o.mtp_max_t, o.spec) : o.spec;
+        int S_mtp = o.mtp_max_t > 0 ? std::min(o.mtp_max_t, o.spec) : o.spec;
+        {   // the same bench override as the serve loop: the draft cap is what this window's rows follow
+            std::error_code ec;
+            if (std::filesystem::exists("/data/strata-spec", ec))
+                if (std::FILE* f = std::fopen("/data/strata-spec", "r")) {
+                    int a = 0, b = 0;
+                    const int got = std::fscanf(f, "%d %d", &a, &b);
+                    std::fclose(f);
+                    if (got >= 2 && a >= 2 && b >= 2 && a <= o.spec) S_mtp = std::min(a, b);
+                }
+        }
 #if defined(STRATA_HAVE_DFLASH2)
         const bool spec_uses_df2 = use_df2;
 #else
