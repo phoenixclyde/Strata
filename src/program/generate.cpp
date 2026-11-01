@@ -16023,6 +16023,7 @@ int main(int argc, char** argv) {
             if (parked.tokens > std::max(resume, slot_tokens) && !borrow)
                 incoming.emplace(conversations.take(parked.index));
             if (incoming || borrow) slot_source = -1;
+            tr("taken");
             // Reject the entire image before parking/overwriting the outgoing
             // state. Invalid entries can safely fall back to its existing prefix.
             if (incoming && incoming->stage_images.size() != stages.size()) {
@@ -16046,6 +16047,7 @@ int main(int argc, char** argv) {
                 incoming.reset();
                 err.clear();
             }
+            tr("validated");
             // #2409: a restore writes into buffers that exist already. The one thing it can still allocate on a card is
             // this thread's private copy stream for it (a pooled one is reused), and an out-of-memory there is fatal
             // for the process (a failed restore must not be decoded from). So a card that would have to create one and
@@ -16069,6 +16071,7 @@ int main(int argc, char** argv) {
                     }
                     restore_free.push_back((uint64_t) fb);
                     restore_ready.push_back(strata::core::conversation_copy_stream_ready(cur) ? 1 : 0);
+                tr("streams ready");
                 }
                 if (sampled &&
                     !strata::program::conv_cache::restore_fits(restore_free.data(), restore_ready.data(), restore_free.size(),
