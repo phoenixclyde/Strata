@@ -1,0 +1,84 @@
+#!/bin/bash
+# strata-ci -- one entry point for the whole loop.
+#
+#   ci/strata-ci check                 static gate only (seconds, no GPU, no restart)
+#   ci/strata-ci bench --n 12          one recorded experiment: JSON in state/runs/
+#   ci/strata-ci compare A B           is the delta bigger than 2x the measured noise?
+#   ci/strata-ci runs                  the recorded experiments, newest first
+#   ci/strata-ci build                 rebuild one translation unit (~8-10 min)
+#   ci/strata-ci deploy [--apply]      dry run by default; --apply really switches production
+#   ci/strata-ci rollback --last       back to the previous engine
+#   ci/strata-ci status                what is running, what is built, what is in git
+#   ci/strata-ci watch                 is upstream ahead of us? (needs network)
+#
+# The rule this encodes: check -> build -> deploy, and deploy refuses to run unless the
+# commit carries a release tag.  Everything else is a flag.
+set -u
+HERE=$(cd "$(dirname "$0")" && pwd)
+. "$HERE/config.sh"
+
+cmd=${1:-help}
+shift 2>/dev/null || true
+
+case "$cmd" in
+  check)
+    python3 "$HERE/gate.py" --repo "$REPO" --build "$BUILD" --config "$CFG" "$@"
+    ;;
+  bench)
+    python3 "$HERE/bench.py" "$@"
+    ;;
+  compare)
+    python3 "$HERE/compare.py" "$@"
+    ;;
+  runs)
+    ls -t "$HERE/state/runs" 2>/dev/null | head -20
+    ;;
+  build)
+    bash "$HERE/build.sh" "$@"
+    ;;
+  deploy)
+    bash "$HERE/deploy.sh" "$@"
+    ;;
+  rollback)
+    bash "$HERE/rollback.sh" "$@"
+    ;;
+  status)
+    echo "=== engine in production ==="
+    python3 -c 'import json,sys;d=json.load(open(sys.argv[1]));print("exe   :",d["exe"]);print("args  :",len(d.get("args",[])),"env:",len(d.get("env",{})))' "$CFG"
+    echo "health: $(curl -s --max-time 5 "$HEALTH" | head -c 120)"
+    echo "vram  : $(rocm-smi --showmeminfo vram 2>/dev/null | grep -i Used | head -1 | grep -o '[0-9]*$') bytes"
+    echo "uptime: $(docker ps --format '{{.Names}} {{.Status}}' | grep "$CONTAINER")"
+    echo
+    echo "=== built binary ==="
+    ls -l "$BUILD/strata" 2>/dev/null | awk '{print $5" bytes  "$6" "$7" "$8}'
+    md5sum "$BUILD/strata" 2>/dev/null
+    echo
+    echo "=== git ==="
+    git -C "$REPO" --no-pager log --oneline -1
+    echo "branch: $(git -C "$REPO" rev-parse --abbrev-ref HEAD)  dirty: $(git -C "$REPO" status --porcelain --untracked-files=no | wc -l)"
+    git -C "$REPO" describe --tags --exact-match HEAD 2>/dev/null || echo "tag   : <none>"
+    echo
+    echo "=== ledger (last 3) ==="
+    [ -f "$HISTORY" ] && tail -3 "$HISTORY" || echo "(none yet)"
+    ;;
+  watch)
+    # Is upstream ahead?  Read-only; safe to run any time.
+    cd "$REPO" || exit 1
+    git fetch --quiet upstream --tags 2>/dev/null || echo "WARN: fetch failed (network?)"
+    BEHIND=$(git rev-list --count "HEAD..upstream/main" 2>/dev/null || echo "?")
+    AHEAD=$(git rev-list --count "upstream/main..HEAD" 2>/dev/null || echo "?")
+    echo "upstream/main : $(git --no-pager log --oneline -1 upstream/main 2>/dev/null)"
+    echo "since our base: $(git describe --tags --abbrev=0 upstream/main 2>/dev/null || echo '?')"
+    echo "we are ahead $AHEAD / behind $BEHIND"
+    if [ "$BEHIND" != "0" ] && [ "$BEHIND" != "?" ]; then
+      echo
+      echo "=== new upstream commits ==="
+      git --no-pager log --oneline "HEAD..upstream/main" | head -20
+      echo
+      echo "rebase:  git rebase upstream/main   (then ci/strata-ci check && build && deploy)"
+    fi
+    ;;
+  *)
+    sed -n '2,16p' "$HERE/strata-ci" | sed 's/^# \{0,1\}//'
+    ;;
+esac
