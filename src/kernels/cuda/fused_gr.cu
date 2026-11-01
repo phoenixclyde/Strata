@@ -1757,6 +1757,11 @@ __global__ void gr_down_finish_kernel(GrMulti m) {
 // R' * w_norm (unscaled) for the T tokens and writing the chunk's partial dots and sums of squares; `up` sums them
 // per stream in a fixed order, applies rs, SwiGLU-free silu, and runs the default epilogue.  Another summation order
 // and other weights than the default read: an output-changing step (measured, quality-checked).
+// W863/R28: a Q8_0 block is 34 bytes (2 d + 32 q), so a block address is 0 or 2 mod 4 and a
+// 32-bit load of q would be misaligned half the time (UB on GCN).  Reading q as two 16-bit
+// halves keeps it legal; widening the load needs a 36-byte padded layout, i.e. a pack-format
+// change, not a kernel tweak.  Measured: 176 blocks / 60 CU is not the limit either (block
+// count is inverse to rows-per-block, and fewer blocks was faster: 69.3 -> 59.5 us).
 constexpr int Q8B = 34;                             // Q8_0 block: fp16 d + 32 int8
 constexpr int Q8_RPW = 4;                           // down rows per warp
 constexpr int Q8_RG = LR / (WARPS * Q8_RPW);        // 10 row groups (+1: the inject rows)
