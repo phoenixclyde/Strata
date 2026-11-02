@@ -27,6 +27,7 @@
 #include "strata/core/on_device.hpp"
 #include "strata/core/peer_experts.hpp"
 #include "strata/kernels/iq_kernels.hpp"
+#include "strata/kernels/megakernel.hpp"
 #include "strata/kernels/cpu/expert_layout.hpp"
 #include "strata/kernels/cpu/hadamard.hpp"
 #include "strata/kernels/bf16_gemv.hpp"
@@ -1543,7 +1544,53 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
                     note_prio_tail(side_, 1);
                     if (cudaEventRecord(mjoin_, side_) != cudaSuccess) { err = "verify: the GDN gates' branch could not join"; return false; }
                 }
-                if (!q8_attn) quant_in(xm, (int) N);
+                // ---- R54: the GDN chain as one persistent kernel (W899 7) -------------------------
+                // Only when it owns the layer: the six kernels are faster at n <= 3 (T=1 -10.9%,
+                // T=3 -0.9%; T=4 +12.7%, T=5 +15.1%), and the kernel is bitwise equal to them
+                // (mk_gdn_parity: 0 differing values at T=1..8).  STRATA_MK_GDN=1 opts in.
+                static const bool mk_env = [] {
+                    const char* e = std::getenv("STRATA_MK_GDN");
+                    return e != nullptr && std::atoi(e) != 0;
+                }();
+                static unsigned* mk_cnt = nullptr;
+                const bool mk_on = mk_env && n >= 4 && tb == 0 && te == n && !batch_rec_ && !side_proj &&
+                                   !br && !sidem && !prof_on_;
+                if (mk_on) {
+                    if (mk_cnt == nullptr) mk_cnt = strata::kernels::mk_counters_alloc();
+                    strata::kernels::MkGdnArgs mk;
+                    mk.x = xm;
+                    mk.xq = xq_;                          // phase 3 overwrites it with y's image, as the
+                    mk.yq = xq_;                          // six-kernel path does under STRATA_QFUSE
+                    mk.w_qkv = wqkv->native_data;
+                    mk.w_z = wg->native_data;
+                    mk.w_out = wout->native_data;
+                    mk.qkv = qkv;
+                    mk.z = z_;
+                    mk.hist = conv;
+                    mk.w_conv = (const float*) wc->data;
+                    mk.h = hb;
+                    mk.w_alpha = (const uint16_t*) wa->data;
+                    mk.w_beta = (const uint16_t*) wb->data;
+                    mk.dt = (const float*) wdt->data;
+                    mk.ssm_a = (const float*) wsa->data;
+                    mk.gate = gate;
+                    mk.beta = beta;
+                    mk.state = state;
+                    mk.gamma = (const float*) wnm->data;
+                    mk.y = y_;
+                    mk.bo = bo_;
+                    mk.n_embd = (int) N;
+                    mk.conv_channels = (int) C;
+                    mk.value_dim = (int) ZV;
+                    mk.h_k = (int) HK;
+                    mk.h_v = (int) HV;
+                    mk.eps = EPS;
+                    mk.counters = mk_cnt;
+                    mk.diag = q8_attn ? 32 : 0;           // xq_ already holds the input's q8_1
+                    strata::kernels::mk_gdn_dense(mk, (int) n, cs);
+                    il_ready = false;                     // xq_ no longer holds x's image
+                }
+                if (!mk_on && !q8_attn) quant_in(xm, (int) N);
                 if (side_proj) {   // the gate projection (compute-bound for i-quants) beside qkv and the conv
                     // the branch reads F4's interleaved copy too (written on cs before the fork; bitwise native_mmvq's
                     // output), and qkv is recorded before the branch's launch, so its grid is dispatched first and the
@@ -1570,9 +1617,10 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
                                 df_side_[1]);
                 }
                 const bool fuse_ab = fuse_convab_on() && !br && !batch_rec_ && !prof_on_ && !sidem;   // the side mixer computes the gates on its branch
-                if (!side_proj) mm(wqkv, qkv + (size_t) tb * C, (int) N, (int) C);   // with side_proj: above, first
+                if (!mk_on && !side_proj) mm(wqkv, qkv + (size_t) tb * C, (int) N, (int) C);   // with side_proj: above, first
                 stamp(l, 2, grp);
-                if (batch_rec_) {   // contiguous rows may be proposals for the same slot
+                if (mk_on) {        // R54: the persistent kernel ran the whole chain
+                } else if (batch_rec_) {   // contiguous rows may be proposals for the same slot
                     for (int t = tb; t < te;) {
                         const int first = t;
                         while (t < te && brow_[t] == brow_[first]) ++t;
@@ -1598,12 +1646,12 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
                     join(0);
                     join(1);
                 } else {
-                if (!fuse_ab && !sidem)   // the gates: the HIP fused conv kernel (143-amdk) or the side mixer's branch, else here
+                if (!mk_on && !fuse_ab && !sidem)   // the gates: the HIP fused conv kernel (143-amdk) or the side mixer's branch, else here
                 gdn_ab_multi(xm, (const uint16_t*) wa->data, (const uint16_t*) wb->data, (const float*) wdt->data,
                              (const float*) wsa->data, gate + (size_t) tb * HV, beta + (size_t) tb * HV, (int) N, (int) HV,
                              n, cs);
                 stamp(l, 4, grp);
-                if (!side_proj) mm(wg, z_ + (size_t) tb * ZV, (int) N, (int) ZV);
+                if (!mk_on && !side_proj) mm(wg, z_ + (size_t) tb * ZV, (int) N, (int) ZV);
                 stamp(l, 5, grp);
                 if (side_proj && cudaStreamWaitEvent(cs, pjoin_, 0) != cudaSuccess) {
                     err = "verify: the gate projection's branch could not join";
@@ -1645,15 +1693,15 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
                                             (const float*) wnm->data, EPS, y_ + (size_t) first * ZV,
                                             (int) HK, (int) HV, t - first, keep_rows ? one_ : nullptr, cs, 0);
                     }
-                } else
+                } else if (!mk_on)
                 gdn_step_norm_multi(state, hb, (int) C, gate, beta, z_, (const float*) wnm->data, EPS, y_, (int) HK,
                                     (int) HV, te, self_commit ? one_ : nullptr, cs, tb, g_qfuse() ? (void*) xq_ : nullptr);
                 stamp(l, 6, grp);
                 // STRATA_QFUSE: done above by gdn_step_norm_multi - but a batch's per-slot recurrence passes it no q8_1
                 // destination (#1139: the out-projection read stale bytes), so that case quantizes here as without it
-                if (!g_qfuse() || batch_rec_) quant_in(y_ + (size_t) tb * ZV, (int) ZV);
+                if (!mk_on && (!g_qfuse() || batch_rec_)) quant_in(y_ + (size_t) tb * ZV, (int) ZV);
                 else il_ready = false;
-                mm(wout, bo_ + tb * N, (int) ZV, (int) N);
+                if (!mk_on) mm(wout, bo_ + tb * N, (int) ZV, (int) N);
             } else {
                 // ======================= QSA =======================
                 const int64_t qi = qsa_idx[(size_t) l];
