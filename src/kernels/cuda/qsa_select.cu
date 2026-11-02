@@ -14,6 +14,33 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <cstring>
+
+// [R55] 32-lane XOR exchanges through ds_swizzle_b32.  Its swap-n pattern is the same permutation as
+// __shfl_xor(v, n, 32) - verified lane by lane on gfx906 in W902 (0 mismatches, n = 1, 2, 4, 8, 16,
+// including the second 32-lane half of the wave64) - but the pattern lives in the instruction, so there
+// is no address VGPR and no LDS bank traffic.  Anything else falls back to the shim's __shfl_xor.
+// STRATA_NO_SHFL_SWIZZLE=1 at compile time keeps the old path for an A/B.
+#if defined(__HIPCC__) && !defined(STRATA_NO_SHFL_SWIZZLE)
+namespace strata_r55 {
+template <typename T>
+__device__ __forceinline__ T swz_xor(T v, int n) {
+    union { T t; unsigned u; } in, out;
+    in.t = v;
+    switch (n) {
+        case 1:  out.u = __builtin_amdgcn_ds_swizzle(in.u, 0x041F); break;
+        case 2:  out.u = __builtin_amdgcn_ds_swizzle(in.u, 0x081F); break;
+        case 4:  out.u = __builtin_amdgcn_ds_swizzle(in.u, 0x101F); break;
+        case 8:  out.u = __builtin_amdgcn_ds_swizzle(in.u, 0x201F); break;
+        case 16: out.u = __builtin_amdgcn_ds_swizzle(in.u, 0x401F); break;
+        default: out.t = __shfl_xor(v, n, 32); break;
+    }
+    return out.t;
+}
+}  // namespace strata_r55
+#undef __shfl_xor_sync
+#define __shfl_xor_sync(mask, var, n, ...) strata_r55::swz_xor((var), (n))
+#endif
 
 namespace strata::kernels {
 namespace {
