@@ -28,6 +28,11 @@
 #include "strata/core/peer_experts.hpp"
 #include "strata/kernels/iq_kernels.hpp"
 #include "strata/kernels/megakernel.hpp"
+
+// R54: the persistent GDN kernel's phase counters.  They must be allocated BEFORE any window is
+// captured: mk_counters_alloc() calls cudaMalloc, which a capture rejects (the first A/B arm died
+// with "mk_gdn_dense: invalid arguments" because of it).
+static unsigned* g_mk_cnt = nullptr;
 #include "strata/kernels/cpu/expert_layout.hpp"
 #include "strata/kernels/cpu/hadamard.hpp"
 #include "strata/kernels/bf16_gemv.hpp"
@@ -952,6 +957,7 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
         pos_ = b.take<int32_t>(T * (NH + NKV + IQ)); commit_ = b.take<int32_t>(2 + T);
         ple_ = b.take<float>(T * N); emb_ = b.take<float>(T * N); R_ = b.take<float>(T * HC * N);
         mixed_ = b.take<float>(T * N); bo_ = b.take<float>(T * N);
+        if (g_mk_cnt == nullptr) g_mk_cnt = strata::kernels::mk_counters_alloc();   // R54 (capture-free)
         inj_ = b.take<float>(T * HC); inj2_ = b.take<float>(T * HC);
         lo_ = b.take<float>(T * (uint64_t) g.hc_lr); rs_ = b.take<float>(T * HC); xn_ = b.take<float>(T * HC * N);
         xq_ = b.take<uint8_t>(strata::kernels::native_q8_1_bytes(max_in, (int) T));
@@ -1552,11 +1558,9 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
                     const char* e = std::getenv("STRATA_MK_GDN");
                     return e != nullptr && std::atoi(e) != 0;
                 }();
-                static unsigned* mk_cnt = nullptr;
-                const bool mk_on = mk_env && n >= 4 && tb == 0 && te == n && !batch_rec_ && !side_proj &&
+                const bool mk_on = mk_env && g_mk_cnt != nullptr && n >= 4 && tb == 0 && te == n && !batch_rec_ && !side_proj &&
                                    !br && !sidem && !prof_on_;
                 if (mk_on) {
-                    if (mk_cnt == nullptr) mk_cnt = strata::kernels::mk_counters_alloc();
                     strata::kernels::MkGdnArgs mk;
                     mk.x = xm;
                     mk.xq = xq_;                          // phase 3 overwrites it with y's image, as the
@@ -1585,7 +1589,7 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
                     mk.h_k = (int) HK;
                     mk.h_v = (int) HV;
                     mk.eps = EPS;
-                    mk.counters = mk_cnt;
+                    mk.counters = g_mk_cnt;
                     mk.diag = q8_attn ? 32 : 0;           // xq_ already holds the input's q8_1
                     strata::kernels::mk_gdn_dense(mk, (int) n, cs);
                     il_ready = false;                     // xq_ no longer holds x's image

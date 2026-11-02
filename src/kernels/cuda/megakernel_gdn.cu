@@ -536,7 +536,9 @@ unsigned* mk_counters_alloc() {
 int mk_gdn_grid(int n_tok) { return g_grid[0][n_tok < 1 ? 1 : n_tok > 8 ? 8 : n_tok]; }
 
 void mk_gdn_dense(const MkGdnArgs& a, int n_tok, void* stream) {
-    if (n_tok < 1 || n_tok > 8 || a.counters == nullptr) { std::fprintf(stderr, "mk_gdn_dense: invalid arguments\n"); std::exit(1); }
+    // R54: never std::exit here - the caller runs this inside a captured window, and an exit takes the
+    // whole engine with it (that is how the first A/B arm "hung" at the warm-up).
+    if (n_tok < 1 || n_tok > 8 || a.counters == nullptr) { std::fprintf(stderr, "mk_gdn_dense: invalid arguments\n"); return; }
     cudaStream_t s = (cudaStream_t) stream;
     switch (n_tok) {
         case 1: launch<1>(a, s); break;
@@ -549,7 +551,7 @@ void mk_gdn_dense(const MkGdnArgs& a, int n_tok, void* stream) {
         default: launch<8>(a, s); break;
     }
     const cudaError_t e = cudaGetLastError();
-    if (e != cudaSuccess) { std::fprintf(stderr, "mk_gdn_dense: %s\n", cudaGetErrorString(e)); std::exit(1); }
+    if (e != cudaSuccess) std::fprintf(stderr, "mk_gdn_dense: %s\n", cudaGetErrorString(e));
 }
 
 }  // namespace strata::kernels
