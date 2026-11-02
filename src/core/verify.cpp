@@ -1560,6 +1560,19 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
                 }();
                 const bool mk_on = mk_env && g_mk_cnt != nullptr && n >= 4 && tb == 0 && te == n && !batch_rec_ && !side_proj &&
                                    !br && !sidem && !prof_on_;
+                {   // R54 diagnostic: is the persistent kernel entered at all?
+                    static long mk_n = 0, mk_on_n = 0;
+                    static bool said = false;
+                    if (!said && n >= 2) {
+                        said = true;
+                        std::fprintf(stderr,
+                                     "R54 gate: n=%d tb=%d te=%d batch=%d side_proj=%d br=%d sidem=%d prof=%d cnt=%p on=%d\n",
+                                     (int) n, (int) tb, (int) te, (int) batch_rec_, (int) side_proj, (int) br,
+                                     (int) sidem, (int) prof_on_, (void*) g_mk_cnt, (int) mk_on);
+                    }
+                    if (mk_on) ++mk_on_n;
+                    if (++mk_n % 250 == 0) std::fprintf(stderr, "R54 calls=%ld on=%ld\n", mk_n, mk_on_n);
+                }
                 if (mk_on) {
                     strata::kernels::MkGdnArgs mk;
                     mk.x = xm;
