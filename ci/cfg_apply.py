@@ -26,6 +26,7 @@ import copy
 import json
 import os
 import shutil
+import secrets
 import statistics
 import subprocess
 import sys
@@ -69,12 +70,13 @@ def restart(wait=True):
 
 
 def ttft(n, warmup=1):
-    """2K-token prompt, streaming-free wall time; the engine's read time is in its log."""
-    prompt = "ttft " + "The quick brown fox jumps over the lazy dog. " * 200
-    body = json.dumps({"model": "x", "messages": [{"role": "user", "content": prompt}],
-                       "max_tokens": 2, "temperature": 0.0}).encode()
+    """2K-token prompt, a UNIQUE prefix per call: repeating the same prompt is a prefix
+    hit (0.29 s measured), not a measurement."""
     vals = []
     for i in range(n + warmup):
+        prompt = "ttft " + secrets.token_hex(4) + " " + "The quick brown fox jumps over the lazy dog. " * 200
+        body = json.dumps({"model": "x", "messages": [{"role": "user", "content": prompt}],
+                           "max_tokens": 2, "temperature": 0.0}).encode()
         t0 = time.perf_counter()
         req = urllib.request.Request(URL + "/v1/chat/completions", data=body,
                                      headers={"Content-Type": "application/json"})
@@ -83,6 +85,24 @@ def ttft(n, warmup=1):
         dt = time.perf_counter() - t0
         if i >= warmup:
             vals.append(dt)
+    return vals
+
+
+def decode(n, tokens=64, warmup=1):
+    vals = []
+    for i in range(n + warmup):
+        prompt = "decode " + secrets.token_hex(4) + " Count from 1 to 40, one number per line."
+        body = json.dumps({"model": "x", "messages": [{"role": "user", "content": prompt}],
+                           "max_tokens": tokens, "temperature": 0.0}).encode()
+        t0 = time.perf_counter()
+        req = urllib.request.Request(URL + "/v1/chat/completions", data=body,
+                                     headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=600) as r:
+            d = json.loads(r.read())
+        dt = time.perf_counter() - t0
+        comp = d.get("usage", {}).get("completion_tokens", 0)
+        if i >= warmup and dt:
+            vals.append(comp / dt)
     return vals
 
 
@@ -150,15 +170,13 @@ def main():
 
     if a.record_only:
         print("== record-only: measuring the live config, nothing is written to it")
-        bench = sh("python3 %s/bench.py --n %d --label %s-decode" % (HERE, a.n, a.label), timeout=1800)
-        rec_path = bench.stdout.strip().splitlines()[-1] if bench.stdout.strip() else ""
-        decode = json.load(open(rec_path))["metrics"]["tok_s"] if os.path.exists(rec_path) else None
+        dec = stats(decode(a.n))
         tt = stats(ttft(a.n))
         json.dump({"label": a.label, "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
                    "args": live["args"], "env": live["env"],
-                   "decode": decode, "ttft": tt, "gate": "record-only"},
+                   "decode": dec, "ttft": tt, "gate": "record-only"},
                   open(os.path.join(STATE, a.label + ".json"), "w"), indent=1)
-        print("   decode: %s" % decode)
+        print("   decode: %s" % dec)
         print("   ttft  : %s" % tt)
         print("   record: %s" % os.path.join(STATE, a.label + ".json"))
         return 0
@@ -188,27 +206,23 @@ def main():
     print("   up in %.0fs" % dt)
 
     print("== measure (decode n=%d, ttft n=%d)" % (a.n, a.n))
-    bench = sh("python3 %s/bench.py --n %d --label %s-decode" % (HERE, a.n, a.label), timeout=1800)
-    rec_path = bench.stdout.strip().splitlines()[-1] if bench.stdout.strip() else ""
-    decode = None
-    if os.path.exists(rec_path):
-        decode = json.load(open(rec_path))["metrics"]["tok_s"]
+    dec = stats(decode(a.n))
     tt = stats(ttft(a.n))
 
     rec = {"label": a.label, "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
            "args": cand["args"], "env": cand["env"], "deltas_args": changed, "deltas_env": env_changed,
-           "decode": decode, "ttft": tt, "gate": "PASS"}
+           "decode": dec, "ttft": tt, "gate": "PASS"}
     json.dump(rec, open(os.path.join(STATE, a.label + ".json"), "w"), indent=1)
-    print("   decode: %s" % decode)
+    print("   decode: %s" % dec)
     print("   ttft  : %s" % tt)
 
     verdict, why = "KEEP", "no baseline"
     if a.baseline:
         b = json.load(open(os.path.join(STATE, a.baseline + ".json")))
-        if b.get("decode") and decode:
-            cv = max(b["decode"]["cv_pct"] or 0, decode["cv_pct"] or 0)
+        if b.get("decode") and dec:
+            cv = max(b["decode"]["cv_pct"] or 0, dec["cv_pct"] or 0)
             lim = 2 * cv
-            dd = 100.0 * (decode["median"] - b["decode"]["median"]) / b["decode"]["median"]
+            dd = 100.0 * (dec["median"] - b["decode"]["median"]) / b["decode"]["median"]
             dt2 = 100.0 * (tt["median"] - b["ttft"]["median"]) / b["ttft"]["median"]
             print("   vs %s: decode %+.2f%% (band %.2f%%), ttft %+.2f%% (band %.2f%%)"
                   % (a.baseline, dd, lim, dt2, 2 * b["ttft"]["cv_pct"]))
@@ -224,7 +238,7 @@ def main():
 
     with open(LEDGER, "a") as f:
         f.write("%s\t%s\tKEEP\tdecode=%s\tttft=%s\t%s\n"
-                % (rec["ts"], a.label, decode and decode["median"], tt["median"], a.set + a.env))
+                % (rec["ts"], a.label, dec["median"], tt["median"], a.set + a.env))
     print("   ledger: %s" % LEDGER)
     return 0
 
