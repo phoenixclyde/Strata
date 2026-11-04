@@ -392,6 +392,11 @@ int pick_J(int t, int64_t ncols, bool fallback) {
         const int ntiles = (int) ((ncols + c.J - 1) / c.J);
         if (ntiles < ntiles_best) { best = J; ntiles_best = ntiles; }
     }
+    if (const char* dbg = std::getenv("STRATA_MMQ_DEBUG_J")) {
+        (void) dbg;
+        std::fprintf(stderr, "pick_J: type=%d ncols=%lld fallback=%d -> J=%d\n",
+                     t, (long long) ncols, (int) fallback, best > 0 ? best : 64);
+    }
     return best > 0 ? best : 64;
 }
 
