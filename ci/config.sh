@@ -4,7 +4,7 @@
 
 # --- repo / build ---------------------------------------------------------------
 REPO=/home/albus/strata166/pr/strata-fork
-BUILD=/home/albus/strata166/gfx029-build          # cmake build dir (container sees it as /out)
+BUILD=/home/albus/strata166/build-r28            # cmake build dir (container sees it as /out)
 SRC_MOUNT=/src                                    # container path of $REPO
 
 # --- runtime / production ------------------------------------------------------
@@ -12,7 +12,7 @@ DATA=/home/albus/strata166/data
 BIN=$DATA/bin
 CFG=$DATA/strata-huihui-ud-iq4_xs.json
 CONTAINER=strata166-407
-IMG=strata-gfx906:0.2.9-101
+IMG=strata-gfx906:0.2.10-101
 HEALTH=http://127.0.0.1:8090/health
 ELOG=$DATA/strata-huihui-ud-iq4_xs.log
 
