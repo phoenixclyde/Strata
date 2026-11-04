@@ -151,6 +151,8 @@ def main():
     ap.add_argument("--n", type=int, default=5)
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--record-only", action="store_true", help="measure the live config, change nothing")
+    ap.add_argument("--restart-baseline", action="store_true",
+                    help="with --record-only: restart first, so the baseline sits in the same state as an applied arm")
     a = ap.parse_args()
 
     os.makedirs(STATE, exist_ok=True)
@@ -170,6 +172,11 @@ def main():
 
     if a.record_only:
         print("== record-only: measuring the live config, nothing is written to it")
+        if a.restart_baseline:
+            up, dt = restart()
+            print("   restarted before measuring: %s in %.0fs" % ("ok" if up else "FAILED", dt))
+            if not up:
+                return 2
         dec = stats(decode(a.n))
         tt = stats(ttft(a.n))
         json.dump({"label": a.label, "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
