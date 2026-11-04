@@ -1,0 +1,11 @@
+#!/bin/bash
+# pre-commit: the static gate must pass before anything is committed.
+# Installed by ci/install-hooks.sh (git hooks are not versioned themselves).
+set -e
+cd "$(git rev-parse --show-toplevel)"
+python3 ci/gate.py --source-only --quiet >/tmp/precommit_gate.log 2>&1 || {
+  echo "pre-commit: gate failed -- see /tmp/precommit_gate.log"
+  grep -E "^FAIL" /tmp/precommit_gate.log || true
+  exit 1
+}
+exit 0
