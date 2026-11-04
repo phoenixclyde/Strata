@@ -11,7 +11,6 @@
 #endif
 #include "strata/prefill/moe_fused.hpp"   // kMoeEmbd, kMoeFF: the compiled geometry's widths
 #include "strata/prefill/moe_iq4_w4a8.hpp"
-#include "strata/prefill/nan_probe.cuh"
 
 #include "strata/prefill/mmq_kq_abi.hpp"
 
@@ -19,8 +18,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <string>
-#include <vector>
 
 namespace strata::prefill::mmq {
 namespace {
@@ -35,21 +32,6 @@ inline size_t type_bytes(int t) {
 inline const char* type_label(int t) {
     return t == 144 ? "tq2_t" : t == 145 ? "tqk6" : t == 146 ? "tqk7"
          : t == 147 ? "tqp5" : t == 148 ? "tqp6" : t == 149 ? "tqp7" : ggml_type_name((ggml_type) t);
-}
-
-// b12361 gave ggml_cuda_mmq_get_config and mul_mat_q_case a `ggml_prec prec_src1` argument: it names the
-// precision src1 (the activations) is quantized to, and on CUDA + Blackwell it is the only thing that
-// separates the native FP4 x FP4 config from the int8 one (mmq.cuh:255-261 upstream).  Upstream passes
-// GGML_PREC_Q8 for every product that keeps src1 at Q8_1 (mmq.cu's switch, one line per type) and
-// GGML_PREC_Q4 only in the native-FP4 unit.  On the AMD branches the argument is not read at all
-// (mmq.cuh:234-253 host side, :272-288 device side: GCN/CDNA/RDNA* configs take three arguments), so on
-// gfx906 this is a signature fix with no numerical effect; on CUDA the value below is upstream's own rule.
-inline ggml_prec prec_of(int t) {
-#if !defined(GGML_USE_HIP)
-    if ((ggml_type) t == GGML_TYPE_NVFP4 && fp4_activations((ggml_type) t)) return GGML_PREC_Q4;
-#endif
-    (void) t;
-    return GGML_PREC_Q8;
 }
 }  // namespace
 #if defined(STRATA_KQ_DSO)
@@ -267,7 +249,7 @@ bool fits(int t, int64_t w_rows) {
         const size_t smpbo = info.devices[id].smpbo;
         bool any = false;
         for (int J = 8; J <= kMmqTileColsMax && !any; J += kMmqTileColsStep) {
-            const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, fallback, cc, prec_of(t));
+            const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, fallback, cc, GGML_PREC_Q8);
             any = c.type != GGML_TYPE_COUNT && mmq_get_nbytes_shared(c, cc) <= smpbo;
         }
         if (!any) {
@@ -296,21 +278,23 @@ int pick_J(int t, int64_t ncols, bool fallback) {
     const size_t smpbo = info.devices[id].smpbo;
     int best = 0, ntiles_best = INT_MAX;
     for (int J = 8; J <= 128 && ntiles_best > 1; J += 8) {
-        const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, fallback, cc, prec_of(t));
+        const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, fallback, cc, GGML_PREC_Q8);
         if (c.type == GGML_TYPE_COUNT) continue;
         if (mmq_get_nbytes_shared(c, cc) > smpbo) continue;
         const int ntiles = (int) ((ncols + c.J - 1) / c.J);
         if (ntiles < ntiles_best) { best = J; ntiles_best = ntiles; }
     }
-    if (const char* dbg = std::getenv("STRATA_MMQ_DEBUG_J")) {
-        (void) dbg;
-        std::fprintf(stderr, "pick_J: type=%d ncols=%lld fallback=%d -> J=%d\n",
-                     t, (long long) ncols, (int) fallback, best > 0 ? best : 64);
-    }
     return best > 0 ? best : 64;
 }
 
-// matrix_bytes/q8_bytes live in moe_helpers.cu since upstream 4cd85d08
+size_t matrix_bytes(int t, int64_t rows, int64_t cols) {
+    return (size_t) rows * (size_t) (cols / type_blck((int) t)) * type_bytes((int) t);
+}
+
+size_t q8_bytes(int64_t rows, int64_t cols) {
+    return (size_t) rows * (size_t) pad512(cols) * sizeof(block_q8_1_mmq) / (4 * QK8_1) + 128 * sizeof(block_q8_1_mmq);
+}
+
 namespace {
 __global__ void scale_gu_rows_kernel(float* __restrict__ gu, int64_t ld, int64_t n_ff, const int32_t* __restrict__ bounds,
                                      int n, const float* __restrict__ tails, int64_t row0) {
@@ -391,202 +375,6 @@ void quantize_scatter(const float* x, const int32_t* slot, const int32_t* src, v
     ck(cudaGetLastError(), "quantize_scatter");
 }
 
-// b12361 replaced mmq_args' `expert_bounds` with a device tile table: one ggml_cuda_mm_id_tile_spec per
-// column tile, indexed by blockIdx.x (mmq.cuh:1446-1455 reads it, mmid.cu:121-139 writes it upstream).  The
-// table answers, for each tile, which expert it belongs to and which rows [col_low, col_high) it covers;
-// upstream derives it from `ids` inside mm_ids_helper.  Strata's compact rows are already sorted by expert
-// and `bounds` holds the same partition (bounds[e] .. bounds[e+1), n + 1 of them), so the table is filled
-// here with upstream's own loop, one thread per expert - same tile width, same array length, same entries.
-__global__ void tile_spec_from_bounds_kernel(const int32_t* __restrict__ bounds, int n, int J, int cap_tiles,
-                                             ggml_cuda_mm_id_tile_spec* __restrict__ spec) {
-    const int e = blockIdx.x;
-    if (e >= n || threadIdx.x != 0) return;
-    // The table index is group-relative while the payload keeps absolute compact rows: `ntj`
-    // is sized from this product's own row count, and a Strata group starts at bounds[0] != 0,
-    // so indexing by the absolute row would push whole experts past cap_tiles (llama.cpp can
-    // index absolutely only because its compact space starts at row 0).
-    const int base   = bounds[0];
-    const int total  = bounds[n] - base;
-    const int ntiles = min((total + J - 1) / J, cap_tiles);
-    const int a      = bounds[e] - base;
-    const int b      = bounds[e + 1] - base;
-    int col_low  = a;
-    int col_high = min(a + J, b);
-    while (col_high > ((col_low + J - 1) / J) * J) {
-        const int t = (col_low + J - 1) / J;
-        if (t >= cap_tiles) break;                     // never index past the allocation
-        spec[t] = {e, col_low + base, col_high + base, 0};
-        col_low  = col_high;
-        col_high = min(col_high + J, b);
-    }
-    // at most one extra tile per expert, between the seams (mmid.cu:137-139)
-    if (ntiles + e < cap_tiles + n) spec[ntiles + e] = {e, col_low + base, col_high + base, 0};
-}
-
-// ---- r25 numeric probe (D45 bisection; STRATA_NP=1 enables it) -------------------------------
-// A negative result is only evidence if the scan ran: every tag prints NPSCAN once, and
-// spec_check prints its span/rows_dst pair for the first few launches (D48).
-namespace nprobe {
-namespace {
-int g_on = -1;
-int g_layer = -1;
-int g_budget = 400;
-const char* const kTags[] = {"GU", "H", "Dm", "h_in", "shh", "sy", "hout", "logits"};
-bool g_seen[8] = {false, false, false, false, false, false, false, false};
-int g_spec_shown = 0;
-int g_gaps_shown = 0;
-
-__global__ void k_nonfinite(const float* __restrict__ p, long long n, unsigned long long* __restrict__ cnt,
-                            unsigned long long* __restrict__ first) {
-    const long long stride = (long long) gridDim.x * blockDim.x;
-    for (long long i = (long long) blockIdx.x * blockDim.x + threadIdx.x; i < n; i += stride) {
-        const float v = p[i];
-        if (!(v == v) || v > 3.4028235e38f || v < -3.4028235e38f) {
-            atomicAdd(cnt, 1ull);
-            atomicMin(first, (unsigned long long) i);
-        }
-    }
-}
-
-// One entry per tile: {expert, col_low, col_high, padding}.  A zeroed entry is inactive (col_high == col_low).
-// The span sum must equal the product's own row count, and no entry may be inverted or empty-but-offset.
-__global__ void k_spec(const ggml_cuda_mm_id_tile_spec* __restrict__ s, int n, unsigned long long* __restrict__ bad,
-                       unsigned long long* __restrict__ span, unsigned long long* __restrict__ first,
-                       unsigned long long* __restrict__ active) {
-    const int i = blockIdx.x * blockDim.x + threadIdx.x;
-    if (i >= n) return;
-    const ggml_cuda_mm_id_tile_spec e = s[i];
-    if (e.col_high > e.col_low) {
-        atomicAdd(span, (unsigned long long) (e.col_high - e.col_low));
-        atomicAdd(active, 1ull);
-    }
-    if (e.col_high < e.col_low) { atomicAdd(bad, 1ull); atomicMin(first, (unsigned long long) i); }
-}
-}  // namespace
-
-bool on() {
-    if (g_on < 0) {
-        const char* e = std::getenv("STRATA_NP");
-        g_on = (e != nullptr && std::atoi(e) != 0) ? 1 : 0;
-        if (g_on != 0) {
-            const char* b = std::getenv("STRATA_NP_BUDGET");
-            if (b != nullptr) g_budget = std::atoi(b);
-            std::fprintf(stderr, "NPROBE on: budget=%d tags=GU H Dm h_in shh sy hout logits spec\n", g_budget);
-        }
-    }
-    return g_on != 0;
-}
-
-void set_layer(int l) { g_layer = l; }
-int  layer() { return g_layer; }
-
-void scan(const void* ptr, long long n, const char* tag, void* stream) {
-    if (!on() || ptr == nullptr || n <= 0) return;
-    for (int i = 0; i < 8; ++i) {
-        if (!g_seen[i] && std::strcmp(tag, kTags[i]) == 0) {
-            g_seen[i] = true;
-            std::fprintf(stderr, "NPSCAN tag=%s n=%lld layer=%d first_use\n", tag, n, g_layer);
-        }
-    }
-    if (g_budget <= 0) return;
-    static unsigned long long* dcnt = nullptr;
-    static unsigned long long* dfirst = nullptr;
-    if (dcnt == nullptr) {
-        cudaMalloc(&dcnt, sizeof(unsigned long long));
-        cudaMalloc(&dfirst, sizeof(unsigned long long));
-    }
-    cudaStream_t s = (cudaStream_t) stream;
-    cudaMemsetAsync(dcnt, 0, sizeof(unsigned long long), s);
-    cudaMemsetAsync(dfirst, 0xff, sizeof(unsigned long long), s);
-    const int blocks = (int) (n < 262144 ? (n + 255) / 256 : 1024);
-    k_nonfinite<<<blocks, 256, 0, s>>>((const float*) ptr, n, dcnt, dfirst);
-    unsigned long long hc = 0, hf = 0;
-    cudaMemcpyAsync(&hc, dcnt, sizeof(hc), cudaMemcpyDeviceToHost, s);
-    cudaMemcpyAsync(&hf, dfirst, sizeof(hf), cudaMemcpyDeviceToHost, s);
-    cudaStreamSynchronize(s);
-    if (hc != 0) {
-        float v = 0.0f;
-        cudaMemcpy(&v, (const float*) ptr + hf, sizeof(float), cudaMemcpyDeviceToHost);
-        std::fprintf(stderr, "NONFINITE layer=%d tag=%s count=%llu first=%llu val=%g n=%lld\n", g_layer, tag, hc, hf,
-                     (double) v, n);
-        --g_budget;
-    }
-}
-
-void spec_check(const void* spec, int n, long long rows_expect, const int* bounds, void* stream) {
-    if (!on() || spec == nullptr || n <= 0) return;
-    static unsigned long long* dbad = nullptr;
-    static unsigned long long* dspan = nullptr;
-    static unsigned long long* dfirst = nullptr;
-    static unsigned long long* dact = nullptr;
-    if (dbad == nullptr) {
-        cudaMalloc(&dbad, sizeof(unsigned long long));
-        cudaMalloc(&dspan, sizeof(unsigned long long));
-        cudaMalloc(&dfirst, sizeof(unsigned long long));
-        cudaMalloc(&dact, sizeof(unsigned long long));
-    }
-    cudaStream_t s = (cudaStream_t) stream;
-    int hb0 = 0, hbn = 0;
-    if (bounds != nullptr) {
-        cudaMemcpyAsync(&hb0, bounds, sizeof(int), cudaMemcpyDeviceToHost, s);
-        cudaMemcpyAsync(&hbn, bounds + n, sizeof(int), cudaMemcpyDeviceToHost, s);
-        cudaStreamSynchronize(s);
-    }
-    cudaMemsetAsync(dbad, 0, 8, s);
-    cudaMemsetAsync(dspan, 0, 8, s);
-    cudaMemsetAsync(dfirst, 0xff, 8, s);
-    cudaMemsetAsync(dact, 0, 8, s);
-    k_spec<<<(n + 127) / 128, 128, 0, s>>>((const ggml_cuda_mm_id_tile_spec*) spec, n, dbad, dspan, dfirst, dact);
-    unsigned long long hb = 0, hs = 0, hf = 0, ha = 0;
-    cudaMemcpyAsync(&hb, dbad, 8, cudaMemcpyDeviceToHost, s);
-    cudaMemcpyAsync(&hs, dspan, 8, cudaMemcpyDeviceToHost, s);
-    cudaMemcpyAsync(&hf, dfirst, 8, cudaMemcpyDeviceToHost, s);
-    cudaMemcpyAsync(&ha, dact, 8, cudaMemcpyDeviceToHost, s);
-    cudaStreamSynchronize(s);
-    const long long dev_total = (long long) hbn - hb0;
-    const bool bad = hb != 0 || (long long) hs != rows_expect || dev_total != rows_expect;
-    if (bad || g_spec_shown < 6) {
-        std::fprintf(stderr,
-                     "SPECCHK layer=%d n=%d span=%llu rows_dst=%lld active=%llu inverted=%llu first=%llu "
-                     "dev_first=%d dev_last=%d dev_total=%lld %s\n",
-                     g_layer, n, hs, rows_expect, ha, hb, hf, hb0, hbn, dev_total, bad ? "MISMATCH" : "ok");
-        ++g_spec_shown;
-        if (bad) --g_budget;
-    }
-    if (bad && g_gaps_shown < 4) {
-        ++g_gaps_shown;
-        std::vector<ggml_cuda_mm_id_tile_spec> h((size_t) n);
-        cudaMemcpy(h.data(), spec, (size_t) n * sizeof(ggml_cuda_mm_id_tile_spec), cudaMemcpyDeviceToHost);
-        const long long rows = rows_expect;
-        std::vector<unsigned char> cov((size_t) rows, 0);
-        long long outside = 0, active = 0;
-        for (int i = 0; i < n; ++i) {
-            if (h[(size_t) i].col_high <= h[(size_t) i].col_low) continue;
-            ++active;
-            for (long long r = (long long) h[(size_t) i].col_low - hb0; r < (long long) h[(size_t) i].col_high - hb0; ++r) {
-                if (r < 0 || r >= rows) { ++outside; continue; }
-                cov[(size_t) r] = 1;
-            }
-        }
-        long long missing = 0;
-        std::string gaps;
-        for (long long r = 0; r < rows;) {
-            if (cov[(size_t) r] != 0) { ++r; continue; }
-            long long e = r;
-            while (e < rows && cov[(size_t) e] == 0) ++e;
-            missing += e - r;
-            if (gaps.size() < 220) {
-                char buf[48];
-                std::snprintf(buf, sizeof(buf), " [%lld,%lld)", r, e);
-                gaps += buf;
-            }
-            r = e;
-        }
-        std::fprintf(stderr, "SPECGAP layer=%d rows=%lld entries=%d active=%lld missing=%lld outside=%lld%s\n",
-                     g_layer, rows, n, active, missing, outside, gaps.c_str());
-    }
-}
-}  // namespace nprobe
 Context::Context() {
     int dev = 0;
     cudaGetDevice(&dev);
@@ -612,29 +400,13 @@ void Context::run(const Product& p, void* stream) {
     // 0.8.0: J_best selects the instantiation; the fallback flag follows upstream's rows%128 rule.
     const bool mmq_fb = p.w_rows % 128 != 0;
     const int  J_best = pick_J((int) t, p.max_rows, mmq_fb);
+    const mmq_args a = {(const char*) p.w, t, (const int*) p.xq, p.ids, p.bounds, p.dst, p.y_scale,
+                        p.w_cols, p.w_rows, p.total_rows, bpr, p.total_rows, p.ld_dst,
+                        p.n, p.n, p.tab ? 0 : (int64_t) (p.expert_bytes / type_bytes((int) t)), 0, 0,
+                        1, 1, 0, 0, 0,
+                        (int) p.max_rows, (int) J_best};
     auto& ctx = *(ggml_backend_cuda_context*) ctx_;
     const cudaStream_t s = (cudaStream_t) stream;
-    // b12361: args.ntj is the tile-table length and grid.x, and every tile reads tile_spec[blockIdx.x]
-    // (mmq.cuh:1487, :1093); upstream sizes it ceil(ncols_dst / J) + n_experts (mmq.cu:319-327).  Here it is
-    // an upper bound: this product's own last row is bounds[n] (<= max_rows * n), and Product::total_rows is
-    // the global compact space for gate/up, which would leave the table's tail unwritten.
-    // the product's own rows: Product::total_rows is bounds[n] (the caller passes the group's row count),
-    // which is upstream's ncols_dst in the ids path.  The table is zeroed first, so any entry the fill
-    // kernel does not write reads as {0, 0, 0} - col_low == col_high, and the block returns immediately.
-    const int64_t rows_dst = p.rows_dst > 0 ? p.rows_dst : p.total_rows;
-    const int ntj = (int) ((rows_dst + J_best - 1) / J_best + p.n);
-    ggml_cuda_pool_alloc<ggml_cuda_mm_id_tile_spec> tile_spec(ctx.pool(), ntj);
-    ck(cudaMemsetAsync(tile_spec.get(), 0, (size_t) ntj * sizeof(ggml_cuda_mm_id_tile_spec), s), "tile_spec zero");
-    tile_spec_from_bounds_kernel<<<(unsigned) p.n, 32, 0, s>>>(p.bounds, p.n, J_best, ntj - p.n,
-                                                               tile_spec.get());
-    ck(cudaGetLastError(), "tile_spec");
-    nprobe::spec_check(tile_spec.get(), ntj, rows_dst, p.bounds, s);
-
-    const mmq_args a = {(const char*) p.w, t, (const int*) p.xq, p.ids, tile_spec.get(), p.dst, p.y_scale,
-                        p.w_cols, p.w_rows, rows_dst, bpr, p.total_rows, p.ld_dst,
-                        p.n, 1, p.tab ? 0 : (int64_t) (p.expert_bytes / type_bytes((int) t)), 0, 0,
-                        1, 1, 0, 0, 0,
-                        ntj, (int) J_best};
     if (p.tab) {
         if (p.n > kGatherGroupMax) {
             std::fprintf(stderr, "prefill mmq: a pointer table holds at most %d experts (got %d)\n", kGatherGroupMax, p.n);
@@ -732,7 +504,7 @@ size_t overread_bytes(int t, int64_t cols) {
     const ggml_cuda_device_info& info = ggml_cuda_info();
     for (int id = 0; id < info.device_count; ++id)
         for (int J = 8; J <= kMmqTileColsMax; J += kMmqTileColsStep) {
-            const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, false, info.devices[id].cc, prec_of(t));
+            const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, false, info.devices[id].cc, GGML_PREC_Q8);
             if (c.type != GGML_TYPE_COUNT) blocks = std::max<int64_t>(blocks, over(c.K_vram));
         }
     return (size_t) blocks * type_bytes((int) t);
@@ -749,9 +521,9 @@ bool whole_tiles(int t, int64_t w_rows, int n_experts) {
         const int cc = info.devices[id].cc, nsm = info.devices[id].nsm;
         const size_t smpbo = info.devices[id].smpbo;
         bool any = false, stream_k = false;
-        ggml_cuda_mmq_config c0 = ggml_cuda_mmq_get_config((ggml_type) t, 8, false, cc, prec_of(t));
+        ggml_cuda_mmq_config c0 = ggml_cuda_mmq_get_config((ggml_type) t, 8, false, cc, GGML_PREC_Q8);
         for (int J = 8; J <= kMmqTileColsMax; J += kMmqTileColsStep) {
-            const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, false, cc, prec_of(t));
+            const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, false, cc, GGML_PREC_Q8);
             if (c.type == GGML_TYPE_COUNT || mmq_get_nbytes_shared(c, cc) > smpbo) continue;
             if (!any) c0 = c;
             any = true;
@@ -784,7 +556,7 @@ bool launch_splits_k(int t, int64_t w_rows, int64_t max_rows, int n_experts) {
     bool best_stream_k = false;
     int64_t ntiles_best = INT64_MAX;
     for (int J = 8; J <= 128 && ntiles_best > 1; J += 8) {
-        const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, false, cc, prec_of(t));
+        const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, false, cc);
         if (c.type == GGML_TYPE_COUNT || mmq_get_nbytes_shared(c, cc) > smpbo) continue;
         const int64_t ntx = (max_rows + c.J - 1) / c.J;
         if (ntx < ntiles_best) { ntiles_best = ntx; best_I = c.I; best_stream_k = c.stream_k; }
