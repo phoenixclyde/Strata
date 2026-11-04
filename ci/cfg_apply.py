@@ -150,6 +150,8 @@ def main():
     ap.add_argument("--baseline", default=None, help="label of a recorded run to beat")
     ap.add_argument("--n", type=int, default=5)
     ap.add_argument("--apply", action="store_true")
+    ap.add_argument("--force-keep", action="store_true",
+                    help="restoring a known-good value: keep it whatever the metrics say")
     ap.add_argument("--record-only", action="store_true", help="measure the live config, change nothing")
     ap.add_argument("--restart-baseline", action="store_true",
                     help="with --record-only: restart first, so the baseline sits in the same state as an applied arm")
@@ -223,21 +225,30 @@ def main():
     print("   decode: %s" % dec)
     print("   ttft  : %s" % tt)
 
-    verdict, why = "KEEP", "no baseline"
+    verdict, why = "REVERT", "inconclusive: no change beyond 2x CV, so the live value stays"
+    if a.force_keep:
+        verdict, why = "KEEP", "forced (restoring a known-good value)"
+
     if a.baseline:
         b = json.load(open(os.path.join(STATE, a.baseline + ".json")))
         if b.get("decode") and dec:
-            cv = max(b["decode"]["cv_pct"] or 0, dec["cv_pct"] or 0)
-            lim = 2 * cv
+            band_d = 2 * max(b["decode"]["cv_pct"] or 0, dec["cv_pct"] or 0)
+            band_t = 2 * max(b["ttft"]["cv_pct"] or 0, tt["cv_pct"] or 0)
             dd = 100.0 * (dec["median"] - b["decode"]["median"]) / b["decode"]["median"]
             dt2 = 100.0 * (tt["median"] - b["ttft"]["median"]) / b["ttft"]["median"]
             print("   vs %s: decode %+.2f%% (band %.2f%%), ttft %+.2f%% (band %.2f%%)"
-                  % (a.baseline, dd, lim, dt2, 2 * b["ttft"]["cv_pct"]))
-            if dd < -lim or dt2 > 2 * b["ttft"]["cv_pct"]:
+                  % (a.baseline, dd, band_d, dt2, band_t))
+            worse = dd < -band_d or dt2 > band_t
+            better = dd > band_d or dt2 < -band_t
+            if worse:
                 verdict, why = "ROLLBACK", "regression beyond 2x CV"
+            elif better:
+                verdict, why = "KEEP", "improvement beyond 2x CV"
+            else:
+                verdict, why = "REVERT", "inconclusive: nowhere beyond 2x CV, so the live value stays"
     print("== verdict: %s (%s)" % (verdict, why))
 
-    if verdict == "ROLLBACK":
+    if verdict in ("ROLLBACK", "REVERT"):
         shutil.copy2(bak, CFG)
         up2, _ = restart()
         print("   rolled back; health=%s" % ("ok" if up2 else "STILL DOWN"))
