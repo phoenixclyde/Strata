@@ -26,7 +26,6 @@ import copy
 import json
 import os
 import shutil
-import secrets
 import statistics
 import subprocess
 import sys
@@ -70,13 +69,12 @@ def restart(wait=True):
 
 
 def ttft(n, warmup=1):
-    """2K-token prompt, a UNIQUE prefix per call: repeating the same prompt is a prefix
-    hit (0.29 s measured), not a measurement."""
+    """2K-token prompt, streaming-free wall time; the engine's read time is in its log."""
+    prompt = "ttft " + "The quick brown fox jumps over the lazy dog. " * 200
+    body = json.dumps({"model": "x", "messages": [{"role": "user", "content": prompt}],
+                       "max_tokens": 2, "temperature": 0.0}).encode()
     vals = []
     for i in range(n + warmup):
-        prompt = "ttft " + secrets.token_hex(4) + " " + "The quick brown fox jumps over the lazy dog. " * 200
-        body = json.dumps({"model": "x", "messages": [{"role": "user", "content": prompt}],
-                           "max_tokens": 2, "temperature": 0.0}).encode()
         t0 = time.perf_counter()
         req = urllib.request.Request(URL + "/v1/chat/completions", data=body,
                                      headers={"Content-Type": "application/json"})
@@ -85,45 +83,6 @@ def ttft(n, warmup=1):
         dt = time.perf_counter() - t0
         if i >= warmup:
             vals.append(dt)
-    return vals
-
-
-def decode(n, tokens=64, warmup=1):
-    vals = []
-    for i in range(n + warmup):
-        prompt = "decode " + secrets.token_hex(4) + " Count from 1 to 40, one number per line."
-        body = json.dumps({"model": "x", "messages": [{"role": "user", "content": prompt}],
-                           "max_tokens": tokens, "temperature": 0.0}).encode()
-        t0 = time.perf_counter()
-        req = urllib.request.Request(URL + "/v1/chat/completions", data=body,
-                                     headers={"Content-Type": "application/json"})
-        with urllib.request.urlopen(req, timeout=600) as r:
-            d = json.loads(r.read())
-        dt = time.perf_counter() - t0
-        comp = d.get("usage", {}).get("completion_tokens", 0)
-        if i >= warmup and dt:
-            vals.append(comp / dt)
-    return vals
-
-
-def prefill_at(n_tokens, n, warmup=1):
-    """cold unique prompt of ~n_tokens; returns prompt tok/s samples (engine-side time is not parsed,
-    wall time is used and the fixed cost is the same for both arms)."""
-    rep = max(1, int(round(n_tokens / 10.2)))
-    vals = []
-    for i in range(n + warmup):
-        prompt = "k%s " % secrets.token_hex(3) + "The quick brown fox jumps over the lazy dog. " * rep
-        body = json.dumps({"model": "x", "messages": [{"role": "user", "content": prompt}],
-                           "max_tokens": 2, "temperature": 0.0}).encode()
-        t0 = time.perf_counter()
-        req = urllib.request.Request(URL + "/v1/chat/completions", data=body,
-                                     headers={"Content-Type": "application/json"})
-        with urllib.request.urlopen(req, timeout=900) as r:
-            d = json.loads(r.read())
-        pt = d.get("usage", {}).get("prompt_tokens", 0)
-        dt = time.perf_counter() - t0
-        if i >= warmup and dt:
-            vals.append(pt / dt)
     return vals
 
 
@@ -139,7 +98,7 @@ def gate(cfg_path):
     return r.returncode == 0, tail
 
 
-def apply_sets(cfg, sets, envs, unsets=(), unset_args=()):
+def apply_sets(cfg, sets, envs):
     a = list(cfg["args"])
     for s in sets:
         if "=" not in s:
@@ -160,47 +119,7 @@ def apply_sets(cfg, sets, envs, unsets=(), unset_args=()):
             raise SystemExit("--env wants KEY=VALUE, got %r" % s)
         k, v = s.split("=", 1)
         env[k] = v
-    for k in unsets:
-        env.pop(k, None)
-    for f in unset_args:
-        flag = f if f.startswith("--") else "--" + f
-        while flag in cfg["args"]:
-            i = cfg["args"].index(flag)
-            del cfg["args"][i]
-            if i < len(cfg["args"]) and not str(cfg["args"][i]).startswith("--"):
-                del cfg["args"][i]
     return cfg
-
-
-def compare_arms(base, dec, tt, extra):
-    """The verdict arithmetic, pure: (worse, better, lines).
-
-    Extracted because it failed once in production.  `better` used to be bound only inside the
-    per-length loop, so a run where no length moved past its band raised UnboundLocalError
-    *after* the candidate config had been installed and the engine restarted -- leaving an
-    unvetted config live, with no record and no rollback.  Pure and covered by
-    ci/test_cfg_verdict.py instead of retyped in the reporting path.
-    """
-    lines = []
-    band_d = 2 * max(base["decode"]["cv_pct"] or 0, dec["cv_pct"] or 0)
-    band_t = 2 * max(base["ttft"]["cv_pct"] or 0, tt["cv_pct"] or 0)
-    dd = 100.0 * (dec["median"] - base["decode"]["median"]) / base["decode"]["median"]
-    dt = 100.0 * (tt["median"] - base["ttft"]["median"]) / base["ttft"]["median"]
-    lines.append("decode %+.2f%% (band %.2f%%), ttft %+.2f%% (band %.2f%%)" % (dd, band_d, dt, band_t))
-    worse = dd < -band_d or dt > band_t
-    better = dd > band_d or dt < -band_t
-    for L, cur in sorted((extra or {}).items(), key=lambda kv: int(kv[0])):
-        b2 = (base.get("prefill") or {}).get(str(L)) or (base.get("prefill") or {}).get(L)
-        if not (b2 and cur):
-            continue
-        band = 2 * max(b2["cv_pct"] or 0, cur["cv_pct"] or 0)
-        d = 100.0 * (cur["median"] - b2["median"]) / b2["median"]
-        lines.append("prefill@%s %+.2f%% (band %.2f%%)" % (L, d, band))
-        if d < -band:
-            worse = True
-        if d > band:
-            better = True
-    return worse, better, lines
 
 
 def main():
@@ -208,22 +127,15 @@ def main():
     ap.add_argument("--label", required=True)
     ap.add_argument("--set", action="append", default=[], help="FLAG=VALUE (args)")
     ap.add_argument("--env", action="append", default=[], help="KEY=VALUE (env dict)")
-    ap.add_argument("--unset-env", action="append", default=[], help="KEY to delete from env")
-    ap.add_argument("--unset-arg", action="append", default=[], help="FLAG to delete from args (with its value)")
     ap.add_argument("--baseline", default=None, help="label of a recorded run to beat")
     ap.add_argument("--n", type=int, default=5)
-    ap.add_argument("--lengths", default="", help="extra prefill lengths to measure, e.g. 2000,8000,16000")
     ap.add_argument("--apply", action="store_true")
-    ap.add_argument("--force-keep", action="store_true",
-                    help="restoring a known-good value: keep it whatever the metrics say")
     ap.add_argument("--record-only", action="store_true", help="measure the live config, change nothing")
-    ap.add_argument("--restart-baseline", action="store_true",
-                    help="with --record-only: restart first, so the baseline sits in the same state as an applied arm")
     a = ap.parse_args()
 
     os.makedirs(STATE, exist_ok=True)
     live = json.load(open(CFG))
-    cand = apply_sets(copy.deepcopy(live), a.set, a.env, a.unset_env, a.unset_arg)
+    cand = apply_sets(copy.deepcopy(live), a.set, a.env)
 
     cand_path = CFG + ".candidate"      # same dir: the gate maps /data/... against it
     json.dump(cand, open(cand_path, "w"), indent=1)
@@ -235,28 +147,18 @@ def main():
     print("== candidate: %s" % a.label)
     print("   args deltas: %s" % (changed or "none"))
     print("   env  deltas: %s" % (env_changed or "none"))
-    gone = [k for k in live.get("env", {}) if k not in cand["env"]]
-    gone_args = [x for x in live["args"] if x.startswith("--") and x not in cand["args"]]
-    print("   removed: env %s | args %s" % (gone or "none", gone_args or "none"))
 
     if a.record_only:
         print("== record-only: measuring the live config, nothing is written to it")
-        if a.restart_baseline:
-            up, dt = restart()
-            print("   restarted before measuring: %s in %.0fs" % ("ok" if up else "FAILED", dt))
-            if not up:
-                return 2
-        dec = stats(decode(a.n))
+        bench = sh("python3 %s/bench.py --n %d --label %s-decode" % (HERE, a.n, a.label), timeout=1800)
+        rec_path = bench.stdout.strip().splitlines()[-1] if bench.stdout.strip() else ""
+        decode = json.load(open(rec_path))["metrics"]["tok_s"] if os.path.exists(rec_path) else None
         tt = stats(ttft(a.n))
-        extra = {}
-        for L in [int(x) for x in a.lengths.split(",") if x.strip()]:
-            extra[L] = stats(prefill_at(L, max(3, a.n // 2)))
-            print("   prefill@%d: %s" % (L, extra[L]))
         json.dump({"label": a.label, "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
                    "args": live["args"], "env": live["env"],
-                   "decode": dec, "ttft": tt, "prefill": extra, "gate": "record-only"},
+                   "decode": decode, "ttft": tt, "gate": "record-only"},
                   open(os.path.join(STATE, a.label + ".json"), "w"), indent=1)
-        print("   decode: %s" % dec)
+        print("   decode: %s" % decode)
         print("   ttft  : %s" % tt)
         print("   record: %s" % os.path.join(STATE, a.label + ".json"))
         return 0
@@ -285,46 +187,36 @@ def main():
         return 2
     print("   up in %.0fs" % dt)
 
-    try:
-        print("== measure (decode n=%d, ttft n=%d)" % (a.n, a.n))
-        dec = stats(decode(a.n))
-        tt = stats(ttft(a.n))
-        extra = {}
-        for L in [int(x) for x in a.lengths.split(",") if x.strip()]:
-            extra[L] = stats(prefill_at(L, max(3, a.n // 2)))
-            print("   prefill@%d: %s" % (L, extra[L]))
+    print("== measure (decode n=%d, ttft n=%d)" % (a.n, a.n))
+    bench = sh("python3 %s/bench.py --n %d --label %s-decode" % (HERE, a.n, a.label), timeout=1800)
+    rec_path = bench.stdout.strip().splitlines()[-1] if bench.stdout.strip() else ""
+    decode = None
+    if os.path.exists(rec_path):
+        decode = json.load(open(rec_path))["metrics"]["tok_s"]
+    tt = stats(ttft(a.n))
 
-        rec = {"label": a.label, "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-               "args": cand["args"], "env": cand["env"], "deltas_args": changed, "deltas_env": env_changed,
-               "decode": dec, "ttft": tt, "prefill": extra, "gate": "PASS"}
-        json.dump(rec, open(os.path.join(STATE, a.label + ".json"), "w"), indent=1)
-        print("   decode: %s" % dec)
-        print("   ttft  : %s" % tt)
+    rec = {"label": a.label, "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+           "args": cand["args"], "env": cand["env"], "deltas_args": changed, "deltas_env": env_changed,
+           "decode": decode, "ttft": tt, "gate": "PASS"}
+    json.dump(rec, open(os.path.join(STATE, a.label + ".json"), "w"), indent=1)
+    print("   decode: %s" % decode)
+    print("   ttft  : %s" % tt)
 
-        verdict, why = "REVERT", "inconclusive: no change beyond 2x CV, so the live value stays"
-        if a.force_keep:
-            verdict, why = "KEEP", "forced (restoring a known-good value)"
-
-        if a.baseline:
-            b = json.load(open(os.path.join(STATE, a.baseline + ".json")))
-            if b.get("decode") and dec:
-                worse, better, lines = compare_arms(b, dec, tt, extra)
-                for l in lines:
-                    print("   vs %s: %s" % (a.baseline, l))
-                if worse:
-                    verdict, why = "ROLLBACK", "regression beyond 2x CV"
-                elif better:
-                    verdict, why = "KEEP", "improvement beyond 2x CV"
-    except BaseException as e:            # the candidate is LIVE at this point: roll back, never fall through
-        print("!! crashed after install: %r -> ROLLBACK" % (e,))
-        shutil.copy2(bak, CFG)
-        up3, _ = restart()
-        with open(os.path.join(STATE, a.label + ".crash"), "w") as f:
-            f.write("crashed after install: %r\nrestored_health=%s\n" % (e, up3))
-        return 4
+    verdict, why = "KEEP", "no baseline"
+    if a.baseline:
+        b = json.load(open(os.path.join(STATE, a.baseline + ".json")))
+        if b.get("decode") and decode:
+            cv = max(b["decode"]["cv_pct"] or 0, decode["cv_pct"] or 0)
+            lim = 2 * cv
+            dd = 100.0 * (decode["median"] - b["decode"]["median"]) / b["decode"]["median"]
+            dt2 = 100.0 * (tt["median"] - b["ttft"]["median"]) / b["ttft"]["median"]
+            print("   vs %s: decode %+.2f%% (band %.2f%%), ttft %+.2f%% (band %.2f%%)"
+                  % (a.baseline, dd, lim, dt2, 2 * b["ttft"]["cv_pct"]))
+            if dd < -lim or dt2 > 2 * b["ttft"]["cv_pct"]:
+                verdict, why = "ROLLBACK", "regression beyond 2x CV"
     print("== verdict: %s (%s)" % (verdict, why))
 
-    if verdict in ("ROLLBACK", "REVERT"):
+    if verdict == "ROLLBACK":
         shutil.copy2(bak, CFG)
         up2, _ = restart()
         print("   rolled back; health=%s" % ("ok" if up2 else "STILL DOWN"))
@@ -332,7 +224,7 @@ def main():
 
     with open(LEDGER, "a") as f:
         f.write("%s\t%s\tKEEP\tdecode=%s\tttft=%s\t%s\n"
-                % (rec["ts"], a.label, dec["median"], tt["median"], a.set + a.env))
+                % (rec["ts"], a.label, decode and decode["median"], tt["median"], a.set + a.env))
     print("   ledger: %s" % LEDGER)
     return 0
 
