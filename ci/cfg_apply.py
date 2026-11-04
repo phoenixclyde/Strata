@@ -106,6 +106,27 @@ def decode(n, tokens=64, warmup=1):
     return vals
 
 
+def prefill_at(n_tokens, n, warmup=1):
+    """cold unique prompt of ~n_tokens; returns prompt tok/s samples (engine-side time is not parsed,
+    wall time is used and the fixed cost is the same for both arms)."""
+    rep = max(1, int(round(n_tokens / 10.2)))
+    vals = []
+    for i in range(n + warmup):
+        prompt = "k%s " % secrets.token_hex(3) + "The quick brown fox jumps over the lazy dog. " * rep
+        body = json.dumps({"model": "x", "messages": [{"role": "user", "content": prompt}],
+                           "max_tokens": 2, "temperature": 0.0}).encode()
+        t0 = time.perf_counter()
+        req = urllib.request.Request(URL + "/v1/chat/completions", data=body,
+                                     headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=900) as r:
+            d = json.loads(r.read())
+        pt = d.get("usage", {}).get("prompt_tokens", 0)
+        dt = time.perf_counter() - t0
+        if i >= warmup and dt:
+            vals.append(pt / dt)
+    return vals
+
+
 def stats(xs):
     m = statistics.median(xs)
     sd = statistics.pstdev(xs) if len(xs) > 1 else 0.0
@@ -160,6 +181,7 @@ def main():
     ap.add_argument("--unset-arg", action="append", default=[], help="FLAG to delete from args (with its value)")
     ap.add_argument("--baseline", default=None, help="label of a recorded run to beat")
     ap.add_argument("--n", type=int, default=5)
+    ap.add_argument("--lengths", default="", help="extra prefill lengths to measure, e.g. 2000,8000,16000")
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--force-keep", action="store_true",
                     help="restoring a known-good value: keep it whatever the metrics say")
@@ -195,9 +217,13 @@ def main():
                 return 2
         dec = stats(decode(a.n))
         tt = stats(ttft(a.n))
+        extra = {}
+        for L in [int(x) for x in a.lengths.split(",") if x.strip()]:
+            extra[L] = stats(prefill_at(L, max(3, a.n // 2)))
+            print("   prefill@%d: %s" % (L, extra[L]))
         json.dump({"label": a.label, "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
                    "args": live["args"], "env": live["env"],
-                   "decode": dec, "ttft": tt, "gate": "record-only"},
+                   "decode": dec, "ttft": tt, "prefill": extra, "gate": "record-only"},
                   open(os.path.join(STATE, a.label + ".json"), "w"), indent=1)
         print("   decode: %s" % dec)
         print("   ttft  : %s" % tt)
@@ -231,10 +257,14 @@ def main():
     print("== measure (decode n=%d, ttft n=%d)" % (a.n, a.n))
     dec = stats(decode(a.n))
     tt = stats(ttft(a.n))
+    extra = {}
+    for L in [int(x) for x in a.lengths.split(",") if x.strip()]:
+        extra[L] = stats(prefill_at(L, max(3, a.n // 2)))
+        print("   prefill@%d: %s" % (L, extra[L]))
 
     rec = {"label": a.label, "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
            "args": cand["args"], "env": cand["env"], "deltas_args": changed, "deltas_env": env_changed,
-           "decode": dec, "ttft": tt, "gate": "PASS"}
+           "decode": dec, "ttft": tt, "prefill": extra, "gate": "PASS"}
     json.dump(rec, open(os.path.join(STATE, a.label + ".json"), "w"), indent=1)
     print("   decode: %s" % dec)
     print("   ttft  : %s" % tt)
@@ -253,6 +283,14 @@ def main():
             print("   vs %s: decode %+.2f%% (band %.2f%%), ttft %+.2f%% (band %.2f%%)"
                   % (a.baseline, dd, band_d, dt2, band_t))
             worse = dd < -band_d or dt2 > band_t
+            for L, cur in (extra or {}).items():
+                base = (b.get("prefill") or {}).get(str(L)) or (b.get("prefill") or {}).get(L)
+                if base and cur:
+                    band = 2 * max(base["cv_pct"] or 0, cur["cv_pct"] or 0)
+                    d = 100.0 * (cur["median"] - base["median"]) / base["median"]
+                    print("   prefill@%d: %+.2f%% (band %.2f%%)" % (L, d, band))
+                    if d < -band:
+                        worse = True
             better = dd > band_d or dt2 < -band_t
             if worse:
                 verdict, why = "ROLLBACK", "regression beyond 2x CV"
