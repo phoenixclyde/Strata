@@ -118,7 +118,7 @@ def gate(cfg_path):
     return r.returncode == 0, tail
 
 
-def apply_sets(cfg, sets, envs):
+def apply_sets(cfg, sets, envs, unsets=(), unset_args=()):
     a = list(cfg["args"])
     for s in sets:
         if "=" not in s:
@@ -139,6 +139,15 @@ def apply_sets(cfg, sets, envs):
             raise SystemExit("--env wants KEY=VALUE, got %r" % s)
         k, v = s.split("=", 1)
         env[k] = v
+    for k in unsets:
+        env.pop(k, None)
+    for f in unset_args:
+        flag = f if f.startswith("--") else "--" + f
+        while flag in cfg["args"]:
+            i = cfg["args"].index(flag)
+            del cfg["args"][i]
+            if i < len(cfg["args"]) and not str(cfg["args"][i]).startswith("--"):
+                del cfg["args"][i]
     return cfg
 
 
@@ -147,6 +156,8 @@ def main():
     ap.add_argument("--label", required=True)
     ap.add_argument("--set", action="append", default=[], help="FLAG=VALUE (args)")
     ap.add_argument("--env", action="append", default=[], help="KEY=VALUE (env dict)")
+    ap.add_argument("--unset-env", action="append", default=[], help="KEY to delete from env")
+    ap.add_argument("--unset-arg", action="append", default=[], help="FLAG to delete from args (with its value)")
     ap.add_argument("--baseline", default=None, help="label of a recorded run to beat")
     ap.add_argument("--n", type=int, default=5)
     ap.add_argument("--apply", action="store_true")
@@ -159,7 +170,7 @@ def main():
 
     os.makedirs(STATE, exist_ok=True)
     live = json.load(open(CFG))
-    cand = apply_sets(copy.deepcopy(live), a.set, a.env)
+    cand = apply_sets(copy.deepcopy(live), a.set, a.env, a.unset_env, a.unset_arg)
 
     cand_path = CFG + ".candidate"      # same dir: the gate maps /data/... against it
     json.dump(cand, open(cand_path, "w"), indent=1)
@@ -171,6 +182,9 @@ def main():
     print("== candidate: %s" % a.label)
     print("   args deltas: %s" % (changed or "none"))
     print("   env  deltas: %s" % (env_changed or "none"))
+    gone = [k for k in live.get("env", {}) if k not in cand["env"]]
+    gone_args = [x for x in live["args"] if x.startswith("--") and x not in cand["args"]]
+    print("   removed: env %s | args %s" % (gone or "none", gone_args or "none"))
 
     if a.record_only:
         print("== record-only: measuring the live config, nothing is written to it")
