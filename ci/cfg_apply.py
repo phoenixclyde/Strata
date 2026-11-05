@@ -291,6 +291,8 @@ def main():
                     print("   prefill@%d: %+.2f%% (band %.2f%%)" % (L, d, band))
                     if d < -band:
                         worse = True
+                    if d > band:
+                        better = True
             better = dd > band_d or dt2 < -band_t
             if worse:
                 verdict, why = "ROLLBACK", "regression beyond 2x CV"
