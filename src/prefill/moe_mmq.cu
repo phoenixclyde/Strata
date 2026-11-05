@@ -387,7 +387,7 @@ int pick_J(int t, int64_t ncols, bool fallback) {
     const size_t smpbo = info.devices[id].smpbo;
     int best = 0, ntiles_best = INT_MAX;
     for (int J = 8; J <= 128 && ntiles_best > 1; J += 8) {
-        const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, fallback, cc, GGML_PREC_Q8);
+        const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, fallback, cc);
         if (c.type == GGML_TYPE_COUNT) continue;
         if (mmq_get_nbytes_shared(c, cc) > smpbo) continue;
         const int ntiles = (int) ((ncols + c.J - 1) / c.J);
