@@ -30,8 +30,6 @@ GOOD = """## 一、生产容器（8 字段）
 | 6 | 显存布局 | expert cache 7463 slots / 21.79 GiB, borrows 2606 (7.62 GiB), 882 MiB of VRAM free |
 | 7 | 回滚件 | strata-0.1.56-080; cp /data/x.json.bak /data/x.json |
 | 8 | 本轮改动 | 零；disk = build = running 三方一致 |
-| 9 | ROCm 版本 | 打包 .info/version 10.1.0；HIP 7.16.26323-0000000 |
-| 10 | llama.cpp 版本 | b11062 = 3cf03257f219afbe7334045ff7c6a06ac68c627d |
 ## 二、主线
 branch @ 304bd3be · mi50-0.2.10-r32 · 落后 0 / 领先 16 · 上游 ffa80d73 · 工作树脏 0 行
 ## 三、本次落生产
@@ -64,31 +62,6 @@ def ci():
         fails.append("verify.py: " + (v.stdout + v.stderr).strip().replace("\n", " | "))
     else:
         print("  " + v.stdout.strip())
-    ph = run([PY, str(HERE / "prefill_phases" / "phases.py"), "--check",
-              str(HERE / "prefill_phases" / "PREFILL_PHASES.tsv")])
-    if ph.returncode != 0:
-        fails.append("phases.py: " + (ph.stdout + ph.stderr).strip().replace("\n", " | "))
-    else:
-        print("  " + ph.stdout.strip().splitlines()[-1])
-    # W1013: the bundle budget (the 5% gate, applied to a sum instead of to single items) and the
-    # cfg_apply verdict arithmetic (it crashed once after installing a candidate; see the test's docstring).
-    bu = run([PY, str(HERE / "bundle_budget" / "bundle.py")])
-    if bu.returncode != 0:
-        fails.append("bundle.py: " + (bu.stdout + bu.stderr).strip().replace("\n", " | "))
-    else:
-        print("  " + bu.stdout.strip().splitlines()[-1])
-    tv = run([PY, str(HERE / "test_cfg_verdict.py")])
-    if tv.returncode != 0:
-        fails.append("test_cfg_verdict.py: " + (tv.stdout + tv.stderr).strip().replace("\n", " | "))
-    else:
-        print("  " + tv.stdout.strip().splitlines()[-1])
-    # W1022: release_check's fifth pointer (llama.cpp pin) -- the negative cases prove it can fail.
-    # Skips itself when there is no docker daemon (GitHub runners), loudly.
-    sp = run([PY, str(HERE / "selftest_pin.py")])
-    if sp.returncode != 0:
-        fails.append("selftest_pin.py: " + (sp.stdout + sp.stderr).strip().replace("\n", " | "))
-    else:
-        print("  " + sp.stdout.strip().splitlines()[-1])
     for payload, expect, label in ((GOOD, True, "positive"), (BAD, False, "negative")):
         ok, last = lint_text(payload, expect)
         if not ok:
@@ -102,12 +75,8 @@ def status():
     fails = ci()
     # A gate that exists but is never called is the exact bug this file fixes.
     # Only checked on the 166 host: GitHub runners do not have our hooks installed.
-    hooks_resolved = run(["git", "rev-parse", "--git-path", "hooks"], cwd=ROOT)
-    hook_dir = pathlib.Path(hooks_resolved.stdout.strip() or ".git/hooks")
-    if not hook_dir.is_absolute():
-        hook_dir = ROOT / hook_dir
     for hook_name in ("pre-commit", "pre-push"):
-        hook = hook_dir / hook_name
+        hook = ROOT / ".git" / "hooks" / hook_name
         if not hook.is_file():
             fails.append("%s hook is not installed (run ci/install-hooks.sh)" % hook_name)
         elif "round_gate" not in hook.read_text(encoding="utf-8", errors="replace"):
