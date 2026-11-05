@@ -172,6 +172,37 @@ def apply_sets(cfg, sets, envs, unsets=(), unset_args=()):
     return cfg
 
 
+def compare_arms(base, dec, tt, extra):
+    """The verdict arithmetic, pure: (worse, better, lines).
+
+    Extracted because it failed once in production.  `better` used to be bound only inside the
+    per-length loop, so a run where no length moved past its band raised UnboundLocalError
+    *after* the candidate config had been installed and the engine restarted -- leaving an
+    unvetted config live, with no record and no rollback.  Pure and covered by
+    ci/test_cfg_verdict.py instead of retyped in the reporting path.
+    """
+    lines = []
+    band_d = 2 * max(base["decode"]["cv_pct"] or 0, dec["cv_pct"] or 0)
+    band_t = 2 * max(base["ttft"]["cv_pct"] or 0, tt["cv_pct"] or 0)
+    dd = 100.0 * (dec["median"] - base["decode"]["median"]) / base["decode"]["median"]
+    dt = 100.0 * (tt["median"] - base["ttft"]["median"]) / base["ttft"]["median"]
+    lines.append("decode %+.2f%% (band %.2f%%), ttft %+.2f%% (band %.2f%%)" % (dd, band_d, dt, band_t))
+    worse = dd < -band_d or dt > band_t
+    better = dd > band_d or dt < -band_t
+    for L, cur in sorted((extra or {}).items(), key=lambda kv: int(kv[0])):
+        b2 = (base.get("prefill") or {}).get(str(L)) or (base.get("prefill") or {}).get(L)
+        if not (b2 and cur):
+            continue
+        band = 2 * max(b2["cv_pct"] or 0, cur["cv_pct"] or 0)
+        d = 100.0 * (cur["median"] - b2["median"]) / b2["median"]
+        lines.append("prefill@%s %+.2f%% (band %.2f%%)" % (L, d, band))
+        if d < -band:
+            worse = True
+        if d > band:
+            better = True
+    return worse, better, lines
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--label", required=True)
@@ -254,52 +285,43 @@ def main():
         return 2
     print("   up in %.0fs" % dt)
 
-    print("== measure (decode n=%d, ttft n=%d)" % (a.n, a.n))
-    dec = stats(decode(a.n))
-    tt = stats(ttft(a.n))
-    extra = {}
-    for L in [int(x) for x in a.lengths.split(",") if x.strip()]:
-        extra[L] = stats(prefill_at(L, max(3, a.n // 2)))
-        print("   prefill@%d: %s" % (L, extra[L]))
+    try:
+        print("== measure (decode n=%d, ttft n=%d)" % (a.n, a.n))
+        dec = stats(decode(a.n))
+        tt = stats(ttft(a.n))
+        extra = {}
+        for L in [int(x) for x in a.lengths.split(",") if x.strip()]:
+            extra[L] = stats(prefill_at(L, max(3, a.n // 2)))
+            print("   prefill@%d: %s" % (L, extra[L]))
 
-    rec = {"label": a.label, "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-           "args": cand["args"], "env": cand["env"], "deltas_args": changed, "deltas_env": env_changed,
-           "decode": dec, "ttft": tt, "prefill": extra, "gate": "PASS"}
-    json.dump(rec, open(os.path.join(STATE, a.label + ".json"), "w"), indent=1)
-    print("   decode: %s" % dec)
-    print("   ttft  : %s" % tt)
+        rec = {"label": a.label, "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+               "args": cand["args"], "env": cand["env"], "deltas_args": changed, "deltas_env": env_changed,
+               "decode": dec, "ttft": tt, "prefill": extra, "gate": "PASS"}
+        json.dump(rec, open(os.path.join(STATE, a.label + ".json"), "w"), indent=1)
+        print("   decode: %s" % dec)
+        print("   ttft  : %s" % tt)
 
-    verdict, why = "REVERT", "inconclusive: no change beyond 2x CV, so the live value stays"
-    if a.force_keep:
-        verdict, why = "KEEP", "forced (restoring a known-good value)"
+        verdict, why = "REVERT", "inconclusive: no change beyond 2x CV, so the live value stays"
+        if a.force_keep:
+            verdict, why = "KEEP", "forced (restoring a known-good value)"
 
-    if a.baseline:
-        b = json.load(open(os.path.join(STATE, a.baseline + ".json")))
-        if b.get("decode") and dec:
-            band_d = 2 * max(b["decode"]["cv_pct"] or 0, dec["cv_pct"] or 0)
-            band_t = 2 * max(b["ttft"]["cv_pct"] or 0, tt["cv_pct"] or 0)
-            dd = 100.0 * (dec["median"] - b["decode"]["median"]) / b["decode"]["median"]
-            dt2 = 100.0 * (tt["median"] - b["ttft"]["median"]) / b["ttft"]["median"]
-            print("   vs %s: decode %+.2f%% (band %.2f%%), ttft %+.2f%% (band %.2f%%)"
-                  % (a.baseline, dd, band_d, dt2, band_t))
-            worse = dd < -band_d or dt2 > band_t
-            for L, cur in (extra or {}).items():
-                base = (b.get("prefill") or {}).get(str(L)) or (b.get("prefill") or {}).get(L)
-                if base and cur:
-                    band = 2 * max(base["cv_pct"] or 0, cur["cv_pct"] or 0)
-                    d = 100.0 * (cur["median"] - base["median"]) / base["median"]
-                    print("   prefill@%d: %+.2f%% (band %.2f%%)" % (L, d, band))
-                    if d < -band:
-                        worse = True
-                    if d > band:
-                        better = True
-            better = better or dd > band_d or dt2 < -band_t
-            if worse:
-                verdict, why = "ROLLBACK", "regression beyond 2x CV"
-            elif better:
-                verdict, why = "KEEP", "improvement beyond 2x CV"
-            else:
-                verdict, why = "REVERT", "inconclusive: nowhere beyond 2x CV, so the live value stays"
+        if a.baseline:
+            b = json.load(open(os.path.join(STATE, a.baseline + ".json")))
+            if b.get("decode") and dec:
+                worse, better, lines = compare_arms(b, dec, tt, extra)
+                for l in lines:
+                    print("   vs %s: %s" % (a.baseline, l))
+                if worse:
+                    verdict, why = "ROLLBACK", "regression beyond 2x CV"
+                elif better:
+                    verdict, why = "KEEP", "improvement beyond 2x CV"
+    except BaseException as e:            # the candidate is LIVE at this point: roll back, never fall through
+        print("!! crashed after install: %r -> ROLLBACK" % (e,))
+        shutil.copy2(bak, CFG)
+        up3, _ = restart()
+        with open(os.path.join(STATE, a.label + ".crash"), "w") as f:
+            f.write("crashed after install: %r\nrestored_health=%s\n" % (e, up3))
+        return 4
     print("== verdict: %s (%s)" % (verdict, why))
 
     if verdict in ("ROLLBACK", "REVERT"):
