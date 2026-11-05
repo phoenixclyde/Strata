@@ -1,0 +1,10 @@
+# W1001 fair A/B, 16 experts, Q5_1 down 640x2560, hipEvent, 3 reps median.
+# canonical = our mmq::Context::run; repacked = mx mmq_gemm_repacked (w32/64 dispatch).
+# Both arms share ONE activation buffer built by strata::prefill::mmq::quantize.
+# ratio = repacked/canonical; <1 means repacked is faster.
+# w999 column is the RETRACTED measurement (wrong dispatch + wrong activation layout), kept for traceability.
+rows_per_expert	canonical_ms	repacked_w1001_ms	ratio	w999_retracted_ms
+32	0.237	0.156	0.659	0.543
+128	0.542	0.507	0.935	0.557
+320	1.245	1.430	1.149	1.464
+1024	3.437	3.460	1.007	3.582
