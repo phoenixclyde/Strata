@@ -62,6 +62,12 @@ def ci():
         fails.append("verify.py: " + (v.stdout + v.stderr).strip().replace("\n", " | "))
     else:
         print("  " + v.stdout.strip())
+    ph = run([PY, str(HERE / "prefill_phases" / "phases.py"), "--check",
+              str(HERE / "prefill_phases" / "PREFILL_PHASES.tsv")])
+    if ph.returncode != 0:
+        fails.append("phases.py: " + (ph.stdout + ph.stderr).strip().replace("\n", " | "))
+    else:
+        print("  " + ph.stdout.strip().splitlines()[-1])
     for payload, expect, label in ((GOOD, True, "positive"), (BAD, False, "negative")):
         ok, last = lint_text(payload, expect)
         if not ok:
