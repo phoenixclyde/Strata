@@ -68,7 +68,15 @@ Nothing checked any of that. **A tool without a caller is not a gate.**
 | `git push` | `pre-push` → fork policy + `round_gate.py --ci` | pushing to upstream; publishing a state with missing evidence |
 | push on GitHub | `downstream-gate.yml` → `verify.py` + `round_gate.py --ci` | same checks, independently, on a clean runner |
 | round closing (166) | `round_gate.py --status` | unpushed commits, dirty tree, hooks not installed |
-| round closing (laptop) | `albus/w1002/round_close.py` | `report_lint` FAIL, `plan_lint` FAIL, missing four-section report |
+| round closing (laptop) | `albus/w1002/round_close.py` | `report_lint` FAIL, `plan_lint` FAIL, missing four-section report, authoritative plan drifted from the 166 mirror |
+
+**A tool pointed at the wrong copy is not a gate either (W1003).** `plan_lint` reads the laptop's
+`deploy/W832_OPT_PLAN_V2.md`. The 166 copy of that same file had not changed since 2026-11-03 02:54 —
+18 rounds (W882-W1002) of write-backs existed only on the laptop, and nothing compared the two, so the
+gate stayed green against a file nobody on the box was reading. `albus/w1003/mirror_check.py` now
+compares both files byte for byte over ssh; `round_close.py` treats a mismatch as a hard failure and
+`--sync` pushes the laptop copy (now the primary) leaving a dated `.bak` on 166. The comparator has its
+own negative self-test: a forged all-zero remote hash must be reported as DRIFT.
 
 Negative self-tests are mandatory: `round_gate.py --ci` runs `report_lint` against
 both a complete four-section report (**must PASS**) and a conclusion-only text
