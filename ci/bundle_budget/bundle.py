@@ -76,12 +76,36 @@ def load_phases():
     return {k: p.med(g, k) for k in g[0] if k != "tokens"}, None
 
 
+def _tracked(ev):
+    """A path that only exists locally is not evidence: CI does not have it.  When the script
+    runs inside a git work tree the file must be tracked; outside git (the laptop workspace) the
+    check is skipped, which is exactly why the local run cannot be the only run."""
+    import subprocess
+    root = os.path.abspath(os.path.join(HERE, "..", ".."))
+    if not os.path.isdir(os.path.join(root, ".git")):
+        return True
+    r = subprocess.run(["git", "-C", root, "ls-files", "--error-unmatch", ev],
+                       capture_output=True, text=True)
+    return r.returncode == 0
+
+
+def evidence_state(ev):
+    """ok / missing / exists but is not tracked (CI will not have it)."""
+    root = os.path.abspath(os.path.join(HERE, "..", ".."))
+    if os.path.exists(os.path.join(root, ev)):
+        return "ok" if _tracked(ev) else "exists here but is NOT tracked by git (CI cannot see it)"
+    import glob
+    if glob.glob(os.path.join(root, "albus", "*", os.path.basename(ev))):
+        return "ok"
+    return "does not exist"
+
+
 def evidence_exists(ev):
     """The repo layout first (166 / CI), then the laptop's albus/<round>/ mirrors by basename,
     so the same BUNDLE.tsv is checkable on both without copying data around."""
     root = os.path.abspath(os.path.join(HERE, "..", ".."))
     if os.path.exists(os.path.join(root, ev)):
-        return True
+        return _tracked(ev)
     import glob
     base = os.path.basename(ev)
     return bool(glob.glob(os.path.join(root, "albus", "*", base)))
@@ -126,8 +150,9 @@ def evaluate(rows, ph, quiet=False):
                          % (r["item"], r["delta"], 2 * r["cv"]))
         if r["bit_safe"] not in ("Y", "N"):
             fails.append("%s: bit_safe must be Y or N" % r["item"])
-        if not evidence_exists(r["evidence"]):
-            fails.append("%s: evidence %s does not exist" % (r["item"], r["evidence"]))
+        why = evidence_state(r["evidence"])
+        if why != "ok":
+            fails.append("%s: evidence %s %s" % (r["item"], r["evidence"], why))
         per.setdefault(r["bundle"], []).append(dict(r, share=share, e2e=e2e))
 
     adopted, estimates = {}, {}
