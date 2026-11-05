@@ -293,7 +293,7 @@ def main():
                         worse = True
                     if d > band:
                         better = True
-            better = dd > band_d or dt2 < -band_t
+            better = better or dd > band_d or dt2 < -band_t
             if worse:
                 verdict, why = "ROLLBACK", "regression beyond 2x CV"
             elif better:
