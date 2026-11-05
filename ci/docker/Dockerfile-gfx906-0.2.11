@@ -1,0 +1,60 @@
+# How to build this (needs no network; the parent image already has ROCm 7.14-gfx906):
+#
+#   ctx=/path/to/build-ctx
+#   git -C <repo> archive --format=tar.gz -o $ctx/strata-src-0.2.11.tar.gz HEAD
+#   cp <llama.cpp pinned tree>.tar.gz $ctx/llama.cpp-3cf0325.tar.gz
+#   docker build -t strata-gfx906:0.2.11-101 -f ci/docker/Dockerfile-gfx906-0.2.11 $ctx
+#
+# The llama.cpp tarball is `git archive` of ggml-org/llama.cpp at
+# 3cf03257f219afbe7334045ff7c6a06ac68c627d (tag b11062, 2026-09-20), which is the same
+# commit the fork's own CI pins in .github/workflows/metal-build.yml:29.  Its tree hash is
+# asserted below, so a swapped tarball fails the build instead of shipping quietly.
+
+# Strata on AMD gfx906 (Instinct MI50/MI60, Radeon VII) -- v0.2.11-101, engine 0.1.57
+#
+# 与 0.2.10-101 的差异只有 /src：换成 rebase 到 upstream v0.2.11（9f7d977d）的树（66 条提交 + 1 条 API 移植）。
+# 底座直接复用 0.2.10-101（同一 ROCm 7.14-gfx906 + 同一套 python 依赖），因此本镜像**不需要网络**。
+#
+# 为什么这样分：引擎二进制不进镜像（/data 是 bind，引擎走 /data/bin + ci 账本）；镜像负责 /src（serve/server.py、
+# data/expert-profile.bin、third_party/llama.cpp）。所以"镜像跟上游"= 换 /src，不需要重编 ROCm。
+#
+# W1022: BUILD-IMAGE.json 里的 llama.cpp 从 7 位前缀升级成「完整 sha + build 号 + 整树 hash」，
+# 并且构建时就按内容校验树 hash —— 一个能换树而不动任何版本字符串的镜像，只有 hash 能发现。
+FROM strata-gfx906:0.2.10-101
+
+COPY strata-src-0.2.11.tar.gz /tmp/
+COPY llama.cpp-3cf0325.tar.gz /tmp/
+
+ENV LLAMA_CPP_SHA=3cf03257f219afbe7334045ff7c6a06ac68c627d \
+    LLAMA_CPP_BUILD=b11062 \
+    LLAMA_CPP_TREE=6feee58927d5f1efd38e72bbc1db061d
+
+RUN set -eux; \
+    rm -rf /src/* /src/.[!.]* 2>/dev/null || true; \
+    tar xzf /tmp/strata-src-0.2.11.tar.gz -C /src; \
+    mkdir -p /src/third_party; \
+    tar xzf /tmp/llama.cpp-3cf0325.tar.gz -C /src/third_party; \
+    inner=$(find /src/third_party -maxdepth 1 -mindepth 1 -type d -name 'llama.cpp*' | head -1); \
+    if [ "$inner" != "/src/third_party/llama.cpp" ]; then mv "$inner" /src/third_party/llama.cpp; fi; \
+    rm -f /tmp/strata-src-0.2.11.tar.gz /tmp/llama.cpp-3cf0325.tar.gz; \
+    test -f /src/CMakeLists.txt; \
+    test -f /src/serve/server.py; \
+    test -f /src/third_party/llama.cpp/ggml/src/ggml-cpu/iqp.cpp; \
+    TH=$(cd /src/third_party/llama.cpp && find . -type f -print0 | LC_ALL=C sort -z | xargs -0 md5sum 2>/dev/null | md5sum | cut -d' ' -f1); \
+    echo "llama.cpp tree hash: $TH"; \
+    if [ "$TH" != "$LLAMA_CPP_TREE" ]; then echo "TREE HASH MISMATCH: $TH != $LLAMA_CPP_TREE" >&2; exit 1; fi; \
+    printf '%s\n' \
+      '{' \
+      '  "source": "rebase onto upstream v0.2.11 (9f7d977d) from gfx906/mi50 + 1 API port",' \
+      '  "commits_on_top": 66,' \
+      '  "engine": "0.1.57",' \
+      '  "rebase_date": "2026-11-06",' \
+      '  "llama_cpp": "'"$LLAMA_CPP_SHA"'",' \
+      '  "llama_cpp_build": "'"$LLAMA_CPP_BUILD"'",' \
+      '  "llama_cpp_tree": "'"$TH"'",' \
+      '  "base_image": "strata-gfx906:0.2.10-101"' \
+      '}' > /src/BUILD-IMAGE.json; \
+    cat /src/BUILD-IMAGE.json; \
+    du -sh /src
+
+CMD ["/bin/bash"]
