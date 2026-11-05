@@ -30,6 +30,19 @@ ROWS_2K, ROWS_16K = 411, 1015
 # the plan quotes these (W832 6.5 W1008)
 EXPECT = {"gu": 1.06, "dn": 1.00}
 
+# W1009: the second axis.  rows per launch was the only one W1008 looked at; experts per launch
+# matters too (2 / 4 / 8 / 16, Q4_K gate/up, canonical, reps=20, ci/repack_ab/GROUP_SWEEP.tsv).
+GROUP = {2: [(32, 0.002078), (128, 0.001104), (320, 0.000548), (512, 0.000556), (1024, 0.000481)],
+         4: [(32, 0.001079), (128, 0.000688), (320, 0.000535), (512, 0.000481), (1024, 0.000436)],
+         8: [(32, 0.000668), (128, 0.000558), (320, 0.000461), (512, 0.000434), (1024, 0.000425)],
+         16: [(32, 0.000504), (128, 0.000499), (320, 0.000441), (512, 0.000426), (1024, 0.000411)]}
+EXPECT_GROUP = 1.27          # 16 -> 2 experts per launch, at 411 rows
+
+
+def group_at(n, rows):
+    pts = GROUP[n]
+    return at(dict(pts), rows)
+
 
 def load(path=TSV):
     out = {}
@@ -81,10 +94,19 @@ def main():
     for shape, ratio in verdict.items():
         m = MEASURED[shape]
         share = 100.0 * (1.0 - (ratio - 1.0) / (m - 1.0))
-        print("%s: kernel predicts %.2fx, measured %.2fx -> %.0f%% of the gap is OUTSIDE the kernel"
-              % (shape, ratio, m, share))
+        print("%s: rows axis alone predicts %.2fx, measured %.2fx -> %.0f%% is outside that axis"
+              " (the group axis below explains part of it)" % (shape, ratio, m, share))
+    g16, g2 = group_at(16, ROWS_2K), group_at(2, ROWS_2K)
+    g8 = group_at(8, ROWS_2K)
+    print("group axis @%d rows: n=16 %.6f | n=8 %.6f (x%.2f) | n=2 %.6f (x%.2f)"
+          % (ROWS_2K, g16, g8, g8 / g16, g2, g2 / g16))
+    prod = verdict["gu"] * (g2 / g16)
+    print("two axes together: %.2f x %.2f = %.2f  (measured 1.57 -> %.0f%% still unexplained)"
+          % (verdict["gu"], g2 / g16, prod, 100.0 * (1.0 - (prod - 1) / 0.57)))
     if "--check" in sys.argv:
         bad = [k for k, v in verdict.items() if abs(v - EXPECT[k]) > 0.02]
+        if abs(g2 / g16 - EXPECT_GROUP) > 0.03:
+            bad.append("group axis %.2f" % (g2 / g16))
         if bad:
             print("\nKERNEL_CURVE: FAIL (%s)" % ", ".join(
                 "%s says %.3f, plan says %.2f" % (k, verdict[k], EXPECT[k]) for k in bad))
