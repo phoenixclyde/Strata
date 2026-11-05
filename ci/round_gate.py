@@ -68,6 +68,18 @@ def ci():
         fails.append("phases.py: " + (ph.stdout + ph.stderr).strip().replace("\n", " | "))
     else:
         print("  " + ph.stdout.strip().splitlines()[-1])
+    # W1013: the bundle budget (the 5% gate, applied to a sum instead of to single items) and the
+    # cfg_apply verdict arithmetic (it crashed once after installing a candidate; see the test's docstring).
+    bu = run([PY, str(HERE / "bundle_budget" / "bundle.py")])
+    if bu.returncode != 0:
+        fails.append("bundle.py: " + (bu.stdout + bu.stderr).strip().replace("\n", " | "))
+    else:
+        print("  " + bu.stdout.strip().splitlines()[-1])
+    tv = run([PY, str(HERE / "test_cfg_verdict.py")])
+    if tv.returncode != 0:
+        fails.append("test_cfg_verdict.py: " + (tv.stdout + tv.stderr).strip().replace("\n", " | "))
+    else:
+        print("  " + tv.stdout.strip().splitlines()[-1])
     for payload, expect, label in ((GOOD, True, "positive"), (BAD, False, "negative")):
         ok, last = lint_text(payload, expect)
         if not ok:
