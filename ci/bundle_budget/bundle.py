@@ -153,8 +153,10 @@ def evaluate(rows, ph, quiet=False):
                       % (it["item"], it["mechanism"][:26], it["phase"][:22], it["phase_ms"], it["share"], total,
                          it["delta"], it["e2e"], it["basis"], it["status"], it["bit_safe"]))
             universe = sum(it["e2e"] for it in per[b])
-            print("   -> measured sum %+.2f%% ; estimates on top %+.2f%% ; every row together %+.2f%% ; gate -%.1f%%"
-                  % (adopted.get(b, 0.0), estimates.get(b, 0.0), universe, GATE))
+            cands = sum(it["e2e"] for it in per[b] if it["status"] == "CANDIDATE")
+            print("   -> measured sum %+.2f%% ; estimates on top %+.2f%% ; candidates (CANDIDATE) %+.2f%% ;"
+                  " every row %+.2f%% ; gate -%.1f%%"
+                  % (adopted.get(b, 0.0), estimates.get(b, 0.0), cands, universe, GATE))
     return fails, adopted, estimates, total
 
 
