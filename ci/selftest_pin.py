@@ -2,26 +2,31 @@
 """Negative tests for the fifth pointer, without touching the live repo or image.
 
 Each case builds a throwaway "repo" whose only relevant content is .github/workflows,
-a build dir with _ci_all.txt, and a mi50-* tag (so the *other* four pointers stay green
-and a red result can only come from the pin check).
+third_party/ggml/VERSION.txt, a build dir with _ci_all.txt, and a mi50-* tag -- so the
+other pointers stay green and a red result can only come from the pin.
 """
 import io, os, shutil, subprocess, sys, tempfile
 
 RC = "/home/albus/strata166/pr/strata-fork/ci/release_check.py"
 SHA = "3cf03257f219afbe7334045ff7c6a06ac68c627d"
-VER = '0.1.57'
+VER = "0.1.57"
 
 
 def sh(*a, **kw):
     return subprocess.run(a, capture_output=True, text=True, **kw)
 
 
-def fixture(tmp, pin, refs):
+def fixture(tmp, pin, refs, ver=SHA):
     os.makedirs(os.path.join(tmp, ".github", "workflows"), exist_ok=True)
+    os.makedirs(os.path.join(tmp, "third_party", "ggml"), exist_ok=True)
     io.open(os.path.join(tmp, ".github", "workflows", "metal-build.yml"), "w",
             encoding="utf-8").write("env:\n  LLAMA_CPP_COMMIT: %s\n" % pin if pin else "env: {}\n")
-    # the version define must be present regardless of refs, otherwise case 4 fails for the
-    # wrong reason (missing define) instead of the one it is testing (no llama.cpp at all)
+    if ver:
+        # CMakeLists.txt:2078 obeys this file, so it is the first declaration
+        io.open(os.path.join(tmp, "third_party", "ggml", "VERSION.txt"), "w",
+                encoding="utf-8").write("%s Sun Sep 20 16:08:11 2026 +0800\n" % ver)
+    # the version define must be present regardless of refs, otherwise the "no llama.cpp" case
+    # would fail for the wrong reason (missing define) instead of the one it tests
     lines = ['-DSTRATA_VERSION=\\"%s\\" /opt/rocm/llvm/bin/clang++ -c x.cu' % VER]
     lines += ['/llama.cpp/ggml/src/f%d.cu' % i for i in range(refs)]
     io.open(os.path.join(tmp, "_ci_all.txt"), "w", encoding="utf-8").write("\n".join(lines) + "\n")
@@ -36,14 +41,14 @@ def run(tmp):
     return r.returncode, r.stdout + r.stderr
 
 
-def case(name, pin, refs, want_fail):
+def case(name, pin, refs, want_fail, ver=SHA):
     tmp = tempfile.mkdtemp()
     try:
-        fixture(tmp, pin, refs)
+        fixture(tmp, pin, refs, ver)
         rc, out = run(tmp)
         bad = [l.strip() for l in out.splitlines() if "FAIL" in l]
         ok = (rc != 0) == want_fail
-        print("  [%s] %-44s rc=%d %s" % ("ok " if ok else "BAD", name, rc,
+        print("  [%s] %-46s rc=%d %s" % ("ok " if ok else "BAD", name, rc,
                                          ("| " + bad[0][:66]) if bad else ""))
         return ok
     finally:
@@ -58,9 +63,9 @@ if sh("docker", "info").returncode != 0:
     sys.exit(0)
 
 n = 0
-n += case("baseline: correct pin, 93 refs", SHA, 93, False)
-n += case("wrong upstream pin (all f)", "f" * 40, 93, True)
-n += case("no upstream pin at all", "", 93, True)
+n += case("baseline: both declarations agree", SHA, 93, False)
+n += case("workflow pin disagrees with VERSION.txt", "f" * 40, 93, True)
+n += case("no pin declared anywhere", "", 93, True, ver="")
 n += case("engine built from no llama.cpp", SHA, 0, True)
 print("SELFTEST: %d/4" % n)
 sys.exit(0 if n == 4 else 1)
