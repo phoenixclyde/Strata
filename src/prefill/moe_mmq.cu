@@ -357,7 +357,7 @@ bool fits(int t, int64_t w_rows) {
         const size_t smpbo = info.devices[id].smpbo;
         bool any = false;
         for (int J = 8; J <= 128 && !any; J += 8) {
-            const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, fallback, cc, GGML_PREC_Q8);
+            const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, fallback, cc);
             any = c.type != GGML_TYPE_COUNT && mmq_get_nbytes_shared(c, cc) <= smpbo;
         }
         if (!any) {
@@ -386,7 +386,7 @@ int pick_J(int t, int64_t ncols, bool fallback) {
     const size_t smpbo = info.devices[id].smpbo;
     int best = 0, ntiles_best = INT_MAX;
     for (int J = 8; J <= 128 && ntiles_best > 1; J += 8) {
-        const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, fallback, cc, GGML_PREC_Q8);
+        const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, fallback, cc);
         if (c.type == GGML_TYPE_COUNT) continue;
         if (mmq_get_nbytes_shared(c, cc) > smpbo) continue;
         const int ntiles = (int) ((ncols + c.J - 1) / c.J);
@@ -606,7 +606,7 @@ size_t overread_bytes(int t, int64_t cols) {
     const ggml_cuda_device_info& info = ggml_cuda_info();
     for (int id = 0; id < info.device_count; ++id)
         for (int J = 8; J <= 128; J += 8) {
-            const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, false, info.devices[id].cc, GGML_PREC_Q8);
+            const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, false, info.devices[id].cc);
             if (c.type != GGML_TYPE_COUNT) blocks = std::max<int64_t>(blocks, over(c.K_vram));
         }
     return (size_t) blocks * type_bytes((int) t);
@@ -623,9 +623,9 @@ bool whole_tiles(int t, int64_t w_rows, int n_experts) {
         const int cc = info.devices[id].cc, nsm = info.devices[id].nsm;
         const size_t smpbo = info.devices[id].smpbo;
         bool any = false, stream_k = false;
-        ggml_cuda_mmq_config c0 = ggml_cuda_mmq_get_config((ggml_type) t, 8, false, cc, GGML_PREC_Q8);
+        ggml_cuda_mmq_config c0 = ggml_cuda_mmq_get_config((ggml_type) t, 8, false, cc);
         for (int J = 8; J <= 128; J += 8) {
-            const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, false, cc, GGML_PREC_Q8);
+            const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, false, cc);
             if (c.type == GGML_TYPE_COUNT || mmq_get_nbytes_shared(c, cc) > smpbo) continue;
             if (!any) c0 = c;
             any = true;
