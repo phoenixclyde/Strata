@@ -80,6 +80,13 @@ def ci():
         fails.append("test_cfg_verdict.py: " + (tv.stdout + tv.stderr).strip().replace("\n", " | "))
     else:
         print("  " + tv.stdout.strip().splitlines()[-1])
+    # W1022: release_check's fifth pointer (llama.cpp pin) -- the negative cases prove it can fail.
+    # Skips itself when there is no docker daemon (GitHub runners), loudly.
+    sp = run([PY, str(HERE / "selftest_pin.py")])
+    if sp.returncode != 0:
+        fails.append("selftest_pin.py: " + (sp.stdout + sp.stderr).strip().replace("\n", " | "))
+    else:
+        print("  " + sp.stdout.strip().splitlines()[-1])
     for payload, expect, label in ((GOOD, True, "positive"), (BAD, False, "negative")):
         ok, last = lint_text(payload, expect)
         if not ok:
