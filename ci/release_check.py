@@ -96,12 +96,18 @@ def main():
         same, "all three must name the same engine version")
 
     # 5. llama.cpp pin -- the dependency that decides quantisation and kernel behaviour
-    pin_up = ""
+    # two declarations: third_party/ggml/VERSION.txt is what CMakeLists.txt:2078 obeys, the
+    # workflow is a second copy.  They must agree; a disagreement is the failure, not a tie to break.
+    rc, ver_txt = sh("head -1 %s/third_party/ggml/VERSION.txt 2>/dev/null" % a.repo)
+    mv = re.search(r"\b[0-9a-f]{40}\b", ver_txt or "")
+    pin_ver = mv.group(0) if mv else ""
     rc, wf = sh("grep -hoE 'LLAMA_CPP_COMMIT: *[0-9a-f]{40}' %s/.github/workflows/*.yml 2>/dev/null | head -1" % a.repo)
-    m = re.search(r"[0-9a-f]{40}", wf or "")
-    pin_up = m.group(0) if m else ""
-    add("llama.cpp pin (upstream)", pin_up or "(not declared)",
-        bool(pin_up), "the pin the fork's own CI builds against")
+    mw = re.search(r"[0-9a-f]{40}", wf or "")
+    pin_wf = mw.group(0) if mw else ""
+    pin_up = pin_ver or pin_wf
+    add("llama.cpp pin (upstream)", pin_ver or pin_wf or "(not declared)",
+        bool(pin_up) and (not (pin_ver and pin_wf) or pin_ver == pin_wf),
+        "VERSION.txt (CMakeLists.txt:2078) and the workflow pin must both exist and agree")
 
     pin_img = (meta.get("llama_cpp") or "").strip()
     full = bool(re.fullmatch(r"[0-9a-f]{40}", pin_img))
