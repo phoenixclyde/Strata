@@ -7,6 +7,8 @@
 # We therefore take ninja's OWN command lines (no hand-copied flags: losing -DNDEBUG
 # costs 47%, the wrong hip_compat path costs 45%) and run exactly three of them.
 #
+# W1018: a HOST C++ translation unit (src/prefill/prefill.cpp) has no `-x hip`, so the
+# old filter skipped it and only printed "COMPILE LINE NOT FOUND" while the caller went on.
 # Usage: build.sh [--file src/kernels/cuda/native_mmvq.cu] [--archive libstrata_kernels.a]
 #                 [--name strata-ci-build] [--foreground]
 set -u
@@ -42,7 +44,7 @@ cd /out || exit 1
 cmd=/out/_ci_all.txt
 ninja -t commands strata > \$cmd 2>/dev/null || { echo 'NINJA -t commands FAILED'; exit 1; }
 total=\$(wc -l < \$cmd)
-L1=\$(grep -n '$OBJ' \$cmd | grep -- '-x hip -c' | head -1 | cut -d: -f1)
+L1=\$(grep -n '$OBJ' \$cmd | grep -- ' -c ' | head -1 | cut -d: -f1)
 L2=\$(grep -n 'llvm-ar qc $LIB' \$cmd | head -1 | cut -d: -f1)
 L3=\$total
 echo \"total commands: \$total  compile line: \${L1:-none}  archive line: \${L2:-none}  link line: \$L3\"
