@@ -1,0 +1,20 @@
+commit 1a24df163920a4744a95373d178d790b72a9bb2f
+Author: thelittlefireman <5165783+thelittlefireman@users.noreply.github.com>
+Date:   Fri Oct 23 21:37:20 2026 +0200
+
+    ggm-cuda: Enforce DP4A MMQ tile height multiple of warp size (#30837)
+    
+    Added static assertion to enforce DP4A MMQ tile height requirement.
+
+diff --git a/ggml/src/ggml-cuda/mmq.cuh b/ggml/src/ggml-cuda/mmq.cuh
+index e008a34..1375ba3 100644
+--- a/ggml/src/ggml-cuda/mmq.cuh
++++ b/ggml/src/ggml-cuda/mmq.cuh
+@@ -435,6 +435,7 @@ template <ggml_type type, int J, bool fallback, ggml_prec prec_src1> static __de
+     constexpr int warp_size = ggml_cuda_get_physical_warp_size();
+     constexpr int nwarps    = ggml_cuda_mmq_get_nthreads(type, J, fallback, prec_src1) / warp_size;
+     constexpr int I         = ggml_cuda_mmq_get_I(type, J, fallback, prec_src1);
++    static_assert(I % warp_size == 0, "DP4A MMQ tile height must be a multiple of the physical warp size");
+ 
+     const bool y_scale_used = y_scale != nullptr;
+ 
