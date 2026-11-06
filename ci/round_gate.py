@@ -30,6 +30,8 @@ GOOD = """## 一、生产容器（8 字段）
 | 6 | 显存布局 | expert cache 7463 slots / 21.79 GiB, borrows 2606 (7.62 GiB), 882 MiB of VRAM free |
 | 7 | 回滚件 | strata-0.1.56-080; cp /data/x.json.bak /data/x.json |
 | 8 | 本轮改动 | 零；disk = build = running 三方一致 |
+| 9 | ROCm 版本 | 打包 .info/version 10.1.0；HIP 7.16.26323-0000000 |
+| 10 | llama.cpp 版本 | b11062 = 3cf03257f219afbe7334045ff7c6a06ac68c627d |
 ## 二、主线
 branch @ 304bd3be · mi50-0.2.10-r32 · 落后 0 / 领先 16 · 上游 ffa80d73 · 工作树脏 0 行
 ## 三、本次落生产
