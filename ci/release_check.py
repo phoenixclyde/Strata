@@ -44,11 +44,25 @@ def main():
     ap.add_argument("--build", default=DEF_BUILD)
     ap.add_argument("--container", default=DEF_CONT)
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--offline", action="store_true",
+                    help="skip the rows that need the live box (container, image, binary); "
+                         "the tag / pin / build rows are still judged")
     a = ap.parse_args()
 
     rows, fails = [], []
 
+    # Rows that can only be judged where the engine actually runs.  On a GitHub runner there is
+    # no container and no /data/bin, and the run used to die on `docker inspect` with
+    # "no such object: strata166-407" -- a host fact scored as a release failure.  --offline turns
+    # those into SKIP, which is what a static run can honestly say about them.
+    OFFLINE_ROWS = {"container image", "BUILD-IMAGE.json", "binary", "engine versions agree",
+                    "llama.cpp tree (image)"}
+
     def add(name, value, ok, note=""):
+        if a.offline and name in OFFLINE_ROWS:
+            rows.append({"field": name, "value": "SKIP (needs the live box)",
+                         "ok": True, "note": "not checkable on a runner"})
+            return
         rows.append({"field": name, "value": value, "ok": ok, "note": note})
         if not ok:
             fails.append(name)

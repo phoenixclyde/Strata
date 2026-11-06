@@ -58,7 +58,8 @@ def fixture(tmp, pin, refs, ver=SHA):
 def run(tmp):
     if not os.path.isfile(RC):
         raise SystemExit("selftest_pin: release_check.py not found next to this file (%s)" % RC)
-    r = sh(sys.executable, RC, "--repo", tmp, "--build", tmp)
+    # --offline: the fixture has no container, and a host fact is not a pin fact.
+    r = sh(sys.executable, RC, "--repo", tmp, "--build", tmp, "--offline")
     return r.returncode, r.stdout + r.stderr
 
 
