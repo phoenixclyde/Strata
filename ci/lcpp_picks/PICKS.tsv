@@ -1,0 +1,20 @@
+﻿step	sha	pr	subject	surface	applies_alone	status	evidence
+1	e9f824d	24364	llama_prec_policy + W4A4 路径	ggml-cuda/mmq.cuh	yes	TESTING	ladder-1（plumbing；gfx906 恒 Q8）
+2	748d422	29478	HIP __vsubss4 -> __vsub4	ggml-cuda/mmq-load-tiles.cuh	yes	INERT	二进制与 001 逐字节相同（build-vsub4 / md5 5e63174d）
+3	272aad8	29508	musa 定义 __CUDA_ARCH__	ggml-cuda/common.cuh	no	INERT	musa 后端，HIP 不编
+4	8b2fbaf	29857	NVFP4 MMQ 累加优化	ggml-cuda/mmq-vec-dot.cuh	yes	INERT	只有 NVFP4 权重走这条
+5	fc9ce6b	29953	MMQ 越界读修复 + J_best 重构	ggml-cuda/mmq.cuh	no	TESTING	ladder-5（粘合层已按 J_best 槽位喂参，见 src/prefill/moe_mmq.cu:504）
+6	8a1a9b5	30168	src1 精度传进 host 配置	ggml-cuda/mmq*.cuh	no	NEW	需 prec 补丁；我们恒 Q8_1 ⇒ 预期惰性
+7	882d671	30441	死 break 警告	ggml-cuda/mmq.cuh	no	INERT	只消警告
+8	bfe65e1	30443	mmq-load-tiles 警告	ggml-cuda/mmq-load-tiles.cuh	no	INERT	只消警告
+9	9d1878a	29927	Q1_0 用 amdgcn_perm 解包	ggml-cuda/mmq-load-tiles.cuh	yes	INERT	模型里没有 Q1_0
+10	4c1004c	30553	Stream-K 块数封顶	ggml-cuda/mmq.cuh	yes	INERT	mmq-config-gcn.cuh:120-127 全 stream_k=false
+11	1a24df1	30837	DP4A 瓦高须为 warp 倍数（断言）	ggml-cuda/mmq.cuh	no	INERT	I∈{64,128}、gfx906 warp=64 ⇒ 恒过
+12	1ddffe9	30915	perm 不可用时的回退	ggml-cuda/*.cuh	no	INERT	clang 24 有 __builtin_amdgcn_perm
+13	c49edf0	29948	FFN gate/up + GLU 融合（交错行）	ggml-cuda/mmq*.cuh	no	NEW	需 ggml.h 的 ggml_glu_op；且 fusion.gate 必须非空才执行
+14	eb4e244	31373	ROCm/HIP: RDNA4_M 家族	ggml-cuda/mmq.cuh	no	INERT	gfx906 走 CC_IS_GCN 早返回
+15	5ce06fc	31296	NVFP4 gate/up 融合	ggml-cuda/mmq*.cuh	no	INERT	NVFP4 权重
+16	69ee2ec	31047	MoE 数据布局线性化	ggml-cuda/mmid.*	no	REJECTED	R99 两次判否（P374，W1030）
+c1	3dbcb7f	30296	cpu: AVX2 tiled 累加器合并	ggml-cpu/tiled/tiled-kernel.cpp	?	NEW	CPU share 走 native_expert.cpp；这条只影响 ggml 自己的 tiled 路径，需先证被执行
+c2	d834d44	27851	ggml-cpu: k-quants 的 tiled mul_mat	ggml-cpu/{ggml-cpu.c,iqp.cpp}	?	NEW	同上
+c3	284153e	29545	AVX512-FP16 下 f16 点积用 f32 累加	ggml-cpu/{simd-mappings.h,vec.cpp}	?	NEW	host 侧数值/速度；先证路径
