@@ -1,0 +1,201 @@
+commit 272aad8b984a4470d26f14bea8d958be68ac7c0c
+Author: R0CKSTAR <yeahdongcn@gmail.com>
+Date:   Wed Sep 30 15:14:37 2026 +0800
+
+    musa : define __CUDA_ARCH__ for device passes (#29508)
+    
+    The MUSA vendor header never defined __CUDA_ARCH__, so every architecture
+    test in the shared ggml-cuda sources evaluated to 0.  Kernel bodies gated on
+    the architecture therefore compiled to nothing, for example the q8_0 -> f16
+    dequantization kernel in convert.cu, whose NO_DEVICE_CODE fallback expands to
+    an empty body in host code.
+    
+    Report the newest architecture like the HIP backend does and exclude the
+    NVIDIA-only features explicitly, as they are not usable on MUSA.  Define it
+    for device passes only: CUB uses defined(__CUDA_ARCH__) to detect device
+    compilation, which is also how nvcc behaves.
+    
+    Drop the now-redundant defined(__CUDA_ARCH__) checks in the architecture
+    comparisons: __CUDA_ARCH__ is undefined in host passes for CUDA and MUSA, and
+    HIP defines it for every pass, so both forms select the same branch.
+
+diff --git a/ggml/src/ggml-cuda/common.cuh b/ggml/src/ggml-cuda/common.cuh
+index 5363dd0..50713c0 100644
+--- a/ggml/src/ggml-cuda/common.cuh
++++ b/ggml/src/ggml-cuda/common.cuh
+@@ -131,15 +131,15 @@ static __device__ __forceinline__ void ggml_cuda_syncwarp() {
+ }
+ 
+ static __device__ __forceinline__ void ggml_cuda_pdl_sync() {
+-#if defined(GGML_CUDA_USE_PDL) && defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= GGML_CUDA_CC_HOPPER
++#if defined(GGML_CUDA_USE_PDL) && __CUDA_ARCH__ >= GGML_CUDA_CC_HOPPER
+     cudaGridDependencySynchronize();
+-#endif // defined(GGML_CUDA_USE_PDL) && defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= GGML_CUDA_CC_HOPPER
++#endif // defined(GGML_CUDA_USE_PDL) && __CUDA_ARCH__ >= GGML_CUDA_CC_HOPPER
+ }
+ 
+ static __device__ __forceinline__ void ggml_cuda_pdl_lc() {
+-#if defined(GGML_CUDA_USE_PDL) && defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= GGML_CUDA_CC_HOPPER
++#if defined(GGML_CUDA_USE_PDL) && __CUDA_ARCH__ >= GGML_CUDA_CC_HOPPER
+     cudaTriggerProgrammaticLaunchCompletion();
+-#endif // defined(GGML_CUDA_USE_PDL) && defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= GGML_CUDA_CC_HOPPER
++#endif // defined(GGML_CUDA_USE_PDL) && __CUDA_ARCH__ >= GGML_CUDA_CC_HOPPER
+ }
+ 
+ #ifdef __CUDA_ARCH_LIST__
+@@ -285,21 +285,21 @@ static const char * cu_get_error_str(CUresult err) {
+ #define VOLTA_MMA_AVAILABLE
+ #endif // !defined(GGML_USE_HIP) && __CUDA_ARCH__ == GGML_CUDA_CC_VOLTA
+ 
+-#if !defined(GGML_USE_HIP) && __CUDA_ARCH__ >= GGML_CUDA_CC_TURING
++#if !defined(GGML_USE_HIP) && !defined(GGML_USE_MUSA) && __CUDA_ARCH__ >= GGML_CUDA_CC_TURING
+ #define TURING_MMA_AVAILABLE
+-#endif // !defined(GGML_USE_HIP) && __CUDA_ARCH__ >= GGML_CUDA_CC_TURING
++#endif // !defined(GGML_USE_HIP) && !defined(GGML_USE_MUSA) && __CUDA_ARCH__ >= GGML_CUDA_CC_TURING
+ 
+-#if !defined(GGML_USE_HIP) && __CUDA_ARCH__ >= GGML_CUDA_CC_AMPERE
++#if !defined(GGML_USE_HIP) && !defined(GGML_USE_MUSA) && __CUDA_ARCH__ >= GGML_CUDA_CC_AMPERE
+ #define AMPERE_MMA_AVAILABLE
+-#endif // !defined(GGML_USE_HIP) && __CUDA_ARCH__ >= GGML_CUDA_CC_AMPERE
++#endif // !defined(GGML_USE_HIP) && !defined(GGML_USE_MUSA) && __CUDA_ARCH__ >= GGML_CUDA_CC_AMPERE
+ 
+ #if !defined(GGML_USE_HIP) && __CUDA_ARCH__ >= GGML_CUDA_CC_BLACKWELL && __CUDA_ARCH__ < GGML_CUDA_CC_RUBIN
+ #    define BLACKWELL_MMA_AVAILABLE
+ #endif // !defined(GGML_USE_HIP) && __CUDA_ARCH__ >= GGML_CUDA_CC_BLACKWELL
+ 
+-#if !defined(GGML_USE_HIP) && __CUDA_ARCH__ >= GGML_CUDA_CC_AMPERE
++#if !defined(GGML_USE_HIP) && !defined(GGML_USE_MUSA) && __CUDA_ARCH__ >= GGML_CUDA_CC_AMPERE
+ #define CP_ASYNC_AVAILABLE
+-#endif // !defined(GGML_USE_HIP) && __CUDA_ARCH__ >= GGML_CUDA_CC_AMPERE
++#endif // !defined(GGML_USE_HIP) && !defined(GGML_USE_MUSA) && __CUDA_ARCH__ >= GGML_CUDA_CC_AMPERE
+ 
+ #if !defined(GGML_CUDA_NO_FA) && !(defined(GGML_USE_MUSA) && __MUSA_ARCH__ < 220)
+ #define FLASH_ATTN_AVAILABLE
+@@ -453,7 +453,7 @@ struct ggml_cuda_unroll<1> {
+ 
+ template<int width = WARP_SIZE>
+ static __device__ __forceinline__ int warp_reduce_sum(int x) {
+-#if !defined(GGML_USE_HIP) && __CUDA_ARCH__ >= GGML_CUDA_CC_AMPERE
++#if !defined(GGML_USE_HIP) && !defined(GGML_USE_MUSA) && __CUDA_ARCH__ >= GGML_CUDA_CC_AMPERE
+     return __reduce_add_sync(0xffffffff, x);
+ #else
+ #pragma unroll
+@@ -461,7 +461,7 @@ static __device__ __forceinline__ int warp_reduce_sum(int x) {
+         x += __shfl_xor_sync(0xffffffff, x, offset, width);
+     }
+     return x;
+-#endif // !defined(GGML_USE_HIP) && __CUDA_ARCH__ >= GGML_CUDA_CC_AMPERE
++#endif // !defined(GGML_USE_HIP) && !defined(GGML_USE_MUSA) && __CUDA_ARCH__ >= GGML_CUDA_CC_AMPERE
+ }
+ 
+ template<int width = WARP_SIZE>
+@@ -1680,11 +1680,11 @@ static bool ggml_cuda_kernel_can_use_pdl(const void * kernel) {
+ #endif //defined(GGML_CUDA_USE_PDL)
+ 
+ // PDL and __restrict__ need to be mutually exclusive, see https://github.com/ggml-org/llama.cpp/pull/24030
+-# if (defined(GGML_CUDA_USE_PDL) && defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= GGML_CUDA_CC_HOPPER)
++# if (defined(GGML_CUDA_USE_PDL) && __CUDA_ARCH__ >= GGML_CUDA_CC_HOPPER)
+ # define GGML_CUDA_RESTRICT
+ # else
+ # define GGML_CUDA_RESTRICT __restrict__
+-# endif // defined(GGML_CUDA_USE_PDL) && defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= GGML_CUDA_CC_HOPPER
++# endif // defined(GGML_CUDA_USE_PDL) && __CUDA_ARCH__ >= GGML_CUDA_CC_HOPPER
+ 
+ template<typename Kernel, typename... Args>
+ static __inline__ void ggml_cuda_kernel_launch(Kernel kernel, const ggml_cuda_kernel_launch_params & launch_params, Args&&... args) {
+diff --git a/ggml/src/ggml-cuda/convert.cuh b/ggml/src/ggml-cuda/convert.cuh
+index f5d37c7..91255cc 100644
+--- a/ggml/src/ggml-cuda/convert.cuh
++++ b/ggml/src/ggml-cuda/convert.cuh
+@@ -45,11 +45,11 @@ template<typename dst_t, typename src_t>
+ #ifdef GGML_USE_HIP
+         return make_float2(__bfloat162float(__low2bfloat16(x)), __bfloat162float(__high2bfloat16(x)));
+ #else
+-#if __CUDA_ARCH__ >= 800
++#if !defined(GGML_USE_MUSA) && __CUDA_ARCH__ >= 800
+         return __bfloat1622float2(x);
+ #else
+         return make_float2(__bfloat162float(x.x), __bfloat162float(x.y));
+-#endif // __CUDA_ARCH__ >= 800
++#endif // !defined(GGML_USE_MUSA) && __CUDA_ARCH__ >= 800
+ #endif // GGML_USE_HIP
+     } else if constexpr(std::is_same_v<src_t, float2> && std::is_same_v<dst_t, nv_bfloat162>) {
+         // bypass compile error on cuda 12.0.1
+diff --git a/ggml/src/ggml-cuda/mmq.cuh b/ggml/src/ggml-cuda/mmq.cuh
+index 4b50d1d..0cd31d9 100644
+--- a/ggml/src/ggml-cuda/mmq.cuh
++++ b/ggml/src/ggml-cuda/mmq.cuh
+@@ -284,9 +284,9 @@ static constexpr __device__ ggml_cuda_mmq_config ggml_cuda_mmq_get_config(ggml_t
+         return ggml_cuda_mmq_get_config_ampere(type, J, fallback);
+     }
+     return ggml_cuda_mmq_get_config_blackwell(type, J, fallback);
+-#elif __CUDA_ARCH__ >= GGML_CUDA_CC_VOLTA
++#elif !defined(GGML_USE_MUSA) && __CUDA_ARCH__ >= GGML_CUDA_CC_VOLTA
+     return ggml_cuda_mmq_get_config_ampere(type, J, fallback);
+-#elif __CUDA_ARCH__ >= GGML_CUDA_CC_DP4A
++#elif !defined(GGML_USE_MUSA) && __CUDA_ARCH__ >= GGML_CUDA_CC_DP4A
+     return ggml_cuda_mmq_get_config_pascal_dp4a(type, J, fallback);
+ #else
+     return ggml_cuda_mmq_get_config_pascal_older(type, J, fallback);
+diff --git a/ggml/src/ggml-cuda/mmvq.cu b/ggml/src/ggml-cuda/mmvq.cu
+index a851553..dcf484b 100644
+--- a/ggml/src/ggml-cuda/mmvq.cu
++++ b/ggml/src/ggml-cuda/mmvq.cu
+@@ -9,7 +9,7 @@
+ // only enabled on DGX Spark, where it is a gain on every type below. On the higher-bandwidth parts the kernel
+ // has little exposed latency left to hide and the extra requests cost more than they save.
+ // For perf data, see https://github.com/ggml-org/llama.cpp/pull/26705#issuecomment-5569335031
+-#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ == GGML_CUDA_CC_DGX_SPARK
++#if __CUDA_ARCH__ == GGML_CUDA_CC_DGX_SPARK
+ // returns true only for those quants that benefit from prefetch and false otherwise
+ static constexpr __host__ __device__ bool mmvq_should_prefetch(ggml_type type) {
+     switch (type) {
+@@ -112,9 +112,9 @@ static constexpr __device__ mmvq_parameter_table_id get_device_table_id() {
+     return MMVQ_PARAMETERS_RDNA2;
+ #elif defined(GCN) || defined(CDNA)
+     return MMVQ_PARAMETERS_GCN;
+-#elif defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= GGML_CUDA_CC_TURING && __CUDA_ARCH__ < GGML_CUDA_CC_AMPERE
++#elif __CUDA_ARCH__ >= GGML_CUDA_CC_TURING && __CUDA_ARCH__ < GGML_CUDA_CC_AMPERE
+     return MMVQ_PARAMETERS_TURING;
+-#elif defined(__CUDA_ARCH__) && __CUDA_ARCH__ == GGML_CUDA_CC_DGX_SPARK
++#elif __CUDA_ARCH__ == GGML_CUDA_CC_DGX_SPARK
+     return MMVQ_PARAMETERS_GB10;
+ #else
+     return MMVQ_PARAMETERS_GENERIC;
+@@ -440,9 +440,9 @@ static constexpr __device__ int get_mmvq_mmid_max_batch_for_device() {
+     return get_mmvq_mmid_max_batch_cdna(type);
+ #elif defined(GCN)
+     return get_mmvq_mmid_max_batch_gcn(type);
+-#elif defined(__CUDA_ARCH__) && (__CUDA_ARCH__ == GGML_CUDA_CC_VOLTA || __CUDA_ARCH__ >= GGML_CUDA_CC_ADA_LOVELACE)
++#elif !defined(GGML_USE_MUSA) && (__CUDA_ARCH__ == GGML_CUDA_CC_VOLTA || __CUDA_ARCH__ >= GGML_CUDA_CC_ADA_LOVELACE)
+     return MMVQ_MAX_BATCH_SIZE;
+-#elif defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= GGML_CUDA_CC_TURING
++#elif !defined(GGML_USE_MUSA) && __CUDA_ARCH__ >= GGML_CUDA_CC_TURING
+     return get_mmvq_mmid_max_batch_turing_plus(type);
+ #else
+     return get_mmvq_mmid_max_batch_pascal_older(type);
+@@ -718,7 +718,7 @@ static __global__ void mul_mat_vec_q(
+         // x block quant index when casting the quants to int
+         const int kqs = vdr * (tid % (qi/vdr));
+ 
+-#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ == GGML_CUDA_CC_DGX_SPARK
++#if __CUDA_ARCH__ == GGML_CUDA_CC_DGX_SPARK
+         // start the next iterations' weight loads early
+         if constexpr (mmvq_should_prefetch(type)) {
+             constexpr int pf_dist = 2; // loop iterations, not blocks
+diff --git a/ggml/src/ggml-cuda/vendors/musa.h b/ggml/src/ggml-cuda/vendors/musa.h
+index 4243caa..22126de 100644
+--- a/ggml/src/ggml-cuda/vendors/musa.h
++++ b/ggml/src/ggml-cuda/vendors/musa.h
+@@ -5,6 +5,11 @@
+ #include <mublas.h>
+ #include <musa_bf16.h>
+ #include <musa_fp16.h>
++
++#ifdef __MUSA_ARCH__
++#define __CUDA_ARCH__ 1300 // GGML_CUDA_CC_RUBIN
++#endif // __MUSA_ARCH__
++
+ #define CUBLAS_COMPUTE_16F CUDA_R_16F
+ #define CUBLAS_COMPUTE_32F CUDA_R_32F
+ #define CUBLAS_COMPUTE_32F_FAST_16F MUBLAS_COMPUTE_32F_FAST_16F
