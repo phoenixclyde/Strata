@@ -85,12 +85,19 @@ def main():
         add(False, "D1 身份", "本机与 166 都没有 %s（不给 --live 就无法确认）" % a.exe)
 
     # D2 rollback artifact
-    if a.live:
+    n = -1
+    if os.path.isdir(BIN):
+        try:
+            n = len([x for x in os.listdir(BIN) if x.startswith("strata-0.1")])
+        except OSError:
+            n = 0
+        add(n >= 2, "D2 回滚件", "%s 共 %d 个引擎二进制品（>=2 才能回滚）" % (BIN, n))
+    elif a.live:
         rc, out = live("ls -1 %s | grep -c 'strata-0.1'" % BIN)
-        n = int(out) if out.isdigit() else 0
+        n = int(out) if out.strip().isdigit() else 0
         add(n >= 2, "D2 回滚件", "166 上共 %d 个引擎二进制品（>=2 才能回滚）" % n)
     else:
-        add(False, "D2 回滚件", "未加 --live，无法确认 166 上有可回滚的上一版")
+        add(False, "D2 回滚件", "本机没有 %s 且未加 --live，无法确认可回滚" % BIN)
 
     # D3 performance
     ab = None
