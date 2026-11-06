@@ -5,7 +5,7 @@ name: Downstream gate
 # so a commit could change the R table or drop the runtime rollback switch unobserved.
 #
 # This is deliberately not a build: compiling the engine needs ROCm and 8-10 minutes of a
-# self-hosted machine.  See deploy/CI_CD_BLUEPRINT.md for why that stays local.
+# self-hosted machine.  See ci/README.md for why that stays local (deploy/ is not tracked in this repo).
 #
 # W1002: added the round gate.  Before this, the report lint, the experiment artifacts and
 # the port-status file all existed but NOTHING called them, so a round could (and did) finish
