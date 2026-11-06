@@ -28,6 +28,18 @@ REQ = [
     ("Q2 队列", r"队列", [r"→", r"R\d+(?:[’'′])?"]),
 ]
 
+# W1025: two dependency facts that a reader cannot reconstruct from anything else in the
+# report -- which ROCm the container actually runs, and which llama.cpp the engine was built
+# against.  These are checked PER LINE: the point is that the table has a row for them, not
+# that the words appear somewhere in the prose (the older checks are whole-text and that is
+# exactly how a number goes missing while the gate stays green).
+LINE_REQ = [
+    ("F9 ROCm 版本（容器内）", r"ROCm",
+     [r"\b\d+\.\d+\.\d+(?:-\d+)?\b", r"HIP|hipconfig|\.info/version"]),
+    ("F10 llama.cpp 版本（容器内）", r"llama\.cpp",
+     [r"b\d{4,5}", r"\b[0-9a-f]{40}\b"]),
+]
+
 
 def main(path):
     text = open(path, encoding="utf-8").read()
@@ -54,8 +66,17 @@ def main(path):
         elif "→" not in q:
             fails.append("%-28s 队列没有用 → 串成有序形态" % "Q2 队列")
 
+    # dependency facts: they belong to the container table (section 一), so the search is
+    # scoped to it -- "somewhere in the prose" is what let the value go missing before.
+    scope = re.split(r"\*\*二、|## 二、|二、主线", text)[0]
+    for name, header, pats in LINE_REQ:
+        rows = [l for l in scope.split("\n") if re.search(header, l)]
+        if not any(all(re.search(p, l) for p in pats) for l in rows):
+            fails.append("%-28s 生产容器表里需要一行同时含「%s」+ %s（表内 %d 行提到该词，但没写全）"
+                         % (name, header, " / ".join(pats), len(rows)))
+
     if not fails:
-        print("REPORT_LINT: PASS (%d fields)" % len(REQ))
+        print("REPORT_LINT: PASS (%d fields)" % (len(REQ) + len(LINE_REQ)))
         return 0
     print("REPORT_LINT: FAIL (%d issue(s))" % len(fails))
     for f in fails:
