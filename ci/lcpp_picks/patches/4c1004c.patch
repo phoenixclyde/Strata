@@ -1,0 +1,46 @@
+commit 4c1004c49221b07c3b8108977e3d1991fc9f45cc
+Author: Joel <agnel.joel@gmail.com>
+Date:   Mon Oct 19 03:41:14 2026 -0400
+
+    cuda: cap MMQ Stream-K blocks at available work (#30553)
+    
+    * cuda: cap Stream-K blocks at the number of k-blocks
+    
+    Stream-K normally launches one CUDA block per SM. For small matrices,
+    this can exceed the total number of output-tile/k-block pairs, leaving
+    blocks with no work and adding launch and fixup overhead. Cap the grid
+    at that count to remove these excess blocks without changing the useful
+    rounded K ranges or numerical results.
+    
+    Assisted-by: Codex
+    
+    * cuda: cap Stream-K blocks at the number of k iterations
+    
+    Cap the grid at the number of K_vram iterations across all output tiles, rounding up partial iterations. This removes extra CUDA blocks left by the k-block cap.
+    
+    Partial iterations can change FP32 summation grouping. MUL_MAT and MUL_MAT_ID backend tests pass on RTX 5090.
+    
+    * Update ggml/src/ggml-cuda/mmq.cuh
+    
+    ---------
+    
+    Co-authored-by: Johannes Gäßler <johannesg@5d6.de>
+
+diff --git a/ggml/src/ggml-cuda/mmq.cuh b/ggml/src/ggml-cuda/mmq.cuh
+index 33449f9..e008a34 100644
+--- a/ggml/src/ggml-cuda/mmq.cuh
++++ b/ggml/src/ggml-cuda/mmq.cuh
+@@ -1441,10 +1441,12 @@ static void launch_mul_mat_q(ggml_backend_cuda_context & ctx, const mmq_args & a
+     const int ntiles_dst = ntx * nty * ntzw;
+     const int tiles_nwaves = (ntiles_dst + nsm - 1) / nsm;
+     const int tiles_efficiency_percent = 100 * ntiles_dst / (nsm*tiles_nwaves);
+-    const dim3 block_nums_stream_k(GGML_CUDA_CC_IS_NVIDIA(cc) && tiles_efficiency_percent >= 90 ? ntiles_dst : nsm, 1, 1);
+ 
+     GGML_ASSERT(ntiles_dst * blocks_per_ne00_fd.z < (1 << 30)); // Assert that variable kbc will not overflow.
+ 
++    const int nwork = ntiles_dst * ((args.ncols_x + config.K_vram - 1) / config.K_vram); // Maximum number of CUDA blocks that can do useful work.
++    const dim3 block_nums_stream_k(GGML_CUDA_CC_IS_NVIDIA(cc) && tiles_efficiency_percent >= 90 ? ntiles_dst : std::min(nsm, nwork), 1, 1);
++
+     const bool fixup_needed = ntiles_dst % block_nums_stream_k.x != 0;
+ 
+     ggml_cuda_pool & pool = ctx.pool(id);
