@@ -93,6 +93,12 @@ PY
 )
 fi
 TARGET=$BIN/$EXENAME
+# ---------------------------------------------------------------- 3.5/8 evidence gate
+# W1035: 装机必须带 A/B 与数值证据。没有证据 => 不装（判据，不是判断）。
+say "3.5/8 evidence gate (A/B + numeric)"
+EVID=${EVIDENCE:-$REPO/ci/state/ab/latest.json}
+python3 "$HERE/deploy_gate.py" --path "$NEW" --exe "$EXENAME" --ab "$EVID" --live \
+  || fail "deploy gate REFUSE for $EXENAME: no A/B or numeric evidence (see above); expected at $EVID"
 say "4/7 install -> $TARGET"
 echo "from: $NEW"
 if [ -f "$TARGET" ]; then
