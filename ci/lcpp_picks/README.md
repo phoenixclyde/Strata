@@ -56,3 +56,19 @@
    粘合层只填到 `J_best` ⇒ `fusion.gate == nullptr` ⇒ 任何"融合带来的收益/损失"必须先证明 `gate` 非空。
 3. **解码不要拿来验收 prefill 的改动**（decode CV 1.7–6.7%，且与 prefill 无因果）。
 4. 版本文件名不复用；一个臂一个 `strata-0.1.57-0NN`。
+
+## 6.  的特别说明（W1031 实测 + 上游原文）
+
+（MMQ 越界读修复）是本轮唯一「对我们有真实价值」的候选：它修的是 **J 选得比宿主 padding 大 ⇒ kernel 读越过 src1 末尾**。
+但它的 PR 讨论里明确写着：验证覆盖 RTX PRO 6000 / 2080 Ti / RDNA3.5 / CPU 十种架构，
+**"Still untested: MUSA, and AMD CDNA3/RDNA4/GCN hardware, which we only modelled."** —— **GCN 就是我们（gfx906）**。
+
+实测吻合：ladder-5 臂（pin + 该条）在生产上回答退化（只有 reasoning、无答案）并触发客户端断连 ⇒ 判 REJECTED（臂不可信）。
+
+要拿它，顺序必须是：
+1. **CPU 规则检查**（不需要 GPU）：把  的 CASE 表读出来，按  的选 J 规则
+   （最小 tile 数、shared memory 装得下）复算我们每个生产形状（rows/expert、cols=2560/640 等）的 J，
+   再对照  的  与  分配，判「kernel 的读/写范围是否被覆盖」；
+2. 覆盖不足 ⇒ 先在粘合层补 padding（这是 host 侧，不进 kernel），再用  离线计时 + 数值对齐；
+3. 离线两项都过，才允许上生产做一次 A/B。
+**禁止**像 ladder-5 那样直接装机 —— 那正是把 166 搞死的那一臂。
