@@ -218,7 +218,7 @@ void kv_gather_q8_step(const int8_t* k_q, const int8_t* v_q, const uint16_t* k_s
                        const QsaShapes& s, uint16_t* k_scratch, uint16_t* v_scratch, void* stream) {
     validate(s, "kv_gather_q8");
     if (max_ids <= 0) return;
-#if defined(STRATA_EXPERIMENTAL_SM60)
+#if defined(STRATA_EXPERIMENTAL_SM60) || defined(STRATA_HIP_GFX906)
     if (pre75_q8_gather()) {
         const long long total = max_ids * s.n_head_kv * (s.head_dim / 8);
         const unsigned blocks = (unsigned) ((total + 255) / 256);
