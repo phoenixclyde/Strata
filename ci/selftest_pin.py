@@ -7,7 +7,10 @@ other pointers stay green and a red result can only come from the pin.
 """
 import io, os, shutil, subprocess, sys, tempfile
 
-RC = "/home/albus/strata166/pr/strata-fork/ci/release_check.py"
+# Relative to THIS file, never the work repo: the absolute path made every CI run fail with
+# rc=2 "cannot open file" (runs #42-#44, 9-11 s each), which the test then reported as
+# "[BAD] baseline ... rc=2" -- a path bug wearing a pin bug clothes.
+RC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "release_check.py")
 SHA = "3cf03257f219afbe7334045ff7c6a06ac68c627d"
 VER = "0.1.57"
 
@@ -53,6 +56,8 @@ def fixture(tmp, pin, refs, ver=SHA):
 
 
 def run(tmp):
+    if not os.path.isfile(RC):
+        raise SystemExit("selftest_pin: release_check.py not found next to this file (%s)" % RC)
     r = sh(sys.executable, RC, "--repo", tmp, "--build", tmp)
     return r.returncode, r.stdout + r.stderr
 
