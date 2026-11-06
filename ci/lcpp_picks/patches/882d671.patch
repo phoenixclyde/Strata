@@ -1,0 +1,375 @@
+commit 882d67166d237a7020c21c6e35fe05f00f92cb6d
+Author: Adrien Gallouët <angt@huggingface.co>
+Date:   Tue Oct 13 12:29:27 2026 +0200
+
+    cuda : fix warnings from dead breaks (#30441)
+    
+    * cuda : fix warnings from dead breaks
+    
+    Signed-off-by: Adrien Gallouët <angt@huggingface.co>
+    
+    * Remove useless braces
+    
+    Signed-off-by: Adrien Gallouët <angt@huggingface.co>
+    
+    ---------
+    
+    Signed-off-by: Adrien Gallouët <angt@huggingface.co>
+
+diff --git a/ggml/src/ggml-cuda/binbcast.cu b/ggml/src/ggml-cuda/binbcast.cu
+index 89ae2bc..f7c3a73 100644
+--- a/ggml/src/ggml-cuda/binbcast.cu
++++ b/ggml/src/ggml-cuda/binbcast.cu
+@@ -580,8 +580,7 @@ void ggml_cuda_op_repeat_back(ggml_backend_cuda_context & ctx, ggml_tensor * dst
+             float       * dst_d  = (float       *) dst->data;
+             repeat_back_cuda(src0_d, dst_d, ne00, ne01, ne02, ne03, s00, s01, s02, s03, ne0, ne1, ne2, ne3, stream);
+         } break;
+-        default: {
++        default:
+             GGML_ASSERT(false);
+-        } break;
+     }
+ }
+diff --git a/ggml/src/ggml-cuda/concat.cu b/ggml/src/ggml-cuda/concat.cu
+index 6df8901..f8dcd95 100644
+--- a/ggml/src/ggml-cuda/concat.cu
++++ b/ggml/src/ggml-cuda/concat.cu
+@@ -189,7 +189,6 @@ static void concat_cuda(const ggml_tensor * src0, const ggml_tensor * src1, ggml
+                 break;
+             default:
+                 GGML_ABORT("Invalid dim: %d", dim);
+-                break;
+         }
+     }
+ }
+@@ -236,7 +235,6 @@ void ggml_cuda_op_concat(ggml_backend_cuda_context & ctx, ggml_tensor * dst) {
+                 break;
+             default:
+                 GGML_ABORT("Unsupported type size: %zu", ggml_type_size(src0->type));
+-                break;
+         }
+     }
+ }
+diff --git a/ggml/src/ggml-cuda/count-equal.cu b/ggml/src/ggml-cuda/count-equal.cu
+index 0889811..411d08c 100644
+--- a/ggml/src/ggml-cuda/count-equal.cu
++++ b/ggml/src/ggml-cuda/count-equal.cu
+@@ -59,6 +59,5 @@ void ggml_cuda_count_equal(ggml_backend_cuda_context & ctx, ggml_tensor * dst) {
+         } break;
+         default:
+             GGML_ASSERT(false);
+-            break;
+     }
+ }
+diff --git a/ggml/src/ggml-cuda/fattn-tile.cu b/ggml/src/ggml-cuda/fattn-tile.cu
+index e563729..accef63 100644
+--- a/ggml/src/ggml-cuda/fattn-tile.cu
++++ b/ggml/src/ggml-cuda/fattn-tile.cu
+@@ -53,8 +53,7 @@ void ggml_cuda_flash_attn_ext_tile(ggml_backend_cuda_context & ctx, ggml_tensor
+             GGML_ASSERT(V->ne[0] == 512);
+             ggml_cuda_flash_attn_ext_tile_case<576, 512>(ctx, dst);
+         } break;
+-        default: {
++        default:
+             GGML_ABORT("Unsupported head size");
+-        } break;
+     }
+ }
+diff --git a/ggml/src/ggml-cuda/fattn.cu b/ggml/src/ggml-cuda/fattn.cu
+index bb34e01..5fa3e53 100644
+--- a/ggml/src/ggml-cuda/fattn.cu
++++ b/ggml/src/ggml-cuda/fattn.cu
+@@ -412,7 +412,6 @@ static void ggml_cuda_flash_attn_ext_mma_f16(ggml_backend_cuda_context & ctx, gg
+         } break;
+         default:
+             GGML_ABORT("fatal error");
+-            break;
+     }
+ }
+ 
+diff --git a/ggml/src/ggml-cuda/gated_delta_net.cu b/ggml/src/ggml-cuda/gated_delta_net.cu
+index b582570..a703e78 100644
+--- a/ggml/src/ggml-cuda/gated_delta_net.cu
++++ b/ggml/src/ggml-cuda/gated_delta_net.cu
+@@ -233,7 +233,6 @@ static void launch_gated_delta_net(
+         }
+         default:
+             GGML_ABORT("fatal error");
+-            break;
+     }
+ }
+ 
+diff --git a/ggml/src/ggml-cuda/getrows.cu b/ggml/src/ggml-cuda/getrows.cu
+index 6b36b8f..d97e8fd 100644
+--- a/ggml/src/ggml-cuda/getrows.cu
++++ b/ggml/src/ggml-cuda/getrows.cu
+@@ -406,7 +406,6 @@ static void ggml_cuda_get_rows_switch_src0_type(
+             break;
+         default:
+             GGML_ABORT("%s: unsupported src0 type: %s\n", __func__, ggml_type_name(src0_type));
+-            break;
+     }
+ }
+ 
+@@ -435,7 +434,6 @@ void get_rows_cuda(
+             break;
+         default:
+             GGML_ABORT("%s: unsupported dst type: %s\n", __func__, ggml_type_name(dst_type));
+-            break;
+     }
+ }
+ 
+diff --git a/ggml/src/ggml-cuda/ggml-cuda.cu b/ggml/src/ggml-cuda/ggml-cuda.cu
+index 957908f..f4537d4 100644
+--- a/ggml/src/ggml-cuda/ggml-cuda.cu
++++ b/ggml/src/ggml-cuda/ggml-cuda.cu
+@@ -5408,7 +5408,6 @@ static bool ggml_backend_cuda_device_supports_op(ggml_backend_dev_t dev, const g
+                 default:
+                     return false;
+             }
+-            break;
+         case GGML_OP_GLU:
+             switch (ggml_get_glu_op(op)) {
+                 case GGML_GLU_OP_REGLU:
+@@ -5426,7 +5425,6 @@ static bool ggml_backend_cuda_device_supports_op(ggml_backend_dev_t dev, const g
+                 default:
+                     return false;
+             }
+-            break;
+         case GGML_OP_MUL_MAT:
+         case GGML_OP_MUL_MAT_ID:
+             {
+@@ -5486,7 +5484,7 @@ static bool ggml_backend_cuda_device_supports_op(ggml_backend_dev_t dev, const g
+                     default:
+                         return false;
+                 }
+-            } break;
++            }
+         case GGML_OP_OUT_PROD:
+             return op->type == GGML_TYPE_F32 && op->src[0]->type == GGML_TYPE_F32 && op->src[1]->type == GGML_TYPE_F32;
+         case GGML_OP_GET_ROWS:
+@@ -5525,11 +5523,9 @@ static bool ggml_backend_cuda_device_supports_op(ggml_backend_dev_t dev, const g
+                     default:
+                         return false;
+                 }
+-            } break;
++            }
+         case GGML_OP_GET_ROWS_BACK:
+-            {
+-                return op->type == GGML_TYPE_F32 && op->src[0]->type == GGML_TYPE_F32 && op->ne[2] == 1 && op->ne[3] == 1;
+-            } break;
++            return op->type == GGML_TYPE_F32 && op->src[0]->type == GGML_TYPE_F32 && op->ne[2] == 1 && op->ne[3] == 1;
+         case GGML_OP_SET_ROWS:
+             {
+                 return (
+@@ -5543,14 +5539,14 @@ static bool ggml_backend_cuda_device_supports_op(ggml_backend_dev_t dev, const g
+                            )
+                        ) &&
+                        (op->src[1]->type == GGML_TYPE_I64 || op->src[1]->type == GGML_TYPE_I32);
+-            } break;
++            }
+         case GGML_OP_SET:
+             {
+                 const ggml_type t = op->type;
+                 return (t == GGML_TYPE_F32 || t == GGML_TYPE_I32) &&
+                     t == op->src[0]->type &&
+                     t == op->src[1]->type;
+-            } break;
++            }
+         case GGML_OP_CPY:
+             {
+                 ggml_type src0_type = op->src[0]->type;
+@@ -5606,20 +5602,18 @@ static bool ggml_backend_cuda_device_supports_op(ggml_backend_dev_t dev, const g
+                     return true;
+                 }
+                 return false;
+-            } break;
++            }
+         case GGML_OP_DUP:
+                 return true;
+         case GGML_OP_ARGMAX:
+         case GGML_OP_COUNT_EQUAL:
+-            {
+-                return true;
+-            } break;
++            return true;
+         case GGML_OP_REPEAT:
+             {
+                 // the CUDA REPEAT path only implements F32/F16; other types assert at runtime
+                 ggml_type src0_type = op->src[0]->type;
+                 return src0_type == GGML_TYPE_F32 || src0_type == GGML_TYPE_F16;
+-            } break;
++            }
+         case GGML_OP_REPEAT_BACK:
+                 return op->type == GGML_TYPE_F32 && (op->src[0]->ne[2]*op->src[0]->ne[3]) <= (1 << 15);
+         case GGML_OP_CONCAT:
+@@ -5656,7 +5650,7 @@ static bool ggml_backend_cuda_device_supports_op(ggml_backend_dev_t dev, const g
+                                )
+                            )
+                        );
+-            } break;
++            }
+         case GGML_OP_CONV_TRANSPOSE_1D:
+             {
+                 ggml_type src0_type = op->src[0]->type;
+@@ -5665,7 +5659,7 @@ static bool ggml_backend_cuda_device_supports_op(ggml_backend_dev_t dev, const g
+                     return true;
+                 }
+                 return false;
+-            } break;
++            }
+         case GGML_OP_COL2IM_1D:
+             {
+                 ggml_type src0_type = op->src[0]->type;
+@@ -5673,17 +5667,15 @@ static bool ggml_backend_cuda_device_supports_op(ggml_backend_dev_t dev, const g
+                     op->type == src0_type &&
+                     ggml_is_contiguous(op->src[0]) &&
+                     ggml_is_contiguous(op);
+-            } break;
++            }
+         case GGML_OP_SILU_BACK:
+             return ggml_is_contiguous(op->src[0]) && op->src[0]->type == GGML_TYPE_F32;
+-            break;
+         case GGML_OP_NORM:
+         case GGML_OP_RMS_NORM:
+         case GGML_OP_L2_NORM:
+             return ggml_is_contiguous_rows(op->src[0]);
+         case GGML_OP_RMS_NORM_BACK:
+             return ggml_is_contiguous(op->src[0]);
+-            break;
+         case GGML_OP_NONE:
+         case GGML_OP_RESHAPE:
+         case GGML_OP_VIEW:
+diff --git a/ggml/src/ggml-cuda/mmf.cuh b/ggml/src/ggml-cuda/mmf.cuh
+index 879a865..429c887 100644
+--- a/ggml/src/ggml-cuda/mmf.cuh
++++ b/ggml/src/ggml-cuda/mmf.cuh
+@@ -741,9 +741,8 @@ void mul_mat_f_cuda(
+                 sample_ratio, stride_sample_x, stride_sample_y, stride_sample_dst, block_nums, block_dims, nbytes_shared_total, stream,
+                 ids_data);
+         } break;
+-        default: {
++        default:
+             GGML_ABORT("fatal error");
+-        } break;
+     }
+ 
+     GGML_UNUSED_VARS(nchannels_y);
+@@ -845,9 +844,8 @@ static void mul_mat_f_switch_cols_per_block(
+                 stride_col_id, stride_row_id, nchannels_x, nchannels_y,  nchannels_dst, stride_channel_x, stride_channel_y, stride_channel_dst,
+                 nsamples_x, nsamples_dst, stride_sample_x, stride_sample_y, stride_sample_dst, stream, ids_data);
+         } break;
+-        default: {
++        default:
+             GGML_ABORT("fatal error");
+-        } break;
+     }
+ }
+ 
+diff --git a/ggml/src/ggml-cuda/mmq.cu b/ggml/src/ggml-cuda/mmq.cu
+index 91b8999..46efdfe 100644
+--- a/ggml/src/ggml-cuda/mmq.cu
++++ b/ggml/src/ggml-cuda/mmq.cu
+@@ -87,7 +87,6 @@ static void ggml_cuda_mul_mat_q_switch_type(ggml_backend_cuda_context & ctx, con
+             break;
+         default:
+             GGML_ABORT("fatal error");
+-            break;
+     }
+ }
+ 
+diff --git a/ggml/src/ggml-cuda/mmq.cuh b/ggml/src/ggml-cuda/mmq.cuh
+index d3e7b75..33449f9 100644
+--- a/ggml/src/ggml-cuda/mmq.cuh
++++ b/ggml/src/ggml-cuda/mmq.cuh
+@@ -96,7 +96,6 @@ static mmq_q8_1_ds_layout mmq_get_q8_1_ds_layout(const ggml_type type_x) {
+             return MMQ_Q8_1_DS_LAYOUT_D4;
+         default:
+             GGML_ABORT("fatal error");
+-            break;
+     }
+ }
+ 
+@@ -1529,7 +1528,6 @@ void mul_mat_q_switch_J(ggml_backend_cuda_context & ctx, const mmq_args & args,
+         default:
+             fprintf(stderr, "J_best=%d\n", args.J_best);
+             GGML_ABORT("fatal error");
+-            break;
+     }
+ }
+ 
+diff --git a/ggml/src/ggml-cuda/mmvf.cu b/ggml/src/ggml-cuda/mmvf.cu
+index d0a572e..752d28c 100644
+--- a/ggml/src/ggml-cuda/mmvf.cu
++++ b/ggml/src/ggml-cuda/mmvf.cu
+@@ -504,9 +504,8 @@ void launch_mul_mat_vec_f_cuda(
+                  channel_ratio_fd, stride_channel_x, stride_channel_y, stride_channel_dst,
+                  sample_ratio_fd, stride_sample_x, stride_sample_y, stride_sample_dst, block_dims, block_nums, nbytes_shared, ids_stride, stream);
+         } break;
+-        default: {
++        default:
+             GGML_ABORT("fatal error");
+-        } break;
+     }
+ }
+ 
+@@ -603,7 +602,6 @@ static void mul_mat_vec_f_cuda_switch_ncols_dst(
+             break;
+         default:
+             GGML_ABORT("fatal error");
+-            break;
+     }
+ }
+ 
+diff --git a/ggml/src/ggml-cuda/mmvq.cu b/ggml/src/ggml-cuda/mmvq.cu
+index 0714ae3..8068ba3 100644
+--- a/ggml/src/ggml-cuda/mmvq.cu
++++ b/ggml/src/ggml-cuda/mmvq.cu
+@@ -1275,7 +1275,6 @@ static void mul_mat_vec_q_switch_ncols_dst(
+         } break;
+         default:
+             GGML_ABORT("fatal error");
+-            break;
+     }
+ }
+ static void mul_mat_vec_q_switch_type(
+@@ -1427,7 +1426,6 @@ static void mul_mat_vec_q_switch_type(
+             break;
+         default:
+             GGML_ABORT("fatal error");
+-            break;
+     }
+ }
+ 
+diff --git a/ggml/src/ggml-cuda/quantize.cu b/ggml/src/ggml-cuda/quantize.cu
+index 935b2bf..ea089a8 100644
+--- a/ggml/src/ggml-cuda/quantize.cu
++++ b/ggml/src/ggml-cuda/quantize.cu
+@@ -597,7 +597,6 @@ void quantize_mmq_q8_1_cuda(
+             break;
+         default:
+             GGML_ABORT("fatal error");
+-            break;
+     }
+ }
+ 
+@@ -627,7 +626,6 @@ void quantize_scatter_mmq_q8_1_cuda(
+             break;
+         default:
+             GGML_ABORT("fatal error");
+-            break;
+     }
+ }
+ 
+diff --git a/ggml/src/ggml-cuda/topk-moe.cu b/ggml/src/ggml-cuda/topk-moe.cu
+index ee903bf..d015e7d 100644
+--- a/ggml/src/ggml-cuda/topk-moe.cu
++++ b/ggml/src/ggml-cuda/topk-moe.cu
+@@ -348,7 +348,6 @@ static void launch_topk_moe_cuda(ggml_backend_cuda_context & ctx,
+             break;
+         default:
+             GGML_ASSERT(false && "fatal error");
+-            break;
+     }
+ }
+ 
