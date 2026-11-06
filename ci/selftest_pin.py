@@ -34,6 +34,12 @@ def fixture(tmp, pin, refs, ver=SHA):
     os.makedirs(os.path.join(tmp, "third_party", "ggml"), exist_ok=True)
     io.open(os.path.join(tmp, ".github", "workflows", "metal-build.yml"), "w",
             encoding="utf-8").write("env:\n  LLAMA_CPP_COMMIT: %s\n" % pin if pin else "env: {}\n")
+    # The release pin row reads the recipe when there is no image (--offline), so a complete
+    # fixture needs one: without it every case reported "llama.cpp pin (release) (absent)" and
+    # the baseline could not pass -- the same "fixture is not the real thing" shape again.
+    os.makedirs(os.path.join(tmp, "ci", "docker"), exist_ok=True)
+    io.open(os.path.join(tmp, "ci", "docker", "Dockerfile-selftest"), "w",
+            encoding="utf-8").write("ENV LLAMA_CPP_SHA=%s\n" % SHA)
     if ver:
         # CMakeLists.txt:2078 obeys this file, so it is the first declaration
         io.open(os.path.join(tmp, "third_party", "ggml", "VERSION.txt"), "w",
