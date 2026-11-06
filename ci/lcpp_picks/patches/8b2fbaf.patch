@@ -1,0 +1,33 @@
+commit 8b2fbaf32cad6fbe08cf85348dbbb84d8e3c70f0
+Author: Konrad Moren <kmoren@nvidia.com>
+Date:   Mon Oct 5 13:43:07 2026 +0200
+
+    CUDA: Optimize accumulation in mmq for NVFP4 type (#29857)
+    
+    * ggml_cuda: optimize accumulation in mmq_vec_dot_fp4_fp4_mma for better performance
+    
+    * remove whitespace
+    
+    * fix: correct indentation in mma_block_scaled_fp4 loop
+
+diff --git a/ggml/src/ggml-cuda/mmq-vec-dot.cuh b/ggml/src/ggml-cuda/mmq-vec-dot.cuh
+index 4ca6542..b39e4d5 100644
+--- a/ggml/src/ggml-cuda/mmq-vec-dot.cuh
++++ b/ggml/src/ggml-cuda/mmq-vec-dot.cuh
+@@ -1225,14 +1225,11 @@ template <ggml_type type, int J, bool fallback> static __device__ __forceinline_
+ 
+ #pragma unroll
+         for (int n = 0; n < ntx; ++n) {
++            // accumulate in place into the output sum array
++            tile_C & C = *reinterpret_cast<tile_C *>(sum + (j0 / tile_C::J + n) * tile_C::ne);
+ #pragma unroll
+             for (int frag = 0; frag < nfrags; ++frag) {
+-                tile_C C = {};
+                 mma_block_scaled_fp4<type>(C, A[n][frag], B[frag], scaleA[n][frag], scaleB[frag]);
+-#pragma unroll
+-                for (int l = 0; l < tile_C::ne; ++l) {
+-                    sum[(j0 / tile_C::J + n) * tile_C::ne + l] += C.x[l];
+-                }
+             }
+         }
+     }
