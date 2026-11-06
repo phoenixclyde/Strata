@@ -107,7 +107,7 @@ __global__ void kv_gather_q8_kernel(const int8_t* __restrict__ k_q, const int8_t
     reinterpret_cast<ushort4*>(v_scratch)[dst] = vo;
 }
 
-#if defined(STRATA_EXPERIMENTAL_SM60)
+#if defined(STRATA_EXPERIMENTAL_SM60) || defined(STRATA_HIP_GFX906)
 // One thread = 8 consecutive values of one cell and head: an 8-byte `uint2` load of codes and a 16-byte `uint4`
 // store of the dequantized fp16.  The 8 values share one 64-value group, so one scale is loaded per thread and
 // the arithmetic stays `(float) code * scale -> f16_from_f32`, i.e. bitwise the same as the previous 4-wide
@@ -156,6 +156,16 @@ __global__ void kv_gather_q8_wide_kernel(const int8_t* __restrict__ k_q, const i
 // 8-wide gather off (A/B).  The wide kernel is bitwise identical, so this only decides speed.  Mirrors
 // qsa_decode_attn.cu's pre75_attn.
 bool pre75_q8_gather() {
+#if defined(STRATA_HIP_GFX906)
+    // W1036/A5: on gfx906 the 8-wide kernel is compiled now (it used to sit behind STRATA_EXPERIMENTAL_SM60 only, so
+    // HIP always ran the 4-wide one).  It is bitwise the same arithmetic (its own comment says so: same per-64-group
+    // scale, same `(float) code * scale -> f16_from_f32`), so this is a speed switch - opt-in for A/B.
+    static const bool on = [] {
+        const char* e = std::getenv("STRATA_GFX906_Q8_GATHER8");
+        return e != nullptr && e[0] == '1';
+    }();
+    return on;
+#else
     static const bool off = [] {
         const char* e = std::getenv("STRATA_Q8_GATHER_WIDE");
         return e != nullptr && e[0] == '0';
@@ -174,8 +184,9 @@ bool pre75_q8_gather() {
         cc[dev] = 10 * major + minor;
     }
     return cc[dev] < 75;
+#endif
 }
-#endif  // STRATA_EXPERIMENTAL_SM60
+#endif  // STRATA_EXPERIMENTAL_SM60 || STRATA_HIP_GFX906
 
 }  // namespace
 
