@@ -3,7 +3,7 @@
 2	748d422	29478	HIP __vsubss4 -> __vsub4	ggml-cuda/mmq-load-tiles.cuh	yes	INERT	二进制与 001 逐字节相同（build-vsub4 / md5 5e63174d）
 3	272aad8	29508	musa 定义 __CUDA_ARCH__	ggml-cuda/common.cuh	no	INERT	musa 后端，HIP 不编
 4	8b2fbaf	29857	NVFP4 MMQ 累加优化	ggml-cuda/mmq-vec-dot.cuh	yes	INERT	只有 NVFP4 权重走这条
-5	fc9ce6b	29953	MMQ 越界读修复 + J_best 重构	ggml-cuda/mmq.cuh	no	TESTING	ladder-5（粘合层已按 J_best 槽位喂参，见 src/prefill/moe_mmq.cu:504）
+5	fc9ce6b	29953	MMQ 越界读修复 + J_best 重构	ggml-cuda/mmq.cuh	no	REJECTED	ladder-5 臂（strata-0.1.57-008）回答退化+客户端断连；上游 PR 自述「AMD CDNA3/RDNA4/**GCN** 只做了建模、未在硬件上验过」，且 J_best 的宿主侧 padding 规则在我们粘合层里没有对应实现 ⇒ 先做 CPU 规则检查（见 README §6）
 6	8a1a9b5	30168	src1 精度传进 host 配置	ggml-cuda/mmq*.cuh	no	NEW	需 prec 补丁；我们恒 Q8_1 ⇒ 预期惰性
 7	882d671	30441	死 break 警告	ggml-cuda/mmq.cuh	no	INERT	只消警告
 8	bfe65e1	30443	mmq-load-tiles 警告	ggml-cuda/mmq-load-tiles.cuh	no	INERT	只消警告
