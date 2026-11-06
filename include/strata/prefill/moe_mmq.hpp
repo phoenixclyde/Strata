@@ -94,6 +94,8 @@ public:
 
 private:
     void* ctx_ = nullptr;
+    void* spec_ = nullptr;      // tile_spec for ggml-cuda with #31047 (device memory, grown on demand)
+    size_t spec_cap_ = 0;
 };
 
 /// A GGUF-native expert (gate at `gate`, up at `up`, down at `down`, each its GGUF rows) into a group buffer's
