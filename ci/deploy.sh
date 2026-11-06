@@ -35,6 +35,14 @@ done
 say() { printf '\n=== %s ===\n' "$*"; }
 fail() { printf '\nDEPLOY STOPPED: %s\n' "$*" >&2; exit 1; }
 
+# ---------------------------------------------------------------- 0 receipt
+# W1028: an independent run must have seen this exact commit.  The receipt is written by
+# the gate repo's pre-receive hook on 166 (git push gate <branch>); no working copy can
+# produce one, which is what makes it different from "I ran the gate".
+say "0/8 gate receipt"
+python3 "$HERE/gate_receipt.py" --sha "$(git -C "$REPO" rev-parse HEAD)" \
+  || fail "no gate receipt for HEAD -- push it through the gate first (git push gate gfx906/mi50)"
+
 # ---------------------------------------------------------------- 1 gate
 say "1/7 gate"
 python3 "$HERE/gate.py" --repo "$REPO" --build "$BUILD" --config "$CFG" || fail "gate"
