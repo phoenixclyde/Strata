@@ -6,6 +6,7 @@
 #include "strata/core/defaults_026.hpp"
 #define STRATA_Q81_FASTMATH_DIV 1   // #3948: the q8_1 tails divide as native_mmvq.cu (--use_fast_math) does, see q8_1_finite.hpp
 #include "strata/kernels/q8_1_finite.hpp"   // #606: q8_1_ds
+#include "strata/kernels/dp4a.hpp"   // W1046: opt-in HC down DP4A candidate
 #include "strata/core/geometry.hpp"
 #include "strata/core/bw_dense_defaults.hpp"
 #include "strata/kernels/fused_gr.hpp"
@@ -1993,9 +1994,17 @@ __device__ __forceinline__ float4 q8_four(uint32_t q, float d) {
                        d * (float) (int8_t) ((q >> 16) & 255u), d * (float) (int8_t) (q >> 24));
 }
 
+// W1046 / R103-B3: opt-in symmetric INT8 activation x INT8 weight DP4A down projection.
+// The original gr_down_q8_kernel remains byte-for-byte the off arm. The candidate changes
+// arithmetic (not bit-identical): Q8_0 weight scale x per-32 activation scale is applied after
+// the integer dot. No zero-point is needed because both operands are symmetric signed INT8.
+// Inject rows keep the original BF16 x FP32 path. Gate: build floor, gr_parity/fused_gr_bench,
+// prompt logits + anchored KL/top-1, task grid, then paired production A/B. Default OFF.
 template <int T>
-__global__ void __launch_bounds__(THREADS) gr_down_q8_kernel(GrMulti m, float* __restrict__ part, float* __restrict__ ssg) {
-    __shared__ __align__(16) float xs[T][Q8_KC];
+__global__ void __launch_bounds__(THREADS) gr_down_q8_dp4a_kernel(GrMulti m, float* __restrict__ part, float* __restrict__ ssg) {
+    __shared__ __align__(16) float xs[T][Q8_KC];   // retained for the BF16 inject rows
+    __shared__ __align__(16) uint32_t xq[T][Q8_KC / 4];   // four signed int8 activations
+    __shared__ float xd[T][Q8_KC / 32];               // one fp32 scale per 32 activations
     __shared__ float red[WARPS][T];
     const int t = threadIdx.x, lane = t & 31, warp = t >> 5;
     const int rg = blockIdx.x, kc = blockIdx.y, c = kc / Q8_CPS;
@@ -2037,6 +2046,23 @@ __global__ void __launch_bounds__(THREADS) gr_down_q8_kernel(GrMulti m, float* _
             const float4 g = *reinterpret_cast<const float4*>(a.w_norm + col);
             ssp[k] += r.x * r.x + r.y * r.y + r.z * r.z + r.w * r.w;
             *reinterpret_cast<float4*>(&xs[k][4 * i]) = make_float4(r.x * g.x, r.y * g.y, r.z * g.z, r.w * g.w);
+            // W1046: quantize once while staging. Eight consecutive lanes own one 32-value
+            // group, so xor 4/2/1 never crosses a group boundary. The same qx/xd are reused
+            // by all four down rows; no per-use FP32->INT8 conversion in the dot loop.
+            {
+                const float4 x = make_float4(r.x * g.x, r.y * g.y, r.z * g.z, r.w * g.w);
+                float amax = fmaxf(fmaxf(fabsf(x.x), fabsf(x.y)), fmaxf(fabsf(x.z), fabsf(x.w)));
+#pragma unroll
+                for (int o = 4; o > 0; o >>= 1)
+                    amax = fmaxf(amax, __shfl_xor_sync(0xffffffffu, amax, o));
+                const float d = q8_1_finite(q81_div(amax, 127.0f));
+                const uint32_t q0 = (uint8_t) q8_1_quant(x.x, d, amax);
+                const uint32_t q1 = (uint8_t) q8_1_quant(x.y, d, amax);
+                const uint32_t q2 = (uint8_t) q8_1_quant(x.z, d, amax);
+                const uint32_t q3 = (uint8_t) q8_1_quant(x.w, d, amax);
+                xq[k][i] = q0 | (q1 << 8) | (q2 << 16) | (q3 << 24);
+                if ((i & 7) == 0) xd[k][i >> 3] = d;
+            }
         }
     }
 #pragma unroll
@@ -2065,14 +2091,18 @@ __global__ void __launch_bounds__(THREADS) gr_down_q8_kernel(GrMulti m, float* _
                 const uint2 b = *reinterpret_cast<const uint2*>(m.a[0].w_inject + (size_t) row0 * D + (size_t) kc * Q8_KC + v);
                 w = make_float4(__uint_as_float(b.x << 16), __uint_as_float(b.x & 0xffff0000u),
                                 __uint_as_float(b.y << 16), __uint_as_float(b.y & 0xffff0000u));
-            } else {
-                w = q8_four(q[r][s], dq[r][s]);
             }
 #pragma unroll
             for (int k = 0; k < T; ++k) {
-                const float4 x = *reinterpret_cast<const float4*>(&xs[k][v]);
-                acc[k] = fmaf(w.x, x.x, acc[k]); acc[k] = fmaf(w.y, x.y, acc[k]);
-                acc[k] = fmaf(w.z, x.z, acc[k]); acc[k] = fmaf(w.w, x.w, acc[k]);
+                if (inj_bf16) {
+                    const float4 x = *reinterpret_cast<const float4*>(&xs[k][v]);
+                    acc[k] = fmaf(w.x, x.x, acc[k]); acc[k] = fmaf(w.y, x.y, acc[k]);
+                    acc[k] = fmaf(w.z, x.z, acc[k]); acc[k] = fmaf(w.w, x.w, acc[k]);
+                } else {
+                    const int block = 4 * s + bl;
+                    const int sumi = STRATA_DP4A((int) q[r][s], (int) xq[k][v / 4], 0);
+                    acc[k] = fmaf(dq[r][s] * xd[k][block], (float) sumi, acc[k]);
+                }
             }
         }
         const int prow = inj ? LR + warp : row0 + r;
@@ -2587,9 +2617,14 @@ __global__ void __launch_bounds__(THREADS) gr_up_q8_fast_kernel(GrMulti m, const
 template <int T> void launch_q8_t(const GrMulti& m, float* part, float* ssg, cudaStream_t st, unsigned long long* stamp_buf,
                                   int stamp_i0) {
     static const bool ts = [] { const char* v = std::getenv("STRATA_TSUM"); return v && v[0] == '1'; }();
+    static const bool dp4a = [] {
+        const char* v = std::getenv("STRATA_HC_DOWN_DP4A");
+        return v != nullptr && std::atoi(v) != 0;
+    }();
     if (stamp_buf) gpu_stamp(stamp_buf, stamp_i0, (void*) st);
     static const bool pfs = [] { const char* v = std::getenv("STRATA_GR_Q8_PFS"); return v != nullptr && std::atoi(v) != 0; }();
-    if (ts && pfs) gr_down_q8_fast_kernel<T, 4, true><<<dim3(LR / (WARPS * 4) + 1, Q8_NKC), THREADS, 0, st>>>(m, part, ssg);
+    if (dp4a) gr_down_q8_dp4a_kernel<T><<<dim3(Q8_RG + 1, Q8_NKC), THREADS, 0, st>>>(m, part, ssg);
+    else if (ts && pfs) gr_down_q8_fast_kernel<T, 4, true><<<dim3(LR / (WARPS * 4) + 1, Q8_NKC), THREADS, 0, st>>>(m, part, ssg);
     else if (ts) gr_down_q8_fast_kernel<T, 4><<<dim3(LR / (WARPS * 4) + 1, Q8_NKC), THREADS, 0, st>>>(m, part, ssg);
     else gr_down_q8_kernel<T><<<dim3(Q8_RG + 1, Q8_NKC), THREADS, 0, st>>>(m, part, ssg);
     if (stamp_buf) gpu_stamp(stamp_buf, stamp_i0 + 1, (void*) st);
