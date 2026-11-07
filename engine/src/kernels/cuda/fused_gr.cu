@@ -1561,7 +1561,7 @@ bool up75_on() {
         cudaDeviceGetAttribute(&major, cudaDevAttrComputeCapabilityMajor, dev);
         cudaDeviceGetAttribute(&minor, cudaDevAttrComputeCapabilityMinor, dev);
         // Turing (STRATA_SM75_PERF=1), and a 12.0 card (sm120_series.hpp: RTX PRO 5000, a 4-token verify round -1.7%)
-        per_dev[dev] = strata::sm75_default(major, minor) || strata::sm12x_default(major, minor, strata::kGb10GrUp75) ? 2 : 1;
+        per_dev[dev] = strata::sm75_default(major, minor) || strata::sm120_default(major, minor) ? 2 : 1;
     }
     return per_dev[dev] == 2;
 #endif
@@ -1586,7 +1586,7 @@ int down_tg(int ct) {
         cudaDeviceGetAttribute(&major, cudaDevAttrComputeCapabilityMajor, dev);
         cudaDeviceGetAttribute(&minor, cudaDevAttrComputeCapabilityMinor, dev);
         cudaDeviceGetAttribute(&sms, cudaDevAttrMultiProcessorCount, dev);
-        per_dev[dev] = strata::sm75_default(major, minor) ? 2 : strata::sm12x_default(major, minor, strata::kGb10GrDownTg) ? (sms >= 80 ? 3 : 4) : 1;   // Turing, STRATA_SM75_PERF=1
+        per_dev[dev] = strata::sm75_default(major, minor) ? 2 : strata::sm120_default(major, minor) ? (sms >= 80 ? 3 : 4) : 1;   // Turing, STRATA_SM75_PERF=1
     }
     // a 12.0 card (sm120_series.hpp) with 80+ SMs: one token a block row for every launch of 2+ tokens (RTX PRO 5000, fixed
     // rounds against token pairs: 2 tokens -2.1%, 3 -2.3%, 4 -0.2%, 5 -2.5%; pairs against no split at 4 tokens -2.4%); a
@@ -2018,97 +2018,6 @@ __device__ __forceinline__ float q8_half(uint32_t h) { return __half2float(__ush
 __device__ __forceinline__ float4 q8_four(uint32_t q, float d) {
     return make_float4(d * (float) (int8_t) (q & 255u), d * (float) (int8_t) ((q >> 8) & 255u),
                        d * (float) (int8_t) ((q >> 16) & 255u), d * (float) (int8_t) (q >> 24));
-}
-
-template <int T>
-__global__ void __launch_bounds__(THREADS) gr_down_q8_kernel(GrMulti m, float* __restrict__ part, float* __restrict__ ssg) {
-    __shared__ __align__(16) float xs[T][Q8_KC];
-    __shared__ float red[WARPS][T];
-    const int t = threadIdx.x, lane = t & 31, warp = t >> 5;
-    const int rg = blockIdx.x, kc = blockIdx.y, c = kc / Q8_CPS;
-    const bool inj = rg == Q8_RG;
-    // S25: the inject rows are F32 in the GGUF with BF16-exact values, so by default they are read as the pack's BF16
-    // (exact); a Q8_0 copy (STRATA_HC_Q8_INJECT=1) is the other option
-    const bool inj_bf16 = inj && m.a[0].q8_inject == nullptr;
-    const int nrows = inj ? (((m.a[0].q8_inject != nullptr || m.a[0].w_inject != nullptr) && warp < HC) ? 1 : 0) : Q8_RPW;
-    const int row0 = inj ? warp : (rg * WARPS + warp) * Q8_RPW;
-    const uint8_t* wb = inj ? m.a[0].q8_inject : m.a[0].q8_down;
-    const int sub = lane & 7, bl = lane >> 3;       // lanes 8b..8b+7: one Q8_0 block, 4 values each
-    uint32_t q[Q8_RPW][Q8_SPB];
-    float dq[Q8_RPW][Q8_SPB];
-#pragma unroll
-    for (int r = 0; r < Q8_RPW; ++r) {
-        if (r >= nrows || inj_bf16) break;
-        const uint8_t* row = wb + (size_t) (row0 + r) * (D / 32) * Q8B + (size_t) kc * (Q8_KC / 32) * Q8B;
-#pragma unroll
-        for (int s = 0; s < Q8_SPB; ++s) {
-            const uint8_t* blk = row + (4 * s + bl) * Q8B;
-            dq[r][s] = q8_half(q8_ld16(blk));
-            q[r][s] = q8_ld16(blk + 2 + 4 * sub) | q8_ld16(blk + 4 + 4 * sub) << 16;
-        }
-    }
-    float ssp[T];
-#pragma unroll
-    for (int k = 0; k < T; ++k) {
-        ssp[k] = 0.0f;
-        const FusedGrArgs& a = m.a[k];
-        const float gw = a.apply ? 2.0f * sigmoidf_(a.inj_prev[c] / (float) HC) : 0.0f;
-        for (int i = t; i < Q8_KC / 4; i += THREADS) {
-            const int col = kc * Q8_KC + 4 * i;
-            float4 r = *reinterpret_cast<const float4*>(a.R + col);
-            if (a.apply) {
-                const float4 b = *reinterpret_cast<const float4*>(a.bo_prev + (col - c * N));
-                r.x = fmaf(b.x, gw, r.x); r.y = fmaf(b.y, gw, r.y);
-                r.z = fmaf(b.z, gw, r.z); r.w = fmaf(b.w, gw, r.w);
-            }
-            const float4 g = *reinterpret_cast<const float4*>(a.w_norm + col);
-            ssp[k] += r.x * r.x + r.y * r.y + r.z * r.z + r.w * r.w;
-            *reinterpret_cast<float4*>(&xs[k][4 * i]) = make_float4(r.x * g.x, r.y * g.y, r.z * g.z, r.w * g.w);
-        }
-    }
-#pragma unroll
-    for (int k = 0; k < T; ++k) {
-        const float v = warp_sum(ssp[k]);
-        if (lane == 0) red[warp][k] = v;
-    }
-    __syncthreads();
-    if (rg == 0 && t < T) {
-        float s = 0.0f;
-        for (int w = 0; w < WARPS; ++w) s += red[w][t];
-        ssg[t * Q8_NKC + kc] = s;
-    }
-    if (nrows == 0) return;
-#pragma unroll
-    for (int r = 0; r < Q8_RPW; ++r) {
-        if (r >= nrows) break;
-        float acc[T];
-#pragma unroll
-        for (int k = 0; k < T; ++k) acc[k] = 0.0f;
-#pragma unroll
-        for (int s = 0; s < Q8_SPB; ++s) {
-            const int v = 32 * (4 * s + bl) + 4 * sub;
-            float4 w;
-            if (inj_bf16) {
-                const uint2 b = *reinterpret_cast<const uint2*>(m.a[0].w_inject + (size_t) row0 * D + (size_t) kc * Q8_KC + v);
-                w = make_float4(__uint_as_float(b.x << 16), __uint_as_float(b.x & 0xffff0000u),
-                                __uint_as_float(b.y << 16), __uint_as_float(b.y & 0xffff0000u));
-            } else {
-                w = q8_four(q[r][s], dq[r][s]);
-            }
-#pragma unroll
-            for (int k = 0; k < T; ++k) {
-                const float4 x = *reinterpret_cast<const float4*>(&xs[k][v]);
-                acc[k] = fmaf(w.x, x.x, acc[k]); acc[k] = fmaf(w.y, x.y, acc[k]);
-                acc[k] = fmaf(w.z, x.z, acc[k]); acc[k] = fmaf(w.w, x.w, acc[k]);
-            }
-        }
-        const int prow = inj ? LR + warp : row0 + r;
-#pragma unroll
-        for (int k = 0; k < T; ++k) {
-            const float v = warp_sum(acc[k]);
-            if (lane == 0) part[((size_t) k * Q8_NKC + kc) * PR + prow] = v;
-        }
-    }
 }
 
 // W1046 / R103-B3: opt-in symmetric INT8 activation x INT8 weight DP4A down projection.
@@ -2738,13 +2647,7 @@ template <int T> void launch_q8_t(const GrMulti& m, float* part, float* ssg, cud
     }();
     if (stamp_buf) gpu_stamp(stamp_buf, stamp_i0, (void*) st);
     static const bool pfs = [] { const char* v = std::getenv("STRATA_GR_Q8_PFS"); return v != nullptr && std::atoi(v) != 0; }();
-    // W1047: the clean bench showed the activation-quantized kernel wins at T<=6
-    // but loses badly at T=7/8 (shared-memory/occupancy cliff). Default safe cutoff.
-    static const int dp4a_max_t = [] {
-        const char* v = std::getenv("STRATA_HC_DOWN_DP4A_MAX_T");
-        return v != nullptr ? std::atoi(v) : 6;
-    }();
-    if (dp4a && T <= dp4a_max_t) gr_down_q8_dp4a_kernel<T><<<dim3(Q8_RG + 1, Q8_NKC), THREADS, 0, st>>>(m, part, ssg);
+    if (dp4a) gr_down_q8_dp4a_kernel<T><<<dim3(Q8_RG + 1, Q8_NKC), THREADS, 0, st>>>(m, part, ssg);
     else if (ts && pfs) gr_down_q8_fast_kernel<T, 4, true><<<dim3(LR / (WARPS * 4) + 1, Q8_NKC), THREADS, 0, st>>>(m, part, ssg);
     else if (ts) gr_down_q8_fast_kernel<T, 4><<<dim3(LR / (WARPS * 4) + 1, Q8_NKC), THREADS, 0, st>>>(m, part, ssg);
     else gr_down_q8_kernel<T><<<dim3(Q8_RG + 1, Q8_NKC), THREADS, 0, st>>>(m, part, ssg);
@@ -3939,7 +3842,6 @@ bool fused_gr_read_persist(const FusedGrArgs* a, int n_tok, void* stream) {
     const hcp::DevState& st = hcp::g_dev[dev];
     if (n_tok > st.max_t) return false;
     if (a[0].q8_down != nullptr || a[0].q8_up != nullptr) return false;    // STRATA_HC_Q8: the default read
-    if (a[0].s_down != nullptr || a[0].s_up != nullptr) return false;      // #5560 STRATA_HC_REQ8: int8 rows + scales, the default read (it knows them)
     for (int t = 0; t < n_tok; ++t)
         if (a[t].q8_mixed != nullptr) return false;                         // STRATA_QFUSE: the default read
     hcp::launch(a, n_tok, st, (cudaStream_t) stream, hcp::kTicksRun);
