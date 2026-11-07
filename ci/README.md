@@ -107,3 +107,22 @@ Local-only scripts (they hardcode Windows paths) stay on the laptop:
 
 判据一条命令：`python3 ci/gh_gate.py --wait 300`（exit 6 = 没 run，并会打印上面四条）。
 `ci/deploy.sh` 第 0 步就是它：**开关没开 = 部署被拒**，这是故意的。
+
+## W1046 (2026-11-07): isa_dump.sh, and why the hooks were never installed
+
+`ci/isa_dump.sh` is the only sanctioned way to disassemble one TU. W1045 lost the
+production binary's `.hip_fatbin` to `llvm-objcopy --dump-section` called without
+an output path; the script refuses `/data/bin`, always works on a copy, and always
+passes an output file.
+
+`ci/install-hooks.sh` existed since W1002 but `pr/k10`'s `.git/hooks` was empty, so
+`pre-commit` / `pre-push` (the round gate) never ran in the tree that actually
+produces the engine. Installed W1046 after verifying both gates pass locally
+(`ci/gate.py --source-only`: 11 checks 0 failed; `ci/round_gate.py --ci`: PASS).
+
+Still missing (needs a policy decision, tracked as R113):
+  - `paths:` does not include `tools/**`, so changes to the local gate scripts do
+    not trigger this workflow;
+  - the three working branches (`gfx906/lcpp-k10`, `gfx906/attn-opt`,
+    `gfx906/dot48`) are not in the branch whitelist, so pushes to them produce no run;
+  - `deploy/` and `albus/` are not under version control at all.
