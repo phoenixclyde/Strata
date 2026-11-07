@@ -21,7 +21,7 @@
 | 2K prefill 相位 | GPU **3191 ms**；gu 816、down 510、dequant **161（5.0%）**、wait copy **37（1.2%）**、host grouping **91（2.9%）** | `ci/prefill_phases/PREFILL_PHASES.tsv`（n=3 冷 prompt）+ `phases.py --check` |
 | 2K 相对 16K 的每 token 成本 | 整条 **1.23×**；gate/up **1.57×**、down **1.52×** | 同上（16K = 16375 tok / 20318 ms） |
 | 专家权重类型 | gu = Q4_K/Q5_K @[1280,2560]；down = Q5_1/Q8_0 @[2560,640] | `native_experts.txt`（pack 清单） |
-| 进度分母 | **493 条 / 已结 399 / 80.9%**（W1049；值由 `tools/progress.py` 派生，`tools/audit_scope.py §D` 拦手写） | `deploy/PROGRESS.tsv`（唯一分母） |
+| 进度分母 | **496 条 / 已结 403 / 81.2%**（W1050；值由 `tools/progress.py` 派生，`tools/audit_scope.py §D` 拦手写） | `deploy/PROGRESS.tsv`（唯一分母） |
 | **主线 / 上游基线** | 树 = `mi50-0.2.11-r33-14` @ `6501c28f`（v0.2.11 + API 移植 + 发布门，线性，behind 0 / ahead 78 / merges 0）；**镜像 `strata-gfx906:0.2.11-101`（`/src` = 该 tag 的树）**；引擎 `strata-0.1.57-001`（md5 `5e63174d…`）；容器 `2d765942e041` 跑 `0.2.11-101` | `git describe --tags`；`git rev-list --count upstream/main..HEAD`；`docker images` |
 | **ROCm（容器内）** | `.info/version` = **10.1.0**；HIP 运行时 **7.16.26323-0000000**（`hipconfig`）；clang **24.0.0git**；`ROCM_BUILD=7.14.0-gfx906+20260802001858`；rocprofv3 1.3.5 | `docker exec strata166-407 …`；三套编号互不相等（自建 gfx906 树），写「ROCm 7.x」等于没写 |
 | **依赖 pin（llama.cpp）** | **`b11062` = `3cf03257f219afbe7334045ff7c6a06ac68c627d`**（2026-09-20）；整树 hash `6feee58927d5f1efd38e72bbc1db061d`；镜像 `/src/third_party/llama.cpp`、构建挂载 `ref/llama_3cf0325`、引擎 `/llama.cpp/…`×93 三处同 hash；自 0.2.8p2 起未变；**b12129（最新 tag）已试并回滚（−4.0/−4.6%，`P354`）** | `ci/release_check.py` 三行（pin / tree / build refs）；上游钉法 `.github/workflows/metal-build.yml:29` |
@@ -643,6 +643,7 @@ mega 加的 10 项：`GDN_CONVL2` `GDN_NOY` `CVEC_FUSE` `HCD_EXACT` `TOPK_REG_MI
 | `回写 · W1047 装机补记（2026-11-07 22:3x）hc4b 落生产` | D1–D6 后换件；重启 7 / 停机 1810 s | W1047 |
 | `回写 · W1048（2026-11-07 22:5x–23:5x）复核五条全量入方案 + 历史变更 CI/CD 回溯` | 10 retro run 全绿；pa7 重放==91a7c5a4；D7 硬门 | W1048 |
 | `回写 · W1049（2026-11-07 23:5x–01:1x）R103 移植面全收口` | B2 闭案；A2 采纳；A1/A3/A4/A5 判否；P457 结案 | W1049 |
+| `回写 · W1050（2026-11-08 01:1x–02:5x）R106 结案 + R113 护栏 + R114 三件套` | gen_config 无差异；#30837 不变量成立；dot2 1.33× | W1050 |
 | `回写 · W1046（2026-11-07 19:1x–19:3x）R103 后续方案入权威 + B3 候选 + k8v4 dot8 可行性（零停机）` | B2 死路径纠正；hc4 已建未装；R109/R110 预注册；dot8q≠dot8 | W1046 |
 | 回写 · W1039 §十五（`R105`：gfx906 的能力缺口，一半是构建开关） | 全构建只有 dflash2.cpp 定义 STRATA_USE_HIP；七处分类成清单，三处可选开关解开建 hipk（默认不变） |
 | 回写 · W1039 §十六（decode 的账：draft 5.1%，CPU 专家 11.7%） | 400 窗拆完：verify 90.3%、draft 5.1%、host 里 CPU 占 86%（整窗 11.7%，p90 17.1 ms）⇒ MTP_PRIO 不单独开窗，R104 多一条 decode 判据 |
@@ -3182,6 +3183,14 @@ pa7 实测：基线 **886** 条、`<..,16>` **890** 条，`v_fmac_f32` **120 vs 
 - **配方门修正（`P526`）**：`attn` 的 note 同时含 W1042「未装机」和 W1044「已装机」，`recipe_check` 按子串把在产件跳过；已去掉历史标记并实测 `[ok] attn md5=3b758f88…`。
 - **审计债**：`audit_scope §A` 已为 **15 轮连续未审**（W1032–W1046），R107 同步；不冒充已解决。
 - **生产零变更**：引擎仍 `attn` / config `3dde8801`；本轮重启 0 / 停机 0 / 装机 0 / 回滚 0。quant_quality 技能的旧三臂设计稿未跑，不冒充实测。
+
+### 回写 · W1050（2026-11-08 01:1x–02:5x）R106 结案 + R113 护栏验证 + R114 三件套就位
+
+- **R106 结案（`P548`）**：`gen_config --live` **无差异**。九处漂差（P492）+ 派生漂差全清：同义重复行停止 emission（P55/P56）、坏 name 行降级为记录行（P156/P230）、补 TUNED/DECODE_TIMING/SPEC_DEPTH/PREFILL_TIMING 声明行（P543–P546）、tokenizer/model_name 对齐 UD-Q4_K_XL、**tuned7 家族 9 行归位 `arch_defaults.cpp` 缺省生效（scope=DEFAULT 不 emission）**、P138/P259/P254/V02 数据修复、**P547 `--serve` 按 live 实证否决**（W1047/W1049 报告 3a 误抄旧报告——已记账）。`gen_config` 新增 `validate()` fail-closed + `--self-test` 8/8；`--live` 规范化比较（键序 cosmetic、exe 归 D5、args 多重集）。
+- **R113 #30837（`P549`）**：真实 diff = 1 行 `static_assert(I % warp_size == 0)`（编译护栏、零 codegen）。双插两处模板后编译通过 ⇒ **gfx906/wave64 不变量成立**；随下次重编带上，不做无意义换件。同树重编 bit 可复现性顺带证实（hc4b md5 复现）。R113 余 4 提交择机。
+- **R114 三件套（`P550`）**：① 离线权重门（GGUF 真实值）：bf16→fp16 无损率 99.9%+，但 0.5% 尾部（min 2.8e-11）入次正规区 ⇒ 无损 FAIL / 范围 CONDITIONAL；② 微基准 **dot2 1.330×**（5.75 vs 7.65 us/call），延迟受限小内核（12 blocks、65 GB/s）非带宽墙——推翻 roofline 预判，ALU 换指令有效；③ 候选 `r114@7d4db2363`（`STRATA_GFX906_GDN_DOT2` 默认 off）。**G2+相位 A/B 窗口下轮开**；G2 失败则 per-row 2^k 缩放营救（外证 Chenfan：二次幂缩放保 bf16 有效位）。
+- **R107**：机主 2026-11-08 01:19 指示「审计欠账继续记着，后面我处理」——只记账不代做。
+- **边界**：本轮零停机零装机（微基准/离线门/工具链全零停机）；生产仍 `hc4b`+`8d234fa3`（含 LDS_PAD）。
 
 ### 回写 · W1049（2026-11-07 23:5x–01:1x）R103 移植面全收口：B2 闭案、A2 采纳、A1/A3/A4/A5 判否、P457 结案
 
