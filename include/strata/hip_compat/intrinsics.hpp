@@ -1,3 +1,9 @@
+// W1042 WARNING: this header is NOT in the production compile chain.
+// The live HIP compat layer is include/strata/platform/hip_compat/strata_hip.h
+// (it defines strata_dp4a / __dp4a and, since W1042, strata_dp8a / __dp8a).
+// No .d depfile in build-masterp references this file.  Editing it alone
+// changes nothing in the binary -- verify the depfile before treating a
+// change here as an optimisation.  Kept in sync to avoid drift.
 #pragma once
 
 // CUDA device intrinsics used by Strata kernels on supported wave32 HIP targets.
@@ -23,6 +29,13 @@ __device__ __forceinline__ int dp4a(int a, int b, int c) {
     // both packed operands signed to preserve CUDA __dp4a semantics; keep the
     // portable path for other HIP compilers/targets.
     return __builtin_amdgcn_sudot4(true, a, true, b, c, false);
+#elif (defined(__gfx906__) || defined(__gfx908__) || defined(__gfx90a__)) && __has_builtin(__builtin_amdgcn_sdot4)
+    // W1036/A0: gfx906 is the first AMD part with v_dot4_i32_i8, and this tree used to reach the portable loop
+    // below on it.  That loop is NOT folded back into the instruction by the gfx906 backend (measured on the
+    // 0.1.57 tree: 28 instructions per call - 6 v_cmp + 6 v_cndmask + 6 v_or + 3 v_mad_i32_i24 + v_perm - where
+    // every dp4a site in native_mmvq.cu / iq_kernels.cu / s2_expert_grouped.cu expects 1).  Same signed byte
+    // products, same modulo-2^32 accumulation, so the replacement is bit-identical to the loop it replaces.
+    return __builtin_amdgcn_sdot4(a, b, c, false);
 #elif (defined(__gfx1030__) || defined(__gfx1031__) || defined(__gfx1032__)) && __has_builtin(__builtin_amdgcn_sdot4)
     // RDNA2 has no sudot4 (that is gfx11+), but it has the plain signed v_dot4_i32_i8 (dot1-insts): the same
     // signed x signed byte products accumulated modulo 2^32, no clamp.
