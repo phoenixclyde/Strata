@@ -2714,7 +2714,13 @@ template <int T> void launch_q8_t(const GrMulti& m, float* part, float* ssg, cud
     }();
     if (stamp_buf) gpu_stamp(stamp_buf, stamp_i0, (void*) st);
     static const bool pfs = [] { const char* v = std::getenv("STRATA_GR_Q8_PFS"); return v != nullptr && std::atoi(v) != 0; }();
-    if (dp4a) gr_down_q8_dp4a_kernel<T><<<dim3(Q8_RG + 1, Q8_NKC), THREADS, 0, st>>>(m, part, ssg);
+    // W1047: the clean bench showed the activation-quantized kernel wins at T<=6
+    // but loses badly at T=7/8 (shared-memory/occupancy cliff). Default safe cutoff.
+    static const int dp4a_max_t = [] {
+        const char* v = std::getenv("STRATA_HC_DOWN_DP4A_MAX_T");
+        return v != nullptr ? std::atoi(v) : 6;
+    }();
+    if (dp4a && T <= dp4a_max_t) gr_down_q8_dp4a_kernel<T><<<dim3(Q8_RG + 1, Q8_NKC), THREADS, 0, st>>>(m, part, ssg);
     else if (ts && pfs) gr_down_q8_fast_kernel<T, 4, true><<<dim3(LR / (WARPS * 4) + 1, Q8_NKC), THREADS, 0, st>>>(m, part, ssg);
     else if (ts) gr_down_q8_fast_kernel<T, 4><<<dim3(LR / (WARPS * 4) + 1, Q8_NKC), THREADS, 0, st>>>(m, part, ssg);
     else gr_down_q8_kernel<T><<<dim3(Q8_RG + 1, Q8_NKC), THREADS, 0, st>>>(m, part, ssg);
