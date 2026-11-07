@@ -1,0 +1,87 @@
+# W802a vram-reserve 768 vs 832  20261025_222619  order=768 832 832 768  每臂 M x2
+  setv reserve=768
+  mark=42359
+=== ARM reserve=768 rep 1 ready=43s
+  envsnap(容器内):
+    STRATA_GDN_HEAD=1
+    STRATA_GDN_PP=2
+    STRATA_GFX906_ATTN_QUERY_SWIZZLE=1
+    STRATA_HC_Q8=1
+    STRATA_HIP_PROMPT_F16=1
+    STRATA_PREFILL_CPU_SHARE=0
+    STRATA_RESIDENT_HEADROOM_GIB=0.5
+    STRATA_ROCBLAS_TUNING=/data/gfx906-rocblas-5.5.0.txt
+    STRATA_ROUTE_TAIL_SKIP=7
+    STRATA_SELECT_SIMT=1
+    STRATA_SRC=/src
+  args=['--conversation-cache-mib', '4096']
+  ENVCHECK got=11 (want 11)
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=31358 prompt_tps=696.1 decode_tps=57.0 out=320 wall=37.0s
+  [M] run2 ptok=21827 reused=0 prompt_ms=31837 prompt_tps=685.6 decode_tps=66.8 out=320 wall=36.6s
+  [M] n=2 reused0=2 | prompt_tps median=690.8  decode_tps median=61.9
+  LOG strata serve: WARNING: only 506 MiB of VRAM free at the start of this request (below 512 MiB): when the card is this full the driver can page GPU memory to syst
+  setv reserve=832
+  mark=42435
+=== ARM reserve=832 rep 1 ready=70s
+  envsnap(容器内):
+    STRATA_GDN_HEAD=1
+    STRATA_GDN_PP=2
+    STRATA_GFX906_ATTN_QUERY_SWIZZLE=1
+    STRATA_HC_Q8=1
+    STRATA_HIP_PROMPT_F16=1
+    STRATA_PREFILL_CPU_SHARE=0
+    STRATA_RESIDENT_HEADROOM_GIB=0.5
+    STRATA_ROCBLAS_TUNING=/data/gfx906-rocblas-5.5.0.txt
+    STRATA_ROUTE_TAIL_SKIP=7
+    STRATA_SELECT_SIMT=1
+    STRATA_SRC=/src
+  args=['--conversation-cache-mib', '4096']
+  ENVCHECK got=11 (want 11)
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=31435 prompt_tps=694.3 decode_tps=57.5 out=320 wall=37.0s
+  [M] run2 ptok=21827 reused=0 prompt_ms=31817 prompt_tps=686.0 decode_tps=65.1 out=320 wall=36.8s
+  [M] n=2 reused0=2 | prompt_tps median=690.2  decode_tps median=61.3
+  setv reserve=832
+  mark=42510
+=== ARM reserve=832 rep 2 ready=64s
+  envsnap(容器内):
+    STRATA_GDN_HEAD=1
+    STRATA_GDN_PP=2
+    STRATA_GFX906_ATTN_QUERY_SWIZZLE=1
+    STRATA_HC_Q8=1
+    STRATA_HIP_PROMPT_F16=1
+    STRATA_PREFILL_CPU_SHARE=0
+    STRATA_RESIDENT_HEADROOM_GIB=0.5
+    STRATA_ROCBLAS_TUNING=/data/gfx906-rocblas-5.5.0.txt
+    STRATA_ROUTE_TAIL_SKIP=7
+    STRATA_SELECT_SIMT=1
+    STRATA_SRC=/src
+  args=['--conversation-cache-mib', '4096']
+  ENVCHECK got=11 (want 11)
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=31278 prompt_tps=697.8 decode_tps=56.9 out=320 wall=36.9s
+  [M] run2 ptok=21827 reused=0 prompt_ms=31631 prompt_tps=690.1 decode_tps=67.3 out=320 wall=36.4s
+  [M] n=2 reused0=2 | prompt_tps median=693.9  decode_tps median=62.1
+  setv reserve=768
+  mark=42585
+=== ARM reserve=768 rep 2 ready=46s
+  envsnap(容器内):
+    STRATA_GDN_HEAD=1
+    STRATA_GDN_PP=2
+    STRATA_GFX906_ATTN_QUERY_SWIZZLE=1
+    STRATA_HC_Q8=1
+    STRATA_HIP_PROMPT_F16=1
+    STRATA_PREFILL_CPU_SHARE=0
+    STRATA_RESIDENT_HEADROOM_GIB=0.5
+    STRATA_ROCBLAS_TUNING=/data/gfx906-rocblas-5.5.0.txt
+    STRATA_ROUTE_TAIL_SKIP=7
+    STRATA_SELECT_SIMT=1
+    STRATA_SRC=/src
+  args=['--conversation-cache-mib', '4096']
+  ENVCHECK got=11 (want 11)
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=31316 prompt_tps=697.0 decode_tps=56.5 out=320 wall=37.0s
+  [M] run2 ptok=21827 reused=0 prompt_ms=31730 prompt_tps=687.9 decode_tps=68.5 out=320 wall=36.4s
+  [M] n=2 reused0=2 | prompt_tps median=692.4  decode_tps median=62.5
+  LOG strata serve: WARNING: only 506 MiB of VRAM free at the start of this request (below 512 MiB): when the card is this full the driver can page GPU memory to syst

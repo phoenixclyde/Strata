@@ -1,0 +1,16 @@
+{
+  "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+  "reason": "W777 同步 0.2.3.1/0.1.48.1 后更新长期事实（生产版本/回滚位/vram-reserve 768/STRATA_HC_Q8=1），超 2900 窗；经技能入口压缩，保留全部 P 编号",
+  "ops": [
+    {
+      "kind": "line_replace",
+      "line": 46,
+      "new": "- **W775delta**：P55/P56于k8v4不可达;decode需5+runs;PLE用direct(`--ple-io ram`-45%);**W17:352/262/132**;W26:缓存=预填+adapt迁移,复放0.9564;**W28=VRAM9761/RAM33.44G/SSD22G;冷读=budget关借区;stager30/30;**W28E:IO_STATS;P54=IO_PF_STAGE;判据=blob读0**;read_ms12.6~252s;**B8无增益;B7:借区N==M/文件0/冷读-2.5%;drop_caches不重置mmap页**"
+    },
+    {
+      "kind": "line_replace",
+      "line": 58,
+      "new": "- 审计 W713_AUDIT{,2}·W735·W752·W765·W767-773·AUDIT3-5(P0/P1=0/4·0/6·0/3)"
+    }
+  ]
+}

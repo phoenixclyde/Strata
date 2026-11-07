@@ -1,0 +1,25 @@
+{
+ "meta": {
+  "why": "W807：解码侧质量仪器。提示侧用 LOGPOS（teacher-forced KL），但 LOGPOS 只在 prompt 的 read_windows 里落行，看不到 decode。解码侧改用「长生成 + temperature 0 + 文本逐字比对」，并用同配置两遍做底噪。",
+  "rules": [
+   "全部臂把 STRATA_PREFILL_CPU_SHARE 钉 0（已证 share=0 时 prefill 逐字节确定），这样任何发散都只能来自被测量的解码侧开关",
+   "全部臂带 --short-read 0（强制 prompt 走 batched prefill，不经窗口），并把 prompt 长度做到 >=64 token",
+   "temperature 0 / top_p 1 / max_tokens 600；同一条 prompt 在四臂里逐字比对"
+  ],
+  "arms": {
+   "A": "share=0, RT_SKIP=7（生产值）",
+   "A2": "A 的重复（底噪：应逐字相同）",
+   "B": "share=0, RT_SKIP=0",
+   "C": "share=0, RT_SKIP=7, 摘掉 GDN_HEAD+GDN_PP",
+   "D": "share=0, RT_SKIP=7, 摘掉 GFX906_ATTN_QUERY_SWIZZLE"
+  }
+ },
+ "prompts": [
+  "You are writing for an engineering audience. Explain in about 400 words, in continuous prose, how a mixture-of-experts language model decides which experts to evaluate for each token, and why the cost of moving expert weights can dominate on a card with small memory bandwidth. Cover routing, capacity, and caching.",
+  "Write a 400-word technical note, in continuous prose, on why speculative decoding helps some workloads and hurts others. Include the roles of draft acceptance rate, verification cost, and batch size, and finish with the conditions under which you would disable it.",
+  "In about 400 words of continuous prose, describe how a modern inference server keeps a conversation's cached key/value state alive across turns, what it must do when memory runs out, and what can go wrong when the state is restored incorrectly.",
+  "Write roughly 400 words of continuous prose explaining the difference between prefill and decode phases of transformer inference, which hardware resources each stresses, and why optimisations that help one phase often do nothing for the other.",
+  "In about 400 words of continuous prose, explain how quantisation of large language models works at the block level, what kinds of error it introduces, and why two different implementations of the same quantised matrix product can produce slightly different logits.",
+  "Write a 400-word continuous-prose explanation of how you would go about profiling a slow language-model server: what you measure first, how you separate the phases, what instruments you trust, and how you avoid drawing conclusions from noise."
+ ]
+}

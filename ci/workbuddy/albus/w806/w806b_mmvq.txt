@@ -1,0 +1,139 @@
+# W806b MMVQ A/B 20261026_204256 arms='A B C D E'
+  bin 184f8adea850bd6409a675d635fd8465  /src/build-906/_staged/strata_p4
+  bin b87ef3ac76a8199d0a301d101af4769a  /src/build-906/_staged/strata_p6
+  start env_n=12 args_n=33
+  CFGCHECK keys=11 env_n=12
+  mark=59758
+=== ARM A bin=p4 mmvq=0 maxt=default ready=76s
+  BINCHECK arm=A want=p4 md5=184f8adea850 184f8adea850 OK
+  ENVCHECK want=11 got=12 img_extra=1 OK
+BUILD wall=11.50 reused=0 read=7601 prompt_ms=10984.7
+T0 ask=80   read=101   reused=7596  prompt_ms=  1081.4 decode_ms=  1192.5 tok_s= 53.7 wall= 2.29
+T1 ask=280  read=316   reused=7596  prompt_ms=  1647.6 decode_ms=  1493.4 tok_s= 42.9 wall= 3.15
+T2 ask=80   read=125   reused=7596  prompt_ms=  1269.2 decode_ms=  1072.6 tok_s= 59.7 wall= 2.35
+T3 ask=280  read=340   reused=7596  prompt_ms=  1697.3 decode_ms=   964.7 tok_s= 66.3 wall= 2.67
+DONE
+BUILD wall=0.73 reused=7596 read=5 prompt_ms=308.5
+T0 ask=80   read=101   reused=7596  prompt_ms=  1009.1 decode_ms=   917.4 tok_s= 69.8 wall= 1.94
+T1 ask=280  read=316   reused=7596  prompt_ms=  1546.7 decode_ms=  1368.2 tok_s= 46.8 wall= 2.93
+T2 ask=80   read=5     reused=7716  prompt_ms=   393.6 decode_ms=   875.8 tok_s= 73.1 wall= 1.28
+T3 ask=280  read=5     reused=7931  prompt_ms=   353.4 decode_ms=   918.2 tok_s= 69.7 wall= 1.28
+DONE
+  rep0 target=150   chars=537    prompt_tokens=191    wall=1.44s 
+  rep0 target=220   chars=805    prompt_tokens=244    wall=1.37s 
+  rep0 target=300   chars=1228   prompt_tokens=387    wall=1.93s 
+  rep0 target=600   chars=2126   prompt_tokens=620    wall=1.99s 
+  rep1 target=150   chars=621    prompt_tokens=219    wall=1.45s 
+  rep1 target=220   chars=848    prompt_tokens=267    wall=1.50s 
+  rep1 target=300   chars=1066   prompt_tokens=320    wall=1.56s 
+  rep1 target=600   chars=2110   prompt_tokens=495    wall=1.81s 
+READ_DONE A
+  read_results=8
+  CFGCHECK keys=11 env_n=12
+  mark=59911
+=== ARM B bin=p6 mmvq=0 maxt=default ready=74s
+  BINCHECK arm=B want=p6 md5=b87ef3ac76a8 b87ef3ac76a8 OK
+  ENVCHECK want=11 got=12 img_extra=1 OK
+BUILD wall=11.47 reused=0 read=7601 prompt_ms=10957.9
+T0 ask=80   read=101   reused=7596  prompt_ms=  1091.7 decode_ms=  1184.7 tok_s= 54.0 wall= 2.29
+T1 ask=280  read=316   reused=7596  prompt_ms=  1598.9 decode_ms=  1533.3 tok_s= 41.7 wall= 3.14
+T2 ask=80   read=125   reused=7596  prompt_ms=  1446.0 decode_ms=  1062.2 tok_s= 60.3 wall= 2.52
+T3 ask=280  read=340   reused=7596  prompt_ms=  1620.1 decode_ms=  1025.8 tok_s= 62.4 wall= 2.66
+DONE
+BUILD wall=0.74 reused=7596 read=5 prompt_ms=323.3
+T0 ask=80   read=101   reused=7596  prompt_ms=   987.8 decode_ms=   919.5 tok_s= 69.6 wall= 1.92
+T1 ask=280  read=316   reused=7596  prompt_ms=  1566.6 decode_ms=  1429.3 tok_s= 44.8 wall= 3.01
+T2 ask=80   read=5     reused=7716  prompt_ms=   330.3 decode_ms=   905.3 tok_s= 70.7 wall= 1.25
+T3 ask=280  read=5     reused=7931  prompt_ms=   333.4 decode_ms=   901.7 tok_s= 71.0 wall= 1.25
+DONE
+  rep0 target=150   chars=537    prompt_tokens=191    wall=1.37s 
+  rep0 target=220   chars=805    prompt_tokens=244    wall=1.33s 
+  rep0 target=300   chars=1228   prompt_tokens=387    wall=1.65s 
+  rep0 target=600   chars=2126   prompt_tokens=620    wall=2.03s 
+  rep1 target=150   chars=621    prompt_tokens=219    wall=1.35s 
+  rep1 target=220   chars=848    prompt_tokens=267    wall=1.44s 
+  rep1 target=300   chars=1066   prompt_tokens=320    wall=1.52s 
+  rep1 target=600   chars=2110   prompt_tokens=495    wall=1.85s 
+READ_DONE B
+  read_results=8
+  CFGCHECK keys=11 env_n=14
+  mark=60066
+=== ARM C bin=p6 mmvq=1 maxt=256 ready=51s
+  BINCHECK arm=C want=p6 md5=b87ef3ac76a8 b87ef3ac76a8 OK
+  ENVCHECK want=13 got=14 img_extra=1 OK
+BUILD wall=11.53 reused=0 read=7601 prompt_ms=10926.9
+T0 ask=80   read=101   reused=7596  prompt_ms=  1195.0 decode_ms=  1214.4 tok_s= 52.7 wall= 2.42
+T1 ask=280  read=316   reused=7596  prompt_ms=  1584.8 decode_ms=  1852.2 tok_s= 34.6 wall= 3.45
+T2 ask=80   read=125   reused=7596  prompt_ms=  1282.4 decode_ms=  1055.0 tok_s= 60.7 wall= 2.35
+T3 ask=280  read=340   reused=7596  prompt_ms=  2283.3 decode_ms=  1029.3 tok_s= 62.2 wall= 3.32
+DONE
+BUILD wall=0.71 reused=7596 read=5 prompt_ms=311.4
+T0 ask=80   read=101   reused=7596  prompt_ms=  1112.3 decode_ms=   907.7 tok_s= 70.5 wall= 2.03
+T1 ask=280  read=316   reused=7596  prompt_ms=  1563.6 decode_ms=  1316.4 tok_s= 48.6 wall= 2.89
+T2 ask=80   read=5     reused=7716  prompt_ms=   311.0 decode_ms=   908.5 tok_s= 70.4 wall= 1.23
+T3 ask=280  read=5     reused=7931  prompt_ms=   305.1 decode_ms=   923.6 tok_s= 69.3 wall= 1.24
+DONE
+  rep0 target=150   chars=537    prompt_tokens=191    wall=1.75s 
+  rep0 target=220   chars=805    prompt_tokens=244    wall=1.64s 
+  rep0 target=300   chars=1228   prompt_tokens=387    wall=2.54s 
+  rep0 target=600   chars=2126   prompt_tokens=620    wall=2.01s 
+  rep1 target=150   chars=621    prompt_tokens=219    wall=1.55s 
+  rep1 target=220   chars=848    prompt_tokens=267    wall=1.42s 
+  rep1 target=300   chars=1066   prompt_tokens=320    wall=1.50s 
+  rep1 target=600   chars=2110   prompt_tokens=495    wall=1.80s 
+READ_DONE C
+  read_results=8
+  CFGCHECK keys=11 env_n=14
+  mark=60219
+=== ARM D bin=p6 mmvq=1 maxt=512 ready=55s
+  BINCHECK arm=D want=p6 md5=b87ef3ac76a8 b87ef3ac76a8 OK
+  ENVCHECK want=13 got=14 img_extra=1 OK
+BUILD wall=11.55 reused=0 read=7601 prompt_ms=10936.8
+T0 ask=80   read=101   reused=7596  prompt_ms=  1198.5 decode_ms=  1158.5 tok_s= 55.2 wall= 2.37
+T1 ask=280  read=316   reused=7596  prompt_ms=  2063.5 decode_ms=  1695.8 tok_s= 37.7 wall= 3.77
+T2 ask=80   read=125   reused=7596  prompt_ms=  1373.0 decode_ms=  1008.8 tok_s= 63.4 wall= 2.39
+T3 ask=280  read=340   reused=7596  prompt_ms=  2144.2 decode_ms=   954.8 tok_s= 67.0 wall= 3.11
+DONE
+BUILD wall=1.03 reused=7596 read=5 prompt_ms=614.2
+T0 ask=80   read=101   reused=7596  prompt_ms=  1071.9 decode_ms=  1185.4 tok_s= 54.0 wall= 2.27
+T1 ask=280  read=316   reused=7596  prompt_ms=  2000.4 decode_ms=  1400.1 tok_s= 45.7 wall= 3.41
+T2 ask=80   read=5     reused=7716  prompt_ms=   315.9 decode_ms=   913.3 tok_s= 70.1 wall= 1.24
+T3 ask=280  read=5     reused=7931  prompt_ms=   334.0 decode_ms=   918.8 tok_s= 69.7 wall= 1.27
+DONE
+  rep0 target=150   chars=537    prompt_tokens=191    wall=1.56s 
+  rep0 target=220   chars=805    prompt_tokens=244    wall=1.65s 
+  rep0 target=300   chars=1228   prompt_tokens=387    wall=2.25s 
+  rep0 target=600   chars=2126   prompt_tokens=620    wall=2.03s 
+  rep1 target=150   chars=621    prompt_tokens=219    wall=1.57s 
+  rep1 target=220   chars=848    prompt_tokens=267    wall=1.78s 
+  rep1 target=300   chars=1066   prompt_tokens=320    wall=1.98s 
+  rep1 target=600   chars=2110   prompt_tokens=495    wall=2.56s 
+READ_DONE D
+  read_results=8
+  CFGCHECK keys=11 env_n=12
+  mark=60373
+=== ARM E bin=p4 mmvq=0 maxt=default ready=60s
+  BINCHECK arm=E want=p4 md5=184f8adea850 184f8adea850 OK
+  ENVCHECK want=11 got=12 img_extra=1 OK
+BUILD wall=11.43 reused=0 read=7601 prompt_ms=10924.2
+T0 ask=80   read=101   reused=7596  prompt_ms=  1092.3 decode_ms=  1520.8 tok_s= 42.1 wall= 2.63
+T1 ask=280  read=316   reused=7596  prompt_ms=  1562.2 decode_ms=  1421.1 tok_s= 45.0 wall= 3.00
+T2 ask=80   read=125   reused=7596  prompt_ms=  1197.5 decode_ms=  1017.2 tok_s= 62.9 wall= 2.23
+T3 ask=280  read=340   reused=7596  prompt_ms=  1628.7 decode_ms=  1037.7 tok_s= 61.7 wall= 2.68
+DONE
+BUILD wall=1.21 reused=7596 read=5 prompt_ms=845.4
+T0 ask=80   read=101   reused=7596  prompt_ms=  1017.1 decode_ms=  1180.7 tok_s= 54.2 wall= 2.21
+T1 ask=280  read=316   reused=7596  prompt_ms=  1544.3 decode_ms=  1292.6 tok_s= 49.5 wall= 2.85
+T2 ask=80   read=5     reused=7716  prompt_ms=   338.7 decode_ms=   898.2 tok_s= 71.3 wall= 1.25
+T3 ask=280  read=5     reused=7931  prompt_ms=   320.5 decode_ms=   935.6 tok_s= 68.4 wall= 1.27
+DONE
+  rep0 target=150   chars=537    prompt_tokens=191    wall=1.41s 
+  rep0 target=220   chars=805    prompt_tokens=244    wall=1.36s 
+  rep0 target=300   chars=1228   prompt_tokens=387    wall=1.59s 
+  rep0 target=600   chars=2126   prompt_tokens=620    wall=2.01s 
+  rep1 target=150   chars=621    prompt_tokens=219    wall=2.28s 
+  rep1 target=220   chars=848    prompt_tokens=267    wall=1.51s 
+  rep1 target=300   chars=1066   prompt_tokens=320    wall=1.51s 
+  rep1 target=600   chars=2110   prompt_tokens=495    wall=1.80s 
+READ_DONE E
+  read_results=8

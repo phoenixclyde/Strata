@@ -1,0 +1,72 @@
+START 2026-10-25_19:51:29 ts=20261025_195129
+bak=/home/albus/strata166/data/strata-huihui-ud-iq4_xs.json.bak_w798_20261025_195129 image=strata-gfx906:0.2.4p4
+gov=schedutil
+=== ARM A 19:51:29 ===
+arm A env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_GDN_HEAD', '1'), ('STRATA_GDN_PP', '2'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt'), ('STRATA_SELECT_SIMT', '1')]
+health 61s
+slots 9901 vram 606
+build: prompt_tok=7581 prompt_ms=11053.5 wall=15.68
+  r1 prompt_ms=  628.8 decode_ms= 4579.4 decode_tok_s= 55.90 dur=5.22 dec_frac=87.7%
+  r2 prompt_ms= 1581.4 decode_ms= 3815.5 decode_tok_s= 67.10 dur=5.41 dec_frac=70.5%
+  r3 prompt_ms= 1806.9 decode_ms= 3857.8 decode_tok_s= 66.40 dur=5.68 dec_frac=67.9%
+  r4 prompt_ms= 1707.4 decode_ms= 4062.4 decode_tok_s= 63.00 dur=5.78 dec_frac=70.2%
+  r5 prompt_ms= 1658.1 decode_ms= 3482.8 decode_tok_s= 73.50 dur=5.15 dec_frac=67.6%
+  r6 prompt_ms= 1880.0 decode_ms= 3198.3 decode_tok_s= 80.00 dur=5.09 dec_frac=62.8%
+MEDIAN decode_ms=3482.8 decode_tok_s=73.50 dur=5.15  (n=3, 极差 27.0%)
+=== ARM B 19:53:30 ===
+arm B env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_GDN_HEAD', '1'), ('STRATA_GDN_PP', '2'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt'), ('STRATA_SELECT_SIMT', '1'), ('STRATA_SH_STREAM', '1')]
+health 56s
+slots 9901 vram 606
+build: prompt_tok=7581 prompt_ms=10899.0 wall=15.49
+  r1 prompt_ms=  728.9 decode_ms= 4332.5 decode_tok_s= 59.10 dur=5.07 dec_frac=85.4%
+  r2 prompt_ms= 1628.0 decode_ms= 3725.3 decode_tok_s= 68.70 dur=5.37 dec_frac=69.4%
+  r3 prompt_ms= 1657.1 decode_ms= 4437.9 decode_tok_s= 57.70 dur=6.11 dec_frac=72.6%
+  r4 prompt_ms= 1550.2 decode_ms= 4076.7 decode_tok_s= 62.80 dur=5.64 dec_frac=72.3%
+  r5 prompt_ms= 1582.7 decode_ms= 3859.6 decode_tok_s= 66.30 dur=5.46 dec_frac=70.7%
+  r6 prompt_ms= 1769.4 decode_ms= 3618.4 decode_tok_s= 70.70 dur=5.40 dec_frac=67.0%
+MEDIAN decode_ms=3859.6 decode_tok_s=66.30 dur=5.46  (n=3, 极差 12.7%)
+=== ARM C 19:55:27 ===
+arm C env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_GDN_HEAD', '1'), ('STRATA_GDN_PP', '2'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_Q8_PACKED', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt'), ('STRATA_SELECT_SIMT', '1')]
+health 49s
+native dense: STRATA_Q8_PACKED=1 packed 84 Q8_0 matrices for decode (+1912.5 MiB)
+slots 9046 vram 606
+build: prompt_tok=7581 prompt_ms=10929.0 wall=15.55
+  r1 prompt_ms=  651.8 decode_ms= 4424.1 decode_tok_s= 57.90 dur=5.09 dec_frac=86.9%
+  r2 prompt_ms= 1679.7 decode_ms= 4218.8 decode_tok_s= 60.70 dur=5.91 dec_frac=71.4%
+  r3 prompt_ms= 1611.3 decode_ms= 3882.4 decode_tok_s= 65.90 dur=5.51 dec_frac=70.5%
+  r4 prompt_ms= 1692.9 decode_ms= 4334.8 decode_tok_s= 59.10 dur=6.04 dec_frac=71.8%
+  r5 prompt_ms=  834.5 decode_ms= 4274.7 decode_tok_s= 59.90 dur=5.12 dec_frac=83.4%
+  r6 prompt_ms=  965.9 decode_ms= 4441.3 decode_tok_s= 57.60 dur=5.42 dec_frac=81.9%
+MEDIAN decode_ms=4334.8 decode_tok_s=59.10 dur=5.42  (n=3, 极差 3.9%)
+=== ARM D 19:57:17 ===
+arm D env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_EXPERT_V2', '1'), ('STRATA_GDN_HEAD', '1'), ('STRATA_GDN_PP', '2'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt'), ('STRATA_SELECT_SIMT', '1')]
+health 57s
+native dense: STRATA_Q8_PACKED=1 packed 84 Q8_0 matrices for decode (+1912.5 MiB)
+slots 9901 vram 606
+build: prompt_tok=7581 prompt_ms=10907.7 wall=15.77
+  r1 prompt_ms=  725.6 decode_ms= 4511.6 decode_tok_s= 56.70 dur=5.25 dec_frac=85.9%
+  r2 prompt_ms= 1634.6 decode_ms= 4038.4 decode_tok_s= 63.40 dur=5.69 dec_frac=71.0%
+  r3 prompt_ms= 1692.8 decode_ms= 4823.7 decode_tok_s= 53.10 dur=6.53 dec_frac=73.9%
+  r4 prompt_ms= 1548.2 decode_ms= 4462.0 decode_tok_s= 57.40 dur=6.02 dec_frac=74.1%
+  r5 prompt_ms= 1602.9 decode_ms= 4226.0 decode_tok_s= 60.60 dur=5.84 dec_frac=72.3%
+  r6 prompt_ms= 1807.0 decode_ms= 3997.4 decode_tok_s= 64.00 dur=5.82 dec_frac=68.7%
+MEDIAN decode_ms=4226.0 decode_tok_s=60.60 dur=5.84  (n=3, 极差 11.6%)
+=== ARM E 19:59:17 ===
+arm E env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_GDN_HEAD', '1'), ('STRATA_GDN_PP', '2'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_LFUSE', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt'), ('STRATA_SELECT_SIMT', '1')]
+health 56s
+native dense: STRATA_Q8_PACKED=1 packed 84 Q8_0 matrices for decode (+1912.5 MiB)
+slots 9901 vram 606
+build: prompt_tok=7581 prompt_ms=10928.6 wall=15.56
+  r1 prompt_ms=  845.8 decode_ms= 4343.4 decode_tok_s= 58.90 dur=5.21 dec_frac=83.4%
+  r2 prompt_ms= 1593.7 decode_ms= 4119.4 decode_tok_s= 62.10 dur=5.73 dec_frac=71.9%
+  r3 prompt_ms= 1640.2 decode_ms= 5216.9 decode_tok_s= 49.10 dur=6.87 dec_frac=75.9%
+  r4 prompt_ms=  766.8 decode_ms= 4554.4 decode_tok_s= 56.20 dur=5.33 dec_frac=85.4%
+  r5 prompt_ms= 1794.6 decode_ms= 3619.2 decode_tok_s= 70.70 dur=5.43 dec_frac=66.7%
+  r6 prompt_ms= 1861.3 decode_ms= 3986.4 decode_tok_s= 64.20 dur=5.86 dec_frac=68.0%
+MEDIAN decode_ms=3986.4 decode_tok_s=64.20 dur=5.43  (n=3, 极差 25.8%)
+=== RESTORE PROD 20:01:15 ===
+arm PROD env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_GDN_HEAD', '1'), ('STRATA_GDN_PP', '2'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt'), ('STRATA_SELECT_SIMT', '1')]
+health 45s
+slots 9901 vram 606 ver 0.1.49.2
+env_final=[('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_GDN_HEAD', '1'), ('STRATA_GDN_PP', '2'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt'), ('STRATA_SELECT_SIMT', '1')]
+DONE 20:02:08

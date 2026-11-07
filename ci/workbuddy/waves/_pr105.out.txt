@@ -1,0 +1,88 @@
+rc = 0
+===== [1] 全部容器的 restart policy =====
+  strata166-402        no                 strata-gfx906:0.1.40.2 running
+  strata166-401        no                 strata-gfx906:0.1.40.1 exited
+  rk_w680_rk030n_p1_d  no                 routek-base:gfx906-roc exited
+  rk_w680_rk030m_p0_d  no                 routek-base:gfx906-roc exited
+  rk_w680_rk030j_patch_fe no                 routek-base:gfx906-roc exited
+  rk_w680_rk030i_base_fe no                 routek-base:gfx906-roc exited
+  rk_w680_rk030h_patch_f no                 routek-base:gfx906-roc exited
+  rk_w680_rk030g_base_f no                 routek-base:gfx906-roc exited
+  rk_w680_rk030f_patch_t no                 routek-base:gfx906-roc exited
+  rk_w680_rk030e_base_t no                 routek-base:gfx906-roc exited
+  rk_w680_rk030d_patch_m no                 routek-base:gfx906-roc exited
+  rk_w680_rk030c_base_m no                 routek-base:gfx906-roc exited
+  rk_w680_rk030b_patch_d no                 routek-base:gfx906-roc exited
+  rk_w680_rk030a_base_d no                 routek-base:gfx906-roc exited
+  rk_w680_rk030b_patch_d_kept_20261006_205642 no                 routek-base:gfx906-roc exited
+  rk_w680_rk030a_base_d_kept_20261006_205642 no                 routek-base:gfx906-roc exited
+  strata166            no                 strata-gfx906:0.1.39   exited
+  rk_w646_w646g3       no                 docker.1ms.run/mixa360 exited
+  rk_w646_w646g2       no                 docker.1ms.run/mixa360 exited
+  rk_w646_w646g1       no                 docker.1ms.run/mixa360 exited
+  rk_w646_w646g4       no                 docker.1ms.run/mixa360 exited
+  rk_w645_w645m4       no                 routek-base:gfx906-roc exited
+  rk_w645_w645m3       no                 routek-base:gfx906-roc exited
+  rk_w645_w645m2       no                 routek-base:gfx906-roc exited
+  rk_w645_w645m1       no                 routek-base:gfx906-roc exited
+  rk_w645_w645d4       no                 routek-base:gfx906-roc exited
+  rk_w645_w645d3       no                 routek-base:gfx906-roc exited
+  rk_w645_w645d2       no                 routek-base:gfx906-roc exited
+  rk_w645_w645d1       no                 routek-base:gfx906-roc exited
+  w642baserep          no                 ad2440f0bf1a           exited
+  w642gemvmrpt2        no                 ad2440f0bf1a           exited
+  w642ql0moe1          no                 ad2440f0bf1a           exited
+  w642piecewise        no                 ad2440f0bf1a           exited
+  w642packed1          no                 ad2440f0bf1a           exited
+  w641v2off            no                 ad2440f0bf1a           exited
+  w640ctrl             no                 ad2440f0bf1a           exited
+  w640fix              no                 ad2440f0bf1a           exited
+  w640probe            no                 ad2440f0bf1a           exited
+  w639d_eager          no                 routek-base:gfx906-roc exited
+  rk312_rpt2_kept_czW312 no                 routek-vllm:0.28.0-gfx exited
+  srv_research         no                 routek-vllm:0.28.0-gfx exited
+  open-webui           always             ghcr.io/open-webui/ope running
+  netdata              unless-stopped     sha256:545dec0a646cf9f running
+  comfyui-cu130        unless-stopped     yanwk/comfyui-boot:cu1 running
+  portainer            always             portainer/portainer-ce running
+  searxng              unless-stopped     searxng/searxng:latest running
+
+===== [2] 有没有 systemd unit 管 docker 容器 =====
+/etc/systemd/system/strata166.service
+--- 现有自建 unit 全列 ---
+/etc/systemd/system/dbus-fi.w1.wpa_supplicant1.service
+/etc/systemd/system/dbus-org.freedesktop.ModemManager1.service
+/etc/systemd/system/dbus-org.freedesktop.resolve1.service
+/etc/systemd/system/dbus-org.freedesktop.thermald.service
+/etc/systemd/system/dbus-org.freedesktop.timesync1.service
+/etc/systemd/system/fanctl.service
+/etc/systemd/system/fanctl-watchdog.service
+/etc/systemd/system/iscsi.service
+/etc/systemd/system/multipath-tools.service
+/etc/systemd/system/opencode-serve.service
+
+--- docker.service 自身 ---
+enabled
+active
+
+===== [3] 5 个常驻容器的完整启动参数（取一个样本详看）=====
+{"Name":"always","MaximumRetryCount":0}
+Image=ghcr.io/open-webui/open-webui:v0.11.4
+Cmd=["bash","start.sh"]
+Binds=["open-webui:/app/backend/data"]
+Ports={"8080/tcp":[{"HostIp":"","HostPort":"3000"}]}
+Devices=[]
+--- netdata / comfyui / portainer / searxng 的 restart policy ---
+  netdata          unless-stopped
+  comfyui-cu130    unless-stopped
+  portainer        always
+  searxng          unless-stopped
+
+===== [4] 新服务状态（systemd 起的）=====
+active
+strata166-402 | Up 45 seconds | 0.0.0.0:8090->8090/tcp, [::]:8090->8090/tcp
+--- 8090 是否已 ready ---
+{"object": "list", "data": [{"id": "qwen3.8-flash-next-ud-iq4_xs", "object": "model", "status": {"value": "loaded"}, "meta": {"n_ctx": 262144}, "architecture": {"input_modalities": ["text"], "output_modalities": ["text"]}}]}
+--- VRAM ---
+GPU[0]		: VRAM Total Used Memory (B): 33885966336
+

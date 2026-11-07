@@ -1,0 +1,36 @@
+{
+ "tag": "H",
+ "max_tokens": 200,
+ "results": [
+  {
+   "i": 0,
+   "ok": true,
+   "wall_s": 5.46,
+   "prompt_ms": 1092.1,
+   "decode_ms": 4326.3,
+   "output_tokens": 200,
+   "decode_tps": 46.23,
+   "finish": "length"
+  },
+  {
+   "i": 1,
+   "ok": true,
+   "wall_s": 4.9,
+   "prompt_ms": 933.9,
+   "decode_ms": 3954.4,
+   "output_tokens": 200,
+   "decode_tps": 50.58,
+   "finish": "length"
+  },
+  {
+   "i": 2,
+   "ok": true,
+   "wall_s": 4.71,
+   "prompt_ms": 906.9,
+   "decode_ms": 3791.5,
+   "output_tokens": 200,
+   "decode_tps": 52.75,
+   "finish": "length"
+  }
+ ]
+}

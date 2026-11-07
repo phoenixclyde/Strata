@@ -1,0 +1,57 @@
+# W805c KL gate chunk 8192 vs 16384  20261026_194830 short_read=300
+  corpus sha16=f4ca0b2b2c75624b bytes=150224
+  mark=57717
+=== ARM A ready=41s
+  ENVCHECK want=14 got=14
+  CHUNK strata serve: prompt chunk auto: 8192 tokens, a 384-slot ring strata serve: the prompt path borrows 1969 CUDA0 cache slots (4.43 GiB) 
+  t0  shape0  U prompt_tokens=3744   fresh~3744  wall=7.6s e3b0c44298fc1c14
+  t1  probe   U prompt_tokens=3913   fresh~169   wall=2.9s e3b0c44298fc1c14
+  t2  shape   U prompt_tokens=14916  fresh~11003 wall=18.8s e3b0c44298fc1c14
+  t3  probe   U prompt_tokens=15078  fresh~162   wall=3.3s e3b0c44298fc1c14
+  t4  shape   U prompt_tokens=26389  fresh~11311 wall=20.2s e3b0c44298fc1c14
+  t5  probe   U prompt_tokens=26519  fresh~130   wall=2.9s e3b0c44298fc1c14
+CLIENT_DONE A
+  LOG strata serve: prompt 3744 tokens = 0 reused + 3744 read in 7490 ms (499.9 tok/s), 1 generated in 48 ms (20.9 tok/s), drafts accepted 0 of 0, 1 checkpoints
+  LOG strata serve: prompt 3913 tokens = 3739 reused + 174 read in 2854 ms (61.0 tok/s), 1 generated in 30 ms (32.8 tok/s), drafts accepted 0 of 0, 2 checkpoints
+  LOG strata serve: prompt 14916 tokens = 3908 reused + 11008 read in 18743 ms (587.3 tok/s), 1 generated in 31 ms (31.9 tok/s), drafts accepted 0 of 0, 4 checkpoints
+  LOG strata serve: prompt 15078 tokens = 14911 reused + 167 read in 3248 ms (51.4 tok/s), 1 generated in 32 ms (31.3 tok/s), drafts accepted 0 of 0, 5 checkpoints
+  LOG strata serve: prompt 26389 tokens = 15073 reused + 11316 read in 20094 ms (563.1 tok/s), 1 generated in 30 ms (32.8 tok/s), drafts accepted 0 of 0, 6 checkpoint
+  LOG strata serve: prompt 26519 tokens = 26384 reused + 135 read in 2833 ms (47.7 tok/s), 1 generated in 30 ms (33.2 tok/s), drafts accepted 0 of 0, 6 checkpoints
+  LOGPOS rows=485
+  mark=57802
+=== ARM B ready=53s
+  ENVCHECK want=14 got=14
+  CHUNK strata serve: prompt chunk auto: 16384 tokens, a 384-slot ring strata serve: the prompt path borrows 3299 CUDA0 cache slots (7.43 GiB) 
+  t0  shape0  U prompt_tokens=3744   fresh~3744  wall=7.3s e3b0c44298fc1c14
+  t1  probe   U prompt_tokens=3913   fresh~169   wall=2.9s e3b0c44298fc1c14
+  t2  shape   U prompt_tokens=14916  fresh~11003 wall=18.3s e3b0c44298fc1c14
+  t3  probe   U prompt_tokens=15078  fresh~162   wall=3.0s e3b0c44298fc1c14
+  t4  shape   U prompt_tokens=26389  fresh~11311 wall=18.9s e3b0c44298fc1c14
+  t5  probe   U prompt_tokens=26519  fresh~130   wall=2.9s e3b0c44298fc1c14
+CLIENT_DONE B
+  LOG strata serve: prompt 3744 tokens = 0 reused + 3744 read in 7196 ms (520.3 tok/s), 1 generated in 51 ms (19.8 tok/s), drafts accepted 0 of 0, 1 checkpoints
+  LOG strata serve: prompt 3913 tokens = 3739 reused + 174 read in 2842 ms (61.2 tok/s), 1 generated in 30 ms (33.0 tok/s), drafts accepted 0 of 0, 2 checkpoints
+  LOG strata serve: prompt 14916 tokens = 3908 reused + 11008 read in 18247 ms (603.3 tok/s), 1 generated in 31 ms (32.3 tok/s), drafts accepted 0 of 0, 3 checkpoints
+  LOG strata serve: prompt 15078 tokens = 14911 reused + 167 read in 2896 ms (57.7 tok/s), 1 generated in 32 ms (31.2 tok/s), drafts accepted 0 of 0, 4 checkpoints
+  LOG strata serve: prompt 26389 tokens = 15073 reused + 11316 read in 18813 ms (601.5 tok/s), 1 generated in 30 ms (33.4 tok/s), drafts accepted 0 of 0, 5 checkpoint
+  LOG strata serve: prompt 26519 tokens = 26384 reused + 135 read in 2890 ms (46.7 tok/s), 1 generated in 30 ms (33.7 tok/s), drafts accepted 0 of 0, 6 checkpoints
+  LOGPOS rows=485
+  mark=57887
+=== ARM C ready=52s
+  ENVCHECK want=14 got=14
+  CHUNK strata serve: prompt chunk auto: 16384 tokens, a 384-slot ring strata serve: the prompt path borrows 3299 CUDA0 cache slots (7.43 GiB) 
+  t0  shape0  U prompt_tokens=3744   fresh~3744  wall=7.7s e3b0c44298fc1c14
+  t1  probe   U prompt_tokens=3913   fresh~169   wall=2.9s e3b0c44298fc1c14
+  t2  shape   U prompt_tokens=14916  fresh~11003 wall=18.6s e3b0c44298fc1c14
+  t3  probe   U prompt_tokens=15078  fresh~162   wall=3.1s e3b0c44298fc1c14
+  t4  shape   U prompt_tokens=26389  fresh~11311 wall=19.0s e3b0c44298fc1c14
+  t5  probe   U prompt_tokens=26519  fresh~130   wall=3.5s e3b0c44298fc1c14
+CLIENT_DONE C
+  LOG strata serve: prompt 3744 tokens = 0 reused + 3744 read in 7560 ms (495.2 tok/s), 1 generated in 49 ms (20.6 tok/s), drafts accepted 0 of 0, 1 checkpoints
+  LOG strata serve: prompt 3913 tokens = 3739 reused + 174 read in 2806 ms (62.0 tok/s), 1 generated in 30 ms (33.0 tok/s), drafts accepted 0 of 0, 2 checkpoints
+  LOG strata serve: prompt 14916 tokens = 3908 reused + 11008 read in 18491 ms (595.3 tok/s), 1 generated in 31 ms (32.2 tok/s), drafts accepted 0 of 0, 3 checkpoints
+  LOG strata serve: prompt 15078 tokens = 14911 reused + 167 read in 3088 ms (54.1 tok/s), 1 generated in 32 ms (31.0 tok/s), drafts accepted 0 of 0, 4 checkpoints
+  LOG strata serve: prompt 26389 tokens = 15073 reused + 11316 read in 18959 ms (596.9 tok/s), 1 generated in 30 ms (33.3 tok/s), drafts accepted 0 of 0, 5 checkpoint
+  LOG strata serve: prompt 26519 tokens = 26384 reused + 135 read in 3411 ms (39.6 tok/s), 1 generated in 30 ms (33.5 tok/s), drafts accepted 0 of 0, 6 checkpoints
+  LOGPOS rows=485
+  trap-restored (any exit path)

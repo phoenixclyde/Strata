@@ -1,0 +1,15 @@
+=== 容器 ===
+strata166-402|Up 5 minutes
+=== HTTP（正确写法）===
+http=200
+=== LIVE config md5 ===
+8847728605528012c65cebe5048172ce  /home/albus/strata166/data/strata-ud-iq4_xs.json
+=== 最后一次 engine started ===
+=== 有没有报错 ===
+=== 真实推理自检 ===
+{"id": "chatcmpl-6b01f938e26143d4818a6216", "object": "chat.completion", "created": 1791394716, "model": "qwen3.8-flash-next-ud-iq4_xs", "choices": [{"index": 0, "message": {"role": "assistant", "content": null, "reasoning_content": "We need to respond to user: \"Reply with the single word OK.\" Need"}, "finish_reason": "length"}], "usage": {"prompt_tokens": 59, "completion_tokens": 16, "total_tokens": 75, "prompt_tokens_details": {"cached_tokens": 0}}, "timings": {"cache_n": 0, "prompt_n": 59, "prompt_ms": 1060.5, "prompt_per_token_ms": 17.975, "prompt_per_second": 55.6, "predicted_n": 16, "predicted_ms": 475.2, "predicted_per_token_ms": 29.7, "predicted_per_second": 33.7, "draft_n": 11, "draft_n_accepted": 11}}
+
+--- STDERR ---
+grep: /data/strata-ud-iq4_xs.log: No such file or directory
+grep: /data/strata-ud-iq4_xs.log: No such file or directory
+

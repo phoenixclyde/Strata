@@ -1,0 +1,61 @@
+{
+  "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+  "reason": "W863 CI/CD 固化：新增「默认四层门」铁律；修掉 R23 已上线的过期状态；压掉 11 处冗余措辞（编号表与 P 编号一个不动）",
+  "ops": [
+    {
+      "kind": "substr",
+      "old": "- **写文件禁同式内read+open**\n\n\n\n## 2 现役参数",
+      "new": "- **写文件禁同式内read+open**\n- **默认四层门**:check/build/bench/compare/deploy;publish回写;2倍CV\n\n## 2 现役参数"
+    },
+    {
+      "kind": "substr",
+      "old": "## 4 队列/待办(下=R23 开R行数1.52x未部署;P138)",
+      "new": "## 4 队列/待办(P138;R23已上线)"
+    },
+    {
+      "kind": "substr",
+      "old": "- **--prefill改答案**=>不动 P10\n",
+      "new": ""
+    },
+    {
+      "kind": "substr",
+      "old": "- **改答案**:按index(W739)",
+      "new": "- **改答案**:按index(W739);--prefill 不动 P10"
+    },
+    {
+      "kind": "substr",
+      "old": "地板=小chunk;share 后 wait copy 只 0.5%;park不在关键路径;P126 否;P93 废",
+      "new": "地板=小chunk;share后wait copy 0.5%;park非关键路径;P126/P93 否"
+    },
+    {
+      "kind": "substr",
+      "old": "镜像内建;升级一次到位(禁分批跳版)",
+      "new": "镜像内建;一次到位(禁分批跳版)"
+    },
+    {
+      "kind": "substr",
+      "old": "P105->P107,P106->P109",
+      "new": "P105->107,P106->109"
+    },
+    {
+      "kind": "substr",
+      "old": "- **prefill可判0.2%**;**gfx906无bf16点积**=>改f16(P103)",
+      "new": "- **prefill可判0.2%**;gfx906无bf16点积=>f16(P103)"
+    },
+    {
+      "kind": "substr",
+      "old": "- 禁哈希(W794);share后prefill逐次不同=>n>=2(X);删失观测不当事件(Y);相位表>=2%须全列(Z)",
+      "new": "- 禁哈希(W794);share后prefill逐次不同=>n>=2(X);删失观测非事件(Y);相位表>=2%全列(Z)"
+    },
+    {
+      "kind": "substr",
+      "old": "**ple 10-15%,--ple-io未测(P138)**",
+      "new": "**ple 10-15%,--ple-io未测**"
+    },
+    {
+      "kind": "substr",
+      "old": "- 改长件前先备份(W765/773)",
+      "new": "- 改长件先备份(W765/773)"
+    }
+  ]
+}

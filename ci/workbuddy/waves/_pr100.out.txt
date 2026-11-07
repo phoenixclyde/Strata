@@ -1,0 +1,52 @@
+干净树 = D:/strata166/tmp/src402b\Strata-0.1.40.2
+
+################ 第 1 遍 ################
+rc = 1
+=== gfx906 构建补丁 v3 (0.1.40.2) · root=D:/strata166/tmp/src402b\Strata-0.1.40.2 ===
+  [ok  ] include/strata/platform/hip_compat/strata_hip.h :: H1 cudaFuncSetAttribute 模板内联函数 上游已修（验证通过）
+  [ok  ] src/kernels/cuda/fused_gr.cu :: H2 fused_gr_read_multi 返回 false（gfx906 split 分支） 上游已修（验证通过）
+  [ok  ] src/core/mtp.cpp :: H3 mtp.cpp stream-priority 门含 GFX906 上游已修（验证通过）
+  [ok  ] src/core/vmm.cpp :: H4 vmm.cpp <cuda.h> 门含 GFX906        上游已修（验证通过）
+  [patch] CMakeLists.txt :: H5 CUDA 分支 q6_k 实例门 加 OR STRATA_HIP_GFX906 已改（99668 -> 99745 chars）
+
+STDERR: Traceback (most recent call last):
+  File "D:\strata166\docker\patch_gfx906_402.py", line 144, in <module>
+    hunk(HDR, 'H6 补 cudaEventBlockingSync 映射',
+         ^^^
+NameError: name 'HDR' is not defined
+
+--- 关键文件 md5 ---
+   include/strata/platform/hip_compat/strata_hip.h          17c8aad68fd17b7e
+   src/kernels/cuda/fused_gr.cu                             640fe793e8a8bf9e
+   src/core/mtp.cpp                                         9bf321a3eb1ab6f5
+   src/core/vmm.cpp                                         2289edb848e70cc9
+   CMakeLists.txt                                           f281f82f25e936fd
+   src/prefill/prefill.cpp                                  111b932e8a963c2f
+
+################ 第 2 遍 ################
+rc = 1
+=== gfx906 构建补丁 v3 (0.1.40.2) · root=D:/strata166/tmp/src402b\Strata-0.1.40.2 ===
+  [ok  ] include/strata/platform/hip_compat/strata_hip.h :: H1 cudaFuncSetAttribute 模板内联函数 上游已修（验证通过）
+  [ok  ] src/kernels/cuda/fused_gr.cu :: H2 fused_gr_read_multi 返回 false（gfx906 split 分支） 上游已修（验证通过）
+  [ok  ] src/core/mtp.cpp :: H3 mtp.cpp stream-priority 门含 GFX906 上游已修（验证通过）
+  [ok  ] src/core/vmm.cpp :: H4 vmm.cpp <cuda.h> 门含 GFX906        上游已修（验证通过）
+  [skip] CMakeLists.txt :: H5 CUDA 分支 q6_k 实例门 加 OR STRATA_HIP_GFX906 已是目标形态
+
+STDERR: Traceback (most recent call last):
+  File "D:\strata166\docker\patch_gfx906_402.py", line 144, in <module>
+    hunk(HDR, 'H6 补 cudaEventBlockingSync 映射',
+         ^^^
+NameError: name 'HDR' is not defined
+
+--- 关键文件 md5 ---
+   include/strata/platform/hip_compat/strata_hip.h          17c8aad68fd17b7e
+   src/kernels/cuda/fused_gr.cu                             640fe793e8a8bf9e
+   src/core/mtp.cpp                                         9bf321a3eb1ab6f5
+   src/core/vmm.cpp                                         2289edb848e70cc9
+   CMakeLists.txt                                           f281f82f25e936fd
+   src/prefill/prefill.cpp                                  111b932e8a963c2f
+
+=== 打完后核对两处目标形态 ===
+  H6  cudaEventBlockingSync 映射存在 = False
+  H5  q6_k 门含 OR STRATA_HIP_GFX906 = True
+  H1  cudaFuncSetAttribute 模板函数存在 = True

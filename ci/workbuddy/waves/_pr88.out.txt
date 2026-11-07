@@ -1,0 +1,33 @@
+=== [1] 解压 0.1.40.2 源码 ===
+  内层目录 = ['Strata-0.1.40.2']
+  源码根 = D:/strata166/tmp/src402\Strata-0.1.40.2
+  CMakeLists.txt 存在 = True
+
+=== [2] H5 的真实判据：moe_mmq.cu 里 q6_k 的调用门 ===
+  ABSENT: D:/strata166/tmp/src402\Strata-0.1.40.2\src\kernels\cuda\moe_mmq.cu
+
+=== [3] 补丁前：关键文件 md5 ===
+  include/strata/platform/hip_compat/strata_hip.h             16583  17c8aad68fd17b7e
+  src/kernels/cuda/fused_gr.cu                                96522  640fe793e8a8bf9e
+  src/core/mtp.cpp                                            80470  9bf321a3eb1ab6f5
+  src/core/vmm.cpp                                             5746  2289edb848e70cc9
+  CMakeLists.txt                                              99675  44af8828013d63a0
+
+=== [4] 跑补丁器（--root 指向 0.1.40.2 树）===
+  rc = 1
+=== gfx906 构建补丁 v2 · root=D:/strata166/tmp/src402\Strata-0.1.40.2 ===
+  [skip] include/strata/platform/hip_compat/strata_hip.h :: cudaFuncSetAttribute 宏 -> 模板内联函数 已是目标形态
+  [skip] include/strata/platform/hip_compat/strata_hip.h :: 补 cudaFuncAttributePreferredSharedMemoryCarveout 已是目标形态
+
+  --- STDERR ---
+FAIL-CLOSED: src/kernels/cuda/fused_gr.cu :: fused_gr_read_multi 裸 return; -> return false;
+  锚点命中 0 次（应为 1）
+  锚点首行: '        return;'
+
+
+=== [5] 补丁后：哪些文件变了 ===
+  include/strata/platform/hip_compat/strata_hip.h          17c8aad68fd17b7e  SAME
+  src/kernels/cuda/fused_gr.cu                             640fe793e8a8bf9e  SAME
+  src/core/mtp.cpp                                         9bf321a3eb1ab6f5  SAME
+  src/core/vmm.cpp                                         2289edb848e70cc9  SAME
+  CMakeLists.txt                                           44af8828013d63a0  SAME

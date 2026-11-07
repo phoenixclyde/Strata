@@ -1,0 +1,128 @@
+# W806 determinism ruler 20261026_202116 short_read=300 arms='A B C D E F'
+  start env_n=12 args_n=33 prefill=auto
+  CFGCHECK keys=11 env_n=14
+  mark=58609
+=== ARM A drop='none' ready=45s
+  ENVCHECK want=13 got=14 img_extra=1 OK
+  t0  shape0  U prompt_tokens=244    fresh~244   wall=3.8s e3b0c44298fc1c14
+  t1  probe   U prompt_tokens=397    fresh~153   wall=2.5s e3b0c44298fc1c14
+  t2  shape   U prompt_tokens=1020   fresh~623   wall=2.6s e3b0c44298fc1c14
+  t3  probe   U prompt_tokens=1207   fresh~187   wall=3.2s e3b0c44298fc1c14
+  t4  shape   U prompt_tokens=1873   fresh~666   wall=2.9s e3b0c44298fc1c14
+  t5  probe   U prompt_tokens=2028   fresh~155   wall=2.9s e3b0c44298fc1c14
+  t6  shape   U prompt_tokens=2559   fresh~531   wall=2.8s e3b0c44298fc1c14
+  t7  probe   U prompt_tokens=2678   fresh~119   wall=2.5s e3b0c44298fc1c14
+  t8  shape   U prompt_tokens=3221   fresh~543   wall=2.9s e3b0c44298fc1c14
+  t9  probe   U prompt_tokens=3400   fresh~179   wall=3.2s e3b0c44298fc1c14
+  t10 shape   U prompt_tokens=4018   fresh~618   wall=2.9s e3b0c44298fc1c14
+  t11 probe   U prompt_tokens=4159   fresh~141   wall=2.8s e3b0c44298fc1c14
+  t12 shape   U prompt_tokens=4710   fresh~551   wall=2.7s e3b0c44298fc1c14
+  t13 probe   U prompt_tokens=4853   fresh~143   wall=2.7s e3b0c44298fc1c14
+  t14 shape   U prompt_tokens=5465   fresh~612   wall=2.9s e3b0c44298fc1c14
+CLIENT_DONE A
+  LOGPOS rows=1376 bytes=1432741 md5=5b8fc697f69c
+  CFGCHECK keys=11 env_n=13
+  mark=58742
+=== ARM B drop='STRATA_HIP_PROMPT_F16' ready=89s
+  ENVCHECK want=12 got=13 img_extra=1 OK
+  t0  shape0  U prompt_tokens=244    fresh~244   wall=3.9s e3b0c44298fc1c14
+  t1  probe   U prompt_tokens=397    fresh~153   wall=2.5s e3b0c44298fc1c14
+  t2  shape   U prompt_tokens=1020   fresh~623   wall=3.1s e3b0c44298fc1c14
+  t3  probe   U prompt_tokens=1207   fresh~187   wall=3.2s e3b0c44298fc1c14
+  t4  shape   U prompt_tokens=1873   fresh~666   wall=3.7s e3b0c44298fc1c14
+  t5  probe   U prompt_tokens=2028   fresh~155   wall=2.9s e3b0c44298fc1c14
+  t6  shape   U prompt_tokens=2559   fresh~531   wall=3.3s e3b0c44298fc1c14
+  t7  probe   U prompt_tokens=2678   fresh~119   wall=2.5s e3b0c44298fc1c14
+  t8  shape   U prompt_tokens=3221   fresh~543   wall=3.5s e3b0c44298fc1c14
+  t9  probe   U prompt_tokens=3400   fresh~179   wall=3.3s e3b0c44298fc1c14
+  t10 shape   U prompt_tokens=4018   fresh~618   wall=3.5s e3b0c44298fc1c14
+  t11 probe   U prompt_tokens=4159   fresh~141   wall=2.8s e3b0c44298fc1c14
+  t12 shape   U prompt_tokens=4710   fresh~551   wall=3.3s e3b0c44298fc1c14
+  t13 probe   U prompt_tokens=4853   fresh~143   wall=2.8s e3b0c44298fc1c14
+  t14 shape   U prompt_tokens=5465   fresh~612   wall=3.6s e3b0c44298fc1c14
+CLIENT_DONE B
+  LOGPOS rows=1376 bytes=1432325 md5=2fcb5ce49bba
+  CFGCHECK keys=11 env_n=13
+  mark=58876
+=== ARM C drop='STRATA_GFX906_ATTN_QUERY_SWIZZLE' ready=56s
+  ENVCHECK want=12 got=13 img_extra=1 OK
+  t0  shape0  U prompt_tokens=244    fresh~244   wall=3.9s e3b0c44298fc1c14
+  t1  probe   U prompt_tokens=397    fresh~153   wall=2.5s e3b0c44298fc1c14
+  t2  shape   U prompt_tokens=1020   fresh~623   wall=2.6s e3b0c44298fc1c14
+  t3  probe   U prompt_tokens=1207   fresh~187   wall=3.2s e3b0c44298fc1c14
+  t4  shape   U prompt_tokens=1873   fresh~666   wall=2.8s e3b0c44298fc1c14
+  t5  probe   U prompt_tokens=2028   fresh~155   wall=2.9s e3b0c44298fc1c14
+  t6  shape   U prompt_tokens=2559   fresh~531   wall=2.8s e3b0c44298fc1c14
+  t7  probe   U prompt_tokens=2678   fresh~119   wall=2.6s e3b0c44298fc1c14
+  t8  shape   U prompt_tokens=3221   fresh~543   wall=3.0s e3b0c44298fc1c14
+  t9  probe   U prompt_tokens=3400   fresh~179   wall=3.3s e3b0c44298fc1c14
+  t10 shape   U prompt_tokens=4018   fresh~618   wall=2.9s e3b0c44298fc1c14
+  t11 probe   U prompt_tokens=4159   fresh~141   wall=2.8s e3b0c44298fc1c14
+  t12 shape   U prompt_tokens=4710   fresh~551   wall=2.7s e3b0c44298fc1c14
+  t13 probe   U prompt_tokens=4853   fresh~143   wall=2.8s e3b0c44298fc1c14
+  t14 shape   U prompt_tokens=5465   fresh~612   wall=3.0s e3b0c44298fc1c14
+CLIENT_DONE C
+  LOGPOS rows=1376 bytes=1432741 md5=5b8fc697f69c
+  CFGCHECK keys=11 env_n=12
+  mark=59010
+=== ARM D drop='STRATA_GDN_HEAD,STRATA_GDN_PP' ready=80s
+  ENVCHECK want=11 got=12 img_extra=1 OK
+  t0  shape0  U prompt_tokens=244    fresh~244   wall=4.3s e3b0c44298fc1c14
+  t1  probe   U prompt_tokens=397    fresh~153   wall=2.5s e3b0c44298fc1c14
+  t2  shape   U prompt_tokens=1020   fresh~623   wall=2.5s e3b0c44298fc1c14
+  t3  probe   U prompt_tokens=1207   fresh~187   wall=3.1s e3b0c44298fc1c14
+  t4  shape   U prompt_tokens=1873   fresh~666   wall=2.8s e3b0c44298fc1c14
+  t5  probe   U prompt_tokens=2028   fresh~155   wall=2.9s e3b0c44298fc1c14
+  t6  shape   U prompt_tokens=2559   fresh~531   wall=2.9s e3b0c44298fc1c14
+  t7  probe   U prompt_tokens=2678   fresh~119   wall=2.5s e3b0c44298fc1c14
+  t8  shape   U prompt_tokens=3221   fresh~543   wall=2.9s e3b0c44298fc1c14
+  t9  probe   U prompt_tokens=3400   fresh~179   wall=3.2s e3b0c44298fc1c14
+  t10 shape   U prompt_tokens=4018   fresh~618   wall=3.0s e3b0c44298fc1c14
+  t11 probe   U prompt_tokens=4159   fresh~141   wall=2.8s e3b0c44298fc1c14
+  t12 shape   U prompt_tokens=4710   fresh~551   wall=2.8s e3b0c44298fc1c14
+  t13 probe   U prompt_tokens=4853   fresh~143   wall=2.8s e3b0c44298fc1c14
+  t14 shape   U prompt_tokens=5465   fresh~612   wall=3.0s e3b0c44298fc1c14
+CLIENT_DONE D
+  LOGPOS rows=1376 bytes=1432741 md5=5b8fc697f69c
+  CFGCHECK keys=11 env_n=13
+  mark=59144
+=== ARM E drop='STRATA_ROUTE_TAIL_SKIP' ready=60s
+  ENVCHECK want=12 got=13 img_extra=1 OK
+  t0  shape0  U prompt_tokens=244    fresh~244   wall=3.8s e3b0c44298fc1c14
+  t1  probe   U prompt_tokens=397    fresh~153   wall=2.5s e3b0c44298fc1c14
+  t2  shape   U prompt_tokens=1020   fresh~623   wall=2.5s e3b0c44298fc1c14
+  t3  probe   U prompt_tokens=1207   fresh~187   wall=3.2s e3b0c44298fc1c14
+  t4  shape   U prompt_tokens=1873   fresh~666   wall=2.7s e3b0c44298fc1c14
+  t5  probe   U prompt_tokens=2028   fresh~155   wall=2.8s e3b0c44298fc1c14
+  t6  shape   U prompt_tokens=2559   fresh~531   wall=2.8s e3b0c44298fc1c14
+  t7  probe   U prompt_tokens=2678   fresh~119   wall=2.6s e3b0c44298fc1c14
+  t8  shape   U prompt_tokens=3221   fresh~543   wall=2.8s e3b0c44298fc1c14
+  t9  probe   U prompt_tokens=3400   fresh~179   wall=3.2s e3b0c44298fc1c14
+  t10 shape   U prompt_tokens=4018   fresh~618   wall=2.9s e3b0c44298fc1c14
+  t11 probe   U prompt_tokens=4159   fresh~141   wall=2.7s e3b0c44298fc1c14
+  t12 shape   U prompt_tokens=4710   fresh~551   wall=2.7s e3b0c44298fc1c14
+  t13 probe   U prompt_tokens=4853   fresh~143   wall=2.8s e3b0c44298fc1c14
+  t14 shape   U prompt_tokens=5465   fresh~612   wall=2.9s e3b0c44298fc1c14
+CLIENT_DONE E
+  LOGPOS rows=1376 bytes=1432741 md5=5b8fc697f69c
+  CFGCHECK keys=11 env_n=14
+  mark=59278
+=== ARM F drop='none' ready=91s
+  ENVCHECK want=13 got=14 img_extra=1 OK
+  t0  shape0  U prompt_tokens=244    fresh~244   wall=3.8s e3b0c44298fc1c14
+  t1  probe   U prompt_tokens=397    fresh~153   wall=2.5s e3b0c44298fc1c14
+  t2  shape   U prompt_tokens=1020   fresh~623   wall=2.5s e3b0c44298fc1c14
+  t3  probe   U prompt_tokens=1207   fresh~187   wall=3.2s e3b0c44298fc1c14
+  t4  shape   U prompt_tokens=1873   fresh~666   wall=2.8s e3b0c44298fc1c14
+  t5  probe   U prompt_tokens=2028   fresh~155   wall=2.9s e3b0c44298fc1c14
+  t6  shape   U prompt_tokens=2559   fresh~531   wall=2.8s e3b0c44298fc1c14
+  t7  probe   U prompt_tokens=2678   fresh~119   wall=2.5s e3b0c44298fc1c14
+  t8  shape   U prompt_tokens=3221   fresh~543   wall=3.0s e3b0c44298fc1c14
+  t9  probe   U prompt_tokens=3400   fresh~179   wall=3.3s e3b0c44298fc1c14
+  t10 shape   U prompt_tokens=4018   fresh~618   wall=3.0s e3b0c44298fc1c14
+  t11 probe   U prompt_tokens=4159   fresh~141   wall=2.8s e3b0c44298fc1c14
+  t12 shape   U prompt_tokens=4710   fresh~551   wall=2.8s e3b0c44298fc1c14
+  t13 probe   U prompt_tokens=4853   fresh~143   wall=2.8s e3b0c44298fc1c14
+  t14 shape   U prompt_tokens=5465   fresh~612   wall=3.0s e3b0c44298fc1c14
+CLIENT_DONE F
+  LOGPOS rows=1376 bytes=1432741 md5=5b8fc697f69c

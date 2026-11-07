@@ -1,0 +1,46 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W735：晚场审计落账（W735 指针 + 探针落盘与数字自洽规则）+ 压缩",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- PR **#1396** **ported 进 0.1.41（保留署名）**，closed-not-merged。两轮独立审计 `W713_AUDIT{,2}.md`（P0/P1）。",
+   "new": "- PR **#1396** **ported 进 0.1.41**，closed-not-merged；审计 `W713_AUDIT{,2}.md` + `W735_AUDIT.md`（W717~W734 全轮，P0=0 / P1=4）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **「默认关」不等于「不可达」**：判可达性须核宏（P30 恒 false；P28 在 gfx906 内）。",
+   "new": "- **「默认关」不等于「不可达」**：判可达性须核宏（P30 恒 false / P28 可）。"
+  },
+  {
+   "kind": "substr",
+   "old": "；`spark()` 无显式上限即按序列最大值缩放（空闲抖动显成满幅；W734 下限置 1）；前端 JS 路径 `/web/app.js`；`pcie_path`。",
+   "new": "；`spark()` 无上限即按序列最大值缩放（W734 下限 1）；前端 JS 路径 `/web/app.js`；`pcie_path`。"
+  },
+  {
+   "kind": "substr",
+   "old": "（telemetry v5 + `web/app.js`，W733/W734；**不提上游**；",
+   "new": "（telemetry v5 + `web/app.js`；**不提上游**；"
+  },
+  {
+   "kind": "substr",
+   "old": "3) feature「子 chunk 边界 checkpoint」（通道见 W724 §9）。`mtp.cpp:428` 实测无差 => 不提。",
+   "new": "3) feature「子 chunk 边界 checkpoint」。`mtp.cpp:428` 实测无差。"
+  },
+  {
+   "kind": "substr",
+   "old": "漏推则「本机==166」假 => 必对两侧 md5sum。",
+   "new": "漏推则「本机==166」假 => 必对两侧 md5。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改本件走技能入口 `deploy/tools/mem_slim.py`**：`auto 2900 [plan.json]`。禁裸 Edit/自写脚本/先改后核。",
+   "new": "- **改本件走技能入口 `deploy/tools/mem_slim.py`**：`auto 2900 [plan.json]`。禁裸 Edit/自写脚本/先改后核；**探针/测试须落 `deploy/tmp/`、数字须与所引证据自洽**（W735 同族第 6 次）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 缺陷多死于**判据覆盖面**（W733 第 5 次）。\n",
+   "new": ""
+  }
+ ]
+}

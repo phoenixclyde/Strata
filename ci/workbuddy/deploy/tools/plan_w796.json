@@ -1,0 +1,51 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W796：P109 翻案采纳 SELECT_SIMT（L -4.8%）+ 注意力 roofline 修正（14.7% dp4a，非 8%）",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "**ROCBLAS_TUNING**(-1.8%)·**ATTN_SWIZZLE**(-1.6%)",
+   "new": "**ROCBLAS_TUNING**(-1.8%)·**ATTN_SWIZZLE**(-1.6%)·**SELECT_SIMT**(-4.8%L)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **队列**:P1·P2·P3 采纳(P103/P107/P108);P4 否(P109);P110 采纳;P111 否;P5=MMQ**已耗尽(P112/P113/P114)**,P5c=attn;P6 最低;此后=内核;P105->P107,P106->P109",
+   "new": "- **队列**:P1·P2·P3 采纳(P103/P107/P108);P4/P6 降级;P110 采纳;**P109 翻案采纳(L-4.8%)**;P111 否;P5=MMQ 耗尽(P112/P113/P114);此后=内核,先 MMQ;P105->P107,P106->P109"
+  },
+  {
+   "kind": "substr",
+   "old": "- **专家MMQ**=36.4%/18%dp4a;J=64=48KB=>1WG/CU;J封顶全负;FP16专家+61%(P112/113)",
+   "new": "- **专家MMQ**=36.4%/18%dp4a;J=64=48KB=>1WG/CU;J封顶全负;FP16专家+61%(P112/113)\n- **attn 14.7%dp4a**(PV没乘2);与MMQ同档=>先MMQ"
+  },
+  {
+   "kind": "substr",
+   "old": "- **166 PCIe**:Gen3x16;pcie_bw须独线程\n",
+   "new": ""
+  },
+  {
+   "kind": "substr",
+   "old": "- **HC**:down不敏感;up余量14%;HC_Q8优(P100)",
+   "new": "- **HC**:down不敏感;up余量14%(P100)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **路由**:k10 native_router(无fp64);GR_SPLIT净负(P101/P102)",
+   "new": "- **路由**:k10 native_router;GR_SPLIT净负(P101/P102)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **重启丢前2请求**;A/B同会话交错(P98);臂漂1.7%下限=>**收益先相位判**(规则P)",
+   "new": "- **重启丢前2请求**;A/B同会话交错(P98);臂漂1.7%下限=>**先相位判**(规则P)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **自比同形状**;比ms/step;不可复现先排冷热;**计时行含adapt+join**",
+   "new": "- **自比同形状**;比ms/step;先排冷热;**计时行含adapt+join**"
+  },
+  {
+   "kind": "substr",
+   "old": "- **占用率**=块/CUx/64/40;HC 41块6.8%(P96)",
+   "new": "- **占用率**=块/CU/64/40;HC 41块6.8%(P96)"
+  }
+ ]
+}

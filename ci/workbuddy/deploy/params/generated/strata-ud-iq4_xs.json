@@ -1,0 +1,42 @@
+{
+ "exe": "/src/build-906/strata",
+ "args": [
+  "--pack",
+  "/data/packs/ud-iq4_xs",
+  "--native",
+  "/models/unsloth/Qwen3.8-Flash-Next-UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+  "--resident-budget-gib",
+  "76",
+  "--expert-profile",
+  "/src/data/expert-profile.bin",
+  "--expert-cache",
+  "auto",
+  "--pcie-frac",
+  "0.20",
+  "--spec",
+  "4",
+  "--spec-min-p",
+  "0.70",
+  "--mtp",
+  "/data/mtp/rt",
+  "--max-context",
+  "262144",
+  "--kv",
+  "k8v4",
+  "--prefill",
+  "auto",
+  "--prompt-cache-every",
+  "8192",
+  "--expert-profile-save",
+  "/data/profiles/ud-iq4_xs-learned.bin"
+ ],
+ "cwd": "/src",
+ "tokenizer": "/data/packs/ud-iq4_xs/tokenizer",
+ "model_name": "qwen3.8-flash-next-ud-iq4_xs",
+ "log": "/data/strata-ud-iq4_xs.log",
+ "host": "0.0.0.0",
+ "port": 8090,
+ "env": {
+  "HSA_OVERRIDE_GFX_VERSION": "9.0.6"
+ }
+}

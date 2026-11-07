@@ -1,0 +1,57 @@
+{
+ "target": "expert_cache_slots",
+ "target_kind": "capacity",
+ "capacity": {
+  "base_slots": 7463,
+  "cand_slots": 8301,
+  "base_line": "strata generate: expert cache 7463 slots, 21.79 GiB of VRAM",
+  "cand_line": "strata generate: expert cache 8301 slots, 24.23 GiB of VRAM"
+ },
+ "baseline": {
+  "n": 4,
+  "mean": 7463,
+  "cv_pct": 0.0
+ },
+ "candidate": {
+  "n": 4,
+  "mean": 8301,
+  "cv_pct": 0.0
+ },
+ "guard": [
+  {
+   "name": "prefill_2500",
+   "n": 2,
+   "mean_base": 1579.4,
+   "mean_cand": 1561.56,
+   "cv_pct": 1.73
+  },
+  {
+   "name": "prefill_8000",
+   "n": 2,
+   "mean_base": 1249.57,
+   "mean_cand": 1246.0,
+   "cv_pct": 0.25
+  },
+  {
+   "name": "prefill_16000",
+   "n": 2,
+   "mean_base": 1280.11,
+   "mean_cand": 1277.53,
+   "cv_pct": 0.28
+  },
+  {
+   "name": "prefill_20480",
+   "n": 2,
+   "mean_base": 1244.08,
+   "mean_cand": 1242.51,
+   "cv_pct": 0.1
+  }
+ ],
+ "numeric": {
+  "mode": "bitident",
+  "scope": "batched prompt path, full-vocabulary fp32 logits after 1000/8000/16000/20000 tokens; 1000-16000 are all <= STRATA_KV_GROW_INIT(16384) so no growth is possible, 20000 forces one",
+  "evidence": "albus/w1040/ (window 14:10:03-14:14:38): first.0 first.1 first.2 first.3 all byte-identical (cmp -s), pcompare 4 prompts top-1 100.00% KL mean 0.00000 max 0.00000",
+  "growth": "arm B stderr: 'K/V grown to 20512 cells (0.26 GiB); the expert cache gave 19 slots for it, 15 hotter experts moved to colder ones' slots' => the growth executed and the logits still did not move"
+ },
+ "source": "tmp/w1039/arm_kvg{A,A2,B,B2}.json (window 13:42-13:53)"
+}

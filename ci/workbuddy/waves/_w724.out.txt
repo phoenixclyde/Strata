@@ -1,0 +1,93 @@
+[1] 证据归档 md5(166) = 5a39b6a08bc92d25073fb960f007d08f | md5(local) = 5a39b6a08bc92d25073fb960f007d08f
+[2] gen_config rc = 0
+=== ADOPTED 行 15 个（其中待校准 0 个已跳过）===
+{
+ "exe": "/src/build-906/strata",
+ "args": [
+  "--pack",
+  "/data/packs/ud-iq4_xs",
+  "--native",
+  "/weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+  "--resident-budget-gib",
+  "76",
+  "--expert-profile",
+  "/src/data/expert-profile.bin",
+  "--expert-cache",
+  "auto",
+  "--pcie-frac",
+  "0.20",
+  "--spec",
+  "4",
+  "--spec-min-p",
+  "0.70",
+  "--mtp",
+  "/data/mtp/rt",
+  "--max-context",
+  "262144",
+  "--kv",
+  "k8v4",
+  "--prefill",
+  "auto",
+  "--expert-profile-save",
+  "/data/profiles/ud-iq4_xs-learned.bin"
+ ],
+ "cwd": "/src",
+ "tokenizer": "/data/packs/ud-iq4_xs/tokenizer",
+ "model_name": "qwen3.8-flash-next-ud-iq4_xs",
+ "log": "/data/strata-ud-iq4_xs.log",
+ "host": "0.0.0.0",
+ "port": 8090,
+ "env": {
+  "HSA_OVERRIDE_GFX_VERSION": "9.0.6"
+ }
+}
+
+已写入 D:\strata166\params\generated\strata-ud-iq4_xs.json (772 B)
+
+[2] generated: 772 B md5=8847728605528012c65cebe5048172ce CR=0
+[3] push staging ok=True size=772 md5=8847728605528012c65cebe5048172ce
+--- 部署前 LIVE md5 ---
+a03d612015a4e88c1cb532bdfa2d7e29  /home/albus/strata166/data/strata-ud-iq4_xs.json
+--- 推 ---
+cp_rc=0
+--- 部署后 LIVE md5 ---
+8847728605528012c65cebe5048172ce  /home/albus/strata166/data/strata-ud-iq4_xs.json
+--- 断言：两处 md5 必须相等 ---
+MD5_MATCH=1
+--- 断言：新旋钮在 config 里恰好各 1 次 ---
+1
+1
+--- 重启 ---
+restart_rc=0
+
+  [ 10s] http=%{http_code}
+  [ 20s] http=%{http_code}
+  [ 30s] http=%{http_code}
+  [ 40s] http=%{http_code}
+  [ 50s] http=%{http_code}
+  [ 60s] http=%{http_code}
+  [ 70s] http=%{http_code}
+  [ 80s] http=%{http_code}
+  [ 90s] http=%{http_code}
+  [100s] http=%{http_code}
+  [110s] http=%{http_code}
+  [120s] http=%{http_code}
+  [130s] http=%{http_code}
+  [140s] http=%{http_code}
+  [150s] http=%{http_code}
+  [160s] http=%{http_code}
+  [170s] http=%{http_code}
+  [180s] http=%{http_code}
+  [190s] http=%{http_code}
+  [200s] http=%{http_code}
+  [210s] http=%{http_code}
+  [220s] http=%{http_code}
+  [230s] http=%{http_code}
+  [240s] http=%{http_code}
+  [250s] http=%{http_code}
+  [260s] http=%{http_code}
+  [270s] http=%{http_code}
+  [280s] http=%{http_code}
+  [290s] http=%{http_code}
+  [300s] http=%{http_code}
+[4] ready = False

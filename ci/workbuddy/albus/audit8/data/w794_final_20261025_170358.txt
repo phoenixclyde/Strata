@@ -1,0 +1,18 @@
+START 17:03:58
+=== swizzle ON ===
+env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt')]
+health 41s
+  32k depth  50%: FOUND  (31,640 prompt tokens, 53 s)
+1 of 1 found
+det_sha16=9f1f1d0cbfd320ea len=17 c=''
+=== swizzle OFF (identity probe) ===
+env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt')]
+health 55s
+det_sha16=a108be5b2a297aca len=15 c=''
+=== back to ON ===
+env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt')]
+health 50s
+slots 9901 vram 606 ver 0.1.49.2
+image=strata-gfx906:0.2.4p4
+env_final=[('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt')]
+DONE 17:07:48

@@ -1,0 +1,95 @@
+# W801 park-gain retest 20261025_215420  0 vs 256  4 sizes 46/237/529/1954  order=A B B A A B
+PARK_GAIN=0 dropped=[] tail=['--mtp-window', '8192', '--vram-reserve-mib', '768']
+=== ARM A rep 1 ready=43s val='0' log0=40866
+  envsnap 0
+  args_gain=[]
+BUILD wall=11.11 reused=0 read=7581 prompt_ms=11069.6
+target   read   reused prompt_ms
+    46     79     7576    1409.0
+   237    277     7576    2357.1
+   529    547     7576    3098.0
+  1954   1909     7576    4313.1
+DONE
+  PARK strata serve: conversation cache: parked 900 tokens in 157.1 ms; parked=1 bytes=247289540 evictions=0 snapshot_bytes=247289540 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 7581 tokens in 198.1 ms; parked=2 bytes=577401040 evictions=0 snapshot_bytes=330111500 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 7655 tokens in 216.1 ms; parked=2 bytes=696386992 evictions=0 snapshot_bytes=449097452 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 7853 tokens in 277.5 ms; parked=3 bytes=1147962828 evictions=0 snapshot_bytes=451575836 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 8123 tokens in 306.0 ms; parked=4 bytes=1602859736 evictions=0 snapshot_bytes=454896908 reused_kv_bytes=0
+PARK_GAIN=256 dropped=[] tail=['--vram-reserve-mib', '768', '--conversation-cache-park-gain', '256']
+=== ARM B rep 1 ready=45s val='256' log0=40947
+  envsnap 0
+  args_gain=['--conversation-cache-park-gain', '256']
+BUILD wall=11.01 reused=0 read=7581 prompt_ms=10965.2
+target   read   reused prompt_ms
+    46     79     7576    1389.1
+   237    277     7576    2126.5
+   529    547     7576    3158.6
+  1954   1909     7576    4285.2
+DONE
+  PARK strata serve: conversation cache: parked 900 tokens in 142.9 ms; parked=1 bytes=247289540 evictions=0 snapshot_bytes=247289540 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 7581 tokens in 186.2 ms; parked=2 bytes=577401040 evictions=0 snapshot_bytes=330111500 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 7853 tokens in 281.7 ms; parked=2 bytes=698865376 evictions=0 snapshot_bytes=451575836 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 8123 tokens in 272.3 ms; parked=3 bytes=1153762284 evictions=0 snapshot_bytes=454896908 reused_kv_bytes=0
+PARK_GAIN=256 dropped=['--conversation-cache-park-gain', '256'] tail=['--vram-reserve-mib', '768', '--conversation-cache-park-gain', '256']
+=== ARM B rep 2 ready=45s val='256' log0=41027
+  envsnap 0
+  args_gain=['--conversation-cache-park-gain', '256']
+BUILD wall=10.95 reused=0 read=7581 prompt_ms=10911.5
+target   read   reused prompt_ms
+    46     79     7576    1452.0
+   237    277     7576    2121.4
+   529    547     7576    3158.9
+  1954   1909     7576    4272.7
+DONE
+  PARK strata serve: conversation cache: parked 900 tokens in 164.0 ms; parked=1 bytes=247289540 evictions=0 snapshot_bytes=247289540 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 7581 tokens in 233.0 ms; parked=2 bytes=577401040 evictions=0 snapshot_bytes=330111500 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 7853 tokens in 256.9 ms; parked=2 bytes=698865376 evictions=0 snapshot_bytes=451575836 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 8123 tokens in 274.7 ms; parked=3 bytes=1153762284 evictions=0 snapshot_bytes=454896908 reused_kv_bytes=0
+PARK_GAIN=0 dropped=['--conversation-cache-park-gain', '256'] tail=['--mtp-window', '8192', '--vram-reserve-mib', '768']
+=== ARM A rep 2 ready=61s val='0' log0=41107
+  envsnap 0
+  args_gain=[]
+BUILD wall=11.02 reused=0 read=7581 prompt_ms=10978.8
+target   read   reused prompt_ms
+    46     79     7576    1413.5
+   237    277     7576    2346.9
+   529    547     7576    3144.6
+  1954   1909     7576    4326.1
+DONE
+  PARK strata serve: conversation cache: parked 900 tokens in 151.6 ms; parked=1 bytes=247289540 evictions=0 snapshot_bytes=247289540 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 7581 tokens in 204.8 ms; parked=2 bytes=577401040 evictions=0 snapshot_bytes=330111500 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 7655 tokens in 209.5 ms; parked=2 bytes=696386992 evictions=0 snapshot_bytes=449097452 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 7853 tokens in 298.0 ms; parked=3 bytes=1147962828 evictions=0 snapshot_bytes=451575836 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 8123 tokens in 304.5 ms; parked=4 bytes=1602859736 evictions=0 snapshot_bytes=454896908 reused_kv_bytes=0
+PARK_GAIN=0 dropped=[] tail=['--mtp-window', '8192', '--vram-reserve-mib', '768']
+=== ARM A rep 3 ready=45s val='0' log0=41188
+  envsnap 0
+  args_gain=[]
+BUILD wall=10.93 reused=0 read=7581 prompt_ms=10884.1
+target   read   reused prompt_ms
+    46     79     7576    1381.6
+   237    277     7576    2356.4
+   529    547     7576    3073.0
+  1954   1909     7576    4550.1
+DONE
+  PARK strata serve: conversation cache: parked 900 tokens in 135.0 ms; parked=1 bytes=247289540 evictions=0 snapshot_bytes=247289540 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 7581 tokens in 188.7 ms; parked=2 bytes=577401040 evictions=0 snapshot_bytes=330111500 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 7655 tokens in 216.7 ms; parked=2 bytes=696386992 evictions=0 snapshot_bytes=449097452 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 7853 tokens in 248.7 ms; parked=3 bytes=1147962828 evictions=0 snapshot_bytes=451575836 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 8123 tokens in 263.0 ms; parked=4 bytes=1602859736 evictions=0 snapshot_bytes=454896908 reused_kv_bytes=0
+PARK_GAIN=256 dropped=[] tail=['--vram-reserve-mib', '768', '--conversation-cache-park-gain', '256']
+=== ARM B rep 3 ready=82s val='256' log0=41269
+  envsnap 0
+  args_gain=['--conversation-cache-park-gain', '256']
+BUILD wall=10.93 reused=0 read=7581 prompt_ms=10887.8
+target   read   reused prompt_ms
+    46     79     7576    1465.3
+   237    277     7576    2119.4
+   529    547     7576    3089.4
+  1954   1909     7576    4412.2
+DONE
+  PARK strata serve: conversation cache: parked 900 tokens in 136.0 ms; parked=1 bytes=247289540 evictions=0 snapshot_bytes=247289540 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 7581 tokens in 269.3 ms; parked=2 bytes=577401040 evictions=0 snapshot_bytes=330111500 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 7853 tokens in 219.0 ms; parked=2 bytes=698865376 evictions=0 snapshot_bytes=451575836 reused_kv_bytes=0
+  PARK strata serve: conversation cache: parked 8123 tokens in 303.1 ms; parked=3 bytes=1153762284 evictions=0 snapshot_bytes=454896908 reused_kv_bytes=0
+PARK_GAIN=ABSENT dropped=['--conversation-cache-park-gain', '256'] tail=['--mtp-window', '8192', '--vram-reserve-mib', '768']

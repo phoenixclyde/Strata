@@ -1,0 +1,45 @@
+push ok=True size=3434 md5=71498db598c2bbc147184402cc05ec75
+rc = 0
+=== [A] 归档里 q6_k 实例：定义还是引用 ===
+-- libstrata_mmq.a 中所有 mul_mat_q_case<(ggml_type)14> 符号（含类型码）--
+                 U void mul_mat_q_case<(ggml_type)14>(ggml_backend_cuda_context&, mmq_args const&, ihipStream_t*)
+0000000000000000 W void mul_mat_q_case<(ggml_type)14>(ggml_backend_cuda_context&, mmq_args const&, ihipStream_t*)
+-- 仅「定义」(T/t/W/V) 计数 --
+1
+-- 仅「未定义引用」(U) 计数 --
+1
+-- 该定义在哪个成员里 --
+-- 谁在引用它（U 的成员）--
+
+=== [B] 其它归档里有没有 q6_k 的定义 ===
+  libstrata_engine.a 定义数=0
+  libstrata_prefill.a 定义数=0
+  libstrata_spec.a 定义数=0
+  libstrata_kernels.a 定义数=0
+  libstrata_core.a 定义数=0
+  libstrata_kernels_cpu.a 定义数=0
+  ggml 侧(mmq 实例源) 定义数=/src/build-906/CMakeFiles/strata_mmq.dir/third_party/llama.cpp/ggml/src/ggml-cuda/template-instances/mmq-instance-q6_k.cu.o
+/src/third_party/llama.cpp/ggml/src/ggml-cuda/template-instances/mmq-instance-q6_k.cu
+
+=== [C] 取链接命令 ===
+574 /tmp/link.txt
+libstrata_mmq.a
+ -o strata
+
+=== [D] 去掉 q6_k 实例后重链 ===
+  原归档 q6_k 成员=1
+  新归档 q6_k 成员=0
+  新归档里 14 号定义数=0
+  替换自证: m_noh5 命中=1
+  替换自证: strata_noh5 命中=1
+  link_rc=1
+  产物: (未生成)
+  --- 错误行 ---
+ld.lld: error: undefined symbol: void mul_mat_q_case<(ggml_type)14>(ggml_backend_cuda_context&, mmq_args const&, ihipStream_t*)
+clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+
+=== [E] 对照：原归档原命令 ===
+  ctrl_rc=0
+-rwxr-xr-x 1 root root 24862088 Oct  7 16:20 /tmp/strata_ok
+  cleaned
+

@@ -1,0 +1,40 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "P4·P6·P111·P117·P118·P119·P120·P121·P122·P123·P124·P125 否;P130·P131·P132·P133·P134 否",
+   "new": "P4/6/111/117-125否;P130-134否"
+  },
+  {
+   "kind": "substr",
+   "old": ";**ple 10-15%,--ple-io未测(P138)**",
+   "new": ";ple10-15%(P138)"
+  },
+  {
+   "kind": "substr",
+   "old": ";swizzle>RT_SKIP>GDN(扰动);相位DECODE_TIMING,GPU72%/commit.04(W807/8)",
+   "new": ";swizzle>RT_SKIP>GDN;相位DECODE_TIMING,GPU72%(W807/8)"
+  },
+  {
+   "kind": "substr",
+   "old": "**占用率**=块/CU/64/40;HC6.8%(P96)",
+   "new": "**占用率**=块/CU/64/40;HC6.8%"
+  },
+  {
+   "kind": "substr",
+   "old": "**HC**:down不敏感,up余量14%(P100)",
+   "new": "HC:down不敏感,up余量14%"
+  },
+  {
+   "kind": "substr",
+   "old": "## 4 队列/待办(下=P138 ple-io;解码参数面已关)",
+   "new": "## 4 队列/待办(下=R23 开R行数1.52×未部署/P138 ple-io)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改参唯一道**:register->gen_config --write->推166->restart\n",
+   "new": "- **改参唯一道**:register->gen_config --write->推166->restart\n- **手工重编须逐字抄build.ninja的flags**(漏DNDEBUG慢47%,错compat目录慢45%)\n- **改pr/strata-fork工作树=改生产资产**(须备份+回滚cmd)\n"
+  }
+ ]
+}

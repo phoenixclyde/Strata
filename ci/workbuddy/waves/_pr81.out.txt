@@ -1,0 +1,200 @@
+rc = 0
+===== [1] 当前 Z0 三件实值 =====
+  GPU perflevel : high
+  CPU governor  : performance
+  THP enabled   : [always] madvise never
+  THP defrag    : always defer defer+madvise [madvise] never
+  cur_freq_khz  : 2868812
+
+===== [2] _rk78_z0_state.sh 现状 =====
+-rwxrwxr-x 1 albus albus 5894 Sep 21 08:17 /home/albus/routeK/run/_rk78_z0_state.sh
+1fa932186f87d47baaaa247e72cb87c2  /home/albus/routeK/run/_rk78_z0_state.sh
+--- 全文 ---
+#!/bin/bash
+# _rk78_z0_state.sh —— 重设 166 的 Z0 性能档（三件），**状态驱动幂等**。
+#
+# 为什么不能沿用「标记存在即拒」（D-119，2026-09-21 rk78 波实测）：
+#   原 _rk78_z0_on.sh 的守卫是 `[ -f run/_rk78_z0_on_issued.txt ] && exit 0`。
+#   该语义对「一辈子只做一次」的动作是对的（防重复安装 / 防重复重启），
+#   但对「**每次重启后都必须重做**」的动作是错的 —— 重启会把
+#     GPU perflevel -> auto、CPU governor -> schedutil、THP -> madvise 全部复位，
+#   而那个 issued 标记**跨重启仍在**（在磁盘上）=> 重启后再调用会被误拒，
+#   结果是「以为重设过了，其实跑在省电态」。实测：run/_rk78_z0_on_issued.txt 现存
+#   （07:11 落），本 boot 三件已在目标态；一旦重启，该标记会让本件失效。
+#   => 判据：**幂等守卫的语义必须匹配动作语义** ——
+#      「一次性动作」用标记守卫（并在动作之前落）· 「状态可复位动作」用**状态守卫**（现读现值比对）。
+#
+# v2（2026-09-21 08:2x，闭 D-123）—— 取值器必须**锚定真值行 + 校验值域**：
+#   实测 `rocm-smi -d 0 --showperflevel` 的首个含 Performance Level 的行是**表头**
+#   （缩进含空格），而表头行没有冒号分隔 => 「取冒号后内容」会把整条表头串取回来。
+#   旧件（v1）用 head -1 取第一处命中 => 拿到表头串 => `case "$RP" in auto|low|*auto*|*low*)`
+#   对该串永不命中 => perflevel 维**永远判"已达标"**；apply 后的复读断言同样不命中 => **假成功**。
+#   本 boot 之所以没出事，仅因 governor 维（重启后会变 schedutil）**偶然兜住**。
+#   修法两条：
+#     (1) 取值面：`--json` 优先（最稳），退回**锚定** `^GPU[n] ...: Performance Level: <值>` 的真值行；
+#     (2) **值域白名单 auto|low|high|manual**：取不到或取到非白名单值 => RPOK=0 => **当作未达标**
+#         （宁可多修，不可漏修）。同时把原值打印为 Z0_PERF_UNKNOWN=1，让"假达标"可见。
+#   一般判据（D-123）：**取值器必须校验值域** —— 与 D-120/D-121 同族（取不到值 != 条件满足）。
+#
+# 动作语义：使终态 == 目标态。达到即 SKIP（不重复写，避免无谓的权限/扰动），未达到即 apply。
+# 自带断言：apply 后复读，任一未达标即 exit 3（不报假成功）。
+#
+# 自测钩子（默认值都不变，仅用于验收套件）：
+#   RK78_Z0_NO_JSON=1        跳过 --json 路径（模拟旧版 rocm-smi），走锚定兜底
+#   RK78_Z0_GOV_FILE=<path>  governor 从文件读（否则读 /sys）
+#   RK78_Z0_THP_FILE=<path>  THP 从文件读（否则读 /sys）
+#   RK78_Z0_TRACE=<path>     trace 输出路径（默认 run/_rk78_z0_trace.txt）
+set -u
+cd /home/albus/routeK || exit 1
+TRACE=${RK78_Z0_TRACE:-run/_rk78_z0_trace.txt}
+
+rd() {
+  # [D-123] perflevel：json 优先 + 锚定真值行兜底 + 值域白名单
+  RPRAW=""
+  if [ -z "${RK78_Z0_NO_JSON:-}" ]; then
+    RPRAW=$(rocm-smi -d 0 --showperflevel --json 2>/dev/null \
+              | sed -n 's/.*"Performance Level"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -n1)
+  fi
+  if [ -z "$RPRAW" ]; then
+    RPRAW=$(rocm-smi -d 0 --showperflevel 2>/dev/null \
+              | sed -n 's/^GPU\[[0-9][0-9]*\][^:]*:[[:space:]]*Performance Level:[[:space:]]*\([A-Za-z][A-Za-z_]*\).*$/\1/p' | head -n1)
+  fi
+  RPOK=0
+  case "$RPRAW" in auto|low|high|manual) RPOK=1;; esac
+  RP="$RPRAW"
+  if [ -n "${RK78_Z0_GOV_FILE:-}" ]; then
+    RG=$(cat "$RK78_Z0_GOV_FILE" 2>/dev/null | tr -d ' \t')
+  else
+    RG=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>/dev/null | tr -d ' \t')
+  fi
+  if [ -n "${RK78_Z0_THP_FILE:-}" ]; then
+    RT=$(head -n1 "$RK78_Z0_THP_FILE" 2>/dev/null | sed 's/.*\[\([a-z]*\)\].*/\1/' | tr -d ' \t')
+    [ -z "$RT" ] && RT=$(head -n1 "$RK78_Z0_THP_FILE" 2>/dev/null | tr -d ' \t')
+  else
+    RT=$(head -n1 /sys/kernel/mm/transparent_hugepage/enabled 2>/dev/null | sed 's/.*\[\([a-z]*\)\].*/\1/' | tr -d ' \t')
+  fi
+}
+
+BOOT=$(cat /proc/sys/kernel/random/boot_id 2>/dev/null)
+rd
+echo "BOOT_ID=$BOOT"
+echo "Z0_BEFORE perflevel=${RPRAW:-NA} perf_ok=${RPOK} governor=${RG:-NA} thp=${RT:-NA}"
+if [ "$RPOK" != "1" ]; then
+  echo "Z0_PERF_UNKNOWN=1 (perflevel 取值不在白名单 auto|low|high|manual：原值=[${RPRAW:-EMPTY}] => 视为未达标)"
+fi
+
+NEED=0
+[ "$RPOK" != "1" ] && NEED=1
+case "$RP" in auto|low) NEED=1;; esac
+[ "$RG" != "performance" ] && NEED=1
+[ "$RT" != "always" ] && NEED=1
+
+if [ "$NEED" = "0" ]; then
+  echo "Z0_STATE_ACHIEVED=1 (三件已在目标态：perf=$RP gov=$RG thp=$RT，跳过写入)"
+  printf '%s SKIP boot=%s perf=%s gov=%s thp=%s\n' "$(date '+%F %T')" "$BOOT" "$RP" "$RG" "$RT" >> "$TRACE" 2>/dev/null
+  echo "Z0_ON_DONE (skip)"
+  exit 0
+fi
+
+echo "Z0_NEED_APPLY=1 (perf=${RPRAW:-NA} perf_ok=$RPOK gov=${RG:-NA} thp=${RT:-NA})"
+echo "--- apply ---"
+sudo -n rocm-smi -d 0 --setperflevel high 2>&1 | tail -n2
+sudo -n cpupower frequency-set -g performance 2>&1 | tail -n3
+echo always | sudo -n tee /sys/kernel/mm/transparent_hugepage/enabled >/dev/null 2>&1
+
+rd
+echo "Z0_AFTER perflevel=${RPRAW:-NA} perf_ok=${RPOK} governor=${RG:-NA} thp=${RT:-NA}"
+BAD=""
+if [ "$RPOK" != "1" ] || [ "$RP" = "auto" ] || [ "$RP" = "low" ]; then BAD="$BAD perflevel=${RPRAW:-NA}"; fi
+[ "$RG" != "performance" ] && BAD="$BAD governor=${RG:-NA}"
+[ "$RT" != "always" ] && BAD="$BAD thp=${RT:-NA}"
+if [ -n "$BAD" ]; then
+  echo "Z0_ON_FAIL=1 (未达标:$BAD)"
+  printf '%s FAIL boot=%s perf=%s gov=%s thp=%s bad=%s\n' "$(date '+%F %T')" "$BOOT" "${RPRAW:-NA}" "${RG:-NA}" "${RT:-NA}" "$BAD" >> "$TRACE" 2>/dev/null
+  exit 3
+fi
+printf '%s APPLY boot=%s perf=%s gov=%s thp=%s\n' "$(date '+%F %T')" "$BOOT" "$RP" "$RG" "$RT" >> "$TRACE" 2>/dev/null
+echo "Z0_ON_DONE (applied)"
+exit 0
+
+===== [3] 既有开机机制 =====
+--- enabled systemd units (filtered) ---
+networkd-dispatcher.service            enabled enabled
+systemd-networkd-wait-online.service   enabled enabled
+systemd-networkd.service               enabled enabled
+systemd-networkd.socket                enabled enabled
+--- /etc/systemd/system 下自建 (非 *.wants) ---
+lrwxrwxrwx  1 root root    9 Oct  1 18:43 apt-daily.timer -> /dev/null
+lrwxrwxrwx  1 root root    9 Oct  1 18:43 apt-daily-upgrade.timer -> /dev/null
+lrwxrwxrwx  1 root root   42 Sep 27  2025 dbus-fi.w1.wpa_supplicant1.service -> /lib/systemd/system/wpa_supplicant.service
+lrwxrwxrwx  1 root root   40 Sep 11  2024 dbus-org.freedesktop.ModemManager1.service -> /lib/systemd/system/ModemManager.service
+lrwxrwxrwx  1 root root   44 Sep 11  2024 dbus-org.freedesktop.resolve1.service -> /lib/systemd/system/systemd-resolved.service
+lrwxrwxrwx  1 root root   36 Sep 27  2025 dbus-org.freedesktop.thermald.service -> /lib/systemd/system/thermald.service
+lrwxrwxrwx  1 root root   45 Sep 11  2024 dbus-org.freedesktop.timesync1.service -> /lib/systemd/system/systemd-timesyncd.service
+-rw-r--r--  1 root root  708 Sep 17 23:37 fanctl.service
+-rw-r--r--  1 root root  615 Sep 17 23:37 fanctl-watchdog.service
+lrwxrwxrwx  1 root root   38 Sep 11  2024 iscsi.service -> /lib/systemd/system/open-iscsi.service
+lrwxrwxrwx  1 root root   38 Sep 11  2024 multipath-tools.service -> /lib/systemd/system/multipathd.service
+-rw-r--r--  1 root root  509 Sep 25 09:41 opencode-serve.service
+-rw-r--r--  1 root root  326 May 14 08:54 snap-core20-2866.mount
+-rw-r--r--  1 root root  326 Sep 18 07:10 snap-core20-2922.mount
+-rw-r--r--  1 root root  326 Aug 15 18:27 snap-core22-2437.mount
+-rw-r--r--  1 root root  326 Sep 12 15:52 snap-core22-2955.mount
+-rw-r--r--  1 root root  320 Aug 27 00:03 snap-lxd-40575.mount
+-rw-r--r--  1 root root  320 Sep 25 13:21 snap-lxd-40911.mount
+-rw-r--r--  1 root root  468 Sep 25 13:21 snap.lxd.activate.service
+-rw-r--r--  1 root root  543 Sep 25 13:21 snap.lxd.daemon.service
+-rw-r--r--  1 root root  330 Sep 25 13:21 snap.lxd.daemon.unix.socket
+-rw-r--r--  1 root root  448 Sep 25 13:21 snap.lxd.user-daemon.service
+-rw-r--r--  1 root root  345 Sep 25 13:21 snap.lxd.user-daemon.unix.socket
+-rw-r--r--  1 root root  326 Sep  7 18:55 snap-snapd-27738.mount
+-rw-r--r--  1 root root  326 Oct  1 07:35 snap-snapd-28254.mount
+lrwxrwxrwx  1 root root    9 Sep 11  2024 sudo.service -> /dev/null
+lrwxrwxrwx  1 root root   35 Sep 11  2024 syslog.service -> /lib/systemd/system/rsyslog.service
+lrwxrwxrwx  1 root root    9 Oct  7  2025 ubuntu-fan.service -> /dev/null
+lrwxrwxrwx  1 root root   41 Sep 11  2024 vmtoolsd.service -> /lib/systemd/system/open-vm-tools.service
+--- rc.local ---
+ls: cannot access '/etc/rc.local': No such file or directory
+  rc-local enabled: static
+--- crontab albus ---
+no crontab for albus
+--- crontab root (sudo -n) ---
+no crontab for root
+--- udev rules ---
+70-snap.snapd.rules
+ubuntu--vg-lv--0.rules
+ubuntu--vg-swap--0.rules
+
+===== [4] sudo -n 可用性 =====
+SUDO_NOPASSWD_OK
+
+===== [5] 内核 cmdline =====
+BOOT_IMAGE=/vmlinuz-7.0.0-34-generic root=/dev/mapper/ubuntu--vg-lv--0 ro iommu=pt
+
+===== [6] run/ 下 z0/zk5 相关脚本 =====
+-rw-rw-r--  1 albus albus    1412 Sep 19 19:25 batch_rk27_zk5ctl.log
+-rw-rw-r--  1 albus albus    1027 Sep 19 19:28 batch_rk27_zk5fulls.log
+-rw-rw-r--  1 albus albus    1356 Sep 19 20:05 batch_rk27_zk5gdn1.log
+-rw-rw-r--  1 albus albus    1356 Sep 19 20:10 batch_rk27_zk5gdn2.log
+-rw-rw-r--  1 albus albus    1354 Sep 19 19:58 batch_rk27_zk5gdn.log
+-rw-rw-r--  1 albus albus    1357 Sep 19 20:15 batch_rk27_zk5pmu64b.log
+-rw-rw-r--  1 albus albus    1326 Sep 19 20:00 batch_rk27_zk5pmu64.log
+-rw-rw-r--  1 albus albus    1021 Sep 19 19:48 batch_rk27_zk5pws.log
+-rw-rw-r--  1 albus albus    1024 Sep 19 19:38 batch_rk27_zk5v2fl.log
+-rw-rw-r--  1 albus albus    8384 Sep 19 19:26 bench_zk5ctl_a1.log
+-rw-rw-r--  1 albus albus   20700 Sep 19 19:36 bench_zk5fulls_a1.log
+-rw-rw-r--  1 albus albus   12314 Sep 19 20:07 bench_zk5gdn1_a1.log
+-rw-rw-r--  1 albus albus   12313 Sep 19 20:12 bench_zk5gdn2_a1.log
+-rw-rw-r--  1 albus albus    8298 Sep 19 19:58 bench_zk5gdn_a1.log
+-rw-rw-r--  1 albus albus    8357 Sep 19 20:01 bench_zk5pmu64_a1.log
+-rw-rw-r--  1 albus albus   12373 Sep 19 20:17 bench_zk5pmu64b_a1.log
+-rw-rw-r--  1 albus albus   21240 Sep 19 19:56 bench_zk5pws_a1.log
+-rw-rw-r--  1 albus albus   20720 Sep 19 19:46 bench_zk5v2fl_a1.log
+-rw-rw-r--  1 albus albus    2322 Sep 19 19:19 _cars_zk5ctl.txt
+-rw-rw-r--  1 albus albus    2549 Sep 19 19:20 _cars_zk5d.txt
+
+===== [7] boot id / uptime =====
+46715f3e-6a2d-44a0-b1ce-4245628c86da
+2026-10-06 12:24:24
+ 04:22:55 up 15:58,  2 users,  load average: 0.22, 0.73, 4.26
+

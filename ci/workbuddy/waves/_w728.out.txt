@@ -1,0 +1,16 @@
+[1] 残留驱动 PID = (none)
+--- 现在 LIVE ---
+2a6a6f1e11fee24480e221aa461d0ba4  /home/albus/strata166/data/strata-ud-iq4_xs.json
+cp_rc=0
+--- 恢复后 LIVE（应 8847728605528012c65cebe5048172ce）---
+8847728605528012c65cebe5048172ce  /home/albus/strata166/data/strata-ud-iq4_xs.json
+restart_rc=0
+--- 等就绪 ---
+  [10s] http=000
+  [20s] http=000
+  [30s] http=000
+  [40s] http=200
+--- 最后一次 engine started ---
+--pcie-frac 0.20
+--spec-min-p 0.70
+

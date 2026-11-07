@@ -1,0 +1,11 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W736：上游 3 件已交（PR #1731-1733 + issue #1734/#1735 + 评论 4 条）",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- **未做**：**上游 3 件**：1) PR `prefill.cpp:1839` 宏判据 2) PR `telemetry.py` 补 PCIe（须拆两件，W733）3) feature「子 chunk 边界 checkpoint」。`mtp.cpp:428` 实测无差。",
+   "new": "- **已交上游（W736）**：PR #1731（`app.js` 轴）/#1732（gfx906 守卫）/#1733（AMD PCIe 链路）· issue #1734/#1735 · 评论 4 条（#1595/#1729/#1479/#1670）。`mtp.cpp:428` 实测无差。"
+  }
+ ]
+}

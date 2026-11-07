@@ -1,0 +1,139 @@
+# W809c B6 / GU_SWIGLU single knobs  20261026_222959 arms='P B6 B64 G P2'
+#   stack = STRATA_SIDE_MIXER=2 STRATA_ATTN_DAILY=1 STRATA_GR_UP75=1 STRATA_GU_SWIGLU=1 STRATA_QSA_ROWS=1 STRATA_B6_MMVQ_ROWS=1 STRATA_ADAPT_NOWAIT=1 STRATA_ADAPT_LAG=2 STRATA_CPU_IQ_ALL_EXACT1=1
+  CFGCHECK keys=11 env_n=13 spec=4 min_p=0.70 extra=0
+  mark=64682
+=== ARM P spec=4 min_p=0.70 nenv=0 ready=91s
+  VW --spec 4 --spec-min-p 0.70 
+  FUSECHECK engine_env_hits=0
+  p0  ptok=76   out=200  decode=4583.9  ms  43.6 tok/s  wall=5.8s
+  p1  ptok=65   out=200  decode=4029.7  ms  49.6 tok/s  wall=5.0s
+  p2  ptok=62   out=200  decode=4185.5  ms  47.8 tok/s  wall=5.1s
+  p3  ptok=56   out=200  decode=4098.8  ms  48.8 tok/s  wall=4.9s
+  p4  ptok=62   out=200  decode=4434.3  ms  45.1 tok/s  wall=5.4s
+  p5  ptok=61   out=200  decode=4598.7  ms  43.5 tok/s  wall=5.5s
+  MEDIAN decode_tps = 47.78  (n=6)
+WROTE /home/albus/strata166/data/w809c_gen_P.json
+  OKN 6/6
+  DT strata decode timing: 120 windows, avg T 2.02, 1.67 tokens/window, 38.20 ms/window = verify 33.04 (GPU-reach wait 26.57 + per-layer host 3.89 [plan 0.14 actq 0.12 jobs 0.04 CPU 3.51] + stage 0.06) + commit/emit 0.03 + draft 3.71; per layer-window: CPU experts 0.74 (0.90 entries), VRAM hits 18.54, PCIe 0.01; adapt wait 1.38 join 0.00, 14.2 swaps/window
+  DT strata decode timing: 102 windows, avg T 2.48, 1.96 tokens/window, 39.51 ms/window = verify 34.85 (GPU-reach wait 30.19 + per-layer host 2.60 [plan 0.16 actq 0.12 jobs 0.03 CPU 2.20] + stage 0.08) + commit/emit 0.04 + draft 4.32; per layer-window: CPU experts 0.43 (0.50 entries), VRAM hits 23.75, PCIe 0.00; adapt wait 0.27 join 0.00, 10.2 swaps/window
+  DT strata decode timing: 113 windows, avg T 2.23, 1.77 tokens/window, 37.04 ms/window = verify 33.38 (GPU-reach wait 29.55 + per-layer host 1.85 [plan 0.13 actq 0.08 jobs 0.03 CPU 1.53] + stage 0.06) + commit/emit 0.03 + draft 2.87; per layer-window: CPU experts 0.29 (0.33 entries), VRAM hits 21.56, PCIe 0.00; adapt wait 0.73 join 0.00, 7.0 swaps/window
+  DT strata decode timing: 113 windows, avg T 2.19, 1.77 tokens/window, 36.27 ms/window = verify 33.02 (GPU-reach wait 29.57 + per-layer host 1.50 [plan 0.12 actq 0.07 jobs 0.02 CPU 1.17] + stage 0.10) + commit/emit 0.03 + draft 2.62; per layer-window: CPU experts 0.22 (0.25 entries), VRAM hits 21.29, PCIe 0.00; adapt wait 0.58 join 0.00, 5.6 swaps/window
+  DT strata decode timing: 112 windows, avg T 2.33, 1.79 tokens/window, 39.59 ms/window = verify 35.72 (GPU-reach wait 29.55 + per-layer host 4.16 [plan 0.13 actq 0.08 jobs 0.03 CPU 1.79] + stage 2.11) + commit/emit 0.03 + draft 3.21; per layer-window: CPU experts 0.34 (0.43 entries), VRAM hits 22.45, PCIe 0.01; adapt wait 0.60 join 0.00, 8.1 swaps/window
+  DT strata decode timing: 112 windows, avg T 2.18, 1.79 tokens/window, 41.06 ms/window = verify 36.75 (GPU-reach wait 28.00 + per-layer host 6.82 [plan 0.14 actq 0.11 jobs 0.03 CPU 2.70] + stage 3.81) + commit/emit 0.04 + draft 2.72; per layer-window: CPU experts 0.54 (0.65 entries), VRAM hits 20.59, PCIe 0.01; adapt wait 1.52 join 0.00, 11.6 swaps/window
+  DA strata serve: prompt 65 tokens = 0 reused + 65 read in 941 ms (69.1 tok/s), 200 generated in 4030 ms (49.6 tok/s), drafts accepted 98 of 151, 1 checkpoints
+  DA strata serve: suffix drafts: 1 windows, 0 of 2 drafts accepted
+  DA strata serve: prompt 62 tokens = 0 reused + 62 read in 942 ms (65.8 tok/s), 200 generated in 4186 ms (47.8 tok/s), drafts accepted 89 of 139, 1 checkpoints
+  DA strata serve: prompt 56 tokens = 0 reused + 56 read in 830 ms (67.4 tok/s), 200 generated in 4099 ms (48.8 tok/s), drafts accepted 88 of 134, 1 checkpoints
+  DA strata serve: prompt 62 tokens = 0 reused + 62 read in 928 ms (66.8 tok/s), 200 generated in 4434 ms (45.1 tok/s), drafts accepted 91 of 149, 1 checkpoints
+  DA strata serve: prompt 61 tokens = 0 reused + 61 read in 900 ms (67.8 tok/s), 200 generated in 4599 ms (43.5 tok/s), drafts accepted 88 of 132, 1 checkpoints
+  POOL slots=9873 vram=668
+  CFGCHECK keys=11 env_n=14 spec=4 min_p=0.70 extra=1
+  mark=64774
+=== ARM B6 spec=4 min_p=0.70 nenv=1 ready=54s
+  VW --spec 4 --spec-min-p 0.70 
+  FUSECHECK engine_env_hits=1
+  p0  ptok=76   out=200  decode=4426.7  ms  45.2 tok/s  wall=5.6s
+  p1  ptok=65   out=200  decode=3891.2  ms  51.4 tok/s  wall=4.8s
+  p2  ptok=62   out=200  decode=3903.4  ms  51.2 tok/s  wall=4.8s
+  p3  ptok=56   out=200  decode=4079.8  ms  49.0 tok/s  wall=5.0s
+  p4  ptok=62   out=200  decode=4109.3  ms  48.7 tok/s  wall=5.0s
+  p5  ptok=61   out=200  decode=4037.2  ms  49.5 tok/s  wall=4.9s
+  MEDIAN decode_tps = 49.54  (n=6)
+WROTE /home/albus/strata166/data/w809c_gen_B6.json
+  OKN 6/6
+  DT strata decode timing: 114 windows, avg T 2.14, 1.75 tokens/window, 38.83 ms/window = verify 33.41 (GPU-reach wait 26.66 + per-layer host 4.01 [plan 0.14 actq 0.13 jobs 0.04 CPU 3.63] + stage 0.05) + commit/emit 0.03 + draft 3.20; per layer-window: CPU experts 0.77 (0.94 entries), VRAM hits 19.66, PCIe 0.01; adapt wait 2.16 join 0.00, 15.0 swaps/window
+  DT strata decode timing: 99 windows, avg T 2.42, 2.02 tokens/window, 39.30 ms/window = verify 34.60 (GPU-reach wait 29.54 + per-layer host 3.04 [plan 0.15 actq 0.12 jobs 0.03 CPU 2.55] + stage 0.16) + commit/emit 0.03 + draft 3.15; per layer-window: CPU experts 0.52 (0.62 entries), VRAM hits 23.02, PCIe 0.00; adapt wait 1.50 join 0.00, 12.2 swaps/window
+  DT strata decode timing: 108 windows, avg T 2.15, 1.85 tokens/window, 36.14 ms/window = verify 32.63 (GPU-reach wait 29.09 + per-layer host 1.59 [plan 0.12 actq 0.07 jobs 0.02 CPU 1.27] + stage 0.09) + commit/emit 0.03 + draft 2.79; per layer-window: CPU experts 0.24 (0.29 entries), VRAM hits 20.82, PCIe 0.00; adapt wait 0.67 join 0.00, 6.5 swaps/window
+  DT strata decode timing: 108 windows, avg T 2.40, 1.85 tokens/window, 37.78 ms/window = verify 34.13 (GPU-reach wait 30.36 + per-layer host 1.74 [plan 0.14 actq 0.08 jobs 0.02 CPU 1.40] + stage 0.08) + commit/emit 0.03 + draft 2.89; per layer-window: CPU experts 0.26 (0.31 entries), VRAM hits 23.29, PCIe 0.00; adapt wait 0.70 join 0.00, 6.7 swaps/window
+  DT strata decode timing: 108 windows, avg T 2.26, 1.85 tokens/window, 38.05 ms/window = verify 34.56 (GPU-reach wait 31.00 + per-layer host 1.58 [plan 0.12 actq 0.07 jobs 0.02 CPU 1.26] + stage 0.09) + commit/emit 0.03 + draft 2.97; per layer-window: CPU experts 0.24 (0.30 entries), VRAM hits 21.96, PCIe 0.00; adapt wait 0.45 join 0.00, 6.1 swaps/window
+  DT strata decode timing: 106 windows, avg T 2.35, 1.89 tokens/window, 38.09 ms/window = verify 34.00 (GPU-reach wait 29.41 + per-layer host 2.58 [plan 0.15 actq 0.11 jobs 0.03 CPU 2.20] + stage 0.08) + commit/emit 0.03 + draft 3.00; per layer-window: CPU experts 0.44 (0.53 entries), VRAM hits 22.47, PCIe 0.00; adapt wait 1.03 join 0.00, 9.3 swaps/window
+  DA strata serve: suffix drafts: 1 windows, 1 of 3 drafts accepted
+  DA strata serve: prompt 62 tokens = 0 reused + 62 read in 930 ms (66.7 tok/s), 200 generated in 3903 ms (51.2 tok/s), drafts accepted 94 of 124, 1 checkpoints
+  DA strata serve: prompt 56 tokens = 0 reused + 56 read in 893 ms (62.7 tok/s), 200 generated in 4080 ms (49.0 tok/s), drafts accepted 92 of 151, 1 checkpoints
+  DA strata serve: prompt 62 tokens = 0 reused + 62 read in 876 ms (70.7 tok/s), 200 generated in 4109 ms (48.7 tok/s), drafts accepted 95 of 136, 1 checkpoints
+  DA strata serve: prompt 61 tokens = 0 reused + 61 read in 901 ms (67.7 tok/s), 200 generated in 4037 ms (49.5 tok/s), drafts accepted 94 of 143, 1 checkpoints
+  DA strata serve: suffix drafts: 1 windows, 0 of 2 drafts accepted
+  POOL slots=9873 vram=668
+  CFGCHECK keys=11 env_n=14 spec=4 min_p=0.70 extra=1
+  mark=64867
+=== ARM B64 spec=4 min_p=0.70 nenv=1 ready=109s
+  VW --spec 4 --spec-min-p 0.70 
+  FUSECHECK engine_env_hits=1
+  p0  ptok=76   out=200  decode=4521.5  ms  44.2 tok/s  wall=5.7s
+  p1  ptok=65   out=200  decode=4027.3  ms  49.7 tok/s  wall=5.0s
+  p2  ptok=62   out=200  decode=3867.5  ms  51.7 tok/s  wall=5.1s
+  p3  ptok=56   out=200  decode=4116.3  ms  48.6 tok/s  wall=4.9s
+  p4  ptok=62   out=200  decode=3824.6  ms  52.3 tok/s  wall=4.9s
+  p5  ptok=61   out=200  decode=4225.7  ms  47.3 tok/s  wall=5.1s
+  MEDIAN decode_tps = 49.66  (n=6)
+WROTE /home/albus/strata166/data/w809c_gen_B64.json
+  OKN 6/6
+  DT strata decode timing: 118 windows, avg T 2.08, 1.69 tokens/window, 38.32 ms/window = verify 33.13 (GPU-reach wait 26.27 + per-layer host 4.15 [plan 0.14 actq 0.13 jobs 0.04 CPU 3.77] + stage 0.06) + commit/emit 0.03 + draft 3.57; per layer-window: CPU experts 0.78 (0.97 entries), VRAM hits 19.03, PCIe 0.01; adapt wait 1.55 join 0.00, 14.6 swaps/window
+  DT strata decode timing: 104 windows, avg T 2.47, 1.92 tokens/window, 38.72 ms/window = verify 34.58 (GPU-reach wait 30.33 + per-layer host 2.18 [plan 0.15 actq 0.10 jobs 0.03 CPU 1.81] + stage 0.07) + commit/emit 0.03 + draft 3.18; per layer-window: CPU experts 0.36 (0.41 entries), VRAM hits 23.80, PCIe 0.00; adapt wait 0.91 join 0.00, 8.8 swaps/window
+  DT strata decode timing: 108 windows, avg T 2.09, 1.85 tokens/window, 35.81 ms/window = verify 32.36 (GPU-reach wait 28.66 + per-layer host 1.77 [plan 0.12 actq 0.07 jobs 0.02 CPU 1.43] + stage 0.10) + commit/emit 0.03 + draft 2.63; per layer-window: CPU experts 0.27 (0.32 entries), VRAM hits 20.23, PCIe 0.00; adapt wait 0.77 join 0.00, 6.6 swaps/window
+  DT strata decode timing: 115 windows, avg T 2.15, 1.74 tokens/window, 35.79 ms/window = verify 32.53 (GPU-reach wait 29.10 + per-layer host 1.50 [plan 0.12 actq 0.07 jobs 0.02 CPU 1.20] + stage 0.07) + commit/emit 0.03 + draft 2.71; per layer-window: CPU experts 0.23 (0.26 entries), VRAM hits 20.90, PCIe 0.00; adapt wait 0.50 join 0.00, 5.3 swaps/window
+  DT strata decode timing: 100 windows, avg T 2.42, 2.00 tokens/window, 38.25 ms/window = verify 34.28 (GPU-reach wait 30.06 + per-layer host 2.18 [plan 0.14 actq 0.09 jobs 0.03 CPU 1.84] + stage 0.07) + commit/emit 0.03 + draft 3.31; per layer-window: CPU experts 0.37 (0.47 entries), VRAM hits 23.29, PCIe 0.01; adapt wait 0.60 join 0.00, 7.8 swaps/window
+  DT strata decode timing: 112 windows, avg T 2.28, 1.79 tokens/window, 37.73 ms/window = verify 33.54 (GPU-reach wait 28.97 + per-layer host 2.59 [plan 0.14 actq 0.10 jobs 0.03 CPU 2.22] + stage 0.07) + commit/emit 0.03 + draft 3.10; per layer-window: CPU experts 0.44 (0.54 entries), VRAM hits 21.74, PCIe 0.00; adapt wait 1.04 join 0.00, 9.7 swaps/window
+  DA strata serve: prompt 76 tokens = 0 reused + 76 read in 1134 ms (67.0 tok/s), 200 generated in 4521 ms (44.2 tok/s), drafts accepted 82 of 127, 1 checkpoints
+  DA strata serve: prompt 65 tokens = 0 reused + 65 read in 1011 ms (64.3 tok/s), 200 generated in 4027 ms (49.7 tok/s), drafts accepted 97 of 153, 1 checkpoints
+  DA strata serve: prompt 62 tokens = 0 reused + 62 read in 1183 ms (52.4 tok/s), 200 generated in 3868 ms (51.7 tok/s), drafts accepted 93 of 118, 1 checkpoints
+  DA strata serve: prompt 56 tokens = 0 reused + 56 read in 815 ms (68.7 tok/s), 200 generated in 4116 ms (48.6 tok/s), drafts accepted 85 of 132, 1 checkpoints
+  DA strata serve: prompt 62 tokens = 0 reused + 62 read in 1017 ms (61.0 tok/s), 200 generated in 3825 ms (52.3 tok/s), drafts accepted 100 of 142, 1 checkpoints
+  DA strata serve: prompt 61 tokens = 0 reused + 61 read in 892 ms (68.4 tok/s), 200 generated in 4226 ms (47.3 tok/s), drafts accepted 88 of 143, 1 checkpoints
+  POOL slots=9873 vram=668
+  CFGCHECK keys=11 env_n=14 spec=4 min_p=0.70 extra=1
+  mark=64958
+=== ARM G spec=4 min_p=0.70 nenv=1 ready=71s
+  VW --spec 4 --spec-min-p 0.70 
+  FUSECHECK engine_env_hits=1
+  p0  ptok=76   out=200  decode=4491.3  ms  44.5 tok/s  wall=5.8s
+  p1  ptok=65   out=200  decode=3904.9  ms  51.2 tok/s  wall=4.8s
+  p2  ptok=62   out=200  decode=3964.9  ms  50.4 tok/s  wall=4.9s
+  p3  ptok=56   out=200  decode=4116.8  ms  48.6 tok/s  wall=4.9s
+  p4  ptok=62   out=200  decode=4011.5  ms  49.9 tok/s  wall=4.9s
+  p5  ptok=61   out=200  decode=4134.7  ms  48.4 tok/s  wall=5.0s
+  MEDIAN decode_tps = 49.86  (n=6)
+WROTE /home/albus/strata166/data/w809c_gen_G.json
+  OKN 6/6
+  DT strata decode timing: 120 windows, avg T 1.93, 1.67 tokens/window, 37.43 ms/window = verify 32.36 (GPU-reach wait 26.00 + per-layer host 3.78 [plan 0.13 actq 0.11 jobs 0.03 CPU 3.42] + stage 0.06) + commit/emit 0.04 + draft 3.24; per layer-window: CPU experts 0.72 (0.89 entries), VRAM hits 17.75, PCIe 0.01; adapt wait 1.76 join 0.00, 13.6 swaps/window
+  DT strata decode timing: 99 windows, avg T 2.54, 2.02 tokens/window, 39.44 ms/window = verify 34.98 (GPU-reach wait 30.21 + per-layer host 2.69 [plan 0.16 actq 0.12 jobs 0.03 CPU 2.30] + stage 0.06) + commit/emit 0.03 + draft 3.33; per layer-window: CPU experts 0.46 (0.54 entries), VRAM hits 24.23, PCIe 0.00; adapt wait 1.08 join 0.00, 10.7 swaps/window
+  DT strata decode timing: 106 windows, avg T 2.22, 1.89 tokens/window, 37.40 ms/window = verify 33.66 (GPU-reach wait 29.61 + per-layer host 2.07 [plan 0.14 actq 0.09 jobs 0.03 CPU 1.72] + stage 0.07) + commit/emit 0.03 + draft 3.02; per layer-window: CPU experts 0.34 (0.43 entries), VRAM hits 21.29, PCIe 0.00; adapt wait 0.67 join 0.00, 7.8 swaps/window
+  DT strata decode timing: 115 windows, avg T 2.16, 1.74 tokens/window, 35.80 ms/window = verify 32.60 (GPU-reach wait 29.21 + per-layer host 1.45 [plan 0.12 actq 0.07 jobs 0.02 CPU 1.15] + stage 0.08) + commit/emit 0.03 + draft 2.62; per layer-window: CPU experts 0.23 (0.26 entries), VRAM hits 20.98, PCIe 0.00; adapt wait 0.52 join 0.00, 5.4 swaps/window
+  DT strata decode timing: 111 windows, avg T 2.08, 1.80 tokens/window, 36.14 ms/window = verify 32.74 (GPU-reach wait 28.61 + per-layer host 2.22 [plan 0.11 actq 0.07 jobs 0.02 CPU 1.43] + stage 0.58) + commit/emit 0.03 + draft 2.52; per layer-window: CPU experts 0.28 (0.34 entries), VRAM hits 20.12, PCIe 0.01; adapt wait 0.82 join 0.00, 6.3 swaps/window
+  DT strata decode timing: 111 windows, avg T 2.18, 1.80 tokens/window, 37.25 ms/window = verify 32.97 (GPU-reach wait 28.51 + per-layer host 2.54 [plan 0.13 actq 0.09 jobs 0.03 CPU 2.19] + stage 0.07) + commit/emit 0.03 + draft 3.16; per layer-window: CPU experts 0.44 (0.53 entries), VRAM hits 20.76, PCIe 0.01; adapt wait 1.06 join 0.00, 10.6 swaps/window
+  DA strata serve: prompt 76 tokens = 0 reused + 76 read in 1222 ms (62.2 tok/s), 200 generated in 4491 ms (44.5 tok/s), drafts accepted 80 of 112, 1 checkpoints
+  DA strata serve: prompt 65 tokens = 0 reused + 65 read in 922 ms (70.5 tok/s), 200 generated in 3905 ms (51.2 tok/s), drafts accepted 101 of 152, 1 checkpoints
+  DA strata serve: prompt 62 tokens = 0 reused + 62 read in 896 ms (69.2 tok/s), 200 generated in 3965 ms (50.4 tok/s), drafts accepted 97 of 129, 1 checkpoints
+  DA strata serve: prompt 56 tokens = 0 reused + 56 read in 810 ms (69.1 tok/s), 200 generated in 4117 ms (48.6 tok/s), drafts accepted 85 of 133, 1 checkpoints
+  DA strata serve: prompt 62 tokens = 0 reused + 62 read in 872 ms (71.1 tok/s), 200 generated in 4012 ms (49.9 tok/s), drafts accepted 89 of 120, 1 checkpoints
+  DA strata serve: prompt 61 tokens = 0 reused + 61 read in 888 ms (68.7 tok/s), 200 generated in 4135 ms (48.4 tok/s), drafts accepted 90 of 131, 1 checkpoints
+  POOL slots=9873 vram=668
+  CFGCHECK keys=11 env_n=13 spec=4 min_p=0.70 extra=0
+  mark=65049
+=== ARM P2 spec=4 min_p=0.70 nenv=0 ready=48s
+  VW --spec 4 --spec-min-p 0.70 
+  FUSECHECK engine_env_hits=0
+  p0  ptok=76   out=200  decode=4394.9  ms  45.5 tok/s  wall=5.6s
+  p1  ptok=65   out=200  decode=3861.5  ms  51.8 tok/s  wall=4.8s
+  p2  ptok=62   out=200  decode=4038.3  ms  49.5 tok/s  wall=5.0s
+  p3  ptok=56   out=200  decode=3893.8  ms  51.4 tok/s  wall=4.7s
+  p4  ptok=62   out=200  decode=3989.4  ms  50.1 tok/s  wall=4.9s
+  p5  ptok=61   out=200  decode=4290.0  ms  46.6 tok/s  wall=5.2s
+  MEDIAN decode_tps = 50.13  (n=6)
+WROTE /home/albus/strata166/data/w809c_gen_P2.json
+  OKN 6/6
+  DT strata decode timing: 112 windows, avg T 2.20, 1.79 tokens/window, 39.24 ms/window = verify 33.82 (GPU-reach wait 26.90 + per-layer host 4.22 [plan 0.14 actq 0.13 jobs 0.04 CPU 3.83] + stage 0.06) + commit/emit 0.03 + draft 3.73; per layer-window: CPU experts 0.80 (0.98 entries), VRAM hits 20.17, PCIe 0.01; adapt wait 1.63 join 0.00, 15.5 swaps/window
+  DT strata decode timing: 98 windows, avg T 2.57, 2.04 tokens/window, 39.40 ms/window = verify 35.20 (GPU-reach wait 30.82 + per-layer host 2.27 [plan 0.15 actq 0.11 jobs 0.03 CPU 1.89] + stage 0.07) + commit/emit 0.03 + draft 3.12; per layer-window: CPU experts 0.37 (0.45 entries), VRAM hits 24.73, PCIe 0.00; adapt wait 1.03 join 0.00, 9.4 swaps/window
+  DT strata decode timing: 112 windows, avg T 2.13, 1.79 tokens/window, 36.06 ms/window = verify 32.56 (GPU-reach wait 29.03 + per-layer host 1.59 [plan 0.12 actq 0.07 jobs 0.02 CPU 1.26] + stage 0.10) + commit/emit 0.03 + draft 2.67; per layer-window: CPU experts 0.23 (0.28 entries), VRAM hits 20.70, PCIe 0.00; adapt wait 0.77 join 0.00, 6.6 swaps/window
+  DT strata decode timing: 105 windows, avg T 2.32, 1.90 tokens/window, 37.08 ms/window = verify 33.67 (GPU-reach wait 29.97 + per-layer host 1.69 [plan 0.13 actq 0.08 jobs 0.02 CPU 1.34] + stage 0.10) + commit/emit 0.03 + draft 2.79; per layer-window: CPU experts 0.26 (0.30 entries), VRAM hits 22.56, PCIe 0.00; adapt wait 0.57 join 0.00, 5.7 swaps/window
+  DT strata decode timing: 107 windows, avg T 2.30, 1.87 tokens/window, 37.28 ms/window = verify 33.48 (GPU-reach wait 29.55 + per-layer host 1.95 [plan 0.13 actq 0.08 jobs 0.02 CPU 1.60] + stage 0.09) + commit/emit 0.03 + draft 2.93; per layer-window: CPU experts 0.31 (0.39 entries), VRAM hits 22.18, PCIe 0.00; adapt wait 0.82 join 0.00, 7.8 swaps/window
+  DT strata decode timing: 117 windows, avg T 2.12, 1.71 tokens/window, 36.67 ms/window = verify 32.57 (GPU-reach wait 28.21 + per-layer host 2.45 [plan 0.13 actq 0.09 jobs 0.03 CPU 2.11] + stage 0.07) + commit/emit 0.03 + draft 2.81; per layer-window: CPU experts 0.46 (0.56 entries), VRAM hits 20.16, PCIe 0.01; adapt wait 1.23 join 0.00, 9.8 swaps/window
+  DA strata serve: prompt 76 tokens = 0 reused + 76 read in 1160 ms (65.5 tok/s), 200 generated in 4395 ms (45.5 tok/s), drafts accepted 88 of 134, 1 checkpoints
+  DA strata serve: prompt 65 tokens = 0 reused + 65 read in 949 ms (68.5 tok/s), 200 generated in 3862 ms (51.8 tok/s), drafts accepted 103 of 154, 1 checkpoints
+  DA strata serve: prompt 62 tokens = 0 reused + 62 read in 950 ms (65.3 tok/s), 200 generated in 4038 ms (49.5 tok/s), drafts accepted 89 of 127, 1 checkpoints
+  DA strata serve: prompt 56 tokens = 0 reused + 56 read in 831 ms (67.4 tok/s), 200 generated in 3894 ms (51.4 tok/s), drafts accepted 98 of 139, 1 checkpoints
+  DA strata serve: prompt 62 tokens = 0 reused + 62 read in 901 ms (68.8 tok/s), 200 generated in 3989 ms (50.1 tok/s), drafts accepted 94 of 139, 1 checkpoints
+  DA strata serve: prompt 61 tokens = 0 reused + 61 read in 869 ms (70.2 tok/s), 200 generated in 4290 ms (46.6 tok/s), drafts accepted 85 of 131, 1 checkpoints
+  POOL slots=9873 vram=668
+restored 53s
+  trap-restored (any exit path)

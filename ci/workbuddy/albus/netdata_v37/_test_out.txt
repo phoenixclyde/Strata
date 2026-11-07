@@ -1,0 +1,132 @@
+charts_indexed=413
+  id.amdUtil = amdgpu.gpu_utilization_unknown AMD GPU_card0
+  id.amdVramPerc = amdgpu.gpu_mem_vram_usage_perc_unknown AMD GPU_card0
+  id.amdClk = amdgpu.gpu_clk_frequency_unknown AMD GPU_card0
+  id.amdMClk = amdgpu.gpu_mem_clk_frequency_unknown AMD GPU_card0
+  id.amdMemUtil = amdgpu.gpu_mem_utilization_unknown AMD GPU_card0
+  id.amdTempEdge = sensors.temperature_amdgpu-pci-0500_temp1_edge_input
+  id.amdTempJunc = sensors.temperature_amdgpu-pci-0500_temp2_junction_input
+  id.amdTempMem = sensors.temperature_amdgpu-pci-0500_temp3_mem_input
+  id.amdPower = sensors.power_amdgpu-pci-0500_power1_PPT_input
+  id.amdFan = sensors.fan_nct6779-isa-0a20_fan1_input
+  id.cpu = system.cpu
+  id.ram = system.ram
+  id.load = system.load
+  id.nvdUtil = nvidia_smi.gpu_gpu-6b3ed4a1-5b1d-6d0c-a3ee-7d482e91a7a8_gpu_utilization
+  id.nvdFb = nvidia_smi.gpu_gpu-6b3ed4a1-5b1d-6d0c-a3ee-7d482e91a7a8_frame_buffer_memory_usage
+  id.nvdTemp = nvidia_smi.gpu_gpu-6b3ed4a1-5b1d-6d0c-a3ee-7d482e91a7a8_temperature
+  id.nvdPower = nvidia_smi.gpu_gpu-6b3ed4a1-5b1d-6d0c-a3ee-7d482e91a7a8_power_draw
+  id.nvdClk = nvidia_smi.gpu_gpu-6b3ed4a1-5b1d-6d0c-a3ee-7d482e91a7a8_clock_freq
+  id.nvdMemUtil = nvidia_smi.gpu_gpu-6b3ed4a1-5b1d-6d0c-a3ee-7d482e91a7a8_memory_utilization
+  id.nvdFan = nvidia_smi.gpu_gpu-6b3ed4a1-5b1d-6d0c-a3ee-7d482e91a7a8_fan_speed_perc
+  id.nvdPcie = nvidia_smi.gpu_gpu-6b3ed4a1-5b1d-6d0c-a3ee-7d482e91a7a8_pcie_bandwidth_utilization
+  id.nvdPstate = nvidia_smi.gpu_gpu-6b3ed4a1-5b1d-6d0c-a3ee-7d482e91a7a8_performance_state
+  id.nvdEnc = nvidia_smi.gpu_gpu-6b3ed4a1-5b1d-6d0c-a3ee-7d482e91a7a8_encoder_utilization
+  id.nvdDec = nvidia_smi.gpu_gpu-6b3ed4a1-5b1d-6d0c-a3ee-7d482e91a7a8_decoder_utilization
+  id.net = system.net
+  id.io = system.io
+  id.disk = disk_space./
+  id.cpuTemp = sensors.temperature_coretemp-isa-0000_temp1_Package_id_0_input
+  id.mbTemp = sensors.temperature_nct6779-isa-0a20_temp2_CPUTIN_input
+  id.cpuPower = cpu.powercap_intel_rapl_zone_package-0
+  id.cpuFreq = cpu.cpufreq
+  id.uptime = system.uptime
+  id.cpuFan = sensors.fan_nct6779-isa-0a20_fan2_input
+-- 标签 --
+amd-name = MI50 32GB (gfx906 / card0)
+amd-id   = PCI 05:00.0 · 驱动 amdgpu · 采集 1s
+nvd-name = NVIDIA GeForce RTX 2070
+nvd-id   = PCI 07:00.0 · 驱动 nvidia · 采集 2s
+fan id   = sensors.fan_nct6779-isa-0a20_fan1_input  (必须是 nct6779 的 fan1_input = 主板 PWM1)
+nvd-missing = 
+-- AMD 瓦片 --
+amd-util = 0.0 | t-edge = 42<small>°C</small> | t-junc = 44<small>°C</small> | t-mem = 42<small>°C</small>
+amd-power = 17<small>W</small> | clk = 925<small>MHz</small> | mclk = 350<small>MHz</small>
+amd-memutil = 0.0<small>%</small> | fan = 906<small>rpm</small>
+amd-vram-txt = 31.3 GiB / 32.0 GiB  (97.8%)
+-- NVIDIA 瓦片（本次部署新增） --
+nvd-util = 0.0
+nvd-temp = 29<small>°C</small> | power = 22.0<small>W</small> | clk = 300<small>MHz</small> | mclk = 405<small>MHz</small>
+nvd-memutil = 0.0<small>%</small> | fan = 0<small>%</small> | pcie = 0.0<small>%</small> | pstate = P8
+nvd-vram-txt = 100.0 MiB / 8.00 GiB  (1.2%)
+-- 主机条 --
+host-cpu-txt = 0.6 % | ram = 79.6 GiB / 125.7 GiB  (63.4%)
+host-disk-pct = 17.1<small>%</small> | free = 774.2<small>GiB</small>
+host-net-rx = 341.0<small>kbit/s</small> | tx = 216.5<small>kbit/s</small> | io-in = 62.6<small>KiB/s</small> | io-out = 66.6<small>KiB/s</small>
+DIM_MISS = []   (非空=有维度名写错，colOf 静默退到了第 1 列)
+host-cput = 26<small>°C</small> | mbt = 33<small>°C</small>
+-- 顶部总览 --
+ov-power = 62.6 | CPU 9 + 内存 15 + MI50 17 + 2070 22 · 不含主板/盘/电源损耗
+ov-util  = 0.0 | 0.0 / 0.0
+ov-temp  = 42 | MI50 42 °C
+ov-vram  = 78.5 | 31.4 GiB / 40.0 GiB
+ov-cpufrq = 1200 | 44 线程 | ram = 63.4 | load = 0.56
+ov-gpu   = 2 / 2 | MI50 · 2070 | ov-id = 聚合 2 张卡 · 窗口 120 s
+ov 行1   = 0 / 42 / 17 / 97.8 % / fan 906 rpm
+ov 行2   = 0 / 29 / 22 / 1.2 % / fan 0 %
+ov 行3   = 1 / 26 / 9 / 63.4 % / 1160 rpm | 运行 22 分
+-- 走势图与状态 --
+amd-chart svg len = 7023 | nvd-chart svg len = 4307 | host-chart svg len = 4802
+amd-range = 峰 0.0% · 均 0.0% · 120 点 | nvd-range = 峰 0.0% · 均 0.0% · 60 点 | host-range = 峰 3.3% · 均 0.9% · 120 点
+livetext = 在线 00:49:26 | lastupdate = 最后更新: 00:49:26
+bytes(34342961152) = 32.0 GiB | bytes(8.5e9) = 7.92 GiB
+host 环 = 0.6 %  (host-cpu-txt = 0.6 %)
+disk self-check: used=160.178757 avail=774.1812067 reserved=0 -> 期望 17.14%, 页面 17.1
+-- 顶栏状态组（正向：真实 health.json）--
+  health.json = {"ts":1793810971,"src":"rk-health-collector/container","z0":{"perf":"auto","gov":"schedutil","thp":"madvise"},"poll":{"probe_ok":true,"probe_err":null,"probe_abort":null,"probe_token_n":62,"probe_token_strict":56,"probe_token_expect":56,"probe_partial":false,"verdict":"VRAM_LEAK","exit":3,"oops_run":0,"oops_boot":1,"oops_all":0,"oops_run_raw":0,"oops_const_mode":"drop","oops_const_run":0,"oops_const_all":0,"klog_ovr_taken":0,"klog_ovr_fail":"none","klog_lines":1703,"ratio":3093.44,"vram_used":33602756608,"vram_clean":10862592,"vram_sysfs":33602756608,"vram_src":"probe_rocm_smi","uptime_since":"2026-11-05 00:27:11","gpu_hwfault":"ZERO","gpu_hwfault_carlog":"ZERO","gpu_fault_n":0,"mem_pressure":"CRIT","mem_avail_pct":14.4,"commit_pct":124.5,"pagefault":0,"pagefault_t":0,"vmfail":0,"gfx_fault":"ZERO","hwfault_klog":"ZERO","memacc_klog":0,"coredump_klog":0,"carlog_memacc":0,"carlog_coredump":0,"carlog_scan_n":0,"carlog_fault_files":"<none>","box":"IDLE","docker":6,"klog_src":"dmesg","box_car":0,"box_serve":0,"box_ctr":0,"gpu_busy_pct":0,"strata_serve":0},"boot":{"src_d":"dmesg","src_j":"journalctl_k_b0","lines_d":1703,"lines_j":1703,"sdma1":0,"page1":0,"ring":0,"ite":0,"lockup":0,"lbar":0,"ev_d":true,"ev_j":true,"ev_th_d":1000,"ev_th_j":100,"raw_d":{"lbar":0,"ite":0,"lockup":0,"sdma1":0,"page1":0,"ring":0},"raw_j":{"lbar":0,"ite":0,"lockup":0,"sdma1":0,"page1":0,"ring":0},"carf":0,"carf_raw":null,"carf_boot":null,"carf_stale":0,"boot_id":"5b242f9b-eaba-4030-b748-15007821a2d8"},"tgt":{"cmdline_pt":1,"vum":0,"conf_md5":"0195abee1f56ca3c216181453c016aa2","kfd_proc":1},"sys":{"alarms_warn":0,"alarms_crit":0,"alarms_eval":216,"alarms_undef":42,"alarms_uninit":8,"swap_used":49152,"swap_total":17179865088,"load1":0.47,"uptime":1339}}
+  Z0        = auto[warn] / schedutil[warn] / madvise[warn]
+  污染      = 显存泄漏[bad] / 3093.44x[bad] / 0[ok] / 0[defer]
+  健康      = 0[ok] / 48.0 KiB[ok] / 6[ok] / IDLE[ok] / 7s[ok]
+-- 顶栏状态组（负向：喂一份该红的 fixture，必须真的能红）--
+  hs-perf = auto[warn]  期望 auto[warn]
+  hs-gov = schedutil[warn]  期望 schedutil[warn]
+  hs-thp = madvise[warn]  期望 madvise[warn]
+  hs-poll-verdict = 显存泄漏[bad]  期望 显存泄漏[bad]
+  hs-poll-ratio = 12.50x[bad]  期望 12.50x[bad]
+  hs-poll-oops = 4[bad]  期望 4[bad]
+  hs-poll-gfx = --[]  期望 5[warn]
+  hs-alarm = 3[bad]  期望 3[bad]
+  hs-swap = 512.0 MiB[warn]  期望 512.0 MiB[warn]
+  hs-ctr = 0[warn]  期望 0[warn]
+  hs-box = BUSY[warn]  期望 BUSY[warn]
+-- 顶栏状态组（延后判决：DEFERRED_BUSY 不许替探针判显存维）--
+  hs-poll-verdict = 作业·显存维不判[defer,busy]  期望 有车在飞[无色]
+  hs-poll-ratio = 2174.57x[defer]  期望 2174.57x[无色]
+  hs-poll-oops = 1[warn]  期望 1[无色]
+  hs-poll-gfx = --[无色]  期望 0[无色]
+-- 顶栏状态组（探针失效：必须自报，不许静默 --）--
+  hs-perf = high[ok]  期望 high[ok]
+  hs-alarm = 0[ok]  期望 0[ok]
+  hs-poll-verdict = 探针失效[bad]  期望 探针失效[bad]
+  hs-poll-ratio = --[无色]  期望 --[无色]
+  hs-poll-oops = --[无色]  期望 --[无色]
+  hs-poll-gfx = --[无色]  期望 --[无色]
+  hs-ctr = --[无色]  期望 --[无色]
+  hs-box = --[无色]  期望 --[无色]
+-- 顶栏状态组（IDLE 是已知态 -> 绿点）--
+  hs-box = IDLE[ok]  期望 IDLE[ok]
+  hs-ctr = 5[ok]  期望 5[ok]
+  hs-poll-verdict = 干净[ok]  期望 干净[ok]
+-- 顶栏状态组（采集心跳 a：绝对判据）--
+  hs-fresh = 停 296s[bad]
+-- 顶栏状态组（采集心跳 b：相对判据，同一份 ts 连读 3 次）--
+  hs-fresh = 0s[ok]
+-- 顶栏状态组（诚实性：字段缺失 -> -- 且不置色）--
+  hs-perf = --[无色]
+  hs-gov = --[无色]
+  hs-thp = --[无色]
+  hs-poll-verdict = --[无色]
+  hs-poll-ratio = --[无色]
+  hs-poll-oops = --[无色]
+  hs-poll-gfx = --[无色]
+  hs-alarm = --[无色]
+  hs-swap = --[无色]
+  hs-ctr = --[无色]
+  hs-box = --[无色]
+  hs-fresh = --[无色]
+-- 顶栏状态组（v1.6 新枚举：必须有中文 + 配色）--
+  MEM_PRESSURE_ONLY -> 主机内存压力[warn]
+  MEM_PRESSURE_UNKNOWN -> 内存判据不可读[warn]
+  新枚举透传 = 未识别:SOMETHING_NEW[warn]
+PROBLEMS = [负向] hs-poll-gfx 期望 5 实际 -- ; [负向] hs-poll-gfx 配色期望 warn 实际 无色 ; [延后] hs-poll-verdict 期望 有车在飞 实际 作业·显存维不判 ; [延后] hs-poll-verdict 配色期望 无色 实际 defer,busy ; [延后] hs-poll-ratio 配色期望 无色 实际 defer ; [延后] hs-poll-oops 配色期望 无色 实际 warn ; [延后] hs-poll-gfx 期望 0 实际 -- ; [心跳b] 期望 停 实际 0s ; [心跳b] 期望 bad 实际 ok ; [新枚举] 应原样透传，实际 未识别:SOMETHING_NEW ; [新枚举] 不该擅自置色，实际 warn
+verdict = FAIL

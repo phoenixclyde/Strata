@@ -1,0 +1,95 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- **草稿深度自适应**，kShape编译期常量非旋钮(W8)；同卡 L2=8MB/HBM~805\n",
+   "new": "- **草稿深度自适应**，kShape编译期常量非旋钮(W8)；同卡 L2=8MB/HBM~805\n- **重启丢前2请求**(冷专家17.4->10.3,偏高3%);A/B必同会话交错(P98)\n- **HC**:down对int8/bf16不敏感(3.47);up余量14%(2.96);HC_Q8净优-3.2%+169槽(P100)\n"
+  },
+  {
+   "kind": "substr",
+   "old": ";基线测于performance,现schedutil(P97)",
+   "new": ";**gov schedutil快2.3%**(P97)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **KV 门**（P51）：`STRATA_LOGPOS` 须**两请求**、fresh<=`--short-read`；**self=0**。W770 needle 6/6 => `k8v4` 无损失",
+   "new": "- **KV门**(P51)：`STRATA_LOGPOS`须两请求,fresh<=`--short-read`,self=0；W770 6/6=>k8v4无损失"
+  },
+  {
+   "kind": "substr",
+   "old": "- **W775delta**：P55/P56于k8v4不可达;PLE ram -45%(否);P54=IO_PF_STAGE;B8/B7废(W785);drop_caches不重置mmap页",
+   "new": "- **W775delta**：P55/P56不可达;PLE ram -45%(否);P54=IO_PF_STAGE;B8/B7废;drop_caches不重置mmap页"
+  },
+  {
+   "kind": "substr",
+   "old": "- **dot**：dot4 62,596/dot8 0 => dp4a+解包；换 dot8 须双方 i4（P38）",
+   "new": "- **dot**：dot4 62,596/dot8 0=>dp4a+解包;换dot8须双方i4(P38)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改答案判据**：按 index 跨臂对齐（spread 才真判据，W739）",
+   "new": "- **改答案判据**：按index跨臂对齐(W739)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **自比须同形状**；比 `ms/step`；不可复现先排冷热；**计时行含adapt+join**(曾10.69ms被漏)",
+   "new": "- **自比同形状**;比`ms/step`;不可复现先排冷热;**计时行含adapt+join**(曾10.69ms漏)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **166 PCIe**：Gen3 x16；pcie_bw 读~1s 须独线程",
+   "new": "- **166 PCIe**：Gen3x16;pcie_bw读~1s须独线程"
+  },
+  {
+   "kind": "substr",
+   "old": "- **占用率**=块/CUx线程/64/40(wave64);HC 41块=6.8%=>只加块数,TILEV无效(P96/W789)",
+   "new": "- **占用率**=块/CUx线程/64/40(wave64);HC 41块6.8%=>只加块数,TILEV无效(P96)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **verify_config.py 判配置面** => 运行期取引擎 /proc(W764)",
+   "new": "- **verify_config只判配置面**=>运行期取引擎/proc(W764)"
+  },
+  {
+   "kind": "substr",
+   "old": "- 改裁定后按 ID 全文 grep 同步(W752)",
+   "new": "- 改裁定按ID全文grep同步(W752)"
+  },
+  {
+   "kind": "substr",
+   "old": "- 多文件同走 stdout 须补尾换行",
+   "new": "- 多文件同走stdout须补尾换行"
+  },
+  {
+   "kind": "substr",
+   "old": "- 本工作区 = Strata（gfx906/MI50 32GB）部署调参",
+   "new": "- 本工作区=Strata(gfx906/MI50 32GB)部署调参"
+  },
+  {
+   "kind": "substr",
+   "old": "- 模型 `qwen3.8-flash-next-ud-iq4_xs`（huihui），262144 ctx，`--kv k8v4`",
+   "new": "- 模型 qwen3.8-flash-next-ud-iq4_xs(huihui),262144ctx,--kv k8v4"
+  },
+  {
+   "kind": "substr",
+   "old": "- 权威件：`PARAM_REGISTER.tsv`·`W713_PLAN.md`",
+   "new": "- 权威件:PARAM_REGISTER.tsv·W713_PLAN.md"
+  },
+  {
+   "kind": "substr",
+   "old": "env：**STRATA_HC_Q8=1**(gfx906默认关;+0.6%,槽9732->9901)",
+   "new": "env：**HC_Q8=1**(gfx默认关;+0.6%,槽9732->9901)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **温 TTFT**：重发=上限、追加=多轮、不可混",
+   "new": "- **温TTFT**:重发=上限,追加=多轮,不可混"
+  },
+  {
+   "kind": "substr",
+   "old": "- **筛候选**：上限=环节占比(P31/P34)",
+   "new": "- **筛候选**：上限=环节占比(P31)"
+  }
+ ]
+}

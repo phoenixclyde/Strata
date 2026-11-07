@@ -1,0 +1,41 @@
+# W819 share=0 determinism 2026-10-27 01:20:48
+  CFGCHECK env_n=12 share=0 max=3072
+=== READY 41s
+  MODE strata-vision: on the CPU, 22 threads, no warm-up
+  MODE strata-vision: on the CPU, 22 threads, no warm-up
+  R0 d4ffad2b371fc776f08373a2e86e6938 n=554 wall=3.5s
+  R1 d4ffad2b371fc776f08373a2e86e6938 n=554 wall=2.2s
+  R2 354d4ae85a86bed376c2b264bd88f500 n=556 wall=2.2s
+  R3 354d4ae85a86bed376c2b264bd88f500 n=556 wall=2.2s
+  R4 bf78de3282dc341cbf44bf4e3e45b993 n=556 wall=2.1s
+  R5 30bdfa070a3b8e3c58a27c0d6237ca64 n=522 wall=2.2s
+  PREFIX matrix (chars):
+    R0-R1 common=554 of min(554,554)
+    R0-R2 common=409 of min(554,556)
+    R0-R3 common=409 of min(554,556)
+    R0-R4 common=409 of min(554,556)
+    R0-R5 common=49 of min(554,522)
+    R1-R2 common=409 of min(554,556)
+    R1-R3 common=409 of min(554,556)
+    R1-R4 common=409 of min(554,556)
+    R1-R5 common=49 of min(554,522)
+    R2-R3 common=556 of min(556,556)
+    R2-R4 common=432 of min(556,556)
+    R2-R5 common=49 of min(556,522)
+    R3-R4 common=432 of min(556,556)
+    R3-R5 common=49 of min(556,522)
+    R4-R5 common=49 of min(556,522)
+DET2 tag=SHARE0 reps=6 unique=4 maxt=96
+  R0 87b7d1707640d6b632e8480a2cc35e0a n=522 wall=2.3s
+  R1 354d4ae85a86bed376c2b264bd88f500 n=556 wall=2.2s
+  R2 354d4ae85a86bed376c2b264bd88f500 n=556 wall=2.2s
+  R3 1f34933c6b0c03580624383849c962c6 n=554 wall=2.3s
+  PREFIX matrix (chars):
+    R0-R1 common=49 of min(522,556)
+    R0-R2 common=49 of min(522,556)
+    R0-R3 common=49 of min(522,554)
+    R1-R2 common=556 of min(556,556)
+    R1-R3 common=533 of min(556,554)
+    R2-R3 common=533 of min(556,554)
+DET2 tag=SHARE0b reps=4 unique=3 maxt=96
+restored 39s

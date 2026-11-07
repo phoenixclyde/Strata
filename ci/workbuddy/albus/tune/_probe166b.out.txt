@@ -1,0 +1,215 @@
+===CONFIG===
+{
+ "exe": "/src/build-906/strata",
+ "args": [
+  "--pack",
+  "/data/packs/huihui-ud-iq4_xs",
+  "--native",
+  "/models/huihui-ai/Huihui-Qwen3.8-Flash-Next-abliterated-GGUF/unsloth-UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+  "--expert-profile",
+  "/src/data/expert-profile.bin",
+  "--expert-cache",
+  "auto",
+  "--pcie-frac",
+  "0.20",
+  "--spec",
+  "4",
+  "--spec-min-p",
+  "0.70",
+  "--mtp",
+  "/data/mtp/rt",
+  "--max-context",
+  "262144",
+  "--kv",
+  "k8v4",
+  "--prefill",
+  "auto",
+  "--prompt-cache-every",
+  "8192",
+  "--expert-profile-save",
+  "/data/profiles/huihui-ud-iq4_xs-learned.bin",
+  "--conversation-cache-mib",
+  "4096",
+  "--vision",
+  "--mtp-window",
+  "8192",
+  "--resident-experts"
+ ],
+ "cwd": "/src",
+ "tokenizer": "/data/packs/huihui-ud-iq4_xs/tokenizer",
+ "model_name": "qwen3.8-flash-next-ud-iq4_xs-abliterated",
+ "log": "/data/strata-huihui-ud-iq4_xs.log",
+ "host": "0.0.0.0",
+ "port": 8090,
+ "backend": "hip",
+ "env": {
+  "HSA_OVERRIDE_GFX_VERSION": "9.0.6",
+  "STRATA_PREFILL_CPU_SHARE": "0",
+  "STRATA_RESIDENT_HEADROOM_GIB": "0.5"
+ },
+ "vision": {
+  "exe": "/data/vision/strata-vision",
+  "mmproj": "/models/huihui-ai/Huihui-Qwen3.8-Flash-Next-abliterated-GGUF/mmproj-Qwen3.8-Flash-Next-BF16.gguf",
+  "model": "/models/huihui-ai/Huihui-Qwen3.8-Flash-Next-abliterated-GGUF/unsloth-UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf"
+ }
+}
+
+===HELP_PREFILL===
+                       (vs int8's 1,056); streams with --kv-resident too
+  --kv-resident N      KV streaming: keep N cells of each QSA layer in VRAM (min 20480) and the
+                       all of it in VRAM. A context of N cells or fewer is not streamed
+  --stream-token       enqueue token work on the session stream (experimental)
+  --check-logits       copy and check all logits in the stream-token path
+  --native SHARD1      every full-context native path at once (plan v0.3 P1): stream-token,
+  --native-head-gguf PATH  native Q5_K head from model shard 1; requires --stream-token
+                       slot drafters sit on the last stage's GPU; not with --batch-groups); needs VRAM per slot
+  --batch-groups G     --batch with a layer split: the slots in G groups pipelined through the GPUs
+  --pipeline-windows N --serve with a layer split on two GPUs (on by default for 2+ stages on AMD gfx12;
+                       STRATA_PIPELINE_AUTO=0 or N=0 turns it off): one conversation's verify windows
+                       (stage 0 runs the next window while stage 1 verifies this one); docs/MULTI_GPU.md
+  --trim-stage-weights an explicit --layer-split: each GPU loads only its own layers' dense weights
+                       chunk boundary (default off; requires --prompt-cache and --prompt-cache-every > 0)
+  --prefill-head-alias --serve: unload the native output head while each fresh prompt is read,
+  --mtp-hnorm pooled|stream  the draft layer's hidden-input norm: one RMS over all four streams
+                       (default) or one per stream (llama.cpp's MTP graph)
+  --control-vector-scaled FILE:SCALE[,...]  a control vector GGUF on the residual stream (llama.cpp's
+  --prefill CHUNK      batched prompt processing in chunks of CHUNK tokens (needs --native); auto =
+                       the largest chunk up to 8192 whose buffers the expert cache can lend;
+                       auto:16384 / auto:32768 (or STRATA_PREFILL_AUTO_MAX) allow bigger ones
+  --prefill-pipe R     opt-in, a layer split: prompt chunks sized so the stages read at once - R is
+                       the buffers' chunk count (STRATA_PREFILL_EQUAL's rule); 0 off (default; or
+                       STRATA_PREFILL_PIPE)
+                       which changes every number downstream - pass it for any real run
+  --stage-timing       per-stage KERNEL-COUNT shares.  NOT a time profile: an uncaptured
+  --stats              print the per-stage breakdown
+  --gpu-stages         R0.9: capture the layer as three graphs (mixer / ffn+router / post)
+                       and time them from OUTSIDE the capture.  The per-stage table on the
+                       real graph that --stage-timing cannot give.  Prints and exits.
+  --peer-prefill-rows N  prompt rows per layer the peer computes (default half of chunk x top-k;
+                       adaptive tier's job thread, the prefill helpers, the CUDA driver's threads, ...):
+===HELP_CACHE===
+  --ple-gguf PATH      required PLE table (original second GGUF shard); with --native, the model's
+  --no-ple             explicit diagnostic ablation of the PLE layer
+  --ple-io direct|mmap|ram  n-gram table reads (plan v0.3 P2). direct (default): unbuffered SSD
+                       reads, the table never enters RAM or the file cache; mmap: A/B arm;
+  --ple-row-cache N    bounded cache of fetched rows, 90 B each (default 1048576; 0 = off)
+  --ple-inflight N     outstanding SSD reads (default 256)
+  --ple-delay-us U     fault injection: each row read completes no earlier than U us
+  --ple-sync-submit    A/B arm: submit table reads on the token thread (default: an I/O thread)
+                       VRAM; default fp16 until gate G-C accepts int8
+                       (vs int8's 1,056); streams with --kv-resident too
+  --kv-resident N      KV streaming: keep N cells of each QSA layer in VRAM (min 20480) and the
+                       whole K/V in pinned RAM; the freed VRAM goes to expert slots. 0 (default):
+                       all of it in VRAM. A context of N cells or fewer is not streamed
+  --kv-grow            the K/V takes VRAM only for the cells the requests reach and the expert
+                       cache holds the rest, giving slots back as the context grows (one GPU, with
+                       --expert-profile; STRATA_KV_GROW=1/0 also). Default: the whole --max-context
+  --native-bf16-extra   experimental CUDA-oracle PLE/shared gate BF16 projections
+  --native-ple-key      experimental native PLE key; requires --native-dense-gguf
+  --native-qsa-indexer  experimental pinned indexer key cache and pooling
+  --native-ple-postops  experimental pinned PLE postprojection arithmetic
+  --native-router       experimental pinned CUDA 512-expert top-10 routing
+  --cpu-oracle-q8-0     experimental pinned CPU expert quantization and dot reduction
+                       GR MMVF, BF16, head, dense + PLE key, MoE combine, GDN, router, QSA,
+                       indexer, RoPE, PLE postops, and the CPU q8_0 contract unless the
+                       expert cache is on. Individual --native-* flags stay for A/B.
+                       BF16 as the checkpoint ships it; mapped host memory, no VRAM)
+  --expert-cache-cpu-order  experimental GPU expert reduction matching CPU order
+                       K in the cache is post-RoPE, so one run one scaling
+  --dump-routing PATH  write the routed expert ids and weights per layer per position (P0.S8)
+  --shared-late        A/B: shared expert after the CPU pool (default: overlapped with it)
+  --keep-canonical     A/B: also load canonical copies of natively served tensors (more VRAM)
+  --prompt-cache N     --serve: keep N conversation checkpoints between requests (default 6, ~118 MB
+  --conversation-cache-mib N  --serve: RAM budget for parked conversations (default 0 = off)
+  --conversation-cache-slots N  --serve: at most N parked conversations (default 4)
+  --conversation-cache-min-free-mib N  --serve: RAM floor (under MemAvailable, the cgroup limits and
+  --conversation-cache-min-tokens N  --serve: park only conversations of at least N tokens, so
+  --conversation-cache-park-gain N  --serve: park only after the conversation advanced N tokens past
+  --session-save-reclaim  --serve: reclaim unpinned host caches if SAVE needs RAM (opt-in)
+  --vram-elastic       --serve (#533, opt-in, NVIDIA): the expert cache in segments (--vram-segment-mib,
+                       default 512), so the command `VRAM <reserve_mib>` (the server's POST /v1/vram) can
+                       give VRAM back to other programs between requests and take it back later
+                       each slot with its own session (VRAM like the main one); docs/BATCHING.md
+                       slot drafters sit on the last stage's GPU; not with --batch-groups); needs VRAM per slot
+  --prompt-cache-every N  --serve: also checkpoint every N fresh prompt tokens (default 16384, 0 = off)
+  --prompt-cache-tail  --serve, single GPU: one extra checkpoint near the prompt's end, at an existing
+                       chunk boundary (default off; requires --prompt-cache and --prompt-cache-every > 0)
+  --prompt-cache-spread  --serve: keep the checkpoints spread back from the conversation's end (dense
+                       the largest chunk up to 8192 whose buffers the expert cache can lend;
+  --no-pool            skip the CPU expert pool (the GPU-only floor)
+  --ple-gguf PATH      the n-gram/PLE shard.  WITHOUT IT LAYER 1's PLE IS SILENTLY SKIPPED,
+  --expert-profile P   R4.2e: pre-load the VRAM tier from a `profile.bin` (see
+  --expert-profile-save P  --serve, #477: save what the adaptive tier learned (the experts in
+                       VRAM, then the routing counted since the start) as a profile at P, on
+                       QUIT and every --expert-profile-save-every MIN minutes (default 10;
+                       0 = on QUIT only) between requests; start from it with --expert-profile P
+  --no-ple-prefetch     A/B arm: read the PLE table's sixteen rows one at a time, instead of
+  --expert-cache N     R4: keep N expert blobs resident in VRAM and compute their rows on the
+                       with --expert-cache-per-layer: 54.4% hits, CPU pool drain 19.1 -> 10.3
+  --expert-cache-device1 N|auto  fill CUDA1 with N experts or as many as fit
+  --expert-cache-device2 N|auto  fill CUDA2 with more experts
+===HELP_PCIE===
+  --kv fp16|int8       KV storage (plan v0.3 P7): int8 codes + fp16 scale per 64 values, half the
+  --kv q4_0            4-bit K/V after a Hadamard rotation (PR #21): half of int8's memory,
+                       slightly lower precision (see bench/results/2026-09-27-kv-q4)
+  --kv k8v4            hybrid: INT8 K (exact attention scores) + rotated Q4_0 V, 816 B/cell
+                       (vs int8's 1,056); streams with --kv-resident too
+  --kv-resident N      KV streaming: keep N cells of each QSA layer in VRAM (min 20480) and the
+                       all of it in VRAM. A context of N cells or fewer is not streamed
+  --kv-grow            the K/V takes VRAM only for the cells the requests reach and the expert
+                       cache holds the rest, giving slots back as the context grows (one GPU, with
+                       --expert-profile; STRATA_KV_GROW=1/0 also). Default: the whole --max-context
+  --native-flash-attn-short  diagnostic pinned vector attention; --max-context <=256
+  --native SHARD1      every full-context native path at once (plan v0.3 P1): stream-token,
+  --max-context N      KV/state capacity (default 4096)
+  --rope-scaling T     extend the context past the trained one: none, linear
+  --yarn-orig-ctx N    the trained context the correction targets (0 = 262144)
+                       normally; --batch-mtp waves more through eight-row windows),
+  --batch-mtp          --batch (opt-in, needs --mtp and --spec): each slot also verifies one MTP proposal per
+                       window (STRATA_BATCH_MTP=1 does the same); works on one GPU and on a layer split (the
+                       slot drafters sit on the last stage's GPU; not with --batch-groups); needs VRAM per slot
+  --suffix-draft N     prompt lookup: draft from an earlier repeat of the last N+ tokens of context
+                       when it pays (default 3; 0 = MTP only)
+  --mtp-max-t M        cap the MTP's windows at M tokens (0 = --spec; longer ones come from suffixes)
+  --spec N             the MTP drafter's verify window: how many tokens it proposes per check (setup
+                       writes 4; --suffix-draft lets it grow by 2, up to 8, where a repeat is likely)
+  --spec-min-p P       how sure the draft layer must be to extend a verify window by another guess
+  --lookup-chain K     opt-in: after the MTP's drafts, add up to K prompt-lookup drafts that continue
+  --lookup-chain-min M  the shortest context match --lookup-chain extends on (default 3)
+  --mtp-hnorm pooled|stream  the draft layer's hidden-input norm: one RMS over all four streams
+                       (default) or one per stream (llama.cpp's MTP graph)
+  --mtp-q4 all|proj|head  opt-in: the draft layer's projections and/or draft head as 4-bit copies
+  --mtp-draft-vocab FILE  opt-in: the draft head's token subset (default <mtp>/draft_vocab.bin)
+  --spec-follow PATH   benchmarks: emit this continuation (token ids) instead of the argmax and
+                       accept the drafts that match it, so speculation settings compare on the
+                       same text (with --spec; not --serve)
+                       arithmetic write the same file (use with --spec-follow, --adapt-every 0)
+  --coupled-draft      enable coupled draft sampling for MTP drafter under sampling (STRATA_SPEC_COUPLED)
+  --no-coupled-draft   disable coupled draft sampling (propose argmax drafts)
+===LOGTAIL===
+loading the vision encoder ...
+loading the model (the first start takes a minute or two) ...
+[strata] starting the engine: reading the model's weights ...
+[strata] loading the experts the GPU does not hold into RAM (of tens of GB) and locking part of them for the GPU.
+         YOUR PC CAN BE SLOW OR STOP RESPONDING FOR 1-3 MINUTES NOW - this is normal.
+         Please wait and don't close this window; the server says when it is ready.
+[strata] filling the GPU's expert cache (9761 experts, 21.99 GiB of VRAM) ...
+[strata] almost ready ...
+[strata] still starting (33 s) - please wait ...
+ready: http://127.0.0.1:8090/v1  (OpenAI: /v1/chat/completions, Anthropic: /v1/messages, context 262144 tokens, images on)
+       open http://127.0.0.1:8090/ in a browser to chat; close this window to stop the model
+       from other devices: http://172.17.0.5:8090/   (API: http://172.17.0.5:8090/v1)
+       WARNING: no API key: anyone who can reach port 8090 can use the model. Add an API key to keep others out.
+[strata] thinking: 1 of budget 1 (max 8) tokens, 4.0 tok/s, 1 s
+[strata] done: 1 tokens in 1 s (13.8 tok/s) (length, cancel=False), expert cache 79.4% hit
+[strata] the reply reached max tokens while still thinking, so it has no answer: a thinking budget (reasoning_budget_tokens, in the request or in strata-<model>.json for every request) leaves room to answer
+[strata] thinking: 2 of max 16 tokens, 8.0 tok/s, 1 s
+[strata] done: 16 tokens in 1 s (44.3 tok/s) (length, cancel=False), expert cache 82.3% hit (+0.8% of the routed experts over PCIe)
+[strata] the reply reached max tokens while still thinking, so it has no answer: a thinking budget (reasoning_budget_tokens, in the request or in strata-<model>.json for every request) leaves room to answer
+[strata] reading the prompt: 20,438 tokens, 10 s so far
+[strata] reading the prompt: 8,192 of 20,438 tokens, 16 s so far
+[strata] reading the prompt: 8,192 of 20,438 tokens, 26 s so far
+[strata] reading the prompt: 16,384 of 20,438 tokens, 33 s so far
+[strata] reading the prompt: 20,433 of 20,438 tokens, 42 s so far
+[strata] done: 1 tokens in 43 s (20.6 tok/s) (length, cancel=False), expert cache 85.6% hit
+[strata] the reply reached max tokens while still thinking, so it has no answer: a thinking budget (reasoning_budget_tokens, in the request or in strata-<model>.json for every request) leaves room to answer

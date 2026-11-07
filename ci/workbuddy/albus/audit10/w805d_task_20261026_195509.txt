@@ -1,0 +1,85 @@
+# W805d task gate chunk A=auto(8192) B=auto:16384  20261026_195509 tasks=36 max_tokens=64
+  corpus sha16=3d6b664484ef7189
+  mark=58023
+=== ARM A ready=69s
+  ENVCHECK want=12 got=12 :: strata serve: prompt chunk auto: 8192 tokens, a 384-slot rin
+  t00 kind=0 expect=6      got=6        OK   finish=stop ptok=492 wall=2.3s
+  t01 kind=1 expect=4430   got=4430     OK   finish=stop ptok=605 wall=2.1s
+  t02 kind=2 expect=2      got=2        OK   finish=stop ptok=564 wall=2.0s
+  t03 kind=3 expect=4423   got=4423     OK   finish=stop ptok=483 wall=1.9s
+  t04 kind=0 expect=12     got=12       OK   finish=stop ptok=490 wall=2.1s
+  t05 kind=1 expect=4475   got=4475     OK   finish=stop ptok=568 wall=2.0s
+  t06 kind=2 expect=1      got=1        OK   finish=stop ptok=529 wall=1.9s
+  t07 kind=3 expect=4453   got=4453     OK   finish=stop ptok=563 wall=2.0s
+  t08 kind=0 expect=7      got=None     MISS  finish=stop ptok=530 wall=1.9s
+  t09 kind=1 expect=4416   got=4416     OK   finish=stop ptok=528 wall=1.9s
+  t10 kind=2 expect=3      got=3        OK   finish=stop ptok=609 wall=2.0s
+  t11 kind=3 expect=4443   got=4443     OK   finish=stop ptok=521 wall=1.9s
+  t12 kind=0 expect=15     got=15       OK   finish=stop ptok=493 wall=2.0s
+  t13 kind=1 expect=4431   got=4431     OK   finish=stop ptok=526 wall=1.9s
+  t14 kind=2 expect=1      got=1        OK   finish=stop ptok=495 wall=1.8s
+  t15 kind=3 expect=4474   got=4474     OK   finish=stop ptok=601 wall=2.0s
+  t16 kind=0 expect=5      got=5        OK   finish=stop ptok=531 wall=2.0s
+  t17 kind=1 expect=4444   got=4444     OK   finish=stop ptok=490 wall=1.9s
+  t18 kind=2 expect=1      got=1        OK   finish=stop ptok=609 wall=2.0s
+  t19 kind=3 expect=4473   got=4473     OK   finish=stop ptok=601 wall=2.0s
+  t20 kind=0 expect=7      got=7        OK   finish=stop ptok=570 wall=1.9s
+  t21 kind=1 expect=4403   got=4423     MISS  finish=stop ptok=566 wall=1.9s
+  t22 kind=2 expect=1      got=1        OK   finish=stop ptok=492 wall=1.8s
+  t23 kind=3 expect=4450   got=4450     OK   finish=stop ptok=484 wall=1.8s
+  t24 kind=0 expect=39     got=39       OK   finish=stop ptok=609 wall=2.0s
+  t25 kind=1 expect=4426   got=4426     OK   finish=stop ptok=567 wall=2.0s
+  t26 kind=2 expect=4      got=4        OK   finish=stop ptok=527 wall=1.9s
+  t27 kind=3 expect=4458   got=4458     OK   finish=stop ptok=485 wall=1.8s
+  t28 kind=0 expect=16     got=None     MISS  finish=stop ptok=568 wall=1.9s
+  t29 kind=1 expect=4414   got=4414     OK   finish=stop ptok=605 wall=2.0s
+  t30 kind=2 expect=3      got=3        OK   finish=stop ptok=568 wall=1.9s
+  t31 kind=3 expect=4414   got=4414     OK   finish=stop ptok=562 wall=2.4s
+  t32 kind=0 expect=17     got=14       MISS  finish=stop ptok=568 wall=2.0s
+  t33 kind=1 expect=4435   got=4435     OK   finish=stop ptok=528 wall=1.9s
+  t34 kind=2 expect=0      got=0        OK   finish=stop ptok=529 wall=1.9s
+  t35 kind=3 expect=4475   got=4475     OK   finish=stop ptok=600 wall=2.0s
+  SCORE 32/36
+TASK_DONE A
+  mark=58230
+=== ARM B ready=70s
+  ENVCHECK want=12 got=12 :: strata serve: prompt chunk auto: 16384 tokens, a 384-slot ri
+  t00 kind=0 expect=6      got=6        OK   finish=stop ptok=492 wall=2.1s
+  t01 kind=1 expect=4430   got=4430     OK   finish=stop ptok=605 wall=2.1s
+  t02 kind=2 expect=2      got=2        OK   finish=stop ptok=564 wall=1.9s
+  t03 kind=3 expect=4423   got=4423     OK   finish=stop ptok=483 wall=1.9s
+  t04 kind=0 expect=12     got=12       OK   finish=stop ptok=490 wall=2.1s
+  t05 kind=1 expect=4475   got=4475     OK   finish=stop ptok=568 wall=2.1s
+  t06 kind=2 expect=1      got=1        OK   finish=stop ptok=529 wall=1.9s
+  t07 kind=3 expect=4453   got=4453     OK   finish=stop ptok=563 wall=2.0s
+  t08 kind=0 expect=7      got=7        OK   finish=stop ptok=530 wall=1.9s
+  t09 kind=1 expect=4416   got=4416     OK   finish=stop ptok=528 wall=2.0s
+  t10 kind=2 expect=3      got=3        OK   finish=stop ptok=609 wall=2.0s
+  t11 kind=3 expect=4443   got=4443     OK   finish=stop ptok=521 wall=1.9s
+  t12 kind=0 expect=15     got=15       OK   finish=stop ptok=493 wall=2.0s
+  t13 kind=1 expect=4431   got=4431     OK   finish=stop ptok=526 wall=2.0s
+  t14 kind=2 expect=1      got=1        OK   finish=stop ptok=495 wall=1.8s
+  t15 kind=3 expect=4474   got=4474     OK   finish=stop ptok=601 wall=2.0s
+  t16 kind=0 expect=5      got=5        OK   finish=stop ptok=531 wall=1.9s
+  t17 kind=1 expect=4444   got=4444     OK   finish=stop ptok=490 wall=1.9s
+  t18 kind=2 expect=1      got=1        OK   finish=stop ptok=609 wall=1.9s
+  t19 kind=3 expect=4473   got=4473     OK   finish=stop ptok=601 wall=2.0s
+  t20 kind=0 expect=7      got=7        OK   finish=stop ptok=570 wall=1.9s
+  t21 kind=1 expect=4403   got=4423     MISS  finish=stop ptok=566 wall=2.3s
+  t22 kind=2 expect=1      got=1        OK   finish=stop ptok=492 wall=1.9s
+  t23 kind=3 expect=4450   got=4450     OK   finish=stop ptok=484 wall=1.8s
+  t24 kind=0 expect=39     got=39       OK   finish=stop ptok=609 wall=2.0s
+  t25 kind=1 expect=4426   got=4426     OK   finish=stop ptok=567 wall=2.0s
+  t26 kind=2 expect=4      got=4        OK   finish=stop ptok=527 wall=1.9s
+  t27 kind=3 expect=4458   got=4458     OK   finish=stop ptok=485 wall=1.9s
+  t28 kind=0 expect=16     got=None     MISS  finish=stop ptok=568 wall=1.9s
+  t29 kind=1 expect=4414   got=4414     OK   finish=stop ptok=605 wall=2.0s
+  t30 kind=2 expect=3      got=3        OK   finish=stop ptok=568 wall=1.9s
+  t31 kind=3 expect=4414   got=4414     OK   finish=stop ptok=562 wall=2.0s
+  t32 kind=0 expect=17     got=14       MISS  finish=stop ptok=568 wall=2.1s
+  t33 kind=1 expect=4435   got=4435     OK   finish=stop ptok=528 wall=1.9s
+  t34 kind=2 expect=0      got=0        OK   finish=stop ptok=529 wall=1.9s
+  t35 kind=3 expect=4475   got=4475     OK   finish=stop ptok=600 wall=2.0s
+  SCORE 33/36
+TASK_DONE B
+  trap-restored (any exit path)

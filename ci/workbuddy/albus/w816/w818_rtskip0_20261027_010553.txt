@@ -1,0 +1,29 @@
+# W818 RT_SKIP=0 determinism 2026-10-27 01:05:53
+  CFGCHECK env_n=12 rt_skip=0
+=== READY 36s
+  MODE strata serve: route tail skip: 10035 missed experts skipped (10262 entries) since the start
+  MODE strata serve: route tail skip: 10814 missed experts skipped (11042 entries) since the start
+  R0 78663efe2f152204656b37f5d06dcfac n=528 wall=3.4s
+  R1 78663efe2f152204656b37f5d06dcfac n=528 wall=2.2s
+  R2 87b7d1707640d6b632e8480a2cc35e0a n=522 wall=2.3s
+  R3 0a85949079a26acb95de6aee537c8692 n=559 wall=2.1s
+  R4 c8b095e424ddd3a4c5e1f7633135cdd7 n=530 wall=2.3s
+  R5 3de500ca18113624c083df56e0ee908d n=521 wall=2.2s
+  PREFIX matrix (chars):
+    R0-R1 common=528 of min(528,528)
+    R0-R2 common=169 of min(528,522)
+    R0-R3 common=49 of min(528,559)
+    R0-R4 common=281 of min(528,530)
+    R0-R5 common=295 of min(528,521)
+    R1-R2 common=169 of min(528,522)
+    R1-R3 common=49 of min(528,559)
+    R1-R4 common=281 of min(528,530)
+    R1-R5 common=295 of min(528,521)
+    R2-R3 common=49 of min(522,559)
+    R2-R4 common=169 of min(522,530)
+    R2-R5 common=169 of min(522,521)
+    R3-R4 common=49 of min(559,530)
+    R3-R5 common=49 of min(559,521)
+    R4-R5 common=281 of min(530,521)
+DET2 tag=RSKIP0 reps=6 unique=5 maxt=96
+restored 35s

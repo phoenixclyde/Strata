@@ -1,0 +1,172 @@
+# W803 KL gate mode=probe 20261025_232313
+  order: B
+start env_n=11 args_n=33
+  setarm B share=auto env_n=14 short_read=200
+  mark=44253
+=== ARM B share=auto ready=44s corpus=kl_probe.json
+  envsnap(容器内):
+    STRATA_DBG_CPU_GATE=1
+    STRATA_GDN_HEAD=1
+    STRATA_GDN_PP=2
+    STRATA_GFX906_ATTN_QUERY_SWIZZLE=1
+    STRATA_HC_Q8=1
+    STRATA_HIP_PROMPT_F16=1
+    STRATA_LOGPOS=/data/w803_logpos_B.tsv
+    STRATA_LOGPOS_TOPK=64
+    STRATA_PREFILL_CPU_SHARE=auto
+    STRATA_RESIDENT_HEADROOM_GIB=0.5
+    STRATA_ROCBLAS_TUNING=/data/gfx906-rocblas-5.5.0.txt
+    STRATA_ROUTE_TAIL_SKIP=7
+    STRATA_SELECT_SIMT=1
+    STRATA_SRC=/src
+  args=['--conversation-cache-mib', '4096']
+  ENVCHECK want=14 got=14
+  t0  shape0  U prompt_tokens=312    fresh~312   wall=1.8s e3b0c44298fc1c14
+  t1  shape   U prompt_tokens=620    fresh~308   wall=1.5s e3b0c44298fc1c14
+  t2  probe   U prompt_tokens=875    fresh~255   wall=1.5s e3b0c44298fc1c14
+CLIENT_DONE B
+  LOG cpu gate: layer 2 not shared, 123 non-resident, 54.70 ms (0.4448 a expert) -> do not share
+  LOG cpu gate: layer 3 shared, 122 non-resident, 12.95 ms (0.1061 a expert) -> share
+  LOG cpu gate: layer 4 not shared, 114 non-resident, 30.46 ms (0.2672 a expert) -> share
+  LOG cpu gate: layer 5 shared, 121 non-resident, 14.03 ms (0.1160 a expert) -> share
+  LOG cpu gate: layer 6 not shared, 128 non-resident, 25.93 ms (0.2026 a expert) -> share
+  LOG cpu gate: layer 7 shared, 135 non-resident, 13.54 ms (0.1003 a expert) -> share
+  LOG cpu gate: layer 8 shared, 108 non-resident, 13.63 ms (0.1262 a expert) -> share
+  LOG cpu gate: layer 9 shared, 109 non-resident, 12.72 ms (0.1167 a expert) -> share
+  LOG cpu gate: layer 10 shared, 111 non-resident, 11.95 ms (0.1076 a expert) -> share
+  LOG cpu gate: layer 11 shared, 114 non-resident, 12.90 ms (0.1132 a expert) -> share
+  LOG cpu gate: layer 12 shared, 108 non-resident, 14.24 ms (0.1319 a expert) -> share
+  LOG cpu gate: layer 13 shared, 114 non-resident, 14.57 ms (0.1278 a expert) -> share
+  LOG cpu gate: layer 14 shared, 133 non-resident, 12.09 ms (0.0909 a expert) -> share
+  LOG cpu gate: layer 15 shared, 117 non-resident, 10.27 ms (0.0878 a expert) -> share
+  LOG cpu gate: layer 16 shared, 91 non-resident, 11.08 ms (0.1218 a expert) -> share
+  LOG cpu gate: layer 17 shared, 121 non-resident, 12.35 ms (0.1021 a expert) -> share
+  LOG cpu gate: layer 18 shared, 109 non-resident, 13.53 ms (0.1241 a expert) -> share
+  LOG cpu gate: layer 19 shared, 117 non-resident, 12.41 ms (0.1060 a expert) -> share
+  LOG cpu gate: layer 20 shared, 111 non-resident, 12.12 ms (0.1092 a expert) -> share
+  LOG cpu gate: layer 21 shared, 113 non-resident, 12.91 ms (0.1143 a expert) -> share
+  LOG cpu gate: layer 22 shared, 123 non-resident, 12.54 ms (0.1019 a expert) -> share
+  LOG cpu gate: layer 23 shared, 139 non-resident, 13.12 ms (0.0944 a expert) -> share
+  LOG cpu gate: layer 24 shared, 102 non-resident, 12.47 ms (0.1222 a expert) -> share
+  LOG cpu gate: layer 25 shared, 116 non-resident, 13.95 ms (0.1202 a expert) -> share
+  LOG cpu gate: layer 26 shared, 114 non-resident, 12.80 ms (0.1123 a expert) -> share
+  LOG cpu gate: layer 27 shared, 119 non-resident, 14.14 ms (0.1189 a expert) -> share
+  LOG cpu gate: layer 28 shared, 122 non-resident, 12.68 ms (0.1040 a expert) -> share
+  LOG cpu gate: layer 29 not shared, 126 non-resident, 26.42 ms (0.2097 a expert) -> share
+  LOG cpu gate: layer 30 shared, 154 non-resident, 16.30 ms (0.1058 a expert) -> share
+  LOG cpu gate: layer 31 shared, 127 non-resident, 11.03 ms (0.0868 a expert) -> share
+  LOG cpu gate: layer 32 shared, 117 non-resident, 11.62 ms (0.0993 a expert) -> share
+  LOG cpu gate: layer 33 shared, 132 non-resident, 13.59 ms (0.1030 a expert) -> share
+  LOG cpu gate: layer 34 shared, 111 non-resident, 12.88 ms (0.1160 a expert) -> share
+  LOG cpu gate: layer 35 shared, 125 non-resident, 12.45 ms (0.0996 a expert) -> share
+  LOG cpu gate: layer 36 shared, 121 non-resident, 12.68 ms (0.1048 a expert) -> share
+  LOG cpu gate: layer 37 shared, 111 non-resident, 12.64 ms (0.1139 a expert) -> share
+  LOG cpu gate: layer 38 shared, 120 non-resident, 12.03 ms (0.1003 a expert) -> share
+  LOG cpu gate: layer 39 shared, 126 non-resident, 11.85 ms (0.0940 a expert) -> share
+  LOG cpu gate: layer 40 shared, 137 non-resident, 12.54 ms (0.0915 a expert) -> share
+  LOG cpu gate: layer 41 shared, 141 non-resident, 12.66 ms (0.0898 a expert) -> share
+  LOG cpu gate: layer 42 shared, 122 non-resident, 12.13 ms (0.0994 a expert) -> share
+  LOG cpu gate: layer 43 shared, 131 non-resident, 13.03 ms (0.0995 a expert) -> share
+  LOG cpu gate: layer 44 shared, 132 non-resident, 12.15 ms (0.0921 a expert) -> share
+  LOG cpu gate: layer 45 shared, 143 non-resident, 14.00 ms (0.0979 a expert) -> share
+  LOG cpu gate: layer 46 shared, 124 non-resident, 13.05 ms (0.1053 a expert) -> share
+  LOG strata serve: prompt 312 tokens = 0 reused + 312 read in 1721 ms (181.3 tok/s), 1 generated in 47 ms (21.2 tok/s), drafts accepted 0 of 0, 1 checkpoints
+  LOG cpu gate: layer 47 shared, 110 non-resident, 12.35 ms (0.1123 a expert) -> share
+  LOG cpu gate: layer 1 shared, 105 non-resident, 14.60 ms (0.1390 a expert) -> share
+  LOG cpu gate: layer 2 shared, 109 non-resident, 15.61 ms (0.1432 a expert) -> share
+  LOG cpu gate: layer 3 shared, 75 non-resident, 9.37 ms (0.1250 a expert) -> share
+  LOG cpu gate: layer 4 shared, 74 non-resident, 12.60 ms (0.1702 a expert) -> share
+  LOG cpu gate: layer 5 shared, 88 non-resident, 12.84 ms (0.1459 a expert) -> share
+  LOG cpu gate: layer 6 shared, 105 non-resident, 13.29 ms (0.1265 a expert) -> share
+  LOG cpu gate: layer 7 shared, 103 non-resident, 12.96 ms (0.1258 a expert) -> share
+  LOG cpu gate: layer 8 shared, 91 non-resident, 12.39 ms (0.1361 a expert) -> share
+  LOG cpu gate: layer 9 shared, 72 non-resident, 12.01 ms (0.1669 a expert) -> share
+  LOG cpu gate: layer 10 not shared, 98 non-resident, 20.13 ms (0.2054 a expert) -> share
+  LOG cpu gate: layer 11 shared, 71 non-resident, 12.79 ms (0.1801 a expert) -> share
+  LOG cpu gate: layer 12 shared, 80 non-resident, 15.28 ms (0.1910 a expert) -> share
+  LOG cpu gate: layer 13 shared, 83 non-resident, 13.50 ms (0.1627 a expert) -> share
+  LOG cpu gate: layer 14 shared, 94 non-resident, 12.37 ms (0.1315 a expert) -> share
+  LOG cpu gate: layer 15 shared, 68 non-resident, 8.29 ms (0.1219 a expert) -> share
+  LOG cpu gate: layer 16 shared, 79 non-resident, 10.58 ms (0.1340 a expert) -> share
+  LOG cpu gate: layer 17 shared, 96 non-resident, 12.93 ms (0.1347 a expert) -> share
+  LOG cpu gate: layer 18 shared, 101 non-resident, 12.72 ms (0.1260 a expert) -> share
+  LOG cpu gate: layer 19 shared, 96 non-resident, 12.19 ms (0.1270 a expert) -> share
+  LOG cpu gate: layer 20 shared, 93 non-resident, 12.38 ms (0.1331 a expert) -> share
+  LOG cpu gate: layer 21 shared, 100 non-resident, 13.30 ms (0.1330 a expert) -> share
+  LOG cpu gate: layer 22 shared, 100 non-resident, 12.56 ms (0.1256 a expert) -> share
+  LOG cpu gate: layer 23 shared, 118 non-resident, 12.05 ms (0.1021 a expert) -> share
+  LOG cpu gate: layer 24 shared, 79 non-resident, 12.88 ms (0.1631 a expert) -> share
+  LOG cpu gate: layer 25 shared, 86 non-resident, 12.00 ms (0.1396 a expert) -> share
+  LOG cpu gate: layer 26 shared, 104 non-resident, 12.46 ms (0.1198 a expert) -> share
+  LOG cpu gate: layer 27 shared, 80 non-resident, 12.93 ms (0.1616 a expert) -> share
+  LOG cpu gate: layer 28 shared, 100 non-resident, 12.81 ms (0.1281 a expert) -> share
+  LOG cpu gate: layer 29 shared, 97 non-resident, 13.06 ms (0.1347 a expert) -> share
+  LOG cpu gate: layer 30 shared, 111 non-resident, 14.28 ms (0.1287 a expert) -> share
+  LOG cpu gate: layer 31 shared, 74 non-resident, 9.49 ms (0.1282 a expert) -> share
+  LOG cpu gate: layer 32 shared, 105 non-resident, 10.94 ms (0.1042 a expert) -> share
+  LOG cpu gate: layer 33 shared, 100 non-resident, 13.16 ms (0.1316 a expert) -> share
+  LOG cpu gate: layer 34 shared, 89 non-resident, 14.96 ms (0.1680 a expert) -> share
+  LOG cpu gate: layer 35 shared, 103 non-resident, 12.16 ms (0.1180 a expert) -> share
+  LOG cpu gate: layer 36 shared, 115 non-resident, 11.95 ms (0.1039 a expert) -> share
+  LOG cpu gate: layer 37 shared, 95 non-resident, 12.28 ms (0.1292 a expert) -> share
+  LOG cpu gate: layer 38 shared, 93 non-resident, 12.29 ms (0.1322 a expert) -> share
+  LOG cpu gate: layer 39 not shared, 97 non-resident, 19.75 ms (0.2036 a expert) -> share
+  LOG cpu gate: layer 40 shared, 110 non-resident, 10.95 ms (0.0995 a expert) -> share
+  LOG cpu gate: layer 41 shared, 121 non-resident, 12.05 ms (0.0996 a expert) -> share
+  LOG cpu gate: layer 42 shared, 120 non-resident, 11.90 ms (0.0992 a expert) -> share
+  LOG cpu gate: layer 43 shared, 121 non-resident, 11.30 ms (0.0934 a expert) -> share
+  LOG cpu gate: layer 44 shared, 118 non-resident, 11.65 ms (0.0987 a expert) -> share
+  LOG cpu gate: layer 45 shared, 130 non-resident, 14.16 ms (0.1089 a expert) -> share
+  LOG cpu gate: layer 46 shared, 104 non-resident, 12.07 ms (0.1161 a expert) -> share
+  LOG strata serve: prompt 620 tokens = 307 reused + 313 read in 1482 ms (211.2 tok/s), 1 generated in 30 ms (33.5 tok/s), drafts accepted 0 of 0, 2 checkpoints
+  LOG cpu gate: layer 47 shared, 96 non-resident, 12.96 ms (0.1350 a expert) -> share
+  LOG cpu gate: layer 1 shared, 112 non-resident, 11.64 ms (0.1039 a expert) -> share
+  LOG cpu gate: layer 2 shared, 120 non-resident, 13.49 ms (0.1124 a expert) -> share
+  LOG cpu gate: layer 3 shared, 78 non-resident, 9.45 ms (0.1212 a expert) -> share
+  LOG cpu gate: layer 4 shared, 85 non-resident, 13.40 ms (0.1577 a expert) -> share
+  LOG cpu gate: layer 5 shared, 101 non-resident, 11.96 ms (0.1184 a expert) -> share
+  LOG cpu gate: layer 6 shared, 98 non-resident, 11.05 ms (0.1128 a expert) -> share
+  LOG cpu gate: layer 7 shared, 114 non-resident, 11.24 ms (0.0986 a expert) -> share
+  LOG cpu gate: layer 8 shared, 92 non-resident, 11.53 ms (0.1253 a expert) -> share
+  LOG cpu gate: layer 9 shared, 76 non-resident, 11.42 ms (0.1502 a expert) -> share
+  LOG cpu gate: layer 10 shared, 97 non-resident, 11.17 ms (0.1151 a expert) -> share
+  LOG cpu gate: layer 11 shared, 91 non-resident, 12.21 ms (0.1341 a expert) -> share
+  LOG cpu gate: layer 12 shared, 88 non-resident, 11.24 ms (0.1278 a expert) -> share
+  LOG cpu gate: layer 13 shared, 82 non-resident, 12.13 ms (0.1480 a expert) -> share
+  LOG cpu gate: layer 14 shared, 97 non-resident, 11.60 ms (0.1196 a expert) -> share
+  LOG cpu gate: layer 15 shared, 70 non-resident, 8.42 ms (0.1203 a expert) -> share
+  LOG cpu gate: layer 16 shared, 80 non-resident, 10.32 ms (0.1290 a expert) -> share
+  LOG cpu gate: layer 17 shared, 99 non-resident, 10.84 ms (0.1095 a expert) -> share
+  LOG cpu gate: layer 18 shared, 93 non-resident, 11.94 ms (0.1284 a expert) -> share
+  LOG cpu gate: layer 19 shared, 88 non-resident, 11.33 ms (0.1288 a expert) -> share
+  LOG cpu gate: layer 20 not shared, 92 non-resident, 19.62 ms (0.2132 a expert) -> share
+  LOG cpu gate: layer 21 shared, 91 non-resident, 11.41 ms (0.1254 a expert) -> share
+  LOG cpu gate: layer 22 shared, 96 non-resident, 11.55 ms (0.1203 a expert) -> share
+  LOG cpu gate: layer 23 shared, 95 non-resident, 10.46 ms (0.1101 a expert) -> share
+  LOG cpu gate: layer 24 shared, 69 non-resident, 11.86 ms (0.1719 a expert) -> share
+  LOG cpu gate: layer 25 shared, 84 non-resident, 11.38 ms (0.1354 a expert) -> share
+  LOG cpu gate: layer 26 shared, 98 non-resident, 11.73 ms (0.1197 a expert) -> share
+  LOG cpu gate: layer 27 shared, 93 non-resident, 11.18 ms (0.1202 a expert) -> share
+  LOG cpu gate: layer 28 shared, 92 non-resident, 11.12 ms (0.1208 a expert) -> share
+  LOG cpu gate: layer 29 shared, 90 non-resident, 11.65 ms (0.1294 a expert) -> share
+  LOG cpu gate: layer 30 shared, 115 non-resident, 12.52 ms (0.1088 a expert) -> share
+  LOG cpu gate: layer 31 shared, 75 non-resident, 8.95 ms (0.1193 a expert) -> share
+  LOG cpu gate: layer 32 shared, 90 non-resident, 10.44 ms (0.1160 a expert) -> share
+  LOG cpu gate: layer 33 shared, 97 non-resident, 11.05 ms (0.1140 a expert) -> share
+  LOG cpu gate: layer 34 shared, 79 non-resident, 11.54 ms (0.1461 a expert) -> share
+  LOG cpu gate: layer 35 shared, 90 non-resident, 11.35 ms (0.1261 a expert) -> share
+  LOG cpu gate: layer 36 shared, 81 non-resident, 10.61 ms (0.1310 a expert) -> share
+  LOG cpu gate: layer 37 shared, 78 non-resident, 10.62 ms (0.1362 a expert) -> share
+  LOG cpu gate: layer 38 shared, 77 non-resident, 11.62 ms (0.1509 a expert) -> share
+  LOG cpu gate: layer 39 shared, 66 non-resident, 10.35 ms (0.1569 a expert) -> share
+  LOG cpu gate: layer 40 shared, 68 non-resident, 9.57 ms (0.1407 a expert) -> share
+  LOG cpu gate: layer 41 shared, 80 non-resident, 9.94 ms (0.1242 a expert) -> share
+  LOG cpu gate: layer 42 shared, 72 non-resident, 10.50 ms (0.1458 a expert) -> share
+  LOG cpu gate: layer 43 shared, 76 non-resident, 9.84 ms (0.1295 a expert) -> share
+  LOG cpu gate: layer 44 shared, 78 non-resident, 10.07 ms (0.1291 a expert) -> share
+  LOG cpu gate: layer 45 shared, 82 non-resident, 10.49 ms (0.1280 a expert) -> share
+  LOG cpu gate: layer 46 shared, 91 non-resident, 11.95 ms (0.1313 a expert) -> share
+  LOG strata serve: prompt 875 tokens = 615 reused + 260 read in 1420 ms (183.1 tok/s), 1 generated in 30 ms (33.5 tok/s), drafts accepted 0 of 0, 3 checkpoints
+  LOGPOS rows=12 bytes=13004
+restored 57s
+final env_n=11 share=0

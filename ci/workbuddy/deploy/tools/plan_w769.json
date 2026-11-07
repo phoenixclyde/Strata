@@ -1,0 +1,51 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W769：KV 那条改为「分布门被驻留布局主导、无法裁决 --kv」（同 dtype 同 MC 只差 96 槽即 KL .284；净增量 >= .14 但次级；只剩任务级门）+ 槽位可复现与「显式 N != 最终槽数」；未做清单去掉「驻留严格相等对照」；权威件/审计链补 W769；三条压缩腾空间",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- **KV 门已建**（W767）：门 = 上游原生 `STRATA_LOGPOS`；**self=0**；须**两请求**，fresh <= `--short-read` 才走 verify 窗口被评分（源 `generate.cpp:9397`）；`--kv` KL 中位 i8 .042 < k8v4 .070 < q4_0 .105。**W768：归因不成立** --- 同 `--kv` 只改 `--expert-cache` 6000->9000 即给 KL .366 / argmax 87%，与主效应同量级 => **分布差异不是质量判据**",
+   "new": "- **KV 门已建**（W767）：门 = 上游原生 `STRATA_LOGPOS`；**self=0**；须**两请求**，fresh <= `--short-read` 才被评分（`generate.cpp:9397`）。**W768/W769：分布门被专家驻留布局主导、无法裁决 `--kv`** --- 同 dtype 同 MC 只差 **96 槽** 即 KL .284；槽差 96 与 1224 同量级（阶跃；机理=命中/未命中走不同代码路径）=> `--kv` 净增量 >= .14 但**次级**；**判 `--kv` 只剩任务级门**。**槽位可复现**（W769 `k262` 9761 == W767 `k84`）；显式 `--expert-cache N` != 最终槽数"
+  },
+  {
+   "kind": "substr",
+   "old": "- **未做**：**KV 任务级门+驻留严格相等对照(P50)**·`lookup-chain`(P42)·§4 族(P41)·**并发(P97)**；**W760：P43 采纳、P40 否决**；R5(P39)·R1/R2 关·W763 补 P46-49",
+   "new": "- **未做**：**KV 任务级门(P50)**·`lookup-chain`(P42)·§4 族(P41)·**并发(P97)**；**W760：P43 采纳、P40 否决**；R5(P39)·R1/R2 关·W763 补 P46-49"
+  },
+  {
+   "kind": "substr",
+   "old": "- 权威件：`PARAM_REGISTER.tsv`·`W713_PLAN.md`·`W737`-`W768`；余按号",
+   "new": "- 权威件：`PARAM_REGISTER.tsv`·`W713_PLAN.md`·`W737`-`W769`；余按号"
+  },
+  {
+   "kind": "substr",
+   "old": "- PR **#1396** ported 进 0.1.41（closed-not-merged）；审计 `W713_AUDIT{,2}`·`W735`·`W752`·`W765`·`W767`·`W768`（P0=0/P1=4）",
+   "new": "- PR **#1396** ported 进 0.1.41（closed-not-merged）；审计 `W713_AUDIT{,2}`·`W735`·`W752`·`W765`·`W767`-`W769`（P0=0/P1=4）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **`verify_config.py` 只判配置面**（不读 `/proc`）=> 判运行期须另取引擎 cmdline/environ（W764）",
+   "new": "- **`verify_config.py` 只判配置面** => 运行期须另取引擎 `/proc`（W764）"
+  },
+  {
+   "kind": "substr",
+   "old": "本机 shim 把 `/data/x.py` 转 Win 路径 => 只传短记号、别用 ASCII 引号包中文",
+   "new": "shim 把 `/data/x.py` 转 Win 路径 => 只传短记号、勿用 ASCII 引号包中文"
+  },
+  {
+   "kind": "substr",
+   "old": "- **判「改答案」按 index 跨臂对齐**：同 index 可跨臂逐字节复现；臂内 spread 才真判据（W739）",
+   "new": "- **判「改答案」按 index 跨臂对齐**（同 index 可跨臂复现，臂内 spread 才真判据，W739）"
+  },
+  {
+   "kind": "substr",
+   "old": "；日志混入**他臂**行 => 引用前剔",
+   "new": "；日志混入他臂行 => 引用前剔"
+  },
+  {
+   "kind": "substr",
+   "old": "**W739：`EXPERT_V2` 慢 5.6%、`TSUM` 不复现 => P36/P37 REJECTED**",
+   "new": "**W739：前慢 5.6% / 后不复现 => P36/P37 REJECTED**"
+  }
+ ]
+}

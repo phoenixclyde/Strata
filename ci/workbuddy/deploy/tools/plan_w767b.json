@@ -1,0 +1,46 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W767 修正波：上一波反解器的 L3/L4 把 §3 读数与 §4 的 P 编号压掉（当时\"P 编号齐\"只判 bool）。本波补回读数与 P41/P42/P46/P50/P97/P39，并把带 P 编号的行逐一用内容 op 保护",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- **KV 门已建**：门 = 上游原生 `STRATA_LOGPOS`；**self=0**；评分区间须**两请求**",
+   "new": "- **KV 门已建**（W767）：门 = 上游原生 `STRATA_LOGPOS`（`verify.cpp:2202`）；**self=0**；须**两请求**（fresh<=`--short-read` 才评分，`generate.cpp:9397`）；`--kv` KL 中位 i8 .042<k8v4 .070<q4_0 .105、k8v4 argmax 81.9%，**方向未判**"
+  },
+  {
+   "kind": "substr",
+   "old": "- **未做**：**KV 任务级门+驻留对照**·`lookup-chain`·§4 族·**并发**。**W760：P43 采纳、P40 否决**",
+   "new": "- **未做**：**KV 任务级门+驻留对照(P50)**·`lookup-chain`(P42)·§4 族(P41)·**并发(P97)**。**W760：P43 采纳、P40 否决**；R5(P39)·R1/R2 关·W763 补 P46-49"
+  },
+  {
+   "kind": "substr",
+   "old": "；**W739：`EXPERT_V2` 慢 5.60%、`TSUM` 不可复现 => P36/P37 REJECTED**",
+   "new": "；**W739：`EXPERT_V2` 慢 5.6%、`TSUM` 不复现 => P36/P37 REJECTED**"
+  },
+  {
+   "kind": "substr",
+   "old": "（P31/P34）；否决 改答案/破位",
+   "new": "（P31/P34）；否决 改答案"
+  },
+  {
+   "kind": "substr",
+   "old": "（发射/ISA 可编码/源同否）；",
+   "new": "（发射/ISA/源同否）；"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改前端照上游参考件**；报链路/容量走独立工具；`spark()` 无上限按序列最大缩放；JS 路径 `/web/app.js`",
+   "new": "- 改前端照上游参考件；报链路/容量走独立工具；`spark()` 按序列最大缩放；JS `/web/app.js`"
+  },
+  {
+   "kind": "substr",
+   "old": "- **判「改答案」按 index 跨臂对齐**：同 prompt 连发输出按会话态递进，但同 index 可跨臂逐字节复现；臂内 spread 才真判据（W739）",
+   "new": "- **判「改答案」按 index 跨臂对齐**：同 index 可跨臂逐字节复现；臂内 spread 才真判据（W739）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **dot**：dot4 25,877/49,600/解包 1,375。**W740：dot4 62,596/dot8 0 => dp4a+解包**；换 dot8 须双方 i4（P38）",
+   "new": "- **dot**：**W740：dot4 62,596/dot8 0 => dp4a+解包**；换 dot8 须双方 i4（P38）"
+  }
+ ]
+}

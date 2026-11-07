@@ -1,0 +1,23 @@
+START 2026-10-25_15:34:24
+bak=/home/albus/strata166/data/strata-huihui-ud-iq4_xs.json.bak_w792_20261025_153424
+36f6f8fb3638eeabee73c55b176c9f6c  /home/albus/strata166/data/strata-huihui-ud-iq4_xs.json.bak_w792_20261025_153424
+env_before=[('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_HC_Q8', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5')]
+=== A range check 15:34:24 ===
+range env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_F16_RANGE', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5')]
+health 43s
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=36309 prompt_tps=601.1 decode_tps=54.6 out=320 wall=42.2s
+  [M] n=1 reused0=1 | prompt_tps median=601.1  decode_tps median=54.6
+strata f16 range: 893 tokens: activation images max |x| 103.0 (0 beyond 65504 or NaN), BF16 weights max |w| 11.562 (0), FP16 GEMM outputs max |y| 327.5 (0 not finite)
+strata f16 range: 21822 tokens: activation images max |x| 74.1 (0 beyond 65504 or NaN), BF16 weights max |w| 11.562 (0), FP16 GEMM outputs max |y| 304.8 (0 not finite)
+strata prefill: HIP device 0 gfx906:sramecc+:xnack- - STRATA_HIP_PROMPT_F16=1: the prompt's 16-bit GEMMs run FP16 in and out (rocBLAS is tuned only for that on gfx103x; not bit-identical to the default)
+strata prefill timing: 21822 tokens, GPU timeline 35572 ms, wall 35614 ms, host staging 365 ms: embed+steps 168 (0.5%) hc read 3398 (9.6%) gdn 3746 (10.5%) qsa proj 1769 (5.0%) qsa indexer 1 (0.0%) qsa select 716 (2.0%) qsa attn 6906 (19.4%) router+shared 1068 (3.0%) host grouping 131 (0.4%) gather 87 (0.2%) wait copy 102 (0.3%) dequant 1412 (4.0%) gemm gate/up 7273 (20.4%) gemm down 3811 (10.7%) combine 179 (0.5%) ple 130 (0.4%) gdn conv+gates 152 (0.4%) gdn recurrence 2460 (6.9%) gdn out proj 1629 (4.6%) hc write 433 (1.2%)
+=== B install final 15:36:15 ===
+final installed
+a232561e6e38a395e150e231d30ad040  /home/albus/strata166/data/strata-huihui-ud-iq4_xs.json
+health 48s
+env_after=[('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5')]
+{"status": "ok", "max_context": 262144, "model": "qwen3.8-flash-next-ud-iq4_xs-abliterated", "images": true, "api_key": false, "image_generation": false, "loaded": true, "service": "strata"}
+slots 9901 vram 642 ver 0.1.49.2
+governor=     44 schedutil 
+DONE 15:37:25

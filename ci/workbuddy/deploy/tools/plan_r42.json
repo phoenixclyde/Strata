@@ -1,0 +1,11 @@
+{
+  "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+  "reason": "R42 归因：剩余 830ms 是 host KV pool 的 4KB 页（65000 映射项）；HIP 上 VRAM/async 全屏蔽",
+  "ops": [
+    {
+      "kind": "substr",
+      "old": "cache-every 8192(多轮复用80%;余是恢复开销)",
+      "new": "cache-every 8192(多轮80%;余=4KB页翻译)"
+    }
+  ]
+}

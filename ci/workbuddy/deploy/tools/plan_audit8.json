@@ -1,0 +1,46 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "AUDIT8：三笔生产变更幅度改为相位口径（P107 -1.8% / P110 -1.6% / P97 -1.2%）+ 规则 P",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "env：**HC_Q8=1**·**HIP_PROMPT_F16=1**·**ROCBLAS_TUNING**·**ATTN_SWIZZLE**",
+   "new": "env：**HC_Q8=1**·**HIP_PROMPT_F16=1**(-20.7%)·**ROCBLAS_TUNING**(-1.8%)·**ATTN_SWIZZLE**(-1.6%)"
+  },
+  {
+   "kind": "substr",
+   "old": "**gov schedutil快2.3%**(P97)",
+   "new": "**gov schedutil快1.2%**(P97)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **重启丢前2请求**;A/B同会话交错(P98);臂漂1.7%=>判>3%",
+   "new": "- **重启丢前2请求**;A/B同会话交错(P98);臂漂1.7%下限=>**收益先相位判**(规则P)"
+  },
+  {
+   "kind": "substr",
+   "old": "- 审计 W713_AUDIT{,2}·W735/752/765·W767-W773·AUDIT3/4/5(P0/P1)·W792-795",
+   "new": "- 审计 W713_AUDIT{,2}·W735/752/765·W767-W773·AUDIT3/4/5(P0/P1)·W792-795·AUDIT8"
+  },
+  {
+   "kind": "substr",
+   "old": "- **dot**:dot4 62,596/dot8 0=>dp4a;dot8须i4(P38)",
+   "new": "- **dot**:dot4 62,596/dot8 0=>dp4a(P38)"
+  },
+  {
+   "kind": "substr",
+   "old": "- 「默认关」3种:可用/被前置挡死/没编进(build.ninja);不采用标[EXT:面]",
+   "new": "- 「默认关」3种:可用/被挡死/没编进;不采用标[EXT:面]"
+  },
+  {
+   "kind": "substr",
+   "old": "- **W775**:P56不可达;PLE-45%(否);P54=IO_PF;drop_caches不重置mmap",
+   "new": "- **W775**:P56不可达;PLE-45%;P54=IO_PF;drop_caches不重置mmap"
+  },
+  {
+   "kind": "substr",
+   "old": "- **草稿深度**,kShape(W8);L2=8MB/HBM~805",
+   "new": "- **草稿深度**,kShape(W8);L2 8MB/HBM~805"
+  }
+ ]
+}

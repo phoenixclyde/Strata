@@ -1,0 +1,116 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W725：P29 关/C3 关/vision 核验/#1454 已测/PR#1396 表述更正 + 压缩",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "`W723_COMBO.md`",
+   "new": "`W723_COMBO.md` · `W724_UPSTREAM_PR.md` · `W725_SWEEP.md`"
+  },
+  {
+   "kind": "substr",
+   "old": "- **未做**：P29 GUMBEL（贪心=空操作）· C3 清理 · 上游 FR · vision 核验。",
+   "new": "- **未做**：**仅剩上游 PR**（机主令\"先等等、之后一并弄\"；通道 = 166 `pr/strata-fork` + `_mkpr.sh`）。"
+  },
+  {
+   "kind": "substr",
+   "old": "· P28 `GR_SPLIT`（破位）· P32 `kv-grow`（<1%）· C4/C5。",
+   "new": "· P28 `GR_SPLIT`（破位）· P32 `kv-grow`（<1%）· C4/C5 · **P29** · **C3**（释放 3G）· **vision 核验** · **#1454/tokenizer 单测**（W725）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- PR **#1396**（gfx906 构建修复）**已并入 0.1.41** => 补丁面归零（H1~H6 全修），补丁器降为验证闸门。",
+   "new": "- PR **#1396**（gfx906 构建修复）**ported 进 0.1.41（保留署名）**，PR 状态 **closed-not-merged**（落地 `a732a19b6f`）=> 补丁面归零。"
+  },
+  {
+   "kind": "substr",
+   "old": "（`routek-memory-slim` 适配版；机主令第 5 次强调）：`auto 2900 [plan.json]`。**禁止**裸 Edit 挤牙膏 / 自写压缩脚本 / 先改后核 ---- 绕过技能里的 BAN/字符/归档断言，缺陷即隐形。",
+   "new": "（`routek-memory-slim` 适配版；机主令第 5 次）：`auto 2900 [plan.json]`。禁止裸 Edit / 自写脚本 / 先改后核 ---- 绕过其断言则缺陷隐形。"
+  },
+  {
+   "kind": "substr",
+   "old": "## 2 现役参数（ADOPTED 四项）",
+   "new": "## 2 现役关键参数"
+  },
+  {
+   "kind": "substr",
+   "old": "（`every=4096`+`chunk=8192` 得 reused=0，**待追**）",
+   "new": "（得 reused=0，待追）"
+  },
+  {
+   "kind": "substr",
+   "old": "才两位数（P31/P34），省搬运/显存/kernel/驱逐的仅 0~3%",
+   "new": "才两位数，省搬运/显存/kernel 的仅 0~3%"
+  },
+  {
+   "kind": "substr",
+   "old": "（P30 HIP 恒 false；P28 在 gfx906 宏内 => 可达）。**同路径开关不可组合测**（P28/P29 同在 spec/MTP，归因不分，W723）。",
+   "new": "（P30 HIP 恒 false；P28 在 gfx906 宏内）。**同路径开关不可组合测**（W723）。"
+  },
+  {
+   "kind": "substr",
+   "old": "（huihui；`-406` = base 回滚位）/ 8090",
+   "new": "（huihui；`-406` = 回滚位）/ 8090"
+  },
+  {
+   "kind": "substr",
+   "old": "  切换/回滚：`switch_strata.sh <新容器>`（旧容器自动探测+回滚）。",
+   "new": "  切换/回滚：`switch_strata.sh <新容器>`。"
+  },
+  {
+   "kind": "substr",
+   "old": "（huihui 仓，10-09 切），上下文 262144，`--kv k8v4`。",
+   "new": "（huihui，10-09 切），262144 上下文，`--kv k8v4`。"
+  },
+  {
+   "kind": "substr",
+   "old": "  **漏推则「本机==166」不成立**（P0）=> 改完必对两侧 `md5sum`。",
+   "new": "  **漏推则「本机==166」不成立** => 改完必对两侧 `md5sum`。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **引用任何性能读数必须声明 `Z0=off`**（省电档，见 W706）。",
+   "new": "- **性能读数须声明 `Z0=off`**（省电档，W706）。"
+  },
+  {
+   "kind": "substr",
+   "old": "（宿主路径假阴性）；只读探针也落盘 + `python -u` + 时间戳 + 断言 rc。",
+   "new": "（宿主假阴性）；只读探针也落盘 + `python -u` + 断言 rc。"
+  },
+  {
+   "kind": "substr",
+   "old": "这类参数转成 Windows 路径 => 驱动只传短记号；**别用 ASCII 双引号包中文串**。",
+   "new": "类参数转成 Windows 路径 => 驱动只传短记号；别用 ASCII 双引号包中文串。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 改既有长件前**先备份该件本身**（曾误删 `W713_PLAN` §6 整节）。",
+   "new": "- 改既有长件前**先备份该件**（曾误删 `W713_PLAN` §6）。"
+  },
+  {
+   "kind": "substr",
+   "old": "`--pool-workers` 改非默认。",
+   "new": "`--pool-workers`。"
+  },
+  {
+   "kind": "substr",
+   "old": "register/config 的**行数/分布/md5 一律现算，不写字面值**。",
+   "new": "register/config 的**指纹一律现算**。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **温 TTFT 两口径**：同 prompt 重发=复用上限（0.11~0.15 s）；追加=真实多轮（18k 档 5.75 s）。**不可混比**。",
+   "new": "- **温 TTFT 两口径**：同 prompt 重发=上限（0.11~0.15 s）；追加=多轮（18k 档 5.75 s）。**不可混比**。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **重做**：0.1.40.x 读数须在 0.1.41 重取；0.1.41 新分母已建（0.1.40.1 仅存档）。",
+   "new": "- **重做**：0.1.40.x 读数须在 0.1.41 重取（机主令\"别弄了\"）；新分母已建。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 2026-10-08 **两轮**独立审计：",
+   "new": "- 两轮独立审计："
+  }
+ ]
+}

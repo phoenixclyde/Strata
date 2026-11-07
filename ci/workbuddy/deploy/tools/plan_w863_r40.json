@@ -1,0 +1,11 @@
+{
+  "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+  "reason": "R40 判否：prompt cache 只做整段精确匹配（前缀增长 0 reused），改 1024 无效已回滚",
+  "ops": [
+    {
+      "kind": "substr",
+      "old": "cache-every 8192(增量不复用,改1024待批)",
+      "new": "cache-every 8192(仅整段匹配,改1024无效)"
+    }
+  ]
+}

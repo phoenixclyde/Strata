@@ -1,0 +1,23 @@
+=== [1] main HEAD vs tag v0.1.40.2 ===
+  main      = e8ca9afd03d8  2026-10-07T11:22:57Z
+  v0.1.40.2 = e8ca9afd03d8  2026-10-07T11:22:57Z
+  compare: status=identical ahead_by=0 behind_by=0  total_commits=0
+  files changed by those commits:
+
+=== [2] main 的两个目标文件是否已含修复 ===
+  main:include/strata/platform/hip_compat/strata_hip.h                   #define cudaEventBlockingSync                              x0
+  main:CMakeLists.txt                                                    STRATA_Q6K_EXPERTS OR STRATA_HIP_GFX906                    x0
+  main:CMakeLists.txt                                                    list(APPEND _strata_mmq_cuda_types q6_k)                   x1
+
+=== [3] tag v0.1.40.2 的同样两处（应有/应无）===
+  tag:include/strata/platform/hip_compat/strata_hip.h                    #define cudaEventBlockingSync                              x0
+  tag:CMakeLists.txt                                                     STRATA_Q6K_EXPERTS OR STRATA_HIP_GFX906                    x0
+
+=== [4] 与 gfx906 构建相关的 open PR（排除已列过的大批）===
+  total=4
+    #1084   hip/gfx906: `__dp4a` falls back to a 4-iteration loop although gfx906    2026-10-06T10:12:12Z
+    #1320   test: qualify existing exact HIP paths on gfx906                         2026-10-07T06:20:44Z
+    #1187   gfx906: opt-in Q2_0 gate/up weight reuse without singleton regression    2026-10-06T15:16:03Z
+    #1111   Intel arc 0.1.40                                                         2026-10-06T11:25:49Z
+
+DONE 29.4s

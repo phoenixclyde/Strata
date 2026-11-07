@@ -1,0 +1,138 @@
+=== [1] 0.1.40.1 vs 0.1.40.2 逐字节对比 ===
+  src/kernels/cuda/fused_gr.cu                         new=   96522 640fe793e8a8bf9e
+                                                       old=   96423 ab856a507f407088   DIFF
+  src/core/mtp.cpp                                     new=   80470 9bf321a3eb1ab6f5
+                                                       old=   79014 989a109ab18b8b66   DIFF
+  src/core/vmm.cpp                                     new=    5746 2289edb848e70cc9
+                                                       old=    5480 e170816262d64e82   DIFF
+  include/strata/platform/hip_compat/strata_hip.h      new=   16583 17c8aad68fd17b7e
+                                                       old=   16583 17c8aad68fd17b7e   SAME
+
+=== [2] 锚点 H2/H3: mtp.cpp & vmm.cpp 的 `!defined(STRATA_USE_HIP)` ===
+  ### mtp.cpp (1502 lines)
+  --- !defined(STRATA_USE_HIP) ---
+        419|     bool prio = false;
+        420| #if !defined(STRATA_USE_HIP) && !defined(STRATA_HIP_GFX906)   // (HIP: the default priority)
+        421|     static const bool hi_prio = [] { const char* v = std::getenv("STRATA_MTP_PRIORITY"); return v == nullptr || std::atoi(v) != 0; }
+        422|     int prio_lo = 0, prio_hi = 0;
+        423|     if (force_on_ && hi_prio && cudaDeviceGetStreamPriorityRange(&prio_lo, &prio_hi) == cudaSuccess)
+        424|         prio = cudaStreamCreateWithPriority(&cs_, cudaStreamNonBlocking, prio_hi) == cudaSuccess;
+        425|     cudaGetLastError();
+        426| #endif
+        427|     if (!prio && cudaStreamCreateWithFlags(&cs_, cudaStreamNonBlocking) != cudaSuccess) { err = "mtp: stream"; return false; }
+      ----
+        427|     if (!prio && cudaStreamCreateWithFlags(&cs_, cudaStreamNonBlocking) != cudaSuccess) { err = "mtp: stream"; return false; }
+        428| #if !defined(STRATA_USE_HIP)
+        429|     // HIP keeps the shared expert on cs_; only CUDA needs this branch stream.
+        430|     if (cudaStreamCreateWithFlags(&side_, cudaStreamNonBlocking) != cudaSuccess ||
+        431|         cudaEventCreateWithFlags(&sh_fork_, cudaEventDisableTiming) != cudaSuccess ||
+        432|         cudaEventCreateWithFlags(&sh_join_, cudaEventDisableTiming) != cudaSuccess) {
+        433|         err = "mtp: streams";
+        434|         return false;
+        435|     }
+      ----
+  --- STRATA_HIP_GFX906 ---
+        419|     bool prio = false;
+        420| #if !defined(STRATA_USE_HIP) && !defined(STRATA_HIP_GFX906)   // (HIP: the default priority)
+        421|     static const bool hi_prio = [] { const char* v = std::getenv("STRATA_MTP_PRIORITY"); return v == nullptr || std::atoi(v) != 0; }
+        422|     int prio_lo = 0, prio_hi = 0;
+        423|     if (force_on_ && hi_prio && cudaDeviceGetStreamPriorityRange(&prio_lo, &prio_hi) == cudaSuccess)
+        424|         prio = cudaStreamCreateWithPriority(&cs_, cudaStreamNonBlocking, prio_hi) == cudaSuccess;
+        425|     cudaGetLastError();
+        426| #endif
+        427|     if (!prio && cudaStreamCreateWithFlags(&cs_, cudaStreamNonBlocking) != cudaSuccess) { err = "mtp: stream"; return false; }
+      ----
+  ### vmm.cpp (171 lines)
+  --- !defined(STRATA_USE_HIP) ---
+          2| 
+          3| #if !defined(STRATA_USE_HIP) && !defined(STRATA_HIP_GFX906)
+          4| #include <cuda.h>
+          5| #include <cuda_runtime.h>
+          6| 
+          7| #include <mutex>
+          8| 
+          9| namespace strata::core {
+         10| namespace {
+      ----
+  --- STRATA_HIP_GFX906 ---
+          2| 
+          3| #if !defined(STRATA_USE_HIP) && !defined(STRATA_HIP_GFX906)
+          4| #include <cuda.h>
+          5| #include <cuda_runtime.h>
+          6| 
+          7| #include <mutex>
+          8| 
+          9| namespace strata::core {
+         10| namespace {
+      ----
+
+=== [3] 锚点 H1: fused_gr.cu 的 fused_gr_read_multi ===
+       1621| bool fused_gr_read_multi(const FusedGrArgs* a, int n_tok, float* xn_scratch, void* stream, unsigned long long* stamp_buf,
+  --- STRATA_HIP_GFX906 出现处 ---
+  --- gfx906 ---
+        768| #if defined(__HIPCC__)
+        769| #if defined(STRATA_HIP_GFX906)
+        770|         const bool small_tile = false;  // gfx906: 64 KiB LDS, the 2560 tile as before (8 tokens slice into launches)
+        771| #else
+        772|         const bool small_tile = true;   // all eight tokens fit gfx1100's 64 KiB LDS at this tile
+        773| #endif
+        774| #else
+        775|         int cc_maj = 0, cc_min = 0;
+        776|         cudaDeviceGetAttribute(&cc_maj, cudaDevAttrComputeCapabilityMajor, dev);
+      ----
+        831| // takes first).
+        832| #if defined(STRATA_HIP_GFX906)
+        833| __global__ void __launch_bounds__(THREADS) gr_norm_fast_kernel(GrMulti m);   // below, with the AMD fast path
+        834| __global__ void __launch_bounds__(THREADS) gr_up_fast_kernel(GrMulti m);
+        835| }  // namespace
+        836| static bool gr_fast();
+        837| namespace {
+        838| #endif
+        839| // STRATA_GR_DOWN_MAX4=1 (opt-in): launches of up to 4 tokens hold 4 tokens' sums per thread instead of kFusedGrMaxT (the
+      ----
+        851|     const int n_tok = m.T;
+        852| #if defined(STRATA_HIP_GFX906)
+        853|     // gfx906: the latency-hidden norm/up (STRATA_GR_FAST=0: off) - the same sums in the same order as the kernels
+        854|     // they replace (gr_parity checks the multi-token read against single-token calls bitwise)
+        855|     const bool fast = gr_fast();
+        856|     if (variant >= kHcSplit) gr_norm_split_kernel<<<dim3((unsigned) n_tok, HC), THREADS, 0, st>>>(m);
+        857|     else if (fast) gr_norm_fast_kernel<<<n_tok, THREADS, 0, st>>>(m);
+        858|     else gr_norm_multi_kernel<<<n_tok, THREADS, 0, st>>>(m);
+        859| #else
+      ----
+        907|     if (stamp_buf) gpu_stamp(stamp_buf, stamp_i0 + 1, (void*) st);
+        908| #if defined(STRATA_HIP_GFX906)
+        909|     if (fast) gr_up_fast_kernel<<<UPM_BLOCKS, THREADS, 0, st>>>(m);
+        910|     else
+        911| #endif
+        912|     switch (no_multi_gr ? kFusedGrMaxT : n_tok) {
+        913|         case 1: gr_up_multi_kernel<1, true><<<UPM_BLOCKS, THREADS, 0, st>>>(m); break;
+        914|         case 2: gr_up_multi_kernel<2, true><<<UPM_BLOCKS, THREADS, 0, st>>>(m); break;
+        915|         case 3: gr_up_multi_kernel<3, true><<<UPM_BLOCKS, THREADS, 0, st>>>(m); break;
+      ----
+        935| 
+        936| #if defined(STRATA_HIP_GFX906)
+        937| // ---- AMD fast path (STRATA_GR_FAST, default 1; 0 = the old kernels): the same arithmetic per value in the same order, latency
+        938| // hidden.  gr_norm: one block per token (as before) but a thread's 10 float4 of R / bo / w_norm are loaded
+        939| // before any is used, and xn stays in registers until rs is known (was: store, then re-read the 40 KB).
+        940| // gr_up: a warp's 8 rows of w_up and their epilogue inputs are loaded before the dots (was: one row's load chain
+        941| // after another).
+        942| constexpr int NQ = D / (THREADS * 4);   // 10 float4 per thread
+        943| static_assert(D % (THREADS * 4) == 0, "whole float4 per thread");
+      ----
+       1069| 
+       1070| #if defined(STRATA_HIP_GFX906)
+       1071| // ---- AMD: `gr_down_multi` split along K.  The CUDA kernel is one warp per row of w_down (320 + 4 rows), 41
+       1072| // blocks: on a 60-CU gfx906 that left most of the card idle and read the 6.5 MB matrix at ~100 GB/s.  Here a block
+       1073| // is 8 wavefronts = 8 rows of one K-slice of 2048 (the slice of every token's xn staged in LDS once), 41 x 5
+       1074| // blocks, and a second kernel adds the 5 slice sums in a fixed order and runs the epilogue.  A token's result does
+       1075| // not depend on how many tokens share the window (each column is reduced on its own).
+       1076| constexpr int GS_SL = 2048;                   // K per slice
+       1077| constexpr int GS_S = D / GS_SL;               // 5 slices
+      ----
+
+=== [4] 结论判据 ===
+  mtp.cpp   含 '!defined(STRATA_USE_HIP)' 且同行/近行含 GFX906 : True
+  vmm.cpp   同上                                          : True
+  fused_gr  含 'return false' 于 gfx906 分支                : True
+  (以上任一为 False => 该处仍需打补丁)

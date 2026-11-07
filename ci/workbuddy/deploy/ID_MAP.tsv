@@ -1,0 +1,35 @@
+﻿# ID_MAP.tsv —— 编号对照（唯一）。左边是账本里的 id，右边是权威方案 `W832_OPT_PLAN_V2.md` 里的锚点。
+# 存在理由：PROGRESS 用的是"块内序号"（M1/U2/G3…），方案用的是全局 R 号；两套名字会让
+# "这条待办到底进没进方案"无法机械判定（AUDIT16 回溯时正是靠人工比对才发现）。改一处就要改两处，
+# 所以这张表由 `tools/plan_lint.py` 强制检查：左列必须在 PROGRESS/登记表里存在，右列必须能在方案正文里 grep 到。
+src_id	kind	plan_token	note
+P1c	progress	P227	P227 pcie_frac_auto 单块放开
+K8	progress	P229	GDN_PP 数值债
+D28	progress	6.6	28 个 HIP 死块（§6.6 逐块表）
+P2	progress	宽窗口	宽窗口 16 bit-exact（§2 P2）
+U1	progress	R5	#4283 routed stream
+U2	progress	R3	#3987 decode top-k split
+U3	progress	R4	#4158 PF_MMVQ
+U4	progress	W776	回馈上游（§5.2 #4）
+G1	progress	R7	quantize_q8_0_scaled 的 HIP 串行分支
+G2	progress	R8	head argmax/multi_block
+G3	progress	R9	HC_UPMIX
+G4	progress	R10	GDN_CHUNKED
+G5	progress	R11	GRAPH_PRIO
+G6	progress	R12	CKPT/PARK 异步族
+M1	progress	R6	roofline 三条
+M2	progress	R13	int8 W8A16 探针
+G7	progress	W835-3-5	fused_gr wave64 通道
+G8	progress	W835-3-1	LDS padding
+G9	progress	W835-3-2	DPP 归约
+G10	progress	W835-3-3	fp16 dot2
+M3	progress	W835-9-4a	int8 KV 的 prefill 代价
+R14	progress	R14	dequant 摊薄
+R15	progress	R15	wait copy 预取深度
+R16	progress	R16	MMQ 构建门
+P171	register	P171	GDN_HEAD/GDN_PP 未验证
+P210	register	4.1	spec-min-p / pcie-frac 重判
+P211	register	4.2	0.1.53 vs 0.1.54n2
+P213	register	4.4	数值债 3 项
+P215	register	4.6	数值债逐项二分
+M6	progress	R18	chunk 大小 -> GEMM 算力利用率

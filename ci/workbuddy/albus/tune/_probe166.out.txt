@@ -1,0 +1,119 @@
+===DOCKER===
+strata166-407|strata-gfx906:0.2.2b|Up 13 minutes
+strata166-407.bak022a|strata-gfx906:0.2.2|Exited (0) 13 minutes ago
+strata166-407.bak0142|strata-gfx906:0.1.42|Exited (0) 2 hours ago
+strata166-407_0141bak|strata-gfx906:0.1.41|Exited (0) 11 days ago
+strata166-406|strata-gfx906:0.1.41|Exited (0) 13 days ago
+rk_w680_rk030n_p1_d|routek-base:gfx906-rocm101-hip716-torch215-tv030-df1|Exited (0) 2 weeks ago
+rk_w680_rk030m_p0_d|routek-base:gfx906-rocm101-hip716-torch215-tv030-df1|Exited (0) 2 weeks ago
+rk_w680_rk030j_patch_fe|routek-base:gfx906-rocm101-hip716-torch215-tv030-df1|Exited (0) 2 weeks ago
+rk_w680_rk030i_base_fe|routek-base:gfx906-rocm101-hip716-torch215-tv030-df1|Exited (0) 2 weeks ago
+rk_w680_rk030h_patch_f|routek-base:gfx906-rocm101-hip716-torch215-tv030-df1|Exited (1) 2 weeks ago
+rk_w680_rk030g_base_f|routek-base:gfx906-rocm101-hip716-torch215-tv030-df1|Exited (1) 2 weeks ago
+rk_w680_rk030f_patch_t|routek-base:gfx906-rocm101-hip716-torch215-tv030-df1|Exited (0) 2 weeks ago
+rk_w680_rk030e_base_t|routek-base:gfx906-rocm101-hip716-torch215-tv030-df1|Exited (0) 2 weeks ago
+rk_w680_rk030d_patch_m|routek-base:gfx906-rocm101-hip716-torch215-tv030-df1|Exited (0) 2 weeks ago
+rk_w680_rk030c_base_m|routek-base:gfx906-rocm101-hip716-torch215-tv030-df1|Exited (0) 2 weeks ago
+rk_w680_rk030b_patch_d|routek-base:gfx906-rocm101-hip716-torch215-tv030-df1|Exited (0) 2 weeks ago
+rk_w680_rk030a_base_d|routek-base:gfx906-rocm101-hip716-torch215-tv030-df1|Exited (0) 2 weeks ago
+rk_w680_rk030b_patch_d_kept_20261006_205642|routek-base:gfx906-rocm101-hip716-torch215-tv030-df1|Exited (137) 2 weeks ago
+rk_w680_rk030a_base_d_kept_20261006_205642|routek-base:gfx906-rocm101-hip716-torch215-tv030-df1|Exited (1) 2 weeks ago
+rk_w646_w646g3|docker.1ms.run/mixa3607/llama.cpp-gfx906:v0.5.0-rocm-7.14|Exited (0) 2 weeks ago
+===INSPECT_ENV===
+
+DEBIAN_FRONTEND=noninteractive
+HSA_OVERRIDE_GFX_VERSION=9.0.6
+PATH=/opt/rocm/llvm/bin:/opt/rocm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ROCM_BUILD=7.14.0-gfx906+20260802001858
+ROCM_PATH=/opt/rocm
+STRATA_SRC=/src
+===INSPECT_CMD===
+["/bin/bash","-lc","cd /src && exec python3 serve/server.py --engine strata --config /data/strata-huihui-ud-iq4_xs.json --port 8090"]
+===INSPECT_HOSTCFG===
+[{"Name":"memlock","Hard":-1,"Soft":-1}] "host" 67108864
+===ENGINEVER===
+strata 0.1.47
+===METRICS===
+{"engine": {"model": "qwen3.8-flash-next-ud-iq4_xs-abliterated", "max_context": 262144, "images": true, "version": "0.1.47", "logit_bias": 1, "context": 262144, "kv": "k8v4", "kv_resident": 0, "expert_slots": 9761, "expert_cache_mib": 22516, "expert_slots_primary": 9761, "expert_cache_primary_mib": 22516, "spec": 6, "mtp_max": 4, "lookup": 3, "vram_free_mib": 574, "cvec": 0, "arena_mib": 37819, "pool_workers": 20, "pcie_frac": "0.20", "spec_min_p": "0.70", "conversation_cache_mib": 4096, "conversation_cache_slots": 4, "conversation_cache_min_free_mib": 2560, "conversation_cache_min_tokens": 0, "tail_role_token": -1, "vram_elastic": 0, "prefill_cap": 8192, "prefill_stages": 1, "stream_all_min": 1024, "prefill_pipe": 0, "engine": "0.1.47"}, "live": {"state": "idle", "queued": 0, "phase": null, "prompt_tokens": null, "prompt_read": null, "prompt_total": null, "generated": null, "max_tokens": null, "elapsed_s": null, "tok_s": null, "tok_s_mean": null, "prefill_tok_s_mean": null, "tok_s_window_s": null}, "requests": [{"id": "1b9a861b5f42", "projection": null, "time": 1792605616.1433234, "duration_s": 42.8, "finish": "length", "prompt_tokens": 20438, "reused": 0, "output_tokens": 1, "first_engine_token_s": 42.737, "prompt_total": 20438, "prompt_read": 20438, "reasoning_recoveries": 0, "reasoning_repeat_coverage": 0.0, "engine_generated": 1, "prompt_ms": 42693.2, "decode_ms": 48.6, "decode_tok_s": 20.6, "hit_rate": 0.856, "pcie_share": 0.0, "ram_blobs": 158, "file_blobs": 0, "file_mb": 0, "drafts_offered": 0, "drafts_accepted": 0}, {"id": "c7832316caab", "projection": null, "time": 1792605071.635198, "duration_s": 1.3, "finish": "length", "prompt_tokens": 57, "reused": 0, "output_tokens": 16, "first_engine_token_s": 0.988, "prompt_total": 57, "prompt_read": 57, "reasoning_recoveries": 0, "reasoning_repeat_coverage": 0.0, "engine_generated": 16, "prompt_ms": 950.4, "decode_ms": 361.5, "decode_tok_s": 44.3, "hit_rate": 0.823, "pcie_share": 0.008, "ram_blobs": 1055, "file_blobs": 0, "file_mb": 0, "drafts_offered": 11, "drafts_accepted": 11}, {"id": "95f76ed44624", "projection": null, "time": 1792605061.1126742, "duration_s": 1.1, "finish": "length", "prompt_tokens": 55, "reused": 0, "output_tokens": 1, "first_engine_token_s": 1.051, "prompt_total": 55, "prompt_read": 55, "reasoning_recoveries": 0, "reasoning_repeat_coverage": 0.0, "engine_generated": 1, "prompt_ms": 992.4, "decode_ms": 72.4, "decode_tok_s": 13.8, "hit_rate": 0.794, "pcie_share": 0.0, "ram_blobs": 87, "file_blobs": 0, "file_mb": 0, "drafts_offered": 0, "drafts_accepted": 0}], "conversation_cache": {"enabled": true, "budget_mib": 4096, "slots": 4, "parked": 2, "bytes": 473896840, "evictions": 0, "parks": 2, "restores": 0, "last_event": "parked", "last_tokens": 73, "last_at": 1792605617.6866987, "requests": 3, "requests_reused": 0, "reused_tokens": 0, "prompt_tokens": 20550, "last_reused": 0, "last_prompt": 20438}, "requests_kept": 3, "totals": {"since": 1792605058.9287107, "requests": 3, "prompt_tokens": 20550, "reused": 0, "output_tokens": 18, "prompt_ms": 44636.0, "decode_ms": 482.5, "drafts_offered": 11, "drafts_accepted": 11}, "hardware": {"gpu_util": 0, "gpu_mem_used": 33942556672, "gpu_mem_total": 34342961152, "gpu_temp": 43.0, "gpu_power": 15.0, "gpu_power_limit": 225.0, "gpu_pcie_gen": 3, "gpu_pcie_gen_max": 3, "gpu_pcie_own_gen": 4, "gpu_pcie_width": 16, "gpu_pcie_path": "4/4", "cpu": 2.8, "ram_used": 50497503232, "ram_total": 134952771584, "disk_read_mb": 0.0, "disk_write_mb": 0.0701605967571374, "gpu_pcie_rx_mb": 0.02, "tok_s": 0.0, "tok_s_mean": 0, "prefill_tok_s_mean": 0.0}, "hardware_static": {"gpu_name": "Radeon Instinct MI50 32GB", "gpu_vram_total_mib": null, "gpu_count": 1, "gpu_note": null, "cpu_name": "Intel(R) Xeon(R) CPU E5-2696 v4 @ 2.20GHz", "cores": 22, "threads": 44, "sockets": 1, "numa_nodes": 1, "psutil": true}, "history": {"gpu_util": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "gpu_mem_used": [33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672, 33942556672], "gpu_temp": [45.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 45.0, 44.0, 44.0, 45.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 44.0, 43.0, 44.0, 44.0, 44.0, 43.0], "gpu_power": [16.0, 16.0, 16.0, 16.0, 15.0, 16.0, 15.0, 15.0, 15.0, 15.0, 15.0, 16.0, 16.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 16.0, 15.0, 15.0, 15.0, 16.0, 15.0, 15.0, 15.0, 16.0, 15.0, 16.0, 16.0, 16.0, 16.0, 16.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0], "gpu_pcie_rx_mb": [0.01, 0.01, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.02, 0.02, 0.02, 0.02], "cpu": [0.9, 1.8, 2.2, 0.6, 1.0, 0.7, 1.0, 0.7, 1.4, 0.6, 1.0, 0.6, 2.0, 2.2, 0.8, 0.9, 0.7, 0.5, 1.0, 0.6, 1.0, 0.6, 0.7, 2.2, 1.8, 1.1, 0.6, 1.0, 0.6, 1.0, 0.6, 0.7, 0.8, 0.8, 2.4, 2.0, 0.8, 0.7, 1.1, 0.7, 0.8, 0.8, 1.0, 0.8, 1.1, 2.3, 2.0, 0.6, 1.0, 0.7, 1.1, 0.9, 0.7, 0.9, 0.8, 1.0, 2.7, 1.6, 0.7, 2.8], "ram_used": [50461769728, 50486661120, 50486435840, 50482147328, 50475757568, 50468667392, 50465955840, 50460246016, 50455900160, 50455973888, 50454790144, 50451714048, 50479476736, 50479771648, 50477678592, 50474479616, 50469924864, 50466914304, 50461216768, 50458513408, 50456313856, 50454077440, 50453676032, 50493464576, 50480803840, 50477666304, 50471976960, 50466934784, 50465337344, 50459705344, 50458501120, 50456997888, 50456694784, 50455212032, 50472316928, 50475085824, 50466009088, 50463363072, 50451615744, 50447802368, 50444955648, 50442993664, 50443710464, 50442489856, 50443337728, 50478440448, 50474102784, 50469871616, 50464563200, 50455519232, 50447601664, 50444783616, 50445049856, 50446090240, 50446852096, 50446946304, 50496958464, 50482528256, 50477748224, 50497503232], "disk_read_mb": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "tok_s": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "prefill_tok_s_mean": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, "time": 1792605827.8224456}
+===HEALTH===
+{"status": "ok", "max_context": 262144, "model": "qwen3.8-flash-next-ud-iq4_xs-abliterated", "images": true, "api_key": false, "image_generation": false, "loaded": true, "service": "strata"}
+===HOST===
+               total        used        free      shared  buff/cache   available
+Mem:          128700       48157        8199       39210      112745       80543
+Swap:          16383           0       16383
+---nproc---
+44
+---gov---
+schedutil
+intel_cpufreq
+---thp---
+always [madvise] never
+always defer defer+madvise [madvise] never
+---hugepages---
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+---ulimit---
+16473724
+---loadavg---
+0.57 0.90 1.90 1/1987 2446207
+---meminfo_extra---
+MemTotal:       131789816 kB
+MemFree:         8396716 kB
+MemAvailable:   82476792 kB
+Cached:         114079024 kB
+Unevictable:       28364 kB
+Dirty:              8496 kB
+Writeback:             0 kB
+AnonPages:       5697432 kB
+Mapped:         99784628 kB
+Shmem:          40151352 kB
+WritebackTmp:          0 kB
+ShmemHugePages:        0 kB
+ShmemPmdMapped:        0 kB
+===GPUSYS===
+
+
+============================ ROCm System Management Interface ============================
+====================================== Temperature =======================================
+GPU[0]		: Temperature (Sensor edge) (C): 44.0
+GPU[0]		: Temperature (Sensor junction) (C): 45.0
+GPU[0]		: Temperature (Sensor memory) (C): 44.0
+==========================================================================================
+=================================== Power Consumption ====================================
+GPU[0]		: Current Socket Graphics Package Power (W): 17.0
+==========================================================================================
+=================================== % time GPU is busy ===================================
+GPU[0]		: GPU use (%): 0
+==========================================================================================
+=================================== Current Memory Use ===================================
+GPU[0]		: GPU Memory Allocated (VRAM%): 98
+GPU[0]		: GPU Memory Read/Write Activity (%): 0
+GPU[0]		: Memory Activity: N/A
+GPU[0]		: Not supported on the given system
+==========================================================================================
+================================== End of ROCm SMI Log ===================================
+===LINKSPEED===
+
+
+============================ ROCm System Management Interface ============================
+======================================= PCI Bus ID =======================================
+GPU[0]		: PCI Bus: 0000:05:00.0
+==========================================================================================
+================================== End of ROCm SMI Log ===================================
+===PS===
+    PID %CPU   RSS NLWP COMMAND
+      1  0.5 203528   8 python3
+===NODEINFO===
+CPU(s):                                  44
+Model name:                              Intel(R) Xeon(R) CPU E5-2696 v4 @ 2.20GHz
+Thread(s) per core:                      2
+Core(s) per socket:                      22
+Socket(s):                               1
+CPU(s) scaling MHz:                      47%
+L3 cache:                                55 MiB (1 instance)
+NUMA node(s):                            1
+NUMA node0 CPU(s):                       0-43
+node0

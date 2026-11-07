@@ -1,0 +1,96 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W749：--mtp-window 默认 32768（P43）+ 草稿深度自适应的 kShape 是 CUDA 曲线 + routeK 同卡常量 + 未做清单改为 W749 计划",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- 权威件：`PARAM_REGISTER.tsv`·`W713_PLAN.md`（全量账）·`W737`-`W741`·`W747`；其余按号查。",
+   "new": "- 权威件：`PARAM_REGISTER.tsv`·`W713_PLAN.md`（全量账）·`W737`-`W749`；其余按号。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 生产：`strata166-407`（`-406`=回滚位）/8090；**引擎补丁面 0/serve 覆写 2**（不提上游；重建后重跑 `patches/apply_telemetry_pcie.sh`）。",
+   "new": "- 生产：`strata166-407`（`-406`=回滚位）/8090；**引擎补丁面 0/serve 覆写 2**（不提上游；重建后跑 `apply_telemetry_pcie.sh`）。"
+  },
+  {
+   "kind": "substr",
+   "old": "LIVE config `strata-huihui-ud-iq4_xs.json`（须含 `backend:hip`）；指纹现算。",
+   "new": "LIVE config `strata-huihui-ud-iq4_xs.json`（须含 `backend:hip`）；指纹现算。**未设即默认** `--mtp-window`=**32768**（上游建议 8192，P43）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **反汇编只答源答不了的**（实际发射/ISA 可编码/源与二进制同否）；**dump 记 md5+mtime**；工具 `deploy/tools/isa_probe.py`。",
+   "new": "- **反汇编只答源答不了的**（实际发射/ISA 可编码/源同否）；**dump 记 md5+mtime**；工具 `isa_probe.py`。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **引用 routeK 内核结论须读自有库**（见 §5）；本地树只作副本，`ARCHIVE.md` 只作对照。",
+   "new": "- **引用 routeK 内核结论须读自有库**（见 §5）；本地树只作副本（`ARCHIVE.md` 只作对照）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **166 的 PCIe**：有效链路 **Gen3 x16**；`pcie_bw` 读 ~1 s 须独立线程；`product_name` = **FRU 串** => 容量按实读显存纠正。",
+   "new": "- **166 的 PCIe**：有效链路 **Gen3 x16**；`pcie_bw` 读 ~1 s 须独立线程；`product_name`=**FRU 串** => 容量按实读显存纠正。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改前端先照上游参考件**；报链路/容量须走独立工具；`spark()` 无上限按序列最大值缩放；JS 路径 `/web/app.js`。",
+   "new": "- **改前端先照上游参考件**；报链路/容量走独立工具；`spark()` 无上限按序列最大值缩放；JS 路径 `/web/app.js`。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **「默认关」!=「不可达」**：判可达性须核宏。**同路径开关不可组合测**（W723）。",
+   "new": "- **「默认关」!=「不可达」**：判可达性须核宏；**同路径开关不可组合测**（W723）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **筛候选**：收益上限=该环节时延占比；省「重复预填」（多轮~90%）才两位数（P31/P34）；一票否决：**改答案/破位**。",
+   "new": "- **筛候选**：收益上限=该环节时延占比；省「重复预填」（多轮~90%）才两位数（P31/P34）；否决：改答案/破位。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **温 TTFT 两口径**：重发=上限；追加=多轮。**不可混比**。",
+   "new": "- **温 TTFT 两口径**：重发=上限、追加=多轮，不可混比。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 默认 16384 使 8k~16k 无复用；`<8k` 恒 `reused=0`；`>16k` 时 8192=16384、32768 归零。",
+   "new": "- 默认 16384 使 8k~16k 无复用；`<8k` 恒 `reused=0`；`>16k` 时 8192=16384、32768 归 0。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **dot**：dot4 25,877 GMAC/s；dot8 49,600；解包+dot4=1,375。**W740 普查 dot4 62,596/dot8 0 => dp4a+解包**；换 dot8 须双方 i4（P38 不改）；布局只值 multi-token。",
+   "new": "- **dot**：dot4 25,877 GMAC/s；dot8 49,600；解包+dot4=1,375。**W740 普查 dot4 62,596/dot8 0 => dp4a+解包**；换 dot8 须双方 i4（P38）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **判「改答案」按 index 跨臂对齐**：同 prompt 连发输出按会话态递进，但同 index 可跨臂逐字节复现；臂内 spread 才是真判据（W739=0.13%）。",
+   "new": "- **判「改答案」按 index 跨臂对齐**：同 prompt 连发输出按会话态递进，但同 index 可跨臂逐字节复现；臂内 spread 才是真判据（W739）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **自比须同形状**（同 pt/gen）；`ms/step` 最干净，`tok/s = 每步净出/每步耗时`（净出=草稿命中）；**现役最快**。判「不可复现」先排缓存冷热（W739-W748）。",
+   "new": "- **自比须同形状**（同 pt/gen）；`ms/step` 最干净，`tok/s=每步净出/每步耗时`（净出=草稿命中）；**现役最快**。判「不可复现」先排缓存冷热（W739-W748）。\n- **草稿深度自适应**，`kShape` 是 **RTX 5070 曲线**；routeK 同卡 L2=8MB/HBM~805GB/s（W749）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **gfx1151 专属开关族**（`EXPERT_V2`·`TSUM` 等，`docs/STRIX_HALO.md §4`）=> register 0 登记。pack 命中 `EXPERT_V2`（IQ3_S/IQ4_NL、n_ff 640、零 K-quant）。**W739：`EXPERT_V2` 慢 5.60% 位等、`TSUM` 中性不可复现 => P36/P37 REJECTED**。",
+   "new": "- **gfx1151 专属开关族**（`EXPERT_V2`·`TSUM` 等，`STRIX_HALO.md §4`）=> register 0 登记；pack 命中 `EXPERT_V2`。**W739：`EXPERT_V2` 慢 5.60%、`TSUM` 不可复现 => P36/P37 REJECTED**。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **W740**：MTP 接受长度 **1.797**（<2.0）=> R5 关闭（P39）；R1/R2 完成（P38）。**未做**：`--kv` 质量门·`--lookup-chain`·R0c·R7 布局。",
+   "new": "- **未做**（`W749_OPT_PLAN.md`）：`--mtp-window`(32768,P43)·`--kv` 质量门·`--lookup-chain`·§4 族(P40-42)·并发面；**已关** R5(P39)·R1/R2(P38)。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **自有库**：上游 `KIntegrated/vllm-gfx906-mobydick`，我方 fork 同名（分支 `gfx906-patches-030`）。",
+   "new": "- **自有库**：上游 `KIntegrated/vllm-gfx906-mobydick`，我方 fork 同名（`gfx906-patches-030`）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- PR **#1396** **ported 进 0.1.41**（closed-not-merged）；审计 `W713_AUDIT{,2}`+`W735_AUDIT`（P0=0/P1=4）。",
+   "new": "- PR **#1396** ported 进 0.1.41（closed-not-merged）；审计 `W713_AUDIT{,2}`+`W735_AUDIT`（P0=0/P1=4）。"
+  }
+ ]
+}

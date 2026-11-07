@@ -1,0 +1,456 @@
+### ggml/src/ggml-cuda/argmax.cu  +4 -4
+@@ -22,8 +22,8 @@ static __global__ void argmax_f32(const float * __restrict__ x, int32_t * __rest
+ 
+ #pragma unroll
+     for (int offset = WARP_SIZE/2; offset > 0; offset >>= 1) {
+-        const float val = __shfl_xor_sync(0xFFFFFFFF, maxval, offset, WARP_SIZE);
+-        const int   col = __shfl_xor_sync(0xFFFFFFFF, argmax, offset, WARP_SIZE);
++        const float val = ggml_cuda_shfl_xor_sync<WARP_SIZE>(maxval, offset);
++        const int   col = ggml_cuda_shfl_xor_sync<WARP_SIZE>(argmax, offset);
+         if (val > maxval) {
+             maxval = val;
+             argmax = col;
+@@ -51,8 +51,8 @@ static __global__ void argmax_f32(const float * __restrict__ x, int32_t * __rest
+             }
+ #pragma unroll
+             for (int offset = WARP_SIZE/2; offset > 0; offset >>= 1) {
+-                const float val = __shfl_xor_sync(0xFFFFFFFF, maxval, offset, WARP_SIZE);
+-                const int   col = __shfl_xor_sync(0xFFFFFFFF, argmax, offset, WARP_SIZE);
++                const float val = ggml_cuda_shfl_xor_sync<WARP_SIZE>(maxval, offset);
++                const int   col = ggml_cuda_shfl_xor_sync<WARP_SIZE>(argmax, offset);
+                 if (val > maxval) {
+                     maxval = val;
+                     argmax = col;
+
+### ggml/src/ggml-cuda/common.cuh  +54 -9
+@@ -371,6 +371,50 @@ static bool ggml_cuda_is_aligned(const ggml_tensor * tensor, const size_t alignm
+            tensor->nb[3] % alignment == 0;
+ }
+ 
++#ifdef GGML_USE_HIP
++template <int dpp_ctrl, typename T, int row_mask = 0xf, int bank_mask = 0xf, bool bound_ctrl = true>
++static __device__ __forceinline__ T hip_update_dpp(T x) {
++        static_assert(sizeof(T) == sizeof(int), "hip_update_dpp requires a 32-bit type");
++    return __builtin_bit_cast(
++        T,
++        __builtin_amdgcn_update_dpp(0, __builtin_bit_cast(int, x), dpp_ctrl, row_mask, bank_mask, bound_ctrl)
++    );
++}
++#endif // GGML_USE_HIP
++
++template<int width = WARP_SIZE, typename T>
++static __device__ __forceinline__ T ggml_cuda_shfl_xor_sync(T x, int offset) {
++// clang (v20) will not unroll loops with just the plain `offset` in switch
++#if defined(GGML_USE_HIP)
++ #if defined(RDNA) || defined(CDNA)
++    // row_xor_mask only availaible on GFX10+
++    switch (~offset) {
++        // subgroups (width) should not make a difference for a butterfly shuffle pattern
++        case ~1: return hip_update_dpp<0x160 + 1>(x);  // row_xor_mask: offset
++        case ~2: return hip_update_dpp<0x160 + 2>(x);
++        case ~4: return hip_update_dpp<0x160 + 4>(x);
++        case ~8: return hip_update_dpp<0x160 + 8>(x);
++        default: return __shfl_xor_sync(0xffffffff, x, offset, width);
++    }
++ #else // Fallback for GCN5 and GCN4
++    // For the power-of-two butterfly reductions used here, offset < width and offset is a single bit. Therefore XOR(offset) never leaves the
++    // corresponding width-aligned subgroup.
++    switch (~offset) {
++        case ~1: return hip_update_dpp<0xB1>(x);   // quad_perm:[1,0,3,2]
++        case ~2: return hip_update_dpp<0x4E>(x);   // quad_perm:[2,3,0,1]
++        case ~4: {
++            const T y = hip_update_dpp<0x141>(x); // row_half_mirror: lane ^ 7
++            return hip_update_dpp<0x01B>(y);      // quad_perm:[3,2,1,0]: lane ^ 3
++        }
++        case ~8: return hip_update_dpp<0x128>(x);  // row_ror:8
++        default: return __shfl_xor_sync(0xffffffff, x, offset, width);
++    }
++ #endif // defined(RDNA) || defined(CDNA)
++#else
++    return __shfl_xor_sync(0xffffffff, x, offset, width);
++#endif // defined(GGML_USE_HIP)
++}
++
+ static constexpr __device__ int ggml_cuda_get_physical_warp_size() {
+ #if defined(GGML_USE_HIP) && (defined(__GFX9__) || defined(__GFX8__))
+     return 64;
+@@ -446,7 +490,7 @@ static __device__ __forceinline__ int warp_reduce_sum(int x) {
+ #else
+ #pragma unroll
+     for (int offset = width/2; offset > 0; offset >>= 1) {
+-        x += __shfl_xor_sync(0xffffffff, x, offset, width);
++        x += ggml_cuda_shfl_xor_sync<width>(x, offset);
+     }
+     return x;
+ #endif // !defined(GGML_USE_HIP) && __CUDA_ARCH__ >= GGML_CUDA_CC_AMPERE
+@@ -456,7 +500,7 @@ template<int width = WARP_SIZE>
+ static __device__ __forceinline__ float warp_reduce_sum(float x) {
+ #pragma unroll
+     for (int offset = width/2; offset > 0; offset >>= 1) {
+-        x += __shfl_xor_sync(0xffffffff, x, offset, width);
++        x += ggml_cuda_shfl_xor_sync<width>(x, offset);
+     }
+     return x;
+ }
+@@ -465,8 +509,8 @@ template<int width = WARP_SIZE>
+ static __device__ __forceinline__ float2 warp_reduce_sum(float2 a) {
+ #pragma unroll
+     for (int offset = width/2; offset > 0; offset >>= 1) {
+-        a.x += __shfl_xor_sync(0xffffffff, a.x, offset, width);
+-        a.y += __shfl_xor_sync(0xffffffff, a.y, offset, width);
++        a.x += ggml_cuda_shfl_xor_sync<width>(a.x, offset);
++        a.y += ggml_cuda_shfl_xor_sync<width>(a.y, offset);
+     }
+     return a;
+ }
+@@ -476,7 +520,7 @@ static __device__ __forceinline__ half2 warp_reduce_sum(half2 a) {
+ #ifdef FP16_AVAILABLE
+ #pragma unroll
+     for (int offset = width/2; offset > 0; offset >>= 1) {
+-        a = __hadd2(a, __shfl_xor_sync(0xffffffff, a, offset, width));
++        a = __hadd2(a, ggml_cuda_shfl_xor_sync<width>(a, offset));
+     }
+     return a;
+ 
+@@ -493,7 +537,7 @@ static __device__ __forceinline__ int warp_reduce_all(int x) {
+     } else {
+ #pragma unroll
+         for (int offset = width/2; offset > 0; offset >>= 1) {
+-            x = __shfl_xor_sync(0xffffffff, x, offset, width) && x;
++            x = ggml_cuda_shfl_xor_sync<width>(x, offset) && x;
+         }
+         return x;
+     }
+@@ -506,7 +550,7 @@ static __device__ __forceinline__ int warp_reduce_any(int x) {
+     } else {
+ #pragma unroll
+         for (int offset = width/2; offset > 0; offset >>= 1) {
+-            x = __shfl_xor_sync(0xffffffff, x, offset, width) || x;
++            x = ggml_cuda_shfl_xor_sync<width>(x, offset) || x;
+         }
+         return x;
+     }
+@@ -516,11 +560,12 @@ template<int width = WARP_SIZE>
+ static __device__ __forceinline__ float warp_reduce_max(float x) {
+ #pragma unroll
+     for (int offset = width/2; offset > 0; offset >>= 1) {
+-        x = fmaxf(x, __shfl_xor_sync(0xffffffff, x, offset, width));
++        x = fmaxf(x, ggml_cuda_shfl_xor_sync<width>(x, offset));
+     }
+     return x;
+ }
+ 
++
+ template<typename T, int width = WARP_SIZE>
+ static __device__ __forceinline__ T warp_prefix_inclusive_sum(T x) {
+     const int lane_id = threadIdx.x % width;
+@@ -683,7 +728,7 @@ static __device__ __forceinline__ half2 warp_reduce_max(half2 x) {
+ #if !defined(GGML_USE_HIP) && __CUDA_ARCH__ >= GGML_CUDA_CC_PASCAL || defined(GGML_USE_HIP)
+ #pragma unroll
+    for (int offset = width/2; offset > 0; offset >>= 1) {
+-       x = ggml_cuda_hmax2(x, __shfl_xor_sync(0xffffffff, x, offset, width));
++       x = ggml_cuda_hmax2(x, ggml_cuda_shfl_xor_sync<width>(x, offset));
+    }
+    return x;
+ #else
+
+### ggml/src/ggml-cuda/fattn-common.cuh  +2 -2
+@@ -347,8 +347,8 @@ static __device__ __forceinline__ void quantize_q8_1_to_shared(
+     }
+ #pragma unroll
+     for (int mask = QI8_1/2; mask > 0; mask >>= 1) {
+-        amax = fmaxf(amax, __shfl_xor_sync(0xFFFFFFFF, amax, mask, 32));
+-        sum +=             __shfl_xor_sync(0xFFFFFFFF, sum,  mask, 32);
++        amax = fmaxf(amax, ggml_cuda_shfl_xor_sync<32>(amax, mask));
++        sum +=             ggml_cuda_shfl_xor_sync<32>(sum,  mask);
+     }
+ 
+     const float d = amax / 127;
+
+### ggml/src/ggml-cuda/fattn-mma-f16.cuh  +5 -5
+@@ -730,7 +730,7 @@ static __device__ __forceinline__ void flash_attn_ext_f16_iter(
+         for (int col = 0; col < cols_per_thread; ++col) {
+ #pragma unroll
+             for (int offset = 16; offset >= 4; offset >>= 1) {
+-                KQ_max_new[col] = fmaxf(KQ_max_new[col], __shfl_xor_sync(0xFFFFFFFF, KQ_max_new[col], offset, warp_size));
++                KQ_max_new[col] = fmaxf(KQ_max_new[col], ggml_cuda_shfl_xor_sync<warp_size>(KQ_max_new[col], offset));
+             }
+         }
+ 
+@@ -823,7 +823,7 @@ static __device__ __forceinline__ void flash_attn_ext_f16_iter(
+ #endif // defined(TURING_MMA_AVAILABLE)
+ #pragma unroll
+             for (int offset = offset_first; offset >= offset_last; offset >>= 1) {
+-                KQ_max_new[col] = fmaxf(KQ_max_new[col], __shfl_xor_sync(0xFFFFFFFF, KQ_max_new[col], offset, warp_size));
++                KQ_max_new[col] = fmaxf(KQ_max_new[col], ggml_cuda_shfl_xor_sync<warp_size>(KQ_max_new[col], offset));
+             }
+         }
+ 
+@@ -1341,7 +1341,7 @@ static __device__ __forceinline__ void flash_attn_ext_f16_process_tile(
+         for (int col = 0; col < cols_per_thread; ++col) {
+ #pragma unroll
+             for (int offset = offset_first; offset >= offset_last; offset >>= 1) {
+-                KQ_rowsum[col] += __shfl_xor_sync(0xFFFFFFFF, KQ_rowsum[col], offset, warp_size);
++                KQ_rowsum[col] += ggml_cuda_shfl_xor_sync(KQ_rowsum[col], offset);
+             }
+         }
+     }
+@@ -1513,7 +1513,7 @@ static __device__ __forceinline__ void flash_attn_ext_f16_process_tile(
+ #pragma unroll
+         for (int offset = np*cols_per_warp/2; offset >= cols_per_warp; offset >>= 1) {
+             if (offset < warp_size) {
+-                KQ_cmn = fmaxf(KQ_cmn, __shfl_xor_sync(0xFFFFFFFF, KQ_cmn, offset, warp_size));
++                KQ_cmn = fmaxf(KQ_cmn, ggml_cuda_shfl_xor_sync<warp_size>(KQ_cmn, offset));
+             }
+         }
+ 
+@@ -1531,7 +1531,7 @@ static __device__ __forceinline__ void flash_attn_ext_f16_process_tile(
+ #pragma unroll
+         for (int offset = np*cols_per_warp/2; offset >= cols_per_warp; offset >>= 1) {
+             if (offset < warp_size) {
+-                KQ_crs += __shfl_xor_sync(0xFFFFFFFF, KQ_crs, offset, warp_size);
++                KQ_crs += ggml_cuda_shfl_xor_sync(KQ_crs, offset);
+             }
+         }
+ 
+
+### ggml/src/ggml-cuda/fattn-tile.cuh  +8 -8
+@@ -165,11 +165,11 @@ static constexpr __host__ __device__ uint32_t ggml_cuda_fattn_tile_get_config_am
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE( 40,  40, 64, 256, 2,  32,  40)
+ 
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE( 64,  64,  2,  64, 3,  32,  64)
+-    GGML_CUDA_FATTN_TILE_CONFIG_CASE( 64,  64,  4, 128, 3,  64,  64)
++    GGML_CUDA_FATTN_TILE_CONFIG_CASE( 64,  64,  4, 256, 2,  64,  64)
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE( 64,  64,  8, 128, 2,  32,  64)
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE( 64,  64, 16, 256, 2, 128,  64)
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE( 64,  64, 32, 256, 2,  64,  64)
+-    GGML_CUDA_FATTN_TILE_CONFIG_CASE( 64,  64, 64, 256, 2,  64,  64)
++    GGML_CUDA_FATTN_TILE_CONFIG_CASE( 64,  64, 64, 256, 1,  64,  64)
+ 
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE( 72,  72,  2,  64, 2,  32,  72)
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE( 72,  72,  4, 128, 2,  32,  72)
+@@ -200,7 +200,7 @@ static constexpr __host__ __device__ uint32_t ggml_cuda_fattn_tile_get_config_am
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE(112, 112, 64, 256, 2,  32,  56)
+ 
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE(128, 128,  2, 256, 2, 128,  64)
+-    GGML_CUDA_FATTN_TILE_CONFIG_CASE(128, 128,  4, 128, 2,  64, 128)
++    GGML_CUDA_FATTN_TILE_CONFIG_CASE(128, 128,  4, 256, 2,  64, 128)
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE(128, 128,  8, 256, 2,  64, 128)
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE(128, 128, 16, 256, 2,  64, 128)
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE(128, 128, 32, 256, 2,  64,  64)
+@@ -214,9 +214,9 @@ static constexpr __host__ __device__ uint32_t ggml_cuda_fattn_tile_get_config_am
+ 
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE(256, 256,  2, 256, 2, 128,  64)
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE(256, 256,  4, 256, 2,  64, 128)
+-    GGML_CUDA_FATTN_TILE_CONFIG_CASE(256, 256,  8, 256, 2,  64, 128)
++    GGML_CUDA_FATTN_TILE_CONFIG_CASE(256, 256,  8, 512, 1,  64, 128)
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE(256, 256, 16, 256, 2,  32, 128)
+-    GGML_CUDA_FATTN_TILE_CONFIG_CASE(256, 256, 32, 256, 2,  32, 128)
++    GGML_CUDA_FATTN_TILE_CONFIG_CASE(256, 256, 32, 256, 1,  32, 128)
+ 
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE(320, 256, 32, 512, 1, 128,  64)
+ 
+@@ -247,7 +247,7 @@ static constexpr __host__ __device__ uint32_t ggml_cuda_fattn_tile_get_config_am
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE( 64,  64,  8, 128, 5, 128,  64)
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE( 64,  64, 16, 128, 5, 128,  64)
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE( 64,  64, 32, 128, 4,  64,  64)
+-    GGML_CUDA_FATTN_TILE_CONFIG_CASE( 64,  64, 64, 128, 5,  64,  64)
++    GGML_CUDA_FATTN_TILE_CONFIG_CASE( 64,  64, 64, 256, 2,  64,  64)
+ 
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE( 72,  72,  2,  64, 2,  32,  72)
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE( 72,  72,  4, 128, 2,  32,  72)
+@@ -280,7 +280,7 @@ static constexpr __host__ __device__ uint32_t ggml_cuda_fattn_tile_get_config_am
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE(128, 128,  2,  64, 8,  32,  64)
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE(128, 128,  4, 128, 8,  64,  64)
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE(128, 128,  8, 128, 8,  64,  64)
+-    GGML_CUDA_FATTN_TILE_CONFIG_CASE(128, 128, 16, 256, 3, 128, 128)
++    GGML_CUDA_FATTN_TILE_CONFIG_CASE(128, 128, 16, 256, 3,  64, 128)
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE(128, 128, 32, 256, 3, 128,  64)
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE(128, 128, 64, 256, 3,  64,  64)
+ 
+@@ -296,7 +296,7 @@ static constexpr __host__ __device__ uint32_t ggml_cuda_fattn_tile_get_config_am
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE(256, 256, 16, 256, 5,  32, 256)
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE(256, 256, 32, 256, 3,  64, 128)
+ 
+-    GGML_CUDA_FATTN_TILE_CONFIG_CASE(320, 256, 32, 256, 2, 128,  64)
++    GGML_CUDA_FATTN_TILE_CONFIG_CASE(320, 256, 32, 512, 1, 128,  64)
+ 
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE(512, 512,  2,  64, 2,  64,  64)
+     GGML_CUDA_FATTN_TILE_CONFIG_CASE(512, 512,  4, 128, 2,  64,  64)
+
+### ggml/src/ggml-cuda/fattn-vec.cuh  +36 -18
+@@ -10,6 +10,33 @@ static constexpr __device__ int ggml_cuda_fattn_vec_get_nthreads_device() {
+     return 128;
+ }
+ 
++template<int D, int ncols, ggml_type type_K, ggml_type type_V>
++static constexpr __device__ int ggml_cuda_fattn_vec_get_nthreads_KQ(const int cpy_nb) {
++    if constexpr (type_K == GGML_TYPE_F16 || type_K == GGML_TYPE_BF16) return 128 / cpy_nb;
++#if defined(GGML_USE_HIP)
++#if defined(RDNA)
++    constexpr bool use_nthreads_KQ_2 = D == 256 && ncols == 2 && type_V == GGML_TYPE_F16 && (type_K == GGML_TYPE_Q4_0 || type_K == GGML_TYPE_Q4_1);
++    if constexpr (use_nthreads_KQ_2) return 2;
++    if constexpr (D == 256) return 4;
++    return 2;
++#else
++    return 4;
++#endif // defined(GGML_USE_HIP)
++#else
++    return D / 4 < 32 ? D / 4 : 32;
++#endif // defined(RDNA)
++}
++
++template<int D, int ncols, ggml_type type_K, ggml_type type_V>
++static constexpr __device__ int ggml_cuda_fattn_vec_get_nthreads_V(const int cpy_nb) {
++#if defined(GGML_USE_HIP) && defined(RDNA)
++    if constexpr (D == 256 && ncols == 2 && type_K == GGML_TYPE_BF16 && type_V == GGML_TYPE_BF16) return 16;
++    if constexpr (D == 64 && ncols == 1 && type_K == GGML_TYPE_F16 && type_V == GGML_TYPE_Q4_1) return 32;
++#endif
++    if constexpr (type_V == GGML_TYPE_F16 || type_V == GGML_TYPE_BF16) return 128 / cpy_nb;
++    return D / 4 < 32 ? D / 4 : 32;
++}
++
+ // Currently llvm with the amdgcn target does not support unrolling loops
+ // that contain a break that can not be resolved at compile time.
+ #ifdef __clang__
+@@ -70,22 +97,10 @@ static __global__ void flash_attn_ext_vec(
+ 
+     constexpr int cpy_nb = ggml_cuda_get_max_cpy_bytes();
+     constexpr int cpy_ne = cpy_nb / 4;
+-
+-#ifdef GGML_USE_HIP
+-#ifdef RDNA
+-    constexpr int nthreads_KQ_q = 2;
+-#else
+-    constexpr int nthreads_KQ_q = 4;
+-#endif // RDNA
+-    constexpr int nthreads_V_q  = (D/4 < 32 ? D/4 : 32);
+-#else
+-    constexpr int nthreads_KQ_q = (D/4 < 32 ? D/4 : 32);
+-    constexpr int nthreads_V_q  = (D/4 < 32 ? D/4 : 32);
+-#endif // GGML_USE_HIP
+-
+-    constexpr int nthreads    = ggml_cuda_fattn_vec_get_nthreads_device();
+-    constexpr int nthreads_KQ = (type_K == GGML_TYPE_F16 || type_K == GGML_TYPE_BF16) ? 128 / cpy_nb : nthreads_KQ_q;
+-    constexpr int nthreads_V  = (type_V == GGML_TYPE_F16 || type_V == GGML_TYPE_BF16) ? 128 / cpy_nb : nthreads_V_q;
++    
++    constexpr int nthreads = ggml_cuda_fattn_vec_get_nthreads_device();
++    constexpr int nthreads_KQ = ggml_cuda_fattn_vec_get_nthreads_KQ<D, ncols, type_K, type_V>(cpy_nb);
++    constexpr int nthreads_V = ggml_cuda_fattn_vec_get_nthreads_V<D, ncols, type_K, type_V>(cpy_nb);
+ 
+     static_assert(WARP_SIZE % nthreads_KQ == 0, "bad nthreads_K");
+     static_assert(WARP_SIZE % nthreads_V  == 0, "bad nthreads_V");
+@@ -293,7 +308,7 @@ static __global__ void flash_attn_ext_vec(
+         for (int j = 0; j < ncols; ++j) {
+ #pragma unroll
+             for (int offset = nthreads_KQ; offset < WARP_SIZE; offset <<= 1) {
+-                KQ_max_new[j] = fmaxf(KQ_max_new[j], __shfl_xor_sync(0xFFFFFFFF, KQ_max_new[j], offset, WARP_SIZE));
++                KQ_max_new[j] = fmaxf(KQ_max_new[j], ggml_cuda_shfl_xor_sync(KQ_max_new[j], offset));
+             }
+             const float KQ_max_scale = expf(KQ_max[j] - KQ_max_new[j]);
+             KQ_max[j] = KQ_max_new[j];
+@@ -547,11 +562,14 @@ template <int D, ggml_type type_K, ggml_type type_V>
+ void ggml_cuda_flash_attn_ext_vec_case(ggml_backend_cuda_context & ctx, ggml_tensor * dst) {
+     const ggml_tensor * KQV = dst;
+     const ggml_tensor * Q   = dst->src[0];
++    const int cc = ggml_cuda_info().devices[ggml_cuda_get_device()].cc;
++    constexpr bool is_d128_q8_q4 = D == 128 && type_K == GGML_TYPE_Q8_0 && (type_V == GGML_TYPE_Q4_0 || type_V == GGML_TYPE_Q4_1);
++    const bool force_cols_per_block_1 = GGML_CUDA_CC_IS_RDNA(cc) && is_d128_q8_q4;
+ 
+     float logit_softcap;
+     memcpy(&logit_softcap, (const float *) KQV->op_params + 2, sizeof(float));
+ 
+-    if (Q->ne[1] == 1) {
++    if (Q->ne[1] == 1 || force_cols_per_block_1) {
+         constexpr int cols_per_block = 1;
+         if (logit_softcap == 0.0f) {
+             constexpr bool use_logit_softcap = false;
+
+### ggml/src/ggml-cuda/fwht.cu  +1 -1
+@@ -30,7 +30,7 @@ __global__ void fwht_cuda(const float * src, float * dst, const int64_t n_rows,
+ #pragma unroll
+         for (int j = 0; j < el_w; j++) {
+             const float val  = reg[j];
+-            const float val2 = __shfl_xor_sync(0xFFFFFFFF, val, h, warp_size);
++            const float val2 = ggml_cuda_shfl_xor_sync<warp_size>(val, h);
+ 
+             reg[j] = (lane & h) == 0 ? val + val2 : val2 - val;
+         }
+
+### ggml/src/ggml-cuda/mma.cuh  +3 -3
+@@ -736,7 +736,7 @@ namespace ggml_cuda_mma {
+             int i = threadIdx.x / 16;
+             tmp[i] = tile_float.x[l];
+             i ^= 1;
+-            tmp[i] = __shfl_xor_sync(0xFFFFFFFF, tile_float.x[l], 16, WARP_SIZE);
++            tmp[i] = ggml_cuda_shfl_xor_sync(tile_float.x[l], 16);
+             ret.x[l] = make_half2(tmp[0], tmp[1]);
+         }
+         return ret;
+@@ -767,8 +767,8 @@ namespace ggml_cuda_mma {
+ 
+             // On Volta FP16 and FP32 tiles have a different memory layout,
+             //     for the conversion threads with an offset of 2 need to exchange half their values:
+-            ret.x[l0/2 + (((threadIdx.x % 4) / 2) ^ 1)] = __shfl_xor_sync(
+-                0xFFFFFFFF, ret.x[l0/2 + (((threadIdx.x % 4) / 2) ^ 1)], 2, WARP_SIZE);
++            ret.x[l0/2 + (((threadIdx.x % 4) / 2) ^ 1)] = ggml_cuda_shfl_xor_sync<WARP_SIZE>(
++                ret.x[l0/2 + (((threadIdx.x % 4) / 2) ^ 1)], 2);
+         }
+         return ret;
+     }
+
+### ggml/src/ggml-cuda/quantize.cu  +3 -3
+@@ -390,7 +390,7 @@ static __global__ void quantize_mmq_mxfp4(const float * __restrict__ x,
+         float amax = fabsf(xi);
+ #pragma unroll
+         for (int mask = 16; mask > 0; mask >>= 1) {
+-            amax = fmaxf(amax, __shfl_xor_sync(0xFFFFFFFF, amax, mask, WARP_SIZE));
++            amax = fmaxf(amax, ggml_cuda_shfl_xor_sync<WARP_SIZE>(amax, mask));
+         }
+ 
+         const uint8_t e = compute_e8m0_scale(amax);
+@@ -498,7 +498,7 @@ static __global__ void quantize_mmq_q8_1(
+     // Exchange max. abs. value between vals_per_scale/4 threads.
+ #pragma unroll
+     for (int offset = vals_per_scale/8; offset > 0; offset >>= 1) {
+-        amax = fmaxf(amax, __shfl_xor_sync(0xFFFFFFFF, amax, offset, WARP_SIZE));
++        amax = fmaxf(amax, ggml_cuda_shfl_xor_sync<WARP_SIZE>(amax, offset));
+     }
+ 
+     float sum;
+@@ -508,7 +508,7 @@ static __global__ void quantize_mmq_q8_1(
+         // Calculate sums across vals_per_sum/4 threads.
+ #pragma unroll
+         for (int offset = vals_per_sum/8; offset > 0; offset >>= 1) {
+-            sum += __shfl_xor_sync(0xFFFFFFFF, sum, offset, WARP_SIZE);
++            sum += ggml_cuda_shfl_xor_sync<WARP_SIZE>(sum, offset);
+         }
+     }
+ 
+
+### ggml/src/ggml-cuda/topk-moe.cu  +5 -5
+@@ -195,9 +195,9 @@ __launch_bounds__(4 * WARP_SIZE, 1) __global__ void topk_moe_cuda(const float *
+ 
+ #pragma unroll
+             for (int mask = WARP_SIZE / 2; mask > 0; mask /= 2) {
+-                const float val    = __shfl_xor_sync(0xFFFFFFFF, max_val, mask, WARP_SIZE);
+-                const float val_s  = __shfl_xor_sync(0xFFFFFFFF, max_val_s, mask, WARP_SIZE);
+-                const int   expert = __shfl_xor_sync(0xFFFFFFFF, max_expert, mask, WARP_SIZE);
++                const float val    = ggml_cuda_shfl_xor_sync<WARP_SIZE>(max_val, mask);
++                const float val_s  = ggml_cuda_shfl_xor_sync<WARP_SIZE>(max_val_s, mask);
++                const int   expert = ggml_cuda_shfl_xor_sync<WARP_SIZE>(max_expert, mask);
+                 if (val_s > max_val_s || (val_s == max_val_s && expert < max_expert)) {
+                     max_val    = val;
+                     max_val_s  = val_s;
+@@ -220,8 +220,8 @@ __launch_bounds__(4 * WARP_SIZE, 1) __global__ void topk_moe_cuda(const float *
+ 
+ #pragma unroll
+             for (int mask = WARP_SIZE / 2; mask > 0; mask /= 2) {
+-                const float val    = __shfl_xor_sync(0xFFFFFFFF, max_val, mask, WARP_SIZE);
+-                const int   expert = __shfl_xor_sync(0xFFFFFFFF, max_expert, mask, WARP_SIZE);
++                const float val    = ggml_cuda_shfl_xor_sync<WARP_SIZE>(max_val, mask);
++                const int   expert = ggml_cuda_shfl_xor_sync<WARP_SIZE>(max_expert, mask);
+                 if (val > max_val || (val == max_val && expert < max_expert)) {
+                     max_val    = val;
+                     max_expert = expert;
+

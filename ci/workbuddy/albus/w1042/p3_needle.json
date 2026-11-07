@@ -1,0 +1,30 @@
+{
+ "off": {
+  "16K": {
+   "hit": true,
+   "prompt_tokens": 15992,
+   "cached": 0,
+   "secs": 23.1
+  },
+  "28K": {
+   "hit": true,
+   "prompt_tokens": 28695,
+   "cached": 0,
+   "secs": 39.3
+  }
+ },
+ "on": {
+  "16K": {
+   "hit": true,
+   "prompt_tokens": 15992,
+   "cached": 0,
+   "secs": 22.6
+  },
+  "28K": {
+   "hit": true,
+   "prompt_tokens": 28695,
+   "cached": 0,
+   "secs": 38.0
+  }
+ }
+}

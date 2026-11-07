@@ -1,0 +1,1025 @@
+=== qsa_decode_attn.cu: V path, k8v4, OPT ===
+7:#include "strata/kernels/kv_q4.hpp"
+8:#include "strata/kernels/dp4a.hpp"
+84:// scale) product.  The 8 dimensions of a lane are inside one 64-value group (8 | 64), so the int32 partial is exact
+86:__device__ __forceinline__ float dot8_dp4a(int kb0, int kb1, const int8_t* q8p, float qs, float ks) {
+92:// 8 consecutive values of one cell's key or value row for KV head `kvh`, dimensions [d0, d0+8).
+93:// Per-format bodies; `load8` below is the KV_MODE dispatcher. value=false is the K side, true the V side.
+94:__device__ __forceinline__ void load8_f16(const QsaAttnPools& p, bool value, long long row, int d0, float* out) {
+95:    const uint16_t* base = (value ? p.v_pool : p.k_pool) + row * HD + d0;
+105:__device__ __forceinline__ void load8_q8(const QsaAttnPools& p, bool value, long long row, int d0, float* out) {
+106:    const int8_t* codes = (value ? p.v_q : p.k_q) + row * HD + d0;
+107:    const uint16_t sbits = (value ? p.v_scale : p.k_scale)[row * (HD / KV_Q8_GROUP) + d0 / KV_Q8_GROUP];
+114:__device__ __forceinline__ void load8_q4(const QsaAttnPools& p, bool value, long long row, int d0, float* out) {
+115:    constexpr int bytes_per_head = (HD / QK4_0) * sizeof(block_q4_0);
+118:    const block_q4_0* blk = reinterpret_cast<const block_q4_0*>((value ? p.v_q4 : p.k_q4) + row * bytes_per_head) + b;
+130:template <int KV_MODE>
+131:__device__ __forceinline__ void load8(const QsaAttnPools& p, bool value, long long row, int d0, float* out) {
+132:    if constexpr (KV_MODE == 0) load8_f16(p, value, row, d0, out);
+133:    else if constexpr (KV_MODE == 1) load8_q8(p, value, row, d0, out);
+134:    else if constexpr (KV_MODE == 3) {
+135:        // hybrid K8V4: both sides are defined - K unrotated INT8, V rotated Q4_0 - so a value=true call
+137:        if (value) load8_q4(p, value, row, d0, out);
+138:        else load8_q8(p, value, row, d0, out);
+139:    } else load8_q4(p, value, row, d0, out);
+144:// query-swizzled specialization; softmax, value accumulation and merge are unchanged.
+175:// W1036: OPT is a bit mask of independent, runtime-selected gfx906 ports - one build, each A/B-able on its own:
+177://   bit 1 (2) B1/B2 the score dot product runs on v_dot4_i32_i8 with a per-64-group int8 query (k8v4 and int8)
+179:template <int KV_MODE, bool LANE_CELL, bool QUERY_SWIZZLE, bool REDUCE12, int OPT>
+193:    constexpr int SQ_PAD = (OPT & 4) ? 4 : 0;     // A2: 16 bytes per head row (keeps the float4 reads aligned)
+194:    constexpr int SP_PAD = (OPT & 4) ? 1 : 0;
+195:    constexpr int SQ_HEADS = (OPT & 2) ? 1 : G;   // B1/B2 keep the query as int8 below; the fp32 tile is unused
+199:    __shared__ __align__(16) int8_t sq8[(OPT & 2) ? G : 1][HD];  // B1/B2: the quantized query
+200:    __shared__ float sq8s[(OPT & 2) ? G : 1][NSC];               // one scale per (head, 64-value group)
+215:    static_assert(!(OPT & 2) || !LANE_CELL, "the dp4a score keeps the warp-scoring path");
+216:    if constexpr (!(OPT & 2)) {
+234:    if constexpr (OPT & 2) {
+236:        // W1041: one WARP per (head, 64-value group) instead of one thread.  The old mapping used 48 of the 256
+239:        // dp4a path measured +6.8% instead of -35% (P447/P449).  Now: 48 groups over 8 warps, 2 values per lane,
+242:        constexpr int QPG = KV_Q8_GROUP / 32;   // 64-value group == 2 values per lane
+278:                load8<KV_MODE>(p, false, srow[c], l * 8, k8);
+306:        if constexpr (OPT & 2) {
+311:                part[h] = dot8_dp4a((int) kraw.x, (int) kraw.y, &sq8[h][lane * 8], sq8s[h][lane >> 3], ks);
+314:        load8<KV_MODE>(p, false, srow[c], lane * 8, k8);
+331:        if constexpr (OPT & 2) {
+336:                float s = dot8_dp4a((int) kraw.x, (int) kraw.y, &sq8[h][lane * 8], sq8s[h][lane >> 3], ks);
+337:                s = warp_sum(s, (OPT & 1) != 0);
+342:        load8<KV_MODE>(p, false, srow[c], lane * 8, k8);
+350:            s = warp_sum(s, (OPT & 1) != 0);
+360:        const float m = warp_max(fmaxf(a, b), (OPT & 1) != 0);
+365:        const float l = warp_sum(ea + eb, (OPT & 1) != 0);
+369:    // values: thread t owns dimension t for all 12 heads.
+370:    float acc[G];
+372:    for (int h = 0; h < G; ++h) acc[h] = 0.0f;
+376:        if constexpr (KV_MODE == 0) {
+378:        } else if constexpr (KV_MODE == 1) {
+381:        } else {   // modes 2 and 3: V is rotated Q4_0 (kv_q4.hpp); the caller rotates the output back
+382:            constexpr int bytes_per_head = (HD / QK4_0) * sizeof(block_q4_0);
+385:            const block_q4_0* blk = reinterpret_cast<const block_q4_0*>(p.v_q4 + srow[c] * bytes_per_head) + b;
+393:        for (int h = 0; h < G; ++h) acc[h] = fmaf(sp[h][c], v, acc[h]);
+396:    for (int h = 0; h < G; ++h) part_acc[((size_t) slot * G + h) * HD + t] = acc[h];
+399:template <int KV_MODE, bool LANE_CELL = false, bool QUERY_SWIZZLE = false, bool REDUCE12 = false, int OPT = 0>
+406:    attn_chunk_body<KV_MODE, LANE_CELL, QUERY_SWIZZLE, REDUCE12, OPT>(q, p, ids, step, n_kv_heads, page_size, scale,
+413:template <int KV_MODE, bool LANE_CELL>
+422:    attn_chunk_body<KV_MODE, LANE_CELL, false, false, 0>(q, ps.p[blockIdx.z], ids, step, n_kv_heads, page_size, scale,
+427:template <int KV_MODE>
+436:    attn_chunk_body<KV_MODE, false, false, false, 0>(q, rows.p[blockIdx.z], ids, step, n_kv_heads, page_size, scale,
+448://   - the probabilities are stored cell-major, so the value loop reads a cell's 12 as three 16-byte broadcasts.
+531:    float acc[G];
+533:    for (int h = 0; h < G; ++h) acc[h] = 0.0f;
+543:        for (int h = 0; h < G; ++h) acc[h] = fmaf(pr[h], v, acc[h]);
+546:    for (int h = 0; h < G; ++h) part_acc[((size_t) slot * G + h) * HD + t] = acc[h];
+574:// probabilities and the same four-cell value fold - except that `spt` shares `sq`'s storage here (no arithmetic
+581:// 16-lane row, v_permlanex16 across the two rows - instead of ds_bpermute; the same value moves, so every sum is
+633:// One V element of pool row `row`, dimension `d` (the value loop's own thread index), per KV format.
+634:template <int KV_MODE>
+636:    if constexpr (KV_MODE == 0) {
+638:    } else if constexpr (KV_MODE == 1) {
+641:    } else {   // modes 2 and 3: V is rotated Q4_0 (kv_q4.hpp); the caller rotates the output back
+642:        constexpr int bytes_per_head = (HD / QK4_0) * sizeof(block_q4_0);
+645:        const block_q4_0* blk = reinterpret_cast<const block_q4_0*>(p.v_q4 + row * bytes_per_head) + b;
+654:template <int KV_MODE, int NC_ = 2, bool DPP_ = false>
+671:    // probabilities, cell-major: the value loop reads one cell's 12 as three float4.  They are first written after the
+716:            for (int j = 0; j < NC; ++j) load8<KV_MODE>(p, false, srow[cc[j]], lane * 8, kk[j]);
+742:                load8<KV_MODE>(p, false, srow[c], lane * 8, k8);
+771:    // values: thread t owns dimension t for all 12 heads.
+772:    float acc[G];
+774:    for (int h = 0; h < G; ++h) acc[h] = 0.0f;
+780:        acc[0] = fmaf(w0.x, v, acc[0]);  acc[1] = fmaf(w0.y, v, acc[1]);
+781:        acc[2] = fmaf(w0.z, v, acc[2]);  acc[3] = fmaf(w0.w, v, acc[3]);
+782:        acc[4] = fmaf(w1.x, v, acc[4]);  acc[5] = fmaf(w1.y, v, acc[5]);
+783:        acc[6] = fmaf(w1.z, v, acc[6]);  acc[7] = fmaf(w1.w, v, acc[7]);
+784:        acc[8] = fmaf(w2.x, v, acc[8]);  acc[9] = fmaf(w2.y, v, acc[9]);
+785:        acc[10] = fmaf(w2.z, v, acc[10]); acc[11] = fmaf(w2.w, v, acc[11]);
+793:        const float v0 = load_v1<KV_MODE>(p, r0, t), v1 = load_v1<KV_MODE>(p, r1, t);
+794:        const float v2 = load_v1<KV_MODE>(p, r2, t), v3 = load_v1<KV_MODE>(p, r3, t);
+802:        fold(c, load_v1<KV_MODE>(p, srow[c], t));
+805:    for (int h = 0; h < G; ++h) part_acc[((size_t) slot * G + h) * HD + t] = acc[h];
+828:        L = fmaf(part_l[slot * G + hl], w, L);
+829:        acc = fmaf(part_acc[((size_t) slot * G + hl) * HD + d], w, acc);
+845://     The skip is a select on the loaded m instead of a branch, so the loads cannot move back behind it.  The values
+846://     selected are the very fmaf's attn_merge_kernel computes (same operands, same order), and a skipped chunk leaves
+875:        const float L_next = fmaf(ll[u], w, L);
+876:        const float acc_next = fmaf(aa[u], w, acc);
+1030:// 0 fp16, 1 int8, 2 q4_0, 3 int8 K with q4_0 V
+1031:int attn_kv_mode(const QsaAttnPools& p) {
+1032:    return p.k_q4 != nullptr ? 2 : (p.k_q != nullptr && p.v_q4 != nullptr ? 3 : (p.k_q != nullptr ? 1 : 0));
+1060:// Any bit selects attn_chunk_kernel<M, false, false, false, OPT> (no query swizzle, no reduce12), i.e. the plain
+1061:// baseline is STRATA_GFX906_ATTN_{QUERY_SWIZZLE,REDUCE12}=0 with every OPT switch off.
+1080:#define STRATA_ATTN_OPT_STEP(M, O)                                                                       \
+1084:#define STRATA_ATTN_OPT_BATCH(M, O)                                                                      \
+1088:#define STRATA_ATTN_OPT_DISPATCH(LAUNCH, M)                                                              \
+1101:// so the switches above were still unreachable.  Swizzle and reduce12 stay what production uses; only OPT differs.
+1102:#define STRATA_ATTN_OPT_SWZ(M, O)                                                                         \
+1107:#define STRATA_ATTN_OPT_DISPATCH_SWZ(LAUNCH, M)                                                           \
+1121:    const int kv_mode = pools.k_q4 != nullptr ? 2 : (pools.k_q != nullptr && pools.v_q4 != nullptr ? 3
+1140:    // W794: the permutation is a q-side LDS bijection, independent of the KV format, so KV_MODE 3
+1141:    // (k8v4: int8 K + q4_0 V) takes it too (upstream #1661 measured it on int8 only).
+1143:                                   (kv_mode == 1 || kv_mode == 3) && query_swizzle_gfx906_device();
+1148:        std::fprintf(stderr, "strata attn-query-swizzle: active=%d nq=%lld cap=%lld kv_mode=%d lane_cell=%d\n",
+1149:                     use_query_swizzle, (long long) n_q, (long long) cap, kv_mode, lane_cell);
+1154:    // W1037: the gfx906 OPT switches (DPP / DP4A / LDS pad) were wired into qsa_decode_attn_batch_rows and
+1159:        opt != 0 && !lane_cell && !use_query_swizzle && (kv_mode == 3 || kv_mode == 1)) {
+1160:        if (kv_mode == 3) STRATA_ATTN_OPT_DISPATCH(STRATA_ATTN_OPT_BATCH, 3)
+1161:        else STRATA_ATTN_OPT_DISPATCH(STRATA_ATTN_OPT_BATCH, 1)
+1166:        if (kv_mode == 3) STRATA_ATTN_LC(3);
+1167:        else if (kv_mode == 2) STRATA_ATTN_LC(2);
+1168:        else if (kv_mode == 1) STRATA_ATTN_LC(1);
+1175:    // A k8v4 model's MTP drafter uses INT8 pools and can therefore take this path.
+1183:        // W1039: this is the instantiation production actually runs (swizzle + reduce12), so the OPT switch has to
+1186:            if (kv_mode == 3) STRATA_ATTN_OPT_DISPATCH_SWZ(STRATA_ATTN_OPT_SWZ, 3)
+1187:            else              STRATA_ATTN_OPT_DISPATCH_SWZ(STRATA_ATTN_OPT_SWZ, 1)
+1191:            if (kv_mode == 3)
+1204:                std::fprintf(stderr, "strata attn-reduce12: selected=1 query_swizzle=1 kv_mode=1 nq=%lld cap=%lld\n",
+1208:            if (kv_mode == 3)
+1218:    if (kernel < 0 && kv_mode == 1 && attn_v3_on())   // (the parity harness names its kernel: never the environment)
+1223:    if (const int opt = (kernel < 0 ? gfx906_attn_opt() : 0); opt != 0 && !lane_cell && (kv_mode == 3 || kv_mode == 1)) {
+1224:        if (kv_mode == 3) STRATA_ATTN_OPT_DISPATCH(STRATA_ATTN_OPT_BATCH, 3)
+1225:        else STRATA_ATTN_OPT_DISPATCH(STRATA_ATTN_OPT_BATCH, 1)
+1226:    } else if (kv_mode == 3)
+1230:    else if (kv_mode == 2)
+1234:    else if (kv_mode == 1)
+1283:    const int kv_mode = attn_kv_mode(pools.p[0]);
+1289:        if (attn_kv_mode(pools.p[z]) != kv_mode) return false;
+1300:    if (query_swizzle && !lane_cell && kv_mode == 1 && query_swizzle_gfx906_device()) return false;
+1312:        if (kv_mode == 3) STRATA_ATTN_SLOTS(3, true);
+1313:        else if (kv_mode == 2) STRATA_ATTN_SLOTS(2, true);
+1314:        else if (kv_mode == 1) STRATA_ATTN_SLOTS(1, true);
+1317:        if (kv_mode == 3) STRATA_ATTN_SLOTS(3, false);
+1318:        else if (kv_mode == 2) STRATA_ATTN_SLOTS(2, false);
+1319:        else if (kv_mode == 1) STRATA_ATTN_SLOTS(1, false);
+1342:    const int kv_mode = pools.k_q4 != nullptr ? 2 : (pools.k_q != nullptr && pools.v_q4 != nullptr ? 3
+1371:    if (kv_mode == 3) STRATA_ATTN_ROWS(3);
+1372:    else if (kv_mode == 2) STRATA_ATTN_ROWS(2);
+1373:    else if (kv_mode == 1) STRATA_ATTN_ROWS(1);
+1397:    const int kv_mode = pools.k_q4 != nullptr ? 2 : (pools.k_q != nullptr && pools.v_q4 != nullptr ? 3
+1399:    if (kv_mode == 3 ? (!pools.k_scale || !pools.v_q4)
+1400:                     : (kv_mode == 2 ? (!pools.v_q4) : (kv_mode == 1 ? (!pools.v_q || !pools.k_scale || !pools.v_scale)
+1413:    if (kv_mode == 1 && attn_v3_on())
+1418:    if (const int opt = gfx906_attn_opt(); opt != 0 && (kv_mode == 3 || kv_mode == 1)) {
+1419:        if (kv_mode == 3) STRATA_ATTN_OPT_DISPATCH(STRATA_ATTN_OPT_STEP, 3)
+1420:        else STRATA_ATTN_OPT_DISPATCH(STRATA_ATTN_OPT_STEP, 1)
+1421:    } else if (kv_mode == 3)
+1424:    else if (kv_mode == 2)
+1427:    else if (kv_mode == 1)
+=== qsa_decode_attn.cu score/value body 1-360 ===
+// src/kernels/cuda/qsa_decode_attn.cu - see include/strata/kernels/qsa_decode_attn.hpp.
+#include "strata/kernels/qsa_decode_attn.hpp"
+#include "strata/core/sm75_series.hpp"
+#include "strata/core/sm120_series.hpp"
+#include "strata/core/geometry.hpp"
+#include "strata/kernels/kv_q8.hpp"
+#include "strata/kernels/kv_q4.hpp"
+#include "strata/kernels/dp4a.hpp"
+#if defined(STRATA_HIP_GFX906)
+#include "strata/kernels/gfx_arch.hpp"
+#endif
+
+#include <cuda_fp16.h>
+#include <cuda_runtime.h>
+
+#include <cfloat>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+namespace strata::kernels {
+namespace {
+
+constexpr int HD = 256;          // head_dim
+constexpr int G = 12;            // query heads per KV head (24 / 2)
+static_assert(HD == strata::core::kCompiledGeometry.head_dim && G == strata::core::kCompiledGeometry.n_head / strata::core::kCompiledGeometry.n_head_kv, "qsa_decode_attn is compiled for core/geometry.hpp");
+constexpr int CHUNK = 64;        // cells per block
+constexpr int THREADS = 256;
+constexpr int WARPS = THREADS / 32;
+
+// W1036/A3: DPP instead of ds_bpermute for the 32-lane reductions.  DPP permutes inside a 16-lane row, so xor1/2/4/8
+// are pure lane permutations; xor16 stays a shuffle (on a 64-lane wavefront its scope is not the 32-lane hierarchy's).
+// Same operand pairs, same order (16, 8, 4, 2, 1) => bit-identical sums and maxima.
+template <typename T>
+__device__ __forceinline__ T dpp_xor1(T v) {
+    static_assert(sizeof(T) == 4, "32-bit lanes only");
+    int src = *reinterpret_cast<int*>(&v), dst;
+    asm volatile("s_nop 4\n\tv_mov_b32_dpp %0, %1 quad_perm:[1,0,3,2] row_mask:0xf bank_mask:0xf"
+                 : "=v"(dst) : "v"(src) : "memory");
+    return *reinterpret_cast<T*>(&dst);
+}
+template <typename T>
+__device__ __forceinline__ T dpp_xor2(T v) {
+    static_assert(sizeof(T) == 4, "32-bit lanes only");
+    int src = *reinterpret_cast<int*>(&v), dst;
+    asm volatile("s_nop 1\n\tv_mov_b32_dpp %0, %1 quad_perm:[2,3,0,1] row_mask:0xf bank_mask:0xf"
+                 : "=v"(dst) : "v"(src) : "memory");
+    return *reinterpret_cast<T*>(&dst);
+}
+template <typename T>
+__device__ __forceinline__ T dpp_xor4(T v) {
+    static_assert(sizeof(T) == 4, "32-bit lanes only");
+    int src = *reinterpret_cast<int*>(&v), dst;
+    asm volatile("v_mov_b32 %0, %1\n\ts_nop 1\n\t"
+                 "v_mov_b32_dpp %0, %1 row_shl:4 row_mask:0xf bank_mask:0x5\n\t"
+                 "v_mov_b32_dpp %0, %1 row_shr:4 row_mask:0xf bank_mask:0xa"
+                 : "=v"(dst) : "v"(src) : "memory");
+    return *reinterpret_cast<T*>(&dst);
+}
+template <typename T>
+__device__ __forceinline__ T dpp_xor8(T v) {
+    static_assert(sizeof(T) == 4, "32-bit lanes only");
+    int src = *reinterpret_cast<int*>(&v), dst;
+    asm volatile("s_nop 1\n\tv_mov_b32_dpp %0, %1 row_ror:8 row_mask:0xf bank_mask:0xf"
+                 : "=v"(dst) : "v"(src) : "memory");
+    return *reinterpret_cast<T*>(&dst);
+}
+__device__ __forceinline__ float warp_sum(float v, bool dpp = false) {
+    v += __shfl_xor_sync(0xffffffffu, v, 16);
+    if (dpp) { v += dpp_xor8(v); v += dpp_xor4(v); v += dpp_xor2(v); v += dpp_xor1(v); }
+    else { v += __shfl_xor_sync(0xffffffffu, v, 8); v += __shfl_xor_sync(0xffffffffu, v, 4);
+           v += __shfl_xor_sync(0xffffffffu, v, 2); v += __shfl_xor_sync(0xffffffffu, v, 1); }
+    return v;
+}
+__device__ __forceinline__ float warp_max(float v, bool dpp = false) {
+    v = fmaxf(v, __shfl_xor_sync(0xffffffffu, v, 16));
+    if (dpp) { v = fmaxf(v, dpp_xor8(v)); v = fmaxf(v, dpp_xor4(v)); v = fmaxf(v, dpp_xor2(v)); v = fmaxf(v, dpp_xor1(v)); }
+    else { v = fmaxf(v, __shfl_xor_sync(0xffffffffu, v, 8)); v = fmaxf(v, __shfl_xor_sync(0xffffffffu, v, 4));
+           v = fmaxf(v, __shfl_xor_sync(0xffffffffu, v, 2)); v = fmaxf(v, __shfl_xor_sync(0xffffffffu, v, 1)); }
+    return v;
+}
+constexpr int NSC = HD / KV_Q8_GROUP;   // scales per row (4)
+// W1036/B1+B2: one lane's 8 dimensions - two v_dot4 against the int8 query, then the (query group scale * K group
+// scale) product.  The 8 dimensions of a lane are inside one 64-value group (8 | 64), so the int32 partial is exact
+// and the single float multiply is the only rounding step; the surrounding reduction tree is untouched.
+__device__ __forceinline__ float dot8_dp4a(int kb0, int kb1, const int8_t* q8p, float qs, float ks) {
+    int acc = STRATA_DP4A(kb0, *reinterpret_cast<const int*>(q8p), 0);
+    acc = STRATA_DP4A(kb1, *reinterpret_cast<const int*>(q8p + 4), acc);
+    return (float) acc * (qs * ks);
+}
+
+// 8 consecutive values of one cell's key or value row for KV head `kvh`, dimensions [d0, d0+8).
+// Per-format bodies; `load8` below is the KV_MODE dispatcher. value=false is the K side, true the V side.
+__device__ __forceinline__ void load8_f16(const QsaAttnPools& p, bool value, long long row, int d0, float* out) {
+    const uint16_t* base = (value ? p.v_pool : p.k_pool) + row * HD + d0;
+    const uint4 raw = *reinterpret_cast<const uint4*>(base);
+    const __half2* h2 = reinterpret_cast<const __half2*>(&raw);
+#pragma unroll
+    for (int j = 0; j < 4; ++j) {
+        const float2 f = __half22float2(h2[j]);
+        out[2 * j] = f.x;
+        out[2 * j + 1] = f.y;
+    }
+}
+__device__ __forceinline__ void load8_q8(const QsaAttnPools& p, bool value, long long row, int d0, float* out) {
+    const int8_t* codes = (value ? p.v_q : p.k_q) + row * HD + d0;
+    const uint16_t sbits = (value ? p.v_scale : p.k_scale)[row * (HD / KV_Q8_GROUP) + d0 / KV_Q8_GROUP];
+    const float sc = __half2float(__ushort_as_half(sbits));
+    const uint2 raw = *reinterpret_cast<const uint2*>(codes);
+    const int8_t* c = reinterpret_cast<const int8_t*>(&raw);
+#pragma unroll
+    for (int j = 0; j < 8; ++j) out[j] = (float) c[j] * sc;
+}
+__device__ __forceinline__ void load8_q4(const QsaAttnPools& p, bool value, long long row, int d0, float* out) {
+    constexpr int bytes_per_head = (HD / QK4_0) * sizeof(block_q4_0);
+    const int b = d0 / QK4_0;
+    const int rem = d0 % QK4_0;
+    const block_q4_0* blk = reinterpret_cast<const block_q4_0*>((value ? p.v_q4 : p.k_q4) + row * bytes_per_head) + b;
+    const float d = __half2float(__ushort_as_half(blk->d));
+    const int j = (rem == 0 || rem == 16) ? 0 : 8;
+    const uint8_t* bytes = blk->qs + j;
+    if (rem < 16) {
+#pragma unroll
+        for (int k = 0; k < 8; ++k) out[k] = (float) ((int)(bytes[k] & 0x0F) - 8) * d;
+    } else {
+#pragma unroll
+        for (int k = 0; k < 8; ++k) out[k] = (float) ((int)(bytes[k] >> 4) - 8) * d;
+    }
+}
+template <int KV_MODE>
+__device__ __forceinline__ void load8(const QsaAttnPools& p, bool value, long long row, int d0, float* out) {
+    if constexpr (KV_MODE == 0) load8_f16(p, value, row, d0, out);
+    else if constexpr (KV_MODE == 1) load8_q8(p, value, row, d0, out);
+    else if constexpr (KV_MODE == 3) {
+        // hybrid K8V4: both sides are defined - K unrotated INT8, V rotated Q4_0 - so a value=true call
+        // reads the Q4_0 pool instead of dereferencing the null v_q (no call site does today; PR review)
+        if (value) load8_q4(p, value, row, d0, out);
+        else load8_q8(p, value, row, d0, out);
+    } else load8_q4(p, value, row, d0, out);
+}
+
+// Exact-intent score reduce-scatter: the same butterfly pairs as twelve warp_sum calls,
+// with 16 shuffle exchanges instead of 60. Used only by the opt-in gfx906 INT8
+// query-swizzled specialization; softmax, value accumulation and merge are unchanged.
+__device__ __forceinline__ float reduce12_gfx906(const float (&part)[16], int lane) {
+    float r8[8];
+#pragma unroll
+    for (int i = 0; i < 8; ++i) {
+        const bool hi = (lane & 16) != 0;
+        r8[i] = (hi ? part[i + 8] : part[i]) + __shfl_xor_sync(0xffffffffu, hi ? part[i] : part[i + 8], 16);
+    }
+    float r4[4];
+#pragma unroll
+    for (int i = 0; i < 4; ++i) {
+        const bool hi = (lane & 8) != 0;
+        r4[i] = (hi ? r8[i + 4] : r8[i]) + __shfl_xor_sync(0xffffffffu, hi ? r8[i] : r8[i + 4], 8);
+    }
+    float r2[2];
+#pragma unroll
+    for (int i = 0; i < 2; ++i) {
+        const bool hi = (lane & 4) != 0;
+        r2[i] = (hi ? r4[i + 2] : r4[i]) + __shfl_xor_sync(0xffffffffu, hi ? r4[i] : r4[i + 2], 4);
+    }
+    const bool hi2 = (lane & 2) != 0;
+    const float r1 = (hi2 ? r2[1] : r2[0]) + __shfl_xor_sync(0xffffffffu, hi2 ? r2[0] : r2[1], 2);
+    return r1 + __shfl_xor_sync(0xffffffffu, r1, 1);
+}
+__device__ __forceinline__ int reduce12_head_of_lane(int lane) {
+    return ((lane >> 4) & 1) * 8 + ((lane >> 3) & 1) * 4 + ((lane >> 2) & 1) * 2 + ((lane >> 1) & 1);
+}
+
+// The chunk kernel's body; `p` is the query's KV pools (the call's one set, or blockIdx.z's slot's set).
+// (the body is a device function so the batch window's rows kernel below can run it over each query's own pools without
+// the default kernel's signature, or the function-pointer types the pre-sm_75 / HIP selections build, changing)
+// W1036: OPT is a bit mask of independent, runtime-selected gfx906 ports - one build, each A/B-able on its own:
+//   bit 0 (1) A3  the 32-lane reductions (score sum, chunk softmax) run on DPP instead of ds_bpermute
+//   bit 1 (2) B1/B2 the score dot product runs on v_dot4_i32_i8 with a per-64-group int8 query (k8v4 and int8)
+//   bit 2 (4) A2  the sq / sp LDS tiles take a pad so column-wise reads stop landing on one bank group
+template <int KV_MODE, bool LANE_CELL, bool QUERY_SWIZZLE, bool REDUCE12, int OPT>
+__device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, QsaAttnPools p,
+                                                const int32_t* __restrict__ ids, const int32_t* __restrict__ step,
+                                                int n_kv_heads, int page_size, float scale,
+                                                float* __restrict__ part_acc, float* __restrict__ part_m,
+                                                float* __restrict__ part_l, int n_chunks, int cap,
+                                                long long scratch_stride) {
+    // batched form: query blockIdx.z, with its own q row, selection, step and scratch
+    q += (size_t) blockIdx.z * (size_t) (n_kv_heads * G) * HD;
+    ids += (size_t) blockIdx.z * (size_t) cap;
+    step += (size_t) blockIdx.z * kStepCount;
+    part_acc += (size_t) blockIdx.z * (size_t) scratch_stride;
+    part_m += (size_t) blockIdx.z * (size_t) scratch_stride;
+    part_l += (size_t) blockIdx.z * (size_t) scratch_stride;
+    constexpr int SQ_PAD = (OPT & 4) ? 4 : 0;     // A2: 16 bytes per head row (keeps the float4 reads aligned)
+    constexpr int SP_PAD = (OPT & 4) ? 1 : 0;
+    constexpr int SQ_HEADS = (OPT & 2) ? 1 : G;   // B1/B2 keep the query as int8 below; the fp32 tile is unused
+    __shared__ __align__(16) float sq[SQ_HEADS][HD + SQ_PAD];   // 12 KB: this KV head's query heads
+    __shared__ float sp[G][CHUNK + SP_PAD];       // scores, then probabilities
+    __shared__ long long srow[CHUNK];             // pool row of each cell (page, kv head, slot)
+    __shared__ __align__(16) int8_t sq8[(OPT & 2) ? G : 1][HD];  // B1/B2: the quantized query
+    __shared__ float sq8s[(OPT & 2) ? G : 1][NSC];               // one scale per (head, 64-value group)
+    const int n_ids = __ldg(step + kStepWidth);
+    const int chunk = blockIdx.x, kvh = blockIdx.y;
+    const int t = threadIdx.x, lane = t & 31, warp = t >> 5;
+    const int c0 = chunk * CHUNK;
+    const int n_here = min(CHUNK, n_ids - c0);
+    const int slot = kvh * n_chunks + chunk;
+    if (n_here <= 0) {
+        if (t < G) { part_m[slot * G + t] = -FLT_MAX; part_l[slot * G + t] = 0.0f; }
+        return;
+    }
+    // Opt-in gfx906 batched attention: a bijective XOR of query dimensions in LDS only. It swaps the two
+    // float4 halves of lanes whose bit 2 is set, retaining 16-byte alignment and the 12 KB tile.
+    // The scoring reads undo this permutation; FP operands and operation order are unchanged.
+    static_assert(!QUERY_SWIZZLE || !LANE_CELL, "query swizzle is for warp scoring only");
+    static_assert(!(OPT & 2) || !LANE_CELL, "the dp4a score keeps the warp-scoring path");
+    if constexpr (!(OPT & 2)) {
+        for (int i = t; i < G * HD; i += THREADS) {
+            const int d = i % HD;
+            const int sd = QUERY_SWIZZLE ? (d ^ ((d >> 3) & 4)) : d;
+            sq[i / HD][sd] = q[(size_t) (kvh * G) * HD + i];
+        }
+    }
+    if (t < CHUNK) {
+        long long r = -1;
+        if (t < n_here) {
+            const int cell = ids[c0 + t];
+            const long long page = (long long) p.page_table[cell / page_size];
+            // a block the KV streaming could not make resident keeps page -1 (ctl[3]); its cells are masked
+            // (score -FLT_MAX, weight 0) instead of being read from before the pool.
+            if (page >= 0) r = (page * n_kv_heads + kvh) * page_size + (cell % page_size);
+        }
+        srow[t] = r;
+    }
+    if constexpr (OPT & 2) {
+        // B1/B2: the query is quantized the way KV_Q8's K rows are: q_int8 = round(q / d), d = amax / 127.
+        // W1041: one WARP per (head, 64-value group) instead of one thread.  The old mapping used 48 of the 256
+        // threads, each running a serial 64-element scan twice (~448 instructions) while the other 208 waited at
+        // __syncthreads -- and that happened again in every one of the 64 blocks of a query, which is why the
+        // dp4a path measured +6.8% instead of -35% (P447/P449).  Now: 48 groups over 8 warps, 2 values per lane,
+        // amax by a butterfly.  max is order-independent, so d and every code are bit-identical to the scan.
+        // Pattern copied from llama.cpp's quantize_q8_1 (one warp per block, each lane own element).
+        constexpr int QPG = KV_Q8_GROUP / 32;   // 64-value group == 2 values per lane
+        for (int grp = warp; grp < G * NSC; grp += WARPS) {
+            const int h = grp / NSC, g = grp - h * NSC;
+            const float* src = q + (size_t) (kvh * G + h) * HD + g * KV_Q8_GROUP + lane * QPG;
+            float v[QPG];
+#pragma unroll
+            for (int j = 0; j < QPG; ++j) v[j] = src[j];
+            float amax = 0.0f;
+#pragma unroll
+            for (int j = 0; j < QPG; ++j) amax = fmaxf(amax, fabsf(v[j]));
+#pragma unroll
+            for (int off = 16; off > 0; off >>= 1) amax = fmaxf(amax, __shfl_xor(amax, off));
+            const float d = amax > 0.0f ? amax / 127.0f : 1.0f;
+            if (lane == 0) sq8s[h][g] = d;
+#pragma unroll
+            for (int j = 0; j < QPG; ++j)
+                sq8[h][g * KV_Q8_GROUP + lane * QPG + j] = (int8_t) __float2int_rn(v[j] / d);
+        }
+        __syncthreads();
+    }
+    __syncthreads();
+    if constexpr (LANE_CELL) {
+        // S25 (STRATA_ATTN_LANECELL=1): thread t scores cell t % 64 for heads 3 (t / 64) .. +2 by itself - the same
+        // 8-dimension partial per former lane (the identical expression), then the former warp_sum's butterfly as
+        // lane 0 ran it (a[l] += a[l + o] for o = 16 .. 1), so every score is bit-identical without 12 shuffle
+        // reductions per cell
+        constexpr int HPT = G * CHUNK / THREADS;   // heads per thread (3)
+        const int c = t % CHUNK, h0 = (t / CHUNK) * HPT;
+        if (c >= n_here || srow[c] < 0) {
+#pragma unroll
+            for (int j = 0; j < HPT; ++j) sp[h0 + j][c] = -FLT_MAX;
+        } else {
+            float a[HPT][32];
+#pragma unroll
+            for (int l = 0; l < 32; ++l) {
+                float k8[8];
+                load8<KV_MODE>(p, false, srow[c], l * 8, k8);
+#pragma unroll
+                for (int j = 0; j < HPT; ++j) {
+                    const float4 qa = *reinterpret_cast<const float4*>(&sq[h0 + j][l * 8]);
+                    const float4 qb = *reinterpret_cast<const float4*>(&sq[h0 + j][l * 8 + 4]);
+                    float s = k8[0] * qa.x + k8[1] * qa.y + k8[2] * qa.z + k8[3] * qa.w +
+                              k8[4] * qb.x + k8[5] * qb.y + k8[6] * qb.z + k8[7] * qb.w;
+                    a[j][l] = s;
+                }
+            }
+#pragma unroll
+            for (int j = 0; j < HPT; ++j) {
+#pragma unroll
+                for (int o = 16; o > 0; o >>= 1)
+#pragma unroll
+                    for (int l = 0; l < o; ++l) a[j][l] = a[j][l] + a[j][l + o];
+                sp[h0 + j][c] = a[j][0] * scale;
+            }
+        }
+    } else
+    // scores: each warp takes cells warp, warp+8, ...; each lane holds 8 of the 256 dimensions.
+    for (int c = warp; c < CHUNK; c += WARPS) {
+        if (c >= n_here || srow[c] < 0) {
+            if (lane < G) sp[lane][c] = -FLT_MAX;
+            continue;
+        }
+        if constexpr (REDUCE12) {
+        float part[16];
+        if constexpr (OPT & 2) {
+            const uint2 kraw = *reinterpret_cast<const uint2*>(p.k_q + srow[c] * HD + lane * 8);
+            const float ks = __half2float(__ushort_as_half(p.k_scale[srow[c] * NSC + (lane * 8) / KV_Q8_GROUP]));
+#pragma unroll
+            for (int h = 0; h < G; ++h)
+                part[h] = dot8_dp4a((int) kraw.x, (int) kraw.y, &sq8[h][lane * 8], sq8s[h][lane >> 3], ks);
+        } else {
+        float k8[8];
+        load8<KV_MODE>(p, false, srow[c], lane * 8, k8);
+#pragma unroll
+        for (int h = 0; h < G; ++h) {
+            const int qflip = QUERY_SWIZZLE ? (lane & 4) : 0;
+            const float4 qa = *reinterpret_cast<const float4*>(&sq[h][lane * 8 + qflip]);
+            const float4 qb = *reinterpret_cast<const float4*>(&sq[h][lane * 8 + (qflip ^ 4)]);
+            float s = k8[0] * qa.x + k8[1] * qa.y + k8[2] * qa.z + k8[3] * qa.w +
+                      k8[4] * qb.x + k8[5] * qb.y + k8[6] * qb.z + k8[7] * qb.w;
+            part[h] = s;
+        }
+        }
+#pragma unroll
+        for (int h = G; h < 16; ++h) part[h] = 0.0f;
+        const float score = reduce12_gfx906(part, lane);
+        const int head = reduce12_head_of_lane(lane);
+        if ((lane & 1) == 0 && head < G) sp[head][c] = score * scale;
+        } else {
+        if constexpr (OPT & 2) {
+            const uint2 kraw = *reinterpret_cast<const uint2*>(p.k_q + srow[c] * HD + lane * 8);
+            const float ks = __half2float(__ushort_as_half(p.k_scale[srow[c] * NSC + (lane * 8) / KV_Q8_GROUP]));
+#pragma unroll
+            for (int h = 0; h < G; ++h) {
+                float s = dot8_dp4a((int) kraw.x, (int) kraw.y, &sq8[h][lane * 8], sq8s[h][lane >> 3], ks);
+                s = warp_sum(s, (OPT & 1) != 0);
+                if (lane == 0) sp[h][c] = s * scale;
+            }
+        } else {
+        float k8[8];
+        load8<KV_MODE>(p, false, srow[c], lane * 8, k8);
+#pragma unroll
+        for (int h = 0; h < G; ++h) {
+            const int qflip = QUERY_SWIZZLE ? (lane & 4) : 0;
+            const float4 qa = *reinterpret_cast<const float4*>(&sq[h][lane * 8 + qflip]);
+            const float4 qb = *reinterpret_cast<const float4*>(&sq[h][lane * 8 + (qflip ^ 4)]);
+            float s = k8[0] * qa.x + k8[1] * qa.y + k8[2] * qa.z + k8[3] * qa.w +
+                      k8[4] * qb.x + k8[5] * qb.y + k8[6] * qb.z + k8[7] * qb.w;
+            s = warp_sum(s, (OPT & 1) != 0);
+            if (lane == 0) sp[h][c] = s * scale;
+        }
+        }
+        }
+    }
+    __syncthreads();
+    // per-head chunk max and exp-sum: warp w handles heads w and w+8.
+    for (int h = warp; h < G; h += WARPS) {
+        const float a = sp[h][lane], b = sp[h][lane + 32];
+        const float m = warp_max(fmaxf(a, b), (OPT & 1) != 0);
+=== kv_q4.hpp layout ===
+// include/strata/kernels/kv_q4.hpp - Q4_0 KV storage with Walsh-Hadamard rotation for the QSA layers (`--kv q4_0`).
+//
+// From PR #21 (code-martin). K and V are rotated by the orthonormal 256-point Hadamard matrix H before they are
+// quantized to ggml's q4_0 (32 values per block: an fp16 scale + 16 bytes of 4-bit codes, 144 B per head per cell,
+// 576 B per cell for K and V of both heads, vs 1,056 B in INT8). The rotation spreads a head's outlier channels
+// over all 256 dimensions, which is what makes 4 bits usable. The query is rotated the same way, so
+// <Hq, Hk> = <q, k> and the scores are unchanged, and the attention output (a mix of rotated values) is rotated
+// back with H (self-inverse). What is lossy is the 4-bit rounding itself: measured, not assumed, in
+// bench/results/2026-09-27-kv-q4.
+//
+// With KV streaming (--kv-resident) the codes live in the host copy and the resident slots like INT8's (KvHostPools
+// k_q4/v_q4, the same block granule), so both options combine.
+#pragma once
+
+#include "strata/kernels/qsa.hpp"
+
+#include <cstdint>
+
+namespace strata::kernels {
+
+inline constexpr int QK4_0 = 32;
+
+#pragma pack(push, 1)
+struct block_q4_0 {
+    uint16_t d;             // scale (fp16 bits)
+    uint8_t qs[QK4_0 / 2];  // 32 4-bit codes: element j in the low nibble of qs[j], j + 16 in the high one
+};
+#pragma pack(pop)
+
+static_assert(sizeof(block_q4_0) == 18, "block_q4_0 must be 18 bytes");
+
+/// Bytes per cell and KV head: 8 blocks of 32 for head_dim 256 -> 144.
+inline uint64_t kv_q4_bytes_per_head(int head_dim) { return (uint64_t) (head_dim / QK4_0) * sizeof(block_q4_0); }
+
+/// Bytes per cell (one token, one layer): K and V of every KV head.
+inline uint64_t kv_q4_bytes_per_cell(const QsaShapes& s) {
+    return (uint64_t) s.n_head_kv * kv_q4_bytes_per_head((int) s.head_dim) * 2;
+}
+
+/// Orthonormal Fast Walsh-Hadamard Transform of rows of 256 floats (scale 1/16): its own inverse.
+void fwht256_cuda(const float* src, float* dst, int64_t n_rows, void* stream);
+inline void fwht256_inplace_cuda(float* data, int64_t n_rows, void* stream) { fwht256_cuda(data, data, n_rows, stream); }
+
+/// Append the (already rotated) cell at step[kStepPos]. With a host copy (KV streaming) it is written there too,
+/// and to VRAM only if its block is resident.
+void kv_append_q4_step(uint8_t* k_q4, uint8_t* v_q4, const int32_t* page_table, const int32_t* step,
+                       const float* kcur, const float* vcur, const QsaShapes& s, void* stream,
+                       const KvHostPools* host = nullptr);
+
+void kv_append_q4_steps(uint8_t* k_q4, uint8_t* v_q4, const int32_t* page_table, const int32_t* step,
+                        int step_stride, int n_steps, const float* kcur, const float* vcur, const QsaShapes& s,
+                        void* stream, const KvHostPools* host = nullptr);
+
+/// The prompt path: T consecutive (rotated) cells from pos0, K/V [T, n_head_kv, 256]; also into `stage` (identity
+/// layout, the one-layer staging pool of a streamed session) when given.
+void kv_append_q4(uint8_t* k_q4, uint8_t* v_q4, const int32_t* page_table, int64_t pos0, int64_t T, const float* K,
+                  const float* V, const QsaShapes& s, void* stream, const KvHostPools* host = nullptr,
+                  const KvHostPools* stage = nullptr);
+
+/// Gather step[kStepWidth] cells named by `ids` into FP16 scratch [id][kv_head][head_dim] (still rotated).
+void kv_gather_q4_step(const uint8_t* k_q4, const uint8_t* v_q4, const int32_t* page_table, const int32_t* ids,
+                       const int32_t* step, int64_t max_ids, const QsaShapes& s, uint16_t* k_scratch,
+                       uint16_t* v_scratch, void* stream);
+
+}  // namespace strata::kernels
+=== kv_q4 implementation ===
+// src/kernels/cuda/kv_q4.cu - see include/strata/kernels/kv_q4.hpp. Q4_0 KV with Walsh-Hadamard rotation
+// (from PR #21 by code-martin; KV-streaming integration and the deterministic group maximum added on merge).
+#include "strata/kernels/kv_q4.hpp"
+#include "strata/kernels/f16_bits.hpp"
+#include "strata/kernels/kv_stream.hpp"
+
+#include <cuda_fp16.h>
+#include <cuda_runtime.h>
+#include <cstdio>
+#include <cstdlib>
+
+namespace strata::kernels {
+namespace {
+
+void check(const char* what) {
+    const cudaError_t e = cudaGetLastError();
+    if (e != cudaSuccess) {
+        std::fprintf(stderr, "kv_q4: %s: %s\n", what, cudaGetErrorString(e));
+        std::exit(1);
+    }
+}
+
+// Fast Walsh-Hadamard Transform for N = 256: one warp per row, 8 values per lane in registers.
+// Orthonormal (scale 1/sqrt(256) = 1/16), so it is its own inverse.
+__global__ void fwht256_kernel(const float* __restrict__ src, float* __restrict__ dst, int64_t n_rows, float scale) {
+    constexpr int warp_size = 32;
+    constexpr int N = 256;
+    constexpr int el_w = N / warp_size;   // 8
+
+    const int64_t r = (int64_t) blockIdx.x * blockDim.y + threadIdx.y;
+    if (r >= n_rows) return;
+
+    const float* row_src = src + r * N;
+    float* row_dst = dst + r * N;
+
+    float reg[el_w];
+    const int lane = threadIdx.x;
+
+#pragma unroll
+    for (int i = 0; i < el_w; ++i) reg[i] = row_src[i * warp_size + lane] * scale;
+
+    // the low 5 index bits live across lanes
+#pragma unroll
+    for (int h = 1; h < warp_size; h *= 2) {
+#pragma unroll
+        for (int j = 0; j < el_w; ++j) {
+            const float val = reg[j];
+            const float val2 = __shfl_xor_sync(0xffffffffu, val, h, warp_size);
+            reg[j] = (lane & h) == 0 ? val + val2 : val2 - val;
+        }
+    }
+    // the high 3 bits across each lane's registers
+#pragma unroll
+    for (int h = warp_size; h < N; h *= 2) {
+        const int step = h / warp_size;
+#pragma unroll
+        for (int j = 0; j < el_w; j += 2 * step) {
+#pragma unroll
+            for (int k = 0; k < step; ++k) {
+                const float x = reg[j + k];
+                const float y = reg[j + k + step];
+                reg[j + k] = x + y;
+                reg[j + k + step] = x - y;
+            }
+        }
+    }
+#pragma unroll
+    for (int i = 0; i < el_w; ++i) row_dst[i * warp_size + lane] = reg[i];
+}
+
+// One 32-value group in one warp (lane = element), ggml's q4_0: d = (the value of largest |x|) / -8,
+// q = clamp(trunc(x / d + 8.5), 0, 15). Returns the scale bits; `byte` is lane t's packed byte for t < 16
+// (element t in the low nibble, t + 16 in the high one). Ties in |x| resolve to the larger value in EVERY lane,
+// so all lanes agree on d (a plain `a > amax` could leave lanes with opposite signs and one block two scales).
+__device__ __forceinline__ uint16_t q4_group(float x, int lane, uint8_t& byte) {
+    float amax = fabsf(x), mval = x;
+#pragma unroll
+    for (int o = 16; o > 0; o >>= 1) {
+        const float a = __shfl_xor_sync(0xffffffffu, amax, o);
+        const float v = __shfl_xor_sync(0xffffffffu, mval, o);
+        if (a > amax || (a == amax && v > mval)) { amax = a; mval = v; }
+    }
+    const float d = mval / -8.0f;
+    const float id = d != 0.0f ? 1.0f / d : 0.0f;
+    int q = __float2int_rz(x * id + 8.5f);
+    const uint8_t qc = (uint8_t) (q < 0 ? 0 : (q > 15 ? 15 : q));
+    const uint8_t qhi = __shfl_down_sync(0xffffffffu, qc, 16);
+    byte = (uint8_t) (qc | (qhi << 4));
+    (void) lane;
+    return f16_from_f32(d);
+}
+
+__device__ __forceinline__ void q4_store(uint8_t* pool, long long row, int b, int lane, uint16_t d, uint8_t byte) {
+    block_q4_0* blk = reinterpret_cast<block_q4_0*>(pool + row * (long long) sizeof(block_q4_0) * 8) + b;
+    if (lane == 0) blk->d = d;
+    if (lane < 16) blk->qs[lane] = byte;
+}
+
+// One block = one 32-value group of one KV head of K (plane 0) or V (plane 1) for token step_idx; 32 threads.
+__global__ void kv_append_q4_kernel(uint8_t* __restrict__ k_q4, uint8_t* __restrict__ v_q4,
+                                    const int32_t* __restrict__ table, const int32_t* __restrict__ step,
+                                    int step_stride, int planes,
+                                    const float* __restrict__ kcur, const float* __restrict__ vcur,
+                                    int kv_heads, int head_dim, int page_size, KvHostPools host) {
+    const int step_idx = (int) (blockIdx.z / (unsigned) planes);
+    const bool is_v = (blockIdx.z % (unsigned) planes) == 1u;
+    const long long pos = (long long) __ldg(step + (long long) step_idx * step_stride + kStepPos);
+    const int h = blockIdx.x, b = blockIdx.y, t = threadIdx.x;
+    const long long step_off = (long long) step_idx * kv_heads * head_dim;
+    const float x = (is_v ? vcur : kcur)[step_off + h * head_dim + b * QK4_0 + t];
+    uint8_t byte;
+    const uint16_t d = q4_group(x, t, byte);
+    const long long page = (long long) table[pos / page_size];
+    if (page >= 0) q4_store(is_v ? v_q4 : k_q4, (page * kv_heads + h) * page_size + (pos % page_size), b, t, d, byte);
+    if (host.k_q4 != nullptr)
+        q4_store(is_v ? host.v_q4 : host.k_q4, ((pos / page_size) * kv_heads + h) * page_size + (pos % page_size), b, t,
+                 d, byte);
+}
+
+// The prompt path: grid (T, kv_heads, groups), K then V; also into the staging pool (identity layout) when given.
+__global__ void kv_append_q4_batch_kernel(uint8_t* __restrict__ k_q4, uint8_t* __restrict__ v_q4,
+                                          const int32_t* __restrict__ table, int64_t pos0,
+                                          const float* __restrict__ K, const float* __restrict__ V,
+                                          int kv_heads, int head_dim, int page_size, int is_v_grid, KvHostPools host,
+                                          KvHostPools stage) {
+    const long long t = blockIdx.x;
+    const long long pos = pos0 + t;
+    const int h = blockIdx.y, b = blockIdx.z, th = threadIdx.x;
+    const bool is_v = is_v_grid != 0;
+    const float x = (is_v ? V : K)[t * (kv_heads * head_dim) + h * head_dim + b * QK4_0 + th];
+    uint8_t byte;
+    const uint16_t d = q4_group(x, th, byte);
+    const long long page = (long long) table[pos / page_size];
+    const long long row_id = ((pos / page_size) * kv_heads + h) * page_size + (pos % page_size);
+    if (page >= 0) q4_store(is_v ? v_q4 : k_q4, (page * kv_heads + h) * page_size + (pos % page_size), b, th, d, byte);
+    if (host.k_q4 != nullptr) q4_store(is_v ? host.v_q4 : host.k_q4, row_id, b, th, d, byte);
+    if (stage.k_q4 != nullptr) q4_store(is_v ? stage.v_q4 : stage.k_q4, row_id, b, th, d, byte);
+}
+
+// Gather step[kStepWidth] cells into FP16 scratch (the non-fused attention paths)
+__global__ void kv_gather_q4_kernel(const uint8_t* __restrict__ k_q4, const uint8_t* __restrict__ v_q4,
+                                    const int32_t* __restrict__ table, const int32_t* __restrict__ ids,
+                                    const int32_t* __restrict__ step, int kv_heads, int head_dim, int page_size,
+                                    uint16_t* __restrict__ k_scratch, uint16_t* __restrict__ v_scratch) {
+    const long long n_ids = (long long) __ldg(step + kStepWidth);
+    const int blocks_per_head = head_dim / QK4_0;                        // 8
+    const int bytes_per_head = blocks_per_head * sizeof(block_q4_0);    // 144
+    const long long total_blocks = n_ids * kv_heads * blocks_per_head;
+
+    const long long blk_idx = (long long) blockIdx.x * blockDim.y + threadIdx.y;
+    if (blk_idx >= total_blocks) return;
+
+    const int t = threadIdx.x;
+    const long long id = blk_idx / (kv_heads * blocks_per_head);
+    const int rem = (int) (blk_idx % (kv_heads * blocks_per_head));
+    const int h = rem / blocks_per_head;
+    const int b = rem % blocks_per_head;
+
+    const int cell = ids[id];
+    const long long page = (long long) table[cell / page_size];
+    const long long row = (page * kv_heads + h) * page_size + (cell % page_size);
+
+    const block_q4_0* k_blk = reinterpret_cast<const block_q4_0*>(k_q4 + row * bytes_per_head) + b;
+    const block_q4_0* v_blk = reinterpret_cast<const block_q4_0*>(v_q4 + row * bytes_per_head) + b;
+    const float kd = f32_from_f16(k_blk->d);
+    const float vd = f32_from_f16(v_blk->d);
+    const int j = t < 16 ? t : (t - 16);
+    const uint8_t k_byte = k_blk->qs[j];
+    const uint8_t v_byte = v_blk->qs[j];
+    const int kq = (t < 16) ? ((k_byte & 0x0F) - 8) : ((k_byte >> 4) - 8);
+    const int vq = (t < 16) ? ((v_byte & 0x0F) - 8) : ((v_byte >> 4) - 8);
+    const long long dst_offset = ((id * kv_heads + h) * head_dim) + (b * QK4_0 + t);
+    k_scratch[dst_offset] = f16_from_f32((float) kq * kd);
+    v_scratch[dst_offset] = f16_from_f32((float) vq * vd);
+}
+
+void need_256(const QsaShapes& s, const char* what) {
+    if (s.head_dim != 256) {
+        std::fprintf(stderr, "%s: head_dim must be 256 (the Hadamard transform's size)\n", what);
+        std::exit(1);
+    }
+}
+
+}  // namespace
+
+void fwht256_cuda(const float* src, float* dst, int64_t n_rows, void* stream) {
+    if (n_rows <= 0) return;
+    const int rows_per_block = 4;
+    const int64_t num_blocks = (n_rows + rows_per_block - 1) / rows_per_block;
+    fwht256_kernel<<<dim3((unsigned) num_blocks), dim3(32, rows_per_block), 0, (cudaStream_t) stream>>>(
+        src, dst, n_rows, 1.0f / 16.0f);
+    check("fwht256 launch");
+}
+
+void kv_append_q4_steps(uint8_t* k_q4, uint8_t* v_q4, const int32_t* page_table, const int32_t* step,
+                        int step_stride, int n_steps, const float* kcur, const float* vcur, const QsaShapes& s,
+                        void* stream, const KvHostPools* host) {
+    if (n_steps <= 0) return;
+    need_256(s, "kv_append_q4");
+    const int planes = (v_q4 == nullptr || (v_q4 == k_q4 && vcur == kcur)) ? 1 : 2;
+    const dim3 grid((unsigned) s.n_head_kv, (unsigned) (s.head_dim / QK4_0), (unsigned) (n_steps * planes));
+    kv_append_q4_kernel<<<grid, 32, 0, (cudaStream_t) stream>>>(
+        k_q4, v_q4, page_table, step, step_stride, planes, kcur, vcur, (int) s.n_head_kv, (int) s.head_dim,
+        (int) s.page_size, host ? *host : KvHostPools{});
+    check("kv_append_q4 launch");
+}
+
+void kv_append_q4_step(uint8_t* k_q4, uint8_t* v_q4, const int32_t* page_table, const int32_t* step,
+                       const float* kcur, const float* vcur, const QsaShapes& s, void* stream,
+                       const KvHostPools* host) {
+    kv_append_q4_steps(k_q4, v_q4, page_table, step, 0, 1, kcur, vcur, s, stream, host);
+}
+
+void kv_append_q4(uint8_t* k_q4, uint8_t* v_q4, const int32_t* page_table, int64_t pos0, int64_t T, const float* K,
+                  const float* V, const QsaShapes& s, void* stream, const KvHostPools* host, const KvHostPools* stage) {
+    if (T <= 0) return;
+    need_256(s, "kv_append_q4");
+    const dim3 grid((unsigned) T, (unsigned) s.n_head_kv, (unsigned) (s.head_dim / QK4_0));
+    cudaStream_t cs = (cudaStream_t) stream;
+    const KvHostPools h = host ? *host : KvHostPools{}, st = stage ? *stage : KvHostPools{};
+    for (int is_v = 0; is_v < 2; ++is_v)
+        kv_append_q4_batch_kernel<<<grid, 32, 0, cs>>>(k_q4, v_q4, page_table, pos0, K, V, (int) s.n_head_kv,
+                                                       (int) s.head_dim, (int) s.page_size, is_v, h, st);
+    check("kv_append_q4 batch launch");
+}
+
+void kv_gather_q4_step(const uint8_t* k_q4, const uint8_t* v_q4, const int32_t* page_table, const int32_t* ids,
+                       const int32_t* step, int64_t max_ids, const QsaShapes& s, uint16_t* k_scratch,
+                       uint16_t* v_scratch, void* stream) {
+    if (max_ids <= 0) return;
+    const int blocks_per_head = (int) (s.head_dim / QK4_0);
+    const int64_t total_blocks = max_ids * s.n_head_kv * blocks_per_head;
+    const int rows_per_block = 4;
+    const unsigned num_blocks = (unsigned) ((total_blocks + rows_per_block - 1) / rows_per_block);
+    kv_gather_q4_kernel<<<dim3(num_blocks), dim3(32, rows_per_block), 0, (cudaStream_t) stream>>>(
+        k_q4, v_q4, page_table, ids, step, (int) s.n_head_kv, (int) s.head_dim, (int) s.page_size, k_scratch,
+        v_scratch);
+    check("kv_gather_q4 launch");
+}
+
+}  // namespace strata::kernels
+=== dot48 helper operand contract ===
+// include/strata/kernels/gfx906_dot.hpp - the two gfx906 integer dot cores.
+//
+// Vega 20 (gfx906) is the first AMD part with the VOP3P packed integer dot
+// instructions.  Both take two packed i32 operands and add into a 32-bit
+// accumulator; the 4th intrinsic argument selects saturating clamp, and CUDA's
+// __dp4a contract (which this engine's quant kernels are written against) is
+// modulo-2^32 accumulation, so clamp is always false here.
+//
+//   v_dot4_i32_i8 : 4 x signed int8  MACs in one instruction   (26.5 TMAC/s @60CU/1725MHz)
+//   v_dot8_i32_i4 : 8 x signed int4  MACs in one instruction   (53.0 TMAC/s, 2x dot4)
+//
+// Verified on gfx906 (W835 / skyne98 wiki / ROCm AMDGPUAsmGFX906):
+//   * BOTH instructions are available on the *specific* gfx906 target.  A
+//     `gfx9-generic` build excludes them (LLVM AMDGPUUsage), so the build must
+//     pass --offload-arch=gfx906 (build-masterp/build.ninja does).
+//   * v_dot4c_i32_i8 / v_dot8c_i32_i4 are NOT available on gfx906; never rely
+//     on the folded "c" lowering.  Clamp=false keeps the plain form.
+//   * The int32 accumulator wraps on overflow with clamp=false.  Callers must
+//     bound the contraction length (or split the chain) themselves.
+//
+// On every other target these fall back to a bit-exact scalar loop with the
+// same signed-byte / signed-nibble products and the same modulo-2^32 sum, so a
+// kernel written once produces identical numbers on CUDA and HIP.
+#pragma once
+
+#include <cstdint>
+
+// Self-contained: this header is reachable from wrappers that some host-only
+// translation units include with no CUDA/HIP runtime in scope, so provide the
+// device qualifiers ourselves instead of depending on the includer.
+#if defined(__HIP_PLATFORM_AMD__) || defined(__HIP__) || defined(__HIPCC__)
+#include <hip/hip_runtime.h>
+#elif defined(__CUDACC__)
+#include <cuda_runtime.h>
+#endif
+
+#if defined(__HIP_DEVICE_COMPILE__) && \
+    (defined(__gfx906__) || defined(__gfx908__) || defined(__gfx90a__)) && \
+    __has_builtin(__builtin_amdgcn_sdot4) && __has_builtin(__builtin_amdgcn_sdot8)
+#define STRATA_GFX906_DOT_HW 1
+#else
+#define STRATA_GFX906_DOT_HW 0
+#endif
+
+namespace strata { namespace gfx906 {
+
+__device__ __forceinline__ int32_t sbyte(uint32_t w, int lane) {
+    const uint32_t v = (w >> (lane * 8)) & 0xffu;
+    return v < 0x80u ? static_cast<int32_t>(v) : static_cast<int32_t>(v) - 0x100;
+}
+
+__device__ __forceinline__ int32_t snibble(uint32_t w, int lane) {
+    const uint32_t v = (w >> (lane * 4)) & 0xfu;
+    return v < 0x8u ? static_cast<int32_t>(v) : static_cast<int32_t>(v) - 0x10;
+}
+
+/// dot4: 4 signed int8 MACs + int32 accumulator, modulo 2^32.
+__device__ __forceinline__ int32_t dot4(int32_t a, int32_t b, int32_t c) {
+#if STRATA_GFX906_DOT_HW
+    return __builtin_amdgcn_sdot4(a, b, c, false);
+#else
+    const uint32_t ua = static_cast<uint32_t>(a), ub = static_cast<uint32_t>(b);
+    uint32_t sum = static_cast<uint32_t>(c);
+#pragma unroll
+    for (int i = 0; i < 4; ++i)
+        sum += static_cast<uint32_t>(sbyte(ua, i) * sbyte(ub, i));
+    return static_cast<int32_t>(sum);
+#endif
+}
+
+/// dot8: 8 signed int4 MACs + int32 accumulator, modulo 2^32.
+/// Nibble 0 is the least significant 4 bits of each packed word.
+__device__ __forceinline__ int32_t dot8(int32_t a, int32_t b, int32_t c) {
+#if STRATA_GFX906_DOT_HW
+    return __builtin_amdgcn_sdot8(a, b, c, false);
+#else
+    const uint32_t ua = static_cast<uint32_t>(a), ub = static_cast<uint32_t>(b);
+    uint32_t sum = static_cast<uint32_t>(c);
+#pragma unroll
+    for (int i = 0; i < 8; ++i)
+        sum += static_cast<uint32_t>(snibble(ua, i) * snibble(ub, i));
+    return static_cast<int32_t>(sum);
+#endif
+}
+
+}}  // namespace strata::gfx906
+
+#define STRATA_GFX906_DOT4(a, b, c) (::strata::gfx906::dot4((a), (b), (c)))
+#define STRATA_GFX906_DOT8(a, b, c) (::strata::gfx906::dot8((a), (b), (c)))
+=== existing dot8/k8v4 ledger-relevant source comments ===
+gfx906/attn-opt:include/strata/kernels/gfx_arch.hpp:34:/// `v_dot4_i32_i8` and `v_dot8_i32_i4` ARE available here (verified with llvm-mc --mcpu=gfx906); only the
+gfx906/attn-opt:src/kernels/cuda/dequant_bf16.cu:192:        for (int c = 0; c < CHUNKS; ++c) reinterpret_cast<uint4*>(dst)[c] = reinterpret_cast<const uint4*>(buf)[c];
+gfx906/attn-opt:src/kernels/cuda/dflash2.cu:321:    const int4* wq = reinterpret_cast<const int4*>(sg.q + (size_t) row0 * n_in) + lane;
+gfx906/attn-opt:src/kernels/cuda/dflash2.cu:323:    const int4* xv = reinterpret_cast<const int4*>(xq) + lane;
+gfx906/attn-opt:src/kernels/cuda/dflash2.cu:385:    const int4* wq = reinterpret_cast<const int4*>(sg.q + (size_t) row0 * n_in) + lane + sub * R * 32;
+gfx906/attn-opt:src/kernels/cuda/dflash2.cu:387:    const int4* xv = reinterpret_cast<const int4*>(xq) + lane;
+gfx906/attn-opt:src/kernels/cuda/dflash2.cu:449:    const int4* xv = reinterpret_cast<const int4*>(xq) + lane;
+gfx906/attn-opt:src/kernels/cuda/dflash2.cu:513:    const int4* xv = reinterpret_cast<const int4*>(xq) + lane;
+gfx906/attn-opt:src/kernels/cuda/dflash2.cu:875:                const uint4 raw = *reinterpret_cast<const uint4*>(succ_cb + (size_t) t * rank + lane * 8);
+gfx906/attn-opt:src/kernels/cuda/fused_gdn.cu:109:    const uint4* w4 = reinterpret_cast<const uint4*>((is_beta ? wb : wa) + (size_t) r * n);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:80:// 8 bf16 packed in a uint4, unpacked to two float4 once when reused across tokens.
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:82:__device__ __forceinline__ Bf16x8 unpack8(const uint4 w) {
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:90:__device__ __forceinline__ float dot8u(const Bf16x8& w, const float4 x0, const float4 x1) {
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:102:__device__ __forceinline__ float dot8u_ptr(const Bf16x8& w, const float* x) {
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:104:    return dot8u(w, x4[0], x4[1]);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:107:// 8 bf16 packed in a uint4 against 8 16-byte-aligned floats (same 8-FMA order).
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:108:__device__ __forceinline__ float dot8(const uint4 w, const float* x) {
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:109:    return dot8u_ptr(unpack8(w), x);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:114:__device__ __forceinline__ float dot8q(const uint32_t a, const uint32_t b, const float* x) {
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:123:/// int8 codes with scales `sq`, packed into the same uint4 register as 8 int8 codes in .x/.y and the 32-value block's
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:133:    return __ldg(reinterpret_cast<const uint4*>(wb + e));
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:138:        if (q8) return __uint_as_float(w.z) * dot8q(w.x, w.y, x);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:140:    return dot8(w, x);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:334:    constexpr int TQ = TILEV / 8 / 32;      // uint4 weight chunks per lane per tile
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:410:            const uint4* w4 = reinterpret_cast<const uint4*>(m.a[0].w_up + (size_t) i * LR);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:412:            wb = unpack8(lane < LR / 8 - 32 ? __ldg(w4 + 32 + lane) : make_uint4(0, 0, 0, 0));
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:434:                acc = dot8u_ptr(wa, lo[k] + lane * 8);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:435:                if (lane < LR / 8 - 32) acc += dot8u_ptr(wb, lo[k] + (32 + lane) * 8);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:509:        const uint4* w4 = reinterpret_cast<const uint4*>(m.a[0].w_up + (size_t) i * LR);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:511:        const Bf16x8 wb = unpack8(lane < LR / 8 - 32 ? __ldg(w4 + 32 + lane) : make_uint4(0, 0, 0, 0));
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:526:            float acc = dot8u_ptr(wa, lo[k] + lane * 8);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:527:            if (lane < LR / 8 - 32) acc += dot8u_ptr(wb, lo[k] + (32 + lane) * 8);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:577:            wa[i] = __ldg(reinterpret_cast<const uint4*>(m.a[0].w_up + (size_t) row * LR) + lane);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:581:            wt = __ldg(reinterpret_cast<const uint4*>(m.a[0].w_up + (size_t) row * LR) + 32 + tj);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:591:            const float tb = dot8u(unpack8(wt), lb[0], lb[1]);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:597:                float acc = dot8u(unpack8(wa[i]), x0, x1);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:663:        const uint4* w4 = reinterpret_cast<const uint4*>(m.a[0].w_up + (size_t) i * LR);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:665:        const Bf16x8 wb = unpack8(lane < LR / 8 - 32 ? __ldg(w4 + 32 + lane) : make_uint4(0, 0, 0, 0));
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:681:            float acc = dot8u_ptr(wa, lo[k] + lane * 8);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:682:            if (lane < LR / 8 - 32) acc += dot8u_ptr(wb, lo[k] + (32 + lane) * 8);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:749:constexpr int TQ3 = N / 8 / 32;                    // uint4 weight chunks per lane in one stream's slice (10)
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:777:            const uint4* w4 = reinterpret_cast<const uint4*>(wbase + (size_t) row0 * D + (size_t) c * N + (size_t) h * SL);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:884:            w4r[r] = reinterpret_cast<const uint4*>(wbase + (size_t) (row0 + (r < nrows ? r : 0)) * D + (size_t) c * N + (size_t) h * SL);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:901:                for (int r = 0; r < R2; ++r) accr[r][k] += dot8u(wv[r], x0, x1);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:928:        const uint4* w4 = reinterpret_cast<const uint4*>(wbase + (size_t) (row0 + r) * D + (size_t) c * N + (size_t) h * SL);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:940:                if (EXACT_T || k < T) acc[k] += dot8u_ptr(wvq, xs + (size_t) k * SL + j * 8);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:984:            const uint4* w4 = reinterpret_cast<const uint4*>(m.a[0].w_up + (size_t) i * LR);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:986:            pwb[q] = lane < LR / 8 - 32 ? ldg_v4(w4 + 32 + lane) : make_uint4(0, 0, 0, 0);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:1084:            const uint4* w4 = reinterpret_cast<const uint4*>(m.a[0].w_up + (size_t) i * LR);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:1086:            wb = unpack8(lane < LR / 8 - 32 ? __ldg(w4 + 32 + lane) : make_uint4(0, 0, 0, 0));
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:1105:                float acc = dot8u_ptr(wa, lo[k] + lane * 8);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:1106:                if (lane < LR / 8 - 32) acc += dot8u_ptr(wb, lo[k] + (32 + lane) * 8);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:1115:            float acc = dot8u_ptr(wa, lo[k] + lane * 8);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:1116:            if (lane < LR / 8 - 32) acc += dot8u_ptr(wb, lo[k] + (32 + lane) * 8);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:1289:// `dot8` with its 8 activations as two float4: the same eight fmaf in the same order
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:1290:__device__ __forceinline__ float dot8v(const uint4 w, const float4 x0, const float4 x1) {
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:1324:    const uint4* w4 = reinterpret_cast<const uint4*>(wrow);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:1357:                        acc[k] += dot8u(wvq, pk[j], pk[H_TILE / 8 + j]);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:1843:        const uint4* w4 = reinterpret_cast<const uint4*>(m.a[0].w_up + (size_t) i * LR);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:1865:            const float p0 = dot8(w[p][0], l + j * 8) + dot8(w[p][4], l + (32 + j) * 8);   // old lane j
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:1866:            const float p1 = dot8(w[p][1], l + (j + 8) * 8);                               // old lane j + 8
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:1867:            const float p2 = dot8(w[p][2], l + (j + 16) * 8);                              // old lane j + 16
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:1868:            const float p3 = dot8(w[p][3], l + (j + 24) * 8);                              // old lane j + 24
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:1917:    const uint4* w4 = reinterpret_cast<const uint4*>(wrow) + sl * (GS_SL / 8);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:1939:            if (k < T) acc[k] += dot8(wv[q], tile + k * GS_SL + j * 8);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:3411:__device__ __forceinline__ double dot8d(const uint4 w, const float* x) {
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:3462:        const uint4 w = __ldg(reinterpret_cast<const uint4*>(wrow + col0) + hl);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:3467:            if constexpr (DP) v = dot8d(w, &xs[k][hl * 8]); else v = dot8(w, &xs[k][hl * 8]);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:3538:        const uint4* w4u = reinterpret_cast<const uint4*>(a0.w_up + (size_t) ui * LR) + uh * 20;
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:3551:                    if constexpr (DP) v[k] += dot8d(w[q], &lo[k][uh * 160] + (j0 + q) * 8);
+gfx906/attn-opt:src/kernels/cuda/fused_gr.cu:3552:                    else v[k] += dot8(w[q], &lo[k][uh * 160] + (j0 + q) * 8);
+gfx906/attn-opt:src/kernels/cuda/iq_kernels.cu:4534:            const uint4* src = reinterpret_cast<const uint4*>(gp);
+gfx906/attn-opt:src/kernels/cuda/iq_kernels.cu:4535:            uint4* dw = reinterpret_cast<uint4*>(s_w);
+gfx906/attn-opt:src/kernels/cuda/iq_kernels.cu:4739:__device__ __forceinline__ void nib_pass_s(block_q8_1* s_x, const uint4* crow, const uint8_t* srow, const __half* drow,
+gfx906/attn-opt:src/kernels/cuda/iq_kernels.cu:4774:__device__ __forceinline__ float nib_p_apply(const uint4& q, uint32_t sc, __half dh, const NibXQ& x, float dx, int xsum) {
+gfx906/attn-opt:src/kernels/cuda/iq_kernels.cu:4817:__device__ __forceinline__ void nib_row_dot_p(const uint4 (&q)[5], const uint32_t (&sc)[5], const __half (&dh)[5],
+gfx906/attn-opt:src/kernels/cuda/iq_kernels.cu:4850:__device__ __forceinline__ void nib_group_p(NibXQ* s_x, float* s_d, int* s_xs, const uint4* crow, const uint8_t* srow,
+gfx906/attn-opt:src/kernels/cuda/iq_kernels.cu:5052:    uint4* cp = (uint4*) (slot + nibk::code_off(row, k));
+gfx906/attn-opt:src/kernels/cuda/iq_kernels.cu:5054:    *cp = make_uint4(words[0], words[1], words[2], words[3]);
+gfx906/attn-opt:src/kernels/cuda/iq_kernels.cu:5214:constexpr int kNibGgufWords = 8;       // uint4 per thread in the down / tail part
+gfx906/attn-opt:src/kernels/cuda/iq_kernels.cu:5227:// then written (gather) or compared (check) as 32-bit words; the rest: the down rows as uint4, and (gather, the last
+gfx906/attn-opt:src/kernels/cuda/iq_kernels.cu:6739:            xr[q] = r < rows ? *reinterpret_cast<const uint4*>(X + (size_t) (c0 + t * WG_BM + r) * ldx + kb * WK + xh * WG_XK + c)
+gfx906/attn-opt:src/kernels/cuda/iq_kernels.cu:6789:                    *reinterpret_cast<uint4*>(sx + r * LDX + c) = xr[q];
+gfx906/attn-opt:src/kernels/cuda/iq_kernels.cu:6895:        *reinterpret_cast<uint4*>(o + 8 * il) = out;
+gfx906/attn-opt:src/kernels/cuda/iq_kernels.cu:6948:            Yr[u] = c < ncol ? *reinterpret_cast<const uint4*>(X + (size_t) (c0 + c) * ldx + k0 + 8 * yq) : make_uint4(0, 0, 0, 0);
+gfx906/attn-opt:src/kernels/cuda/iq_kernels.cu:6980:            for (int u = 0; u < 2; ++u) *reinterpret_cast<uint4*>(ys + (yc + 32 * u) * W2_LD + 8 * yq) = Yr[u];
+gfx906/attn-opt:src/kernels/cuda/kv_q8.cu:151:    reinterpret_cast<uint4*>(k_scratch)[dst] = ko;
+gfx906/attn-opt:src/kernels/cuda/kv_q8.cu:152:    reinterpret_cast<uint4*>(v_scratch)[dst] = vo;
+gfx906/attn-opt:src/kernels/cuda/kv_stream.cu:173:            const uint4* src = reinterpret_cast<const uint4*>(r.src[a] + b * r.len[a]);
+gfx906/attn-opt:src/kernels/cuda/kv_stream.cu:174:            uint4* dst = reinterpret_cast<uint4*>(r.dst[a] + sl * r.len[a]);
+gfx906/attn-opt:src/kernels/cuda/q8_1_il.cuh:30:            const int4 a = *reinterpret_cast<const int4*>(s);
+gfx906/attn-opt:src/kernels/cuda/q8_1_il.cuh:36:                const int4 e = *reinterpret_cast<const int4*>(s + 4);
+gfx906/attn-opt:src/kernels/cuda/q8_1_il.cuh:56:            const int4 a = __ldg(reinterpret_cast<const int4*>(s));
+gfx906/attn-opt:src/kernels/cuda/q8_1_il.cuh:62:                const int4 e = __ldg(reinterpret_cast<const int4*>(s + 4));
+gfx906/attn-opt:src/kernels/cuda/q8_sm60.cuh:60:            const int4* w = reinterpret_cast<const int4*>(qs + std::size_t(row) * n_in);
+gfx906/attn-opt:src/kernels/cuda/q8_sm60.cuh:67:                    const int4 xv = reinterpret_cast<const int4*>(sx + std::size_t(j) * n_in)[c];
+gfx906/attn-opt:src/kernels/cuda/qsa_decode_attn.cu:86:__device__ __forceinline__ float dot8_dp4a(int kb0, int kb1, const int8_t* q8p, float qs, float ks) {
+gfx906/attn-opt:src/kernels/cuda/qsa_decode_attn.cu:96:    const uint4 raw = *reinterpret_cast<const uint4*>(base);
+gfx906/attn-opt:src/kernels/cuda/qsa_decode_attn.cu:311:                part[h] = dot8_dp4a((int) kraw.x, (int) kraw.y, &sq8[h][lane * 8], sq8s[h][lane >> 3], ks);
+gfx906/attn-opt:src/kernels/cuda/qsa_decode_attn.cu:336:                float s = dot8_dp4a((int) kraw.x, (int) kraw.y, &sq8[h][lane * 8], sq8s[h][lane >> 3], ks);
+

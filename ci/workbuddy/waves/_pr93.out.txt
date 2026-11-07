@@ -1,0 +1,74 @@
+=== [0] 本机 zip 的 sha256（与 166 下载的对比）===
+  local  size=18570716  sha256=7d595d4ae04b1e163ddd642c5e307d1931b17c36c26a267be0c201f90173383b
+  remote size=18570716  sha256=7d595d4ae04b1e163ddd642c5e307d1931b17c36c26a267be0c201f90173383b
+
+=== [1] build-ctx-401 结构 ===
+/home/albus/strata166/build-ctx-401
+/home/albus/strata166/build-ctx-401/transfer
+/home/albus/strata166/build-ctx-401/transfer/strata-src-0.1.40.1.zip
+/home/albus/strata166/build-ctx-401/transfer/llama.cpp-3cf0325.tar.gz
+/home/albus/strata166/build-ctx-401/Dockerfile
+/home/albus/strata166/build-ctx-401/patch_gfx906.py
+--- strata166 根 ---
+total 16
+drwxrwxr-x 11 albus albus  137 Oct  7 00:21 .
+drwxr-x--- 57 albus albus 8192 Oct  5 23:40 ..
+drwxrwxr-x  2 albus albus    6 Oct  5 23:22 build
+drwxrwxr-x  3 albus albus   87 Oct  6 00:14 build-ctx
+drwxrwxr-x  3 albus albus   63 Oct  7 00:39 build-ctx-401
+drwxrwxr-x  4 albus albus 4096 Oct  7 02:35 data
+drwxrwxr-x  2 albus albus    6 Oct  5 23:22 docker
+drwxrwxr-x  2 albus albus  109 Oct  7 00:33 logs
+drwxrwxr-x  2 albus albus    6 Oct  5 23:22 src
+drwxrwxr-x  2 albus albus   67 Oct  5 23:40 transfer
+drwxrwxr-x  2 albus albus  174 Oct  7 01:14 weights
+
+
+=== [2] 建 build-ctx-402 ===
+--- ctx 内容 ---
+/home/albus/strata166/build-ctx-402:
+total 0
+drwxrwxr-x  4 albus albus  36 Oct  7 23:48 .
+drwxrwxr-x 12 albus albus 158 Oct  7 23:48 ..
+drwxrwxr-x  2 albus albus   6 Oct  7 23:48 docker
+drwxrwxr-x  2 albus albus  69 Oct  7 23:48 transfer
+
+/home/albus/strata166/build-ctx-402/transfer:
+total 51920
+drwxrwxr-x 2 albus albus       69 Oct  7 23:48 .
+drwxrwxr-x 4 albus albus       36 Oct  7 23:48 ..
+-rw-rw-r-- 1 albus albus 34593028 Oct  7 23:48 llama.cpp-3cf0325.tar.gz
+-rw-rw-r-- 1 albus albus 18570716 Oct  7 23:48 strata-src-0.1.40.2.zip
+zip sha256 = 7d595d4ae04b1e163ddd642c5e307d1931b17c36c26a267be0c201f90173383b
+
+
+=== [3] 传 patch_gfx906_402.py 与 Dockerfile-0.1.40.2 ===
+  patch_gfx906_402.py                ok=True size=6635 md5=20ef59f37cae2e564b3f34c9becc65be
+     rc=0 remote_size=6635 remote_md5=20ef59f37cae2e564b3f34c9becc65be match=True | R_SIZE=6635 | R_MD5=20ef59f37cae2e564b3f34c9becc65be | R_BASHSYNTAX=NA_or_FAIL | R_CR=0 | R_LF=150
+  Dockerfile-0.1.40.2                ok=True size=4833 md5=e0c982a03b01208890b660f8dfeedfdd
+     rc=0 remote_size=4833 remote_md5=e0c982a03b01208890b660f8dfeedfdd match=True | R_SIZE=4833 | R_MD5=e0c982a03b01208890b660f8dfeedfdd | R_BASHSYNTAX=OK | R_CR=0 | R_LF=86
+
+=== [4] 复核 ctx 就位 ===
+/home/albus/strata166/build-ctx-402:
+total 16
+drwxrwxr-x  4 albus albus   90 Oct  7 23:48 .
+drwxrwxr-x 12 albus albus  158 Oct  7 23:48 ..
+drwxrwxr-x  2 albus albus    6 Oct  7 23:48 docker
+-rw-rw-r--  1 albus albus 4833 Oct  7 23:48 Dockerfile-0.1.40.2
+-rw-rw-r--  1 albus albus 6635 Oct  7 23:48 patch_gfx906_402.py
+drwxrwxr-x  2 albus albus   69 Oct  7 23:48 transfer
+
+/home/albus/strata166/build-ctx-402/docker:
+total 0
+drwxrwxr-x 2 albus albus  6 Oct  7 23:48 .
+drwxrwxr-x 4 albus albus 90 Oct  7 23:48 ..
+
+/home/albus/strata166/build-ctx-402/transfer:
+total 51920
+drwxrwxr-x 2 albus albus       69 Oct  7 23:48 .
+drwxrwxr-x 4 albus albus       90 Oct  7 23:48 ..
+-rw-rw-r-- 1 albus albus 34593028 Oct  7 23:48 llama.cpp-3cf0325.tar.gz
+-rw-rw-r-- 1 albus albus 18570716 Oct  7 23:48 strata-src-0.1.40.2.zip
+--- patch 语法自检（本机跑一遍 dry-run 需要源码树，这里只做 py_compile）---
+PY_COMPILE_OK
+

@@ -1,0 +1,176 @@
+====================================================================================================
+v0.1.40.4 2026-10-08T08:04:33Z main False
+----------------------------------------------------------------------------------------------------
+**Hotfix for 0.1.40.3: decode on Pascal cards (Tesla P40, GTX 1080, GTX 1070) is back to the 0.1.40 speed.** Default answers are unchanged. Update with `UPDATE.bat` (Linux: `./update.sh`); setup replaces the engine with 0.1.40.4.
+
+## Pascal decode (#1469, #1470)
+
+- **Decode on sm_61 had halved since 0.1.40.2:** the small-batch matrix kernels lost their `__restrict__` hints and gained a prefetch that Pascal cannot overlap, so every decode step ran roughly twice as long. The reporters' own version of this fix took a P40 from 17.7 back to 36.7 tok/s; we have no sm_61 card, so a confirmation on 0.1.40.4 in #1469 helps.
+- The fix is limited to cards below sm_70. For Volta and newer (RTX 20, 30, 40, 50) the compiled code is byte-identical to 0.1.40.3, so nothing changes there. A Tesla P100 (sm_60) measured +2% (five A/B pairs, +1.7 to +2.4%, same answers).
+- The Windows CUDA 12 zip (the one for Pascal and Volta) carries the fix; so does the Linux build from source.
+
+Thanks to paulhothersall and lineape for the bisect that found the commit.
+
+---
+
+Strata is free and open source. If it runs well on your PC, a coffee keeps the work on it going:
+
+<a href="https://buymeacoffee.com/strataengine"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="50"></a>
+
+
+====================================================================================================
+v0.1.40.3 2026-10-07T18:01:30Z main False
+----------------------------------------------------------------------------------------------------
+**Hotfix for 0.1.40.2: Intel Arc install and A-series fixes, Windows AMD speed and runtime fixes, Docker config links, and a few smaller fixes.** Default answers are unchanged. Update with `UPDATE.bat` (Linux: `./update.sh`); setup replaces the engine with 0.1.40.3.
+
+## Intel Arc
+
+- **Install:** `python3 sycl/setup_intel.py`, as the 0.1.40.2 notes said, fails on Ubuntu's managed Python. The way in is: `sudo apt install docker.io`, add yourself to the `docker` group and log in again, then `./setup.sh --backend sycl`. docs/INTEL.md now walks through it, including the build (it was missing) and the A-series.
+- **Arc A750 and other 8 GB A-series cards:** setup now writes a config that starts (no `--stream-experts`, `--ple-io ram`, a 300 MiB reserve, the English draft vocabulary, and the FP64 emulation settings these cards need for sampled answers).
+- **The first answer after a start was garbage on the A750 ("!!!!!")**: the GPU stopped waiting for the CPU's experts after a few tens of milliseconds, and a cold first request is slower than that. The wait is now long enough; the B70 build is unchanged. A750 IQ3_XXS: correct first and later answers, about 19 tok/s.
+- Setup's Intel output is right now (no CUDA banner, no AMD pointer, no "every expert stays in VRAM", the real version number), an explicit `--vram-reserve-mib` is kept, and the config's `env` block reaches the engine.
+
+## Windows AMD
+
+- **Slow answers on 16 GB+ cards (#1376):** the automatic expert cache could leave only about 300 MiB of VRAM free; Windows then pages GPU memory and decode fell by half (RX 7900 XT, IQ3_S: 24 tok/s, 55 tok/s with room). An automatic cache on a 16 GB or larger card now keeps 2,560 MiB free. An explicit `--vram-reserve-mib` is kept; NVIDIA and Linux are unchanged. Thanks to the reporter for the clean measurements.
+- **The bundled HIP runtime is used again (#461):** its dependencies (`rocm_kpack.dll` and the Microsoft C++ runtime) were not next to `strata.exe`, so Windows fell back to the driver's own `amdhip64_7.dll`, which crashed prompts on an RX 7800 XT. They are now copied there, and the engine says which runtime it loaded and, if it is not the bundled one, why. We have no Windows AMD card to confirm this on; reports help.
+- **Driver resets (VIDEO_ENGINE_TIMEOUT_DETECTED):** a new troubleshooting entry lists what to send and what to try.
+- The web dashboard says that Windows AMD GPU readings are not available yet, instead of showing empty tiles.
+
+## Linux AMD
+
+- Setup warns when your user cannot open the GPU (not in the `render` group), with the command that fixes it; the engine no longer blames "another program" in that case.
+- A Radeon 780M (gfx1103) is no longer described as a Strix Halo.
+
+## Everyone
+
+- **Docker / Kubernetes (#1244):** 0.1.40.2 replaced a config link made before the entrypoint, so a pod could silently start the plain setup config. A link into `/data/config` is kept now, `CONFIG=` picks a config file explicitly, and the entrypoint prints which config it uses.
+- **Web app (#1392):** a turn with no answer text (only thinking, or an error) is kept in the history it sends.
+- **MTP:** the draft layer's per-token router call has the same 512-expert guard as its siblings (#1357, thanks to rwkeyes).
+- **Tokenizer (#1385):** hardened against an intermittent error seen on Python 3.14.
+- Docs: `STRATA_STAGER_SLEEP` (sleeping prompt-stager waits: much less CPU, 5-6% slower prompt reads on a Windows laptop).
+
+---
+
+Strata is free and open source. If it runs well on your PC, a coffee keeps the work on it going:
+
+<a href="https://buymeacoffee.com/strataengine"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="50"></a>
+
+
+====================================================================================================
+v0.1.40.2 2026-10-07T12:13:49Z main False
+----------------------------------------------------------------------------------------------------
+**Faster and fixed across the board: official Intel Arc support (Arc Pro B70 and A750 tested), bug fixes and speed-ups merged from the open issues and PRs, and big gains on multi-GPU, low-RAM Linux and long-document use.** Default answers are byte-identical to 0.1.40 (checked on Q2_0, IQ3_XXS, Coder and IQ3_S). See **Updating** below if your copy is older than 0.1.40.1.
+
+## Speed
+
+Measured against 0.1.40 in interleaved pairs (medians, 10 pairs unless noted):
+
+| Machine | Model | Decode (story / code) | Prompt 4K / 20K |
+|---|---|---|---|
+| RTX 5070 12 GB, Windows | IQ3_XXS | 48.5 -> 50.3 (+3.9%, 10/10 pairs) / 53.1 -> 53.5 | equal |
+| RTX 5070 12 GB, Windows | Q2_0 | 74.8 -> 75.6 / 79.3 -> 79.4 | 1377 -> 1387 / 1485 -> 1489 |
+| RTX 3060 12 GB, Linux | IQ3_XXS | 36.3 -> 37.0 (+1.7%) / 45.5 -> 47.5 (+4.3%) | equal |
+| Tesla P100 16 GB, Linux | IQ3_XXS | 27.6 -> 28.6 (+3.7%) / 31.5 -> 32.3 (+2.5%, 10/10 pairs) | equal |
+
+Where it comes from, and the larger gains in particular setups:
+
+- **2-4 token verify windows read each weight block once (on by default, RTX 30 series and newer).** The dense projections of a draft window decode a weight block once and apply it to every token, from an interleaved copy of the activations. Bit-identical output. RTX 3060 +4.2% decode (12/12 pairs), RTX 5070 +1.3 to +2.2%. `STRATA_MMVQ_IL=0` turns it off. The idea comes from Eddoursul's fork.
+- **Multi-GPU layer split: up to +60% prompt speed.** When two placements scored the same, the auto split could pick the unbalanced one. On 4x Radeon AI PRO R9700 a 32K prompt now reads at 2,797 tok/s (3 GPUs: 1,970 -> 2,458).
+- **Linux with less RAM than the model: +20 to +42% decode** (#1194). The file tier now reads through the page cache when it can hold a useful share of the experts, instead of unbuffered reads. P100 box under a 32 GB limit: story 12.6 -> 15.2, code 9.3 -> 13.3 tok/s, with 3-7x less drive traffic. Same tokens. `STRATA_UNBUFFERED_LOAD=1/0` forces either.
+- **Many questions about one long document: first answer in 0.35-0.55 s instead of 48-149 s** (opt-in `pin=N`). A pinned shared prefix is read once and kept; each question only reads its own part. See docs/RESEARCH_RUNS.md.
+- **DGX Spark / Linux with --mmap-experts: prompts up to 10x faster** (#1057). The prompt stager's threads sleep instead of spinning (IQ3_S 8K 91 -> 1,222 tok/s on a GB10). Default on Linux; Windows keeps the old wait (it was 1.2% faster there). `STRATA_STAGER_SLEEP=1/0` forces either. Thanks to uncle daddy.
+- **Short prompts 19-35% faster with the CPU helping (opt-in, `STRATA_PREFILL_CPU_SHARE=auto`)** (#1282): for prompt chunks under 1,024 tokens (typical chat turns and tool calls), the CPU computes the least-routed experts while the GPU does the rest. 512-token prompt: RTX 3060 1.62 -> 1.16 s, P100 4.8 -> 3.1 s, RTX 5070 1.38 -> 1.02 s; 2K and longer unchanged. The answers are not byte-identical (CPU and GPU round differently: mean KL 0.006, the same top token in 19 of 22 prompts), so it is off by default. Thanks to sergiywith.
+- **Opt-in SSD read-ahead on Linux** (`STRATA_IO_PREFETCH=1`): reads the predicted experts of the next layers while the current one computes; `STRATA_IO_PF_STAGE=1` measured +25% on an RTX 3060 under a 32 GB limit, but slower at 16 GB and on an iGPU, so it stays off by default. docs/DETAILS.md has the table. New per-request line: what the OS read from the drive against the page cache.
+- **AMD:** RX 7900 XTX hipBLASLt table rows for small prompt chunks (+32% prompt, measured by the author, #1289); docs for `STRATA_HIP_WMMA=1` on the R9700 (+27-31% prompt, output bits change, so opt-in) and a start hint on gfx12 with `--kv int8`.
+- **Opt-in sampled drafting:** probabilistic draft acceptance (`STRATA_SPEC_PROB`, `STRATA_SPEC_COUPLED`) and Gumbel-max coupled drafts (`STRATA_SPEC_GUMBEL=1`, +5.7 to +9% decode on AMD in the reporters' runs; on an RTX 3060 acceptance rose about a point and decode stayed within noise).
+
+## Intel Arc: officially supported
+
+Strata now officially supports Intel Arc graphics cards on Linux: its own engine ported to SYCL, behind the same server, APIs and web app. Install: `sudo apt install docker.io` (then add yourself to the `docker` group and log in again), then `./setup.sh --backend sycl` (it builds the oneAPI engine in a Docker image; see docs/INTEL.md). **Update 0.1.40.3:** the install path, the 8 GB A-series config and several setup messages were fixed in 0.1.40.3; use that version. Tested on an **Arc Pro B70 (32 GB, xe driver)** and an **Arc A750 (8 GB, i915 driver)**: the 10-prompt check with MTP passes on both (B70: 10/10 twice; A750: 6 of 6 runs), and neither card had a GPU hang.
+
+| Card | Model | Prompt (4K tokens) | Decode (story / code) |
+|---|---|---|---|
+| Arc Pro B70 32 GB | IQ3_S | 980-1,000 tok/s | 31 / 41 tok/s |
+| Arc A750 8 GB | IQ3_XXS | about 58 tok/s | about 16 tok/s |
+
+What it took (0.1.40 did not build for Intel at all):
+- **Wrong answers on the B70:** the xe driver could hand back a large GPU allocation with aliased pages (a write at one offset showed up 1 GiB further on), so cached experts held other experts' bytes. Every big allocation is now checked at start and re-allocated until clean (`STRATA_ARENA_ALIAS_CHECK=0` turns it off).
+- **B70 hang:** without `--stream-experts` the GPU was handed pageable host memory, which the xe driver faults on. `--pcie-frac` now defaults to 0 in that case, with a warning; setup configures `--stream-experts`.
+- **B70 prompt speed:** setup asks a 24 GB+ Arc card for 4,096-token prompt chunks, and there is no short first chunk while part of the experts are in host memory (4K prompt 618 -> about 1,000 tok/s).
+- **MTP drafts** are accepted again (4% -> about 60% on the A750): a wait read a draft token before the GPU had written it.
+- **The first-window hang on i915 cards** (A-series) is fixed: the queues drain before each window.
+- **Free VRAM on i915** is now this process's real use, and the sampler no longer uses FP64, which A-series cards emulate (A750 decode +6%).
+
+Intel Arc is Linux only for now.
+
+## Fixes
+
+- **Updating after the history cleanup** (#1276): `UPDATE.bat` / `update.sh` now move an old clone to the new history by themselves when you have not edited Strata's files (your old commits stay in a branch `pre-cleanup-backup`). With edits, they print the commands and change nothing.
+- **k8v4 KV with --kv-resident** printed every number twice in long counts (#1188, #1135, #1169).
+- **--batch slots hung during a prompt loan** on fully resident multi-GPU setups (#1118).
+- **STRATA_QFUSE with --batch** gave garbage (#1139).
+- **Host OOM at start on Linux** when RAM was mostly file cache: the cache of the model files is given back first, then pinning is paced (#1250).
+- **The server no longer waits for ever** on an engine or image encoder that stopped answering (#1317): 900 s for the engine's start, 300 s for the encoder; `STRATA_ENGINE_READY_S` etc. change them (0 = no limit).
+- A restart could report the old engine's context size for a moment; fixed.
+- **/v1/responses** accepts a JSON `text.format` together with tools (Codex, #782).
+- **Setup:** ROCm wheels chosen per GPU family (gfx103X and gfx1151 get versions that work, #1103, #1267); CUDA 13.2.2 is accepted (13.2.0/13.2.1 still warned on RTX 50: they miscompile IQ3_S/IQ2_S); the downloaded engine is checked against GitHub's SHA-256 (refused on a mismatch, a warning when no digest is available, `STRATA_SKIP_SHA256=1` skips it, #1218).
+- **Also:** `--gpu LIST` selects the visible GPUs (#852); Prometheus `/metrics` in the text format (#793); LRU graph eviction on VRAM OOM (#1185); docker REINSTALL=0 keeps the /data config (#1244); EXIF orientation of uploaded images (#1229); `--kv-grow` hold as an opt-in (`STRATA_KV_GROW_HOLD=1`, #1128); 14 community benchmark reports added to bench/results.
+
+Release builds use CUDA 13.0 (as 0.1.40). The Windows AMD zip includes gfx1151 (Strix Halo).
+
+## Updating
+
+From 0.1.40.1 or newer: `UPDATE.bat` (Linux: `./update.sh`) as usual.
+
+From 0.1.40 or older, once by hand (the old update script cannot follow the cleaned-up history). In your Strata folder:
+
+```
+git fetch origin
+git branch pre-cleanup-backup
+git checkout -B main origin/main
+```
+
+Your models, configs and the engine are not touched. Then run `UPDATE.bat` / `./update.sh` to get the new engine.
+
+---
+
+Strata is free and open source. If it runs well on your PC, a coffee keeps the work on it going:
+
+<a href="https://buymeacoffee.com/strataengine"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="50"></a>
+
+
+====================================================================================================
+v0.1.40.1 2026-10-06T09:53:35Z main False
+----------------------------------------------------------------------------------------------------
+**Hotfix for 0.1.40: a tool call that is only quoted (in the thinking or in a code block) no longer runs, and requests waiting during an engine restart no longer hang.** Python server fixes only. The engine is the same as in 0.1.40, so there is nothing new to download. See **Updating** below: this one time it needs one extra command.
+
+**Tool calls written inside the thinking (#804, #1058):** 0.1.40 turned a `<tool_call>` the model wrote inside its thinking into a real call whenever the tool was one of the request's. That rescue is meant for a model that forgets `</think>` and then writes its call. It also fired on a call that was only an example, even in a reply cut off by max tokens (a quoted `rm -rf build` became a tool call). A call in the thinking is now a call only when all of this holds:
+- tools are declared and the name is one of them;
+- it starts at the beginning of a line, outside a code fence (``` or ~~~) and outside inline code;
+- its `</tool_call>` is there, and only whitespace or more calls follow it before the end of the turn or `</think>`;
+- the turn ended normally. A reply cut by max tokens (or cancelled, or failed) keeps it as thinking text.
+
+Anything else stays in `reasoning_content`. The same holds when the answer streams. Each rescue is logged, and `/metrics` counts them in `totals.tool_calls_from_reasoning`. We ran 37 recorded cases (the 12 real strandings from 47Hunter47's second machine and the 25 cases in PR #525's list) in whole and in chunks, plus fences and tags split across stream chunks: all 16 real calls come through and the 21 quoted ones stay text. Thanks to 47Hunter47 for the 20 test cases and the live runs that showed it.
+
+**An engine restart with requests waiting (#1012):** after the server restarted a dead engine, requests that were waiting for the engine's control lines could hang for good (we saw five stay at "reading the prompt" for 90 minutes) or fail with `list.remove(x): x not in list`. The restart now keeps the same lock and wait list, and wakes the waiting requests. A waiting request goes on with the new engine, or ends at once with a 503 saying it was not sent, so a client can retry. A long prompt that was being read when the engine died also ends at once now instead of after 300 s. Thanks to Jackwwg83 for the report and its cause.
+
+**Smaller:** when the engine exits after an `ERR` line that no request read (a failed batch window), the server window now says what it was (PR #998, ischencheng). Setup reads a four-part version such as 0.1.40.1 as 0.1.40.
+
+**Quoted calls in the visible answer:** a `<tool_call>` inside a code fence (``` or ~~~) or inside inline code in the answer (after `</think>`) is now text, never a call, also when the answer streams and the fence is split across chunks. Before, a model that showed the call format in a fenced example got a real tool call. Calls at the top level of the answer work as before, including one that follows a sentence on the same line.
+
+**Updating (once by hand):** we cleaned up the repository history today, so `UPDATE.bat`'s normal pull refuses it this one time. In your Strata folder run:
+
+```
+git fetch origin
+git reset --hard origin/main
+```
+
+Then restart the server. Your models, configs, run scripts and the engine are not touched (git does not track them); only changes you made to Strata's own source files would be lost. After this, `UPDATE.bat` (Linux: `./update.sh`) works as before. A zip download of the code needs nothing special. The ready-made engines are the ones from 0.1.40, attached again below.
+
+---
+
+Strata is free and open source. If it runs well on your PC, a coffee keeps the work on it going:
+
+<a href="https://buymeacoffee.com/strataengine"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="50"></a>
+

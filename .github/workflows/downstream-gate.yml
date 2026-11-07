@@ -13,15 +13,19 @@ name: Downstream gate
 
 on:
   push:
-    branches: [main, gfx906/mi50, 'ci/**']
+    branches: ['**']
     paths:
       - 'src/**'
       - 'include/**'
       - 'CMakeLists.txt'
       - 'ci/**'
+      - 'tools/**'
+      - 'deploy/params/**'
+      - 'albus/**'
+      - 'waves/**'
       - '.github/workflows/downstream-gate.yml'
   pull_request:
-    branches: [main]
+    branches: [main, 'gfx906/**', 'ci/**']
     paths:
       - 'src/**'
       - 'include/**'
@@ -59,6 +63,8 @@ jobs:
         run: |
           for f in ci/*.sh ci/strata-ci ci/repack_ab/*.sh; do bash -n "$f" && echo "ok   $f"; done
           python3 -m py_compile ci/*.py ci/repack_ab/*.py && echo "ok   ci/*.py + ci/repack_ab/*.py"
+          python3 ci/workbuddy/workbuddy_syntax.py
+          python3 ci/workbuddy/workbuddy_selftest.py
       - name: Config-face checks
         run: python3 ci/gate.py --repo . --source-only
       - name: Round gate (evidence, report lint, port status)

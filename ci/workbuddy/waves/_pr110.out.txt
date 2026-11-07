@@ -1,0 +1,103 @@
+[auth] HTTP 200  login=phoenixclyde  scopes=None
+
+=== [1] Niko1221/Strata ===
+  full_name            : Niko1221/Strata
+  default_branch       : main
+  stargazers_count     : 16705
+  forks_count          : 1453
+  pushed_at            : 2026-10-07T12:13:48Z
+  updated_at           : 2026-10-07T16:03:50Z
+  license              : MIT
+  open_issues_count    : 290
+  size                 : 18064
+
+=== [2] 最近 5 个 release ===
+  v0.1.40.2    2026-10-07T12:13:49Z  target=main
+  v0.1.40.1    2026-10-06T09:53:35Z  target=main
+  v0.1.40      2026-10-06T06:29:21Z  target=main
+  v0.1.39      2026-10-04T12:32:47Z  target=main
+  v0.1.38      2026-10-03T01:17:05Z  target=main
+
+=== [2b] 最近 5 个 tag ===
+  v0.1.40.2      e8ca9afd03d8
+  v0.1.40.1      82f46a8c8f47
+  v0.1.40        1cbcacbcae29
+  v0.1.39        a1641e9f77aa
+  v0.1.38        09817da3979a
+
+=== [3] fork 不存在（HTTP 404）=> 需要 POST /forks
+
+=== [4] PR #1083 ===
+  state=closed merged=False merged_at=None title=hip/gfx906: the tree does not build (three STRATA_USE_HIP gates miss STRATA_HIP_GFX906)
+  base=main head=xxDoman:gfx906-140.1-buildfix files=3 +3/-3
+
+=== [5] open PR 共 100 条；其中标题/正文含 gfx906|hip|q6_k 的 ===
+  #1388  hip: gfx1151 hipBLASLt tuning table for setup's ROCm 7.14.0a20260608    by alexdns1  2026-10-07T15:28:24Z
+  #1383  generate: say that CUDA_LAUNCH_BLOCKING=1 hangs the verify windows (    by ischencheng  2026-10-07T14:53:40Z
+  #1378  bench: community report, RX 6600 8 GB (gfx1032), EPYC 7232P, IQ3_XXS    by cryptedx  2026-10-07T14:23:28Z
+  #1376  bench: add RX 7900 XT results for IQ3_S and IQ3_XXS                     by matrix9neonebuchadnezzar2199-sketch  2026-10-07T14:10:57Z
+  #1374  experts: IQ1_S on GPU/AVX-2, IQ1_S+IQ1_M on AVX-512, and a measured     by Yxmura  2026-10-07T13:59:55Z
+  #1372  DeltaNet recurrence: STRATA_GDN_CHUNKED=1 - the prompt's recurrence     by sergqwer  2026-10-07T13:49:57Z
+  #1370  prefill: opt-in STRATA_HC_UPMIX=1 on CUDA - the hyper-connection up     by sergqwer  2026-10-07T13:25:13Z
+  #1368  prefill: quantize each token's MoE input once and scatter it to its     by sergqwer  2026-10-07T13:17:04Z
+  #1367  prompt attention: STRATA_PROMPT_ATTN_IMMA=1 - the int8-KV kernel on     by sergqwer  2026-10-07T13:13:50Z
+  #1361  tools/hip: gfx1151 hipBLASLt 100500 tuning table (Windows ready-made    by sclsgj  2026-10-07T11:48:36Z
+  #1343  Add support for CYBER-FROST-3.8 (Blackfrost): read qwen4exp.nextn_pr    by rluisr  2026-10-07T09:34:11Z
+  #1340  core: retain fixed RAM originals during native async exchanges          by CC-David-CC  2026-10-07T09:16:51Z
+  #1332  calibrate: the PCIe share sweep reaches 1.0, where no expert goes to    by aly8246  2026-10-07T08:41:04Z
+  #1327  serve: opt-in finite video input                                        by constantindjonkam  2026-10-07T08:00:22Z
+  #1324  file tier: an LRU part of the RAM budget (--resident-lru-gib), elast    by malloc32  2026-10-07T07:46:15Z
+  #1323  prefill: batched unbuffered stager reads; close the experts.bin view    by malloc32  2026-10-07T07:45:50Z
+  #1321  bench: publish an IQ2_XS speed report for the Radeon AI PRO R9700       by alexhegit  2026-10-07T07:37:21Z
+  #1320  test: qualify existing exact HIP paths on gfx906                        by 0FL01  2026-10-07T06:20:44Z
+  #1319  serve: add opt-in bounded Responses history and continuation            by mdwsk88  2026-10-07T06:18:03Z
+  #1313  hipBLASLt table for gfx1201 at 100200 (R9700 calibrated, +15% prefil    by Faks  2026-10-07T05:25:07Z
+  #1305  decode: --lookup-chain 1 and 2 do not change the window cap with the    by ZackO2o  2026-10-07T04:16:24Z
+  #1298  hip: the gfx110x fp16 (rocWMMA) qsa-select scorer arm (STRATA_SELECT    by xyzzing  2026-10-07T02:55:25Z
+  #1297  HIP: on-device autotuning for gfx1100 decode (kernel shapes, draft a    by xyzzing  2026-10-07T02:55:11Z
+  #1296  hip: chunk-parallel GDN recurrence (WY form), two parity-gated arms     by xyzzing  2026-10-07T02:54:58Z
+  #1293  Community benchmark: RX 7900 XTX 24 GB — ROCm 7.1.1 vs ROCm 10.2 nig    by xyzzing  2026-10-07T02:08:05Z
+  #1292  Docs: AMD RX 7900 XTX (gfx1100) IQ3_S rates row (1K-128K)               by xyzzing  2026-10-07T02:07:38Z
+  #1287  feat(vision): support Windows HIP image encoding                        by Yasei-no-otoko  2026-10-07T00:49:01Z
+  #1278  HIP: run the K-quant MMQ test on HIP builds; UD-Q4_K_XL measured on     by ConnorHaggerty  2026-10-06T22:48:57Z
+  #1266  Add the Update the engine card                                          by demetree  2026-10-06T21:48:48Z
+  #1265  Add the engine updater: verify, stage, all-or-nothing swap, rollback    by demetree  2026-10-06T21:48:00Z
+  #1262  STRATA_HC_REQ8: hyper-connection projections requantized to int8 + f    by merbanan  2026-10-06T21:28:37Z
+  #1259  setup: --draft-vocab it - the English/code subset plus the tokens of    by fioruccione  2026-10-06T21:20:07Z
+  #1253  Enable serial multi-GPU batch MTP                                       by ilumn  2026-10-06T20:37:11Z
+  #1251  --peer-device prompt share without P2P: host route, per-token sums,     by guthirry  2026-10-06T20:27:13Z
+  #1224  serve: the Monitor's AMD GPU readings on Windows through ADLX (load,    by tuandat3019  2026-10-06T17:11:42Z
+  #1223  generate: allow the elastic K/V with --peer-device (VMM ranges keep     by chimpera  2026-10-06T16:55:37Z
+  #1219  setup: a Spanish draft subset (--draft-vocab es); Spanish answers dr    by elanonimo832  2026-10-06T16:41:45Z
+  #1187  gfx906: opt-in Q2_0 gate/up weight reuse without singleton regressio    by 0FL01  2026-10-06T15:16:03Z
+  #1186  setup: --draft-vocab es - the English/code subset plus the tokens of    by txiki739  2026-10-06T15:11:49Z
+  #1184  AMD HIP: the primary ordinal, and the helper caches beside the resid    by tuandat3019  2026-10-06T14:59:53Z
+  #1167  hip: a rocBLAS solution table for the FP16 prompt GEMMs on gfx103x (    by xjc10  2026-10-06T14:04:57Z
+  #1156  setup: reach the CPU image encoder on Windows + AMD (#1155, #881)       by Hugua700  2026-10-06T13:24:26Z
+
+=== [6] search "q6_k": total=22 ===
+  PR    #1278   open     HIP: run the K-quant MMQ test on HIP builds; UD-Q4_K_XL meas   2026-10-06T22:48:57Z
+  ISSUE #1258   open     gfx1151 (Strix Halo) prompt: per-kernel profile of a 16K pro   2026-10-06T21:05:10Z
+  ISSUE #1236   open     Will zero-copy be implemented on Strix Halo?                   2026-10-06T18:36:32Z
+  PR    #478    closed   prefill: MMQ prompt kernels for Q6_K experts (STRATA_MMQ_KQU   2026-10-02T08:58:41Z
+  PR    #860    closed   Unsloth UD-Q6_K_XL: Q8_0 PLE rows and Q6_K gate/up experts     2026-10-05T00:00:38Z
+  PR    #820    closed   prefill: the dense GGUF projections through MMQ on HIP (opt-   2026-10-04T19:16:23Z
+  PR    #532    closed   tests: prefill_mmq_kquant_test waits for its uploads before    2026-10-02T19:41:45Z
+  PR    #148    closed   tests: bitwise check of native_mmvq's multi_exact contract,    2026-09-29T16:34:50Z
+
+=== [6] search "cudaEventBlockingSync": total=3 ===
+  PR    #1101   open     prefill: let Stager threads sleep instead of yield-spinning    2026-10-06T10:53:58Z
+  PR    #1057   closed   prefill: let Stager threads sleep instead of yield-spinning    2026-10-06T06:59:58Z
+  ISSUE #1056   closed   Prefill: Stager threads yield-spin while waiting. On Linux w   2026-10-06T06:59:56Z
+
+=== [6] search "STRATA_HIP_GFX906": total=11 ===
+  PR    #1084   open     hip/gfx906: `__dp4a` falls back to a 4-iteration loop althou   2026-10-06T10:12:12Z
+  PR    #1083   closed   hip/gfx906: the tree does not build (three STRATA_USE_HIP ga   2026-10-06T10:12:05Z
+  PR    #1066   closed   hip/gfx906: the 0.1.40 tree does not build (three STRATA_USE   2026-10-06T08:41:54Z
+  ISSUE #1018   open     [gfx906] gr_up_fast_kernel<GrMulti> aborts the engine with H   2026-10-06T03:22:12Z
+  PR    #858    closed   gfx906 compat: cudaFuncSetAttribute as a template function,    2026-10-04T23:35:09Z
+  PR    #808    closed   hip/gfx906: cudaFuncSetAttribute must be a function, not a m   2026-10-04T18:09:45Z
+  PR    #638    closed   hip: AMD Instinct MI50 / MI60 / Radeon VII (gfx906, wave64)    2026-10-03T13:55:25Z
+  PR    #1067   closed   hip/gfx906: `__dp4a` falls back to a 4-iteration loop althou   2026-10-06T08:42:44Z
+
+DONE  elapsed=104.7s

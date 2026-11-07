@@ -1,0 +1,11 @@
+{
+  "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+  "reason": "R40：prompt-cache-every 8192 让 2-4K 对话的检查点永不触发，增量前缀零复用（实测 100.2% 全量）；标注待改 1024",
+  "ops": [
+    {
+      "kind": "substr",
+      "old": "cache-every 8192",
+      "new": "cache-every 8192(增量不复用,改1024待批)"
+    }
+  ]
+}

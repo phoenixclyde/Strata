@@ -1,0 +1,81 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W770：KV 那条把「只剩任务级门」换成答案（needle 两臂 6/6、0 不一致 => k8v4 无质量损失；收益 decode +7.7~16.6%、命中 +3.4~7.7pp）；从「未做」里去掉已做的 KV 门（P50 仍在 §3 与 register）；权威件/审计链补 W770；§5 新增长期事实「提 PR 无 token,开 PR 须手动」；8 条压缩腾空间（全部 P 编号保留）",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "。**W768/W769：分布门被专家驻留布局主导、无法裁决 `--kv`** --- 同 dtype 同 MC 只差 **96 槽** 即 KL .284；槽差 96 与 1224 同量级（阶跃；机理=命中/未命中走不同代码路径）=> `--kv` 净增量 >= .14 但**次级**；**判 `--kv` 只剩任务级门**。**槽位可复现**（W769 `k262` 9761 == W767 `k84`）；显式 `--expert-cache N` != 最终槽数",
+   "new": "。**W768/769：分布门被驻留布局主导、无法裁决 `--kv`**（同 dtype 同 MC 差 **96 槽**即 KL .284；阶跃，机理=命中/未命中路径不同；`--kv` 净增量 >= .14 但次级）；**W770：needle 两臂 6/6、0 不一致 => `k8v4` 无质量损失**（收益 decode +7.7~16.6%、命中 +3.4~7.7pp）。**槽位可复现**（`k262` 9761 == `k84`）；显式 N != 最终槽数"
+  },
+  {
+   "kind": "substr",
+   "old": "- 权威件：`PARAM_REGISTER.tsv`·`W713_PLAN.md`·`W737`-`W769`；余按号",
+   "new": "- 权威件：`PARAM_REGISTER.tsv`·`W713_PLAN.md`·`W737`-`W770`；余按号"
+  },
+  {
+   "kind": "substr",
+   "old": "·`W765`·`W767`-`W769`（P0=0/P1=4）",
+   "new": "·`W765`·`W767`-`W770`（P0=0/P1=4）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **自有库**：上游 `KIntegrated/vllm-gfx906-mobydick`，fork 同名（`gfx906-patches-030`）",
+   "new": "- **自有库**：上游 `KIntegrated/vllm-gfx906-mobydick`，fork 同名（`gfx906-patches-030`）\n- **提 PR 无 API token** => `git push` 到 fork 可自动，**开 PR 须手动点链接**（W736/W770）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **未做**：**KV 任务级门(P50)**·`lookup-chain`(P42)·§4 族(P41)·**并发(P97)**；**W760：P43 采纳、P40 否决**；R5(P39)·R1/R2 关·W763 补 P46-49",
+   "new": "- **未做**（KV 门见 P50）：`lookup-chain`(P42)·§4 族(P41)·**并发(P97)**；**W760：P43 采纳、P40 否决**；R5(P39)·R1/R2 关·W763 补 P46-49"
+  },
+  {
+   "kind": "substr",
+   "old": "- **166 PCIe**：有效链路 **Gen3 x16**；`pcie_bw` 读 ~1s 须独立线程；`product_name`=FRU 串 => 按实读显存纠正",
+   "new": "- **166 PCIe**：有效 **Gen3 x16**；`pcie_bw` 读 ~1s 须独立线程；`product_name`=FRU 串 => 按实读显存纠正"
+  },
+  {
+   "kind": "substr",
+   "old": "- **筛候选**：收益上限=环节占比；省「重复预填」~90% 才两位数（P31/P34）；否决 改答案",
+   "new": "- **筛候选**：收益上限=环节占比；省「重复预填」~90% 才两位数（P31/P34）；否决改答案"
+  },
+  {
+   "kind": "substr",
+   "old": "- **判「改答案」按 index 跨臂对齐**（同 index 可跨臂复现，臂内 spread 才真判据，W739）",
+   "new": "- **改答案判据**：按 index 跨臂对齐（臂内 spread 才真判据，W739）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **「默认关」!=「不可达」**：判可达性核宏；**同路径开关不可组合测**（W723）",
+   "new": "- **「默认关」!=「不可达」**：核宏判可达；**同路径开关不可组合测**（W723）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **自比须同形状**；`ms/step` 最干净（`tok/s` 受草稿净出污染）；**现役最快**；不可复现先排缓存冷热",
+   "new": "- **自比须同形状**；比 `ms/step`（`tok/s` 受草稿净出污染）；**现役最快**；不可复现先排缓存冷热"
+  },
+  {
+   "kind": "substr",
+   "old": "- **非专家**：Q8_0 303 含 lm_head/qkv/shexp · BF16 483/1407 MiB 中 hc_* 约 85% => routeK T1 不成立；上游 bench 规范见 COMMUNITY_BENCHMARKS.md、AMD_HIP:504 单卡未做",
+   "new": "- **非专家**：Q8_0 303（lm_head/qkv/shexp）· BF16 483/1407 MiB（`hc_*` 85%）=> routeK T1 不成立；上游 bench `COMMUNITY_BENCHMARKS.md`（`AMD_HIP:504` 单卡未做）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **dot**：**W740：dot4 62,596/dot8 0 => dp4a+解包**；换 dot8 须双方 i4（P38）",
+   "new": "- **dot**：W740：dot4 62,596/dot8 0 => dp4a+解包；换 dot8 须双方 i4（P38）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **筛候选**：收益上限=环节占比；省",
+   "new": "- **筛候选**：上限=环节占比；省"
+  },
+  {
+   "kind": "substr",
+   "old": "- 生产：`strata166-407`（`-406` 回滚位）/8090；",
+   "new": "- 生产：`strata166-407`（`-406` 回滚）/8090；"
+  },
+  {
+   "kind": "substr",
+   "old": "；原文归档 `MEMORY_DETAIL.md`",
+   "new": "；归档 `MEMORY_DETAIL.md`"
+  }
+ ]
+}

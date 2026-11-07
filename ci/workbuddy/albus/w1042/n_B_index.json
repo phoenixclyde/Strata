@@ -1,0 +1,64 @@
+{
+ "requests": [
+  {
+   "segment": "long",
+   "tokens": 1000
+  },
+  {
+   "segment": "long",
+   "tokens": 8000
+  },
+  {
+   "segment": "long",
+   "tokens": 16000
+  },
+  {
+   "segment": "long",
+   "tokens": 20000
+  }
+ ],
+ "args": [
+  "/data/bin/strata-0.1.57-attn",
+  "--serve",
+  "--pack",
+  "/data/packs/ud-q4_k_xl",
+  "--native",
+  "/models/huihui-ai/Huihui-Qwen3.8-Flash-Next-abliterated-GGUF/unsloth-UD-Q4_K_XL/Qwen3.8-Flash-Next-UD-Q4_K_XL-00001-of-00004.gguf",
+  "--expert-profile",
+  "/src/data/expert-profile.bin",
+  "--spec",
+  "4",
+  "--spec-min-p",
+  "0.70",
+  "--mtp",
+  "/data/mtp/rt",
+  "--expert-profile-save",
+  "/w/qq-profile12-attn.bin",
+  "--mtp-window",
+  "8192",
+  "--vram-reserve-mib",
+  "832",
+  "--ple-io",
+  "mmap",
+  "--pool-workers",
+  "10",
+  "--kv-grow",
+  "--expert-cache",
+  "1500",
+  "--adapt-every",
+  "100000",
+  "--pcie-frac",
+  "0",
+  "--suffix-draft",
+  "0",
+  "--prompt-cache",
+  "0",
+  "--kv",
+  "k8v4",
+  "--max-context",
+  "20512",
+  "--prefill",
+  "auto"
+ ],
+ "env": []
+}

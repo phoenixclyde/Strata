@@ -1,0 +1,52 @@
+rc = 0
+engine pid = 2968745
+=== /proc/2968745 状态（可两次采样看是否在推进）===
+--- sample 1 01:01:57 ---
+utime=103696 stime=1854
+State:	R (running)
+VmRSS:	96648540 kB
+Threads:	76
+--- sample 2 01:02:03 ---
+utime=115674 stime=1872
+State:	R (running)
+VmRSS:	96648540 kB
+Threads:	76
+
+=== 校准引擎的 cmdline ===
+/src/build-906/strata --serve --pack /data/packs/ud-iq4_xs --native /weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf --resident-budget-gib 76 --expert-profile /src/data/expert-profile.bin --expert-cache auto --spec 4 --mtp /data/mtp/rt --max-context 262144 --kv k8v4 --prefill auto --expert-profile-save /data/profiles/calib-learned.bin --spec-min-p 0.5 
+
+=== 容器内进程树 ===
+    PID    PPID STAT     ELAPSED %CPU   RSS COMMAND
+      1       0 Ss         01:43  0.0  1468 sleep infinity
+      7       0 Ssl        01:39  0.9 174040 python3 -u tools/calibrate.py /data/strata-calib.json
+     16       7 Rl         01:38 1310 96648540 /src/build-906/strata --serve --pack /data/packs/ud-iq4_xs --native /weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf --resident-budget-gib 76 --expert-profile /src/data/expert-profile.bin --expert-cache auto --spec 4 --mtp /data/mtp/rt --max-context 262144 --kv k8v4 --prefill auto --expert-profile-save /data/profiles/calib-learned.bin --spec-min-p 0.5
+    299       0 Ss         00:00 60.0  3328 bash -lc ps -eo pid,ppid,stat,etime,pcpu,rss,args | head -20
+    307     299 R          00:00  0.0  3776 ps -eo pid,ppid,stat,etime,pcpu,rss,args
+    308     299 S          00:00  0.0  1552 head -20
+
+=== 容器内 RAM/加载进度 ===
+               total        used        free      shared  buff/cache   available
+Mem:             125          42           4          35         114          82
+MemAvailable:   86860032 kB
+Cached:         116455860 kB
+SwapCached:       675768 kB
+
+=== 校准 out 现在多大 ===
+647 2026-10-08 01:01:57.509420285 +0800
+         Please wait and don't close this window; the browser opens when it is ready.
+[strata] filling the GPU's expert cache (9758 experts, 21.98 GiB of VRAM) ...
+[strata] almost ready ...
+[strata] still starting (34 s) - please wait ...
+    PCIe share 0.00: 35.2 tok/s
+    PCIe share 0.20: 35.7 tok/s
+
+=== calib 专用日志 ===
+ls: cannot access '/data/strata-calib.log': No such file or directory
+
+=== setup.py / server.py 里那句 still starting 出自哪 ===
+/src/serve/mcp.py:513:        """Wait (up to `timeout` s in all) for servers that are still starting."""
+/src/serve/server.py:465:            print(f"[strata] still starting ({time.time() - t0:.0f} s) - please wait ...", flush=True)
+/src/serve/server.py:4707:                svc.mcp.wait(10)                                  # servers still starting (only right after start)
+
+=== dmesg 有无 OOM / GPU 复位 ===
+

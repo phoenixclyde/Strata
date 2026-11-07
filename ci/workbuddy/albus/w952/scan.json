@@ -1,0 +1,721 @@
+[
+ {
+  "w": "W900",
+  "file": "W900_BRANCH_POLICY.md",
+  "bytes": 2253,
+  "banner": false,
+  "A": 0,
+  "C": 0,
+  "claims": {},
+  "head": "# W900 · 源码变更的分支纪律（2026-11-02 定）"
+ },
+ {
+  "w": "W901",
+  "file": "W901_WAVE64_ACCOUNTING.md",
+  "bytes": 3965,
+  "banner": false,
+  "A": 5,
+  "C": 0,
+  "claims": {},
+  "head": "# W901 · R52 wave64 波口径审计：32-lane 是有意契约（实测确认），真正的债是 mask 被丢弃"
+ },
+ {
+  "w": "W902",
+  "file": "W902_R55_SWIZZLE_EQUIVALENCE.md",
+  "bytes": 4376,
+  "banner": false,
+  "A": 2,
+  "C": 1,
+  "claims": {},
+  "head": "# W902 · R55 第一相：`ds_bpermute` 换 `ds_swizzle` —— 逐位等价已证，微基准 3.14×"
+ },
+ {
+  "w": "W903",
+  "file": "W903_R51_MMQ_PREFILL_SHARE.md",
+  "bytes": 3065,
+  "banner": false,
+  "A": 3,
+  "C": 0,
+  "claims": {},
+  "head": "# W903 · R51 立据：MMQ 占 prefill 34.6%（最大单项），而我们的 tile 载入仍是标量"
+ },
+ {
+  "w": "W904",
+  "file": "W904_R51_DP4A_CEILING.md",
+  "bytes": 5799,
+  "banner": false,
+  "A": 5,
+  "C": 2,
+  "claims": {},
+  "head": "# W904 · R51 重定题：不是「载入不够宽」，是「解包 ALU 吃掉 dp4a」"
+ },
+ {
+  "w": "W905",
+  "file": "W905_PRECISION_LEDGER.md",
+  "bytes": 4731,
+  "banner": false,
+  "A": 5,
+  "C": 0,
+  "claims": {},
+  "head": "# W905 · 精度账：我们今天调的是\"已经用精度买过单\"的那条轴"
+ },
+ {
+  "w": "W906",
+  "file": "W906_KI_GFX906_KERNELS_VERDICT.md",
+  "bytes": 3685,
+  "banner": false,
+  "A": 7,
+  "C": 0,
+  "claims": {},
+  "head": "# W906 · ki 的 gfx906 内核：不能移植的理由不是\"拿不到\"，是\"换了更差\""
+ },
+ {
+  "w": "W907",
+  "file": "W907_KERNEL_CORRESPONDENCE.md",
+  "bytes": 4367,
+  "banner": false,
+  "A": 1,
+  "C": 0,
+  "claims": {},
+  "head": "# W907 · 逐内核对照：ki 的 12 个 gfx906 内核 vs 我们的 364 个"
+ },
+ {
+  "w": "W908",
+  "file": "W908_V_DOT8_AND_PMC_CORRECTION.md",
+  "bytes": 6979,
+  "banner": false,
+  "A": 7,
+  "C": 0,
+  "claims": {
+   "R48": [
+    [
+     137,
+     "1 条我们明确不做（#10 超频，R48 已量化否掉）、2 条是对截图推论的否决（#11/#12）。**"
+    ]
+   ]
+  },
+  "head": "# W908 · 逐条核那张截图：三处硬错、一处真观察、一处该做的实验"
+ },
+ {
+  "w": "W909",
+  "file": "W909_DP4A_DOT8_EVIDENCE.md",
+  "bytes": 9663,
+  "banner": false,
+  "A": 6,
+  "C": 0,
+  "claims": {},
+  "head": "# W909 · v_dot4_i32_i8 / v_dot8_i32_i4 我们到底有没有（源码 + 二进制 + 硬件三层实证）"
+ },
+ {
+  "w": "W910",
+  "file": "W910_VERSION_AND_QUANT.md",
+  "bytes": 6292,
+  "banner": true,
+  "A": 0,
+  "C": 0,
+  "claims": {},
+  "head": "# W910 · 版本口径与量化口径：两处更正（附证据与复现）"
+ },
+ {
+  "w": "W911",
+  "file": "W911_THREE_ROUTES_VERDICT.md",
+  "bytes": 10097,
+  "banner": false,
+  "A": 9,
+  "C": 0,
+  "claims": {},
+  "head": "# W911 · 评那三条路线：A 的前提不成立，B 的两处机理错，C 的结论对但理由错一条"
+ },
+ {
+  "w": "W912",
+  "file": "W912_KI_PORT_VERDICT.md",
+  "bytes": 6501,
+  "banner": false,
+  "A": 3,
+  "C": 1,
+  "claims": {},
+  "head": "# W912 · ki 的 gfx906 内核要不要移植（逐文件判决）+ 四节现场"
+ },
+ {
+  "w": "W913",
+  "file": "W913_R59_PRECISION_LEDGER.md",
+  "bytes": 4805,
+  "banner": false,
+  "A": 3,
+  "C": 0,
+  "claims": {},
+  "head": "# W913 · R59 精度账：TUNED 包的代价**低于引擎自身的跨进程噪声**"
+ },
+ {
+  "w": "W914",
+  "file": "W914_PARAM_MASKING_AUDIT.md",
+  "bytes": 4348,
+  "banner": false,
+  "A": 1,
+  "C": 1,
+  "claims": {},
+  "head": "# W914 · 生产参数会不会把实验分支的效果\"挡掉\"——逐项审计"
+ },
+ {
+  "w": "W915",
+  "file": "W915_OBSERVATION_ENVS_AUDIT.md",
+  "bytes": 3492,
+  "banner": false,
+  "A": 1,
+  "C": 0,
+  "claims": {},
+  "head": "# W915 · 三个\"测试参数\"为什么在生产里：一条是主动保留，一条是漏执行"
+ },
+ {
+  "w": "W916",
+  "file": "W916_TTFT_RECHECK_AND_R61_PREDICTION.md",
+  "bytes": 2804,
+  "banner": false,
+  "A": 4,
+  "C": 0,
+  "claims": {},
+  "head": "# W916 · 新二进制（a97f4479）prefill 复核 + R61 的算术预判"
+ },
+ {
+  "w": "W917",
+  "file": "W917_THREE_CORRECTIONS.md",
+  "bytes": 3297,
+  "banner": false,
+  "A": 1,
+  "C": 0,
+  "claims": {},
+  "head": "# W917 · 三处更正：四件套每轮必报 / ROCm 唯一口径 / 上游其实落后 708 条"
+ },
+ {
+  "w": "W918",
+  "file": "W918_UPSTREAM_708_READ.md",
+  "bytes": 4872,
+  "banner": false,
+  "A": 2,
+  "C": 0,
+  "claims": {},
+  "head": "# W918 · 上游 708 条逐条读后的结论：生产不用改，方案要加三条（两条可零冲突落地）"
+ },
+ {
+  "w": "W919",
+  "file": "W919_RELEASE_NOTES_READ.md",
+  "bytes": 10319,
+  "banner": false,
+  "A": 5,
+  "C": 0,
+  "claims": {},
+  "head": "# W919 · 上游 release notes 逐条读（0.2.2 → 0.2.10），以及 AMD 面的移植评估"
+ },
+ {
+  "w": "W920",
+  "file": "W920_PARAM_AUDIT.md",
+  "bytes": 10499,
+  "banner": false,
+  "A": 4,
+  "C": 0,
+  "claims": {},
+  "head": "# W920 · 引擎 arg/env 全量审计：两个检测参数怎么处置，以及一个藏在文件里的开关"
+ },
+ {
+  "w": "W921",
+  "file": "W921_R66_OPTIN_AB.md",
+  "bytes": 4005,
+  "banner": false,
+  "A": 1,
+  "C": 0,
+  "claims": {
+   "R66": [
+    [
+     62,
+     "- **R66 = DONE_NEG**：三条 opt-in 全部生效，prefill 无收益。**不采纳**（无收益就不留复杂度）。"
+    ]
+   ]
+  },
+  "head": "# W921 · R66：0.2.10 三个 opt-in prefill 开关的移植与 A/B"
+ },
+ {
+  "w": "W922",
+  "file": "W922_R68_STOP_BOUND.md",
+  "bytes": 4486,
+  "banner": false,
+  "A": 3,
+  "C": 0,
+  "claims": {
+   "R68": [
+    [
+     73,
+     "**判定：R68 = DONE_NEG（无收益空间，不采纳）**。补丁本身已验证可移植、编译通过、符号正确，"
+    ]
+   ]
+  },
+  "head": "# W922 · R68：`#4677` serve stop bound 的移植尝试与判定"
+ },
+ {
+  "w": "W923",
+  "file": "W923_R61_PMC_FAILED.md",
+  "bytes": 3688,
+  "banner": false,
+  "A": 5,
+  "C": 0,
+  "claims": {},
+  "head": "# W923 · R61：PMC 采集三次失败，R60 按算术预判关闭"
+ },
+ {
+  "w": "W924",
+  "file": "W924_R58_MMQ_THREE_SEGMENTS.md",
+  "bytes": 3657,
+  "banner": false,
+  "A": 2,
+  "C": 6,
+  "claims": {
+   "R61": [
+    [
+     72,
+     "**⇒ VALU 利用率 ≈81%，远高于 R61 的 40% 门** ⇒ **R60（stream-k）确认不做**。"
+    ]
+   ],
+   "R60": [
+    [
+     72,
+     "**⇒ VALU 利用率 ≈81%，远高于 R61 的 40% 门** ⇒ **R60（stream-k）确认不做**。"
+    ]
+   ]
+  },
+  "head": "# W924 · R58：MMQ Q4_K 的 `vec_dot` 三段计数 —— 判据不满足，但产出两条硬结论"
+ },
+ {
+  "w": "W925",
+  "file": "W925_CRITERION_AMDAHL.md",
+  "bytes": 3020,
+  "banner": false,
+  "A": 5,
+  "C": 5,
+  "claims": {
+   "R51": [
+    [
+     59,
+     "| 解包 | 14.8% | **4.15%** | 3.03% | **R51 实测 −6~−10%（已失败）** | 不做 |"
+    ]
+   ]
+  },
+  "head": "# W925 · 判据修正：50% 是我拍的，正确判据是 Amdahl 端到端上限"
+ },
+ {
+  "w": "W926",
+  "file": "W926_R64_ATTN_INT8.md",
+  "bytes": 3815,
+  "banner": false,
+  "A": 6,
+  "C": 4,
+  "claims": {},
+  "head": "# W926 · R64：attention int8 点积 —— 实测推翻\"O(L²) 假设\"，且 k8v4 挡住 dp4a"
+ },
+ {
+  "w": "W927",
+  "file": "W927_DOT8_Q4K_PORT.md",
+  "bytes": 3408,
+  "banner": false,
+  "A": 6,
+  "C": 2,
+  "claims": {},
+  "head": "# W927 · `v_dot8_i32_i4` 移植评估：我 W909 判错了方向，Q4_K 可以直接喂进去"
+ },
+ {
+  "w": "W928",
+  "file": "W928_FLAG_ORTHOGONAL_DIMENSIONS.md",
+  "bytes": 5651,
+  "banner": false,
+  "A": 5,
+  "C": 3,
+  "claims": {},
+  "head": "# W928 · 「W4A4/W4A8 二选一」是错的：四个正交维度，以及 k8v8 的真身"
+ },
+ {
+  "w": "W929",
+  "file": "W929_M3_K8V8_PREFILL.md",
+  "bytes": 4317,
+  "banner": false,
+  "A": 3,
+  "C": 2,
+  "claims": {},
+  "head": "# W929 · M3 结项：k8v8（`--kv int8`）对 prefill 零差异，且它的显存代价只有 P04 记录的 1/5"
+ },
+ {
+  "w": "W930",
+  "file": "W930_R69_PENALTY_WINDOW.md",
+  "bytes": 4306,
+  "banner": false,
+  "A": 3,
+  "C": 0,
+  "claims": {},
+  "head": "# W930 · R69 结项：`#4590` penalty 窗口在我们这里**机制存在、症状不复现**"
+ },
+ {
+  "w": "W931",
+  "file": "W931_R70_CHUNK_SCAN.md",
+  "bytes": 3763,
+  "banner": false,
+  "A": 2,
+  "C": 0,
+  "claims": {},
+  "head": "# W931 · R70 结项：chunk 上限扫出**倒 U 曲线**，并找到机制 —— chunk 与 expert cache 是竞争关系"
+ },
+ {
+  "w": "W932",
+  "file": "W932_R75_AND_CHUNK16384_ADOPT.md",
+  "bytes": 4861,
+  "banner": false,
+  "A": 2,
+  "C": 0,
+  "claims": {},
+  "head": "# W932 · R75 结项（假设证伪）+ 一个测量方法的系统缺陷 + **`--prefill auto:16384` 采纳**"
+ },
+ {
+  "w": "W933",
+  "file": "W933_R76_PARTIAL_PREFIX.md",
+  "bytes": 2633,
+  "banner": false,
+  "A": 3,
+  "C": 0,
+  "claims": {},
+  "head": "# W933 · R76 结项：`auto:16384` 的部分前缀代价只有 **0.04 s/请求**，保留"
+ },
+ {
+  "w": "W934",
+  "file": "W934_R65_REBASE_VERDICT.md",
+  "bytes": 3536,
+  "banner": false,
+  "A": 1,
+  "C": 0,
+  "claims": {
+   "R65": [
+    [
+     1,
+     "# W934 · R65 结项：**不做整体 rebase**，只 cherry-pick 1–2 条"
+    ]
+   ]
+  },
+  "head": "# W934 · R65 结项：**不做整体 rebase**，只 cherry-pick 1–2 条"
+ },
+ {
+  "w": "W935",
+  "file": "W935_PLE_RAISE_LIMIT_ADOPT.md",
+  "bytes": 4286,
+  "banner": false,
+  "A": 6,
+  "C": 0,
+  "claims": {},
+  "head": "# W935 · 采纳 `5a13c34f`（PLE 提限）：补丁能救的那一档实测成立，当前状态下完全静默"
+ },
+ {
+  "w": "W936",
+  "file": "W936_R77_FATAL_GPU_ADOPT.md",
+  "bytes": 7401,
+  "banner": false,
+  "A": 5,
+  "C": 0,
+  "claims": {},
+  "head": "# W936 · R77：GPU 致命错误后自退（`e1b27d54` / #4350）移植并采纳"
+ },
+ {
+  "w": "W937",
+  "file": "W937_CI_BYPASS_AUDIT.md",
+  "bytes": 5212,
+  "banner": false,
+  "A": 2,
+  "C": 0,
+  "claims": {},
+  "head": "# W937 · 流程审计：我确实绕过了 `ci/strata-ci`，以及修复"
+ },
+ {
+  "w": "W938",
+  "file": "W938_REBASE_AND_CONTAINER.md",
+  "bytes": 6794,
+  "banner": false,
+  "A": 2,
+  "C": 0,
+  "claims": {},
+  "head": "# W938 · 三件事：回溯补账 / 主线 rebase 到 v0.2.10 / 容器跟主线"
+ },
+ {
+  "w": "W939",
+  "file": "W939_SOURCE_TASK_AUDIT.md",
+  "bytes": 6629,
+  "banner": false,
+  "A": 18,
+  "C": 11,
+  "claims": {
+   "R60": [
+    [
+     69,
+     "| **R60** | stream-k 不做（VALU 已 81%） | 从没跑过 `stream_k=true` 的二进制 | 实验树把 11 行翻 `true` → 单编 `mmq-instance-q4_k.cu` → 换对象重链（"
+    ],
+    [
+     99,
+     "- 进度分母不变（167），已结数 **104 → 100**（降 4，不是 5：R60 原是 `CLOSED` 且 `done=0`，本来就没计入已结）。这是诚实的代价。"
+    ]
+   ],
+   "R59": [
+    [
+     69,
+     "| **R60** | stream-k 不做（VALU 已 81%） | 从没跑过 `stream_k=true` 的二进制 | 实验树把 11 行翻 `true` → 单编 `mmq-instance-q4_k.cu` → 换对象重链（"
+    ]
+   ],
+   "R64": [
+    [
+     72,
+     "| **R64** | attention int8 不做 | 内核从未存在 | **窄化到只做 Q·K**：`--kv k8v4` 的 K 本来就是 int8，把 Q 量化成 int8 走 `v_dot4`，V 保持现状（V 是 4-bi"
+    ]
+   ]
+  },
+  "head": "# W939 · 源码任务审计（2026-11-02 → 11-04 13:0x）：每条的依据，与重开清单"
+ },
+ {
+  "w": "W940",
+  "file": "W940_DOT4_DOT8_AND_PLAN_GAP.md",
+  "bytes": 3840,
+  "banner": false,
+  "A": 3,
+  "C": 0,
+  "claims": {},
+  "head": "# W940 · dot4 / dot8 到底在不在方案里？—— 一条实测、一条缺项"
+ },
+ {
+  "w": "W941",
+  "file": "W941_PREFILL_800_REOPEN.md",
+  "bytes": 7469,
+  "banner": false,
+  "A": 10,
+  "C": 1,
+  "claims": {
+   "R85": [
+    [
+     49,
+     "为什么把 R85 单列而不是并进 R60：R85 是**验收口径**（端到端吞吐），R60/R61 是**手段**。没有 R85 时，R60 的\"不做\"就没有替代路径可走，prefill 战线会静默消失 —— 这正是这次\"800 多被回滚\""
+    ],
+    [
+     49,
+     "为什么把 R85 单列而不是并进 R60：R85 是**验收口径**（端到端吞吐），R60/R61 是**手段**。没有 R85 时，R60 的\"不做\"就没有替代路径可走，prefill 战线会静默消失 —— 这正是这次\"800 多被回滚\""
+    ],
+    [
+     49,
+     "为什么把 R85 单列而不是并进 R60：R85 是**验收口径**（端到端吞吐），R60/R61 是**手段**。没有 R85 时，R60 的\"不做\"就没有替代路径可走，prefill 战线会静默消失 —— 这正是这次\"800 多被回滚\""
+    ]
+   ],
+   "R60": [
+    [
+     49,
+     "为什么把 R85 单列而不是并进 R60：R85 是**验收口径**（端到端吞吐），R60/R61 是**手段**。没有 R85 时，R60 的\"不做\"就没有替代路径可走，prefill 战线会静默消失 —— 这正是这次\"800 多被回滚\""
+    ],
+    [
+     49,
+     "为什么把 R85 单列而不是并进 R60：R85 是**验收口径**（端到端吞吐），R60/R61 是**手段**。没有 R85 时，R60 的\"不做\"就没有替代路径可走，prefill 战线会静默消失 —— 这正是这次\"800 多被回滚\""
+    ],
+    [
+     49,
+     "为什么把 R85 单列而不是并进 R60：R85 是**验收口径**（端到端吞吐），R60/R61 是**手段**。没有 R85 时，R60 的\"不做\"就没有替代路径可走，prefill 战线会静默消失 —— 这正是这次\"800 多被回滚\""
+    ]
+   ],
+   "R61": [
+    [
+     49,
+     "为什么把 R85 单列而不是并进 R60：R85 是**验收口径**（端到端吞吐），R60/R61 是**手段**。没有 R85 时，R60 的\"不做\"就没有替代路径可走，prefill 战线会静默消失 —— 这正是这次\"800 多被回滚\""
+    ]
+   ],
+   "R54": [
+    [
+     143,
+     "| GDN | 6.2–9.6% | 已拆 8 段计时，11.64 ms/窗口 | `R54` 已判否（T≥4 才赢） |"
+    ]
+   ]
+  },
+  "head": "# W941 · \"prefill 800 多\"那条：先证它在生产，再把它重开成一条战线"
+ },
+ {
+  "w": "W942",
+  "file": "W942_R61_VALUBUSY_67.md",
+  "bytes": 4174,
+  "banner": false,
+  "A": 3,
+  "C": 3,
+  "claims": {
+   "R61": [
+    [
+     47,
+     "| R61 | `VALUBusy ≥ 40%` ⇒ 已到 VALU 墙、**R60 不做**；`≤ 25%` ⇒ R60 必做 | **67.1%** |"
+    ]
+   ],
+   "R60": [
+    [
+     47,
+     "| R61 | `VALUBusy ≥ 40%` ⇒ 已到 VALU 墙、**R60 不做**；`≤ 25%` ⇒ R60 必做 | **67.1%** |"
+    ],
+    [
+     47,
+     "| R61 | `VALUBusy ≥ 40%` ⇒ 已到 VALU 墙、**R60 不做**；`≤ 25%` ⇒ R60 必做 | **67.1%** |"
+    ]
+   ],
+   "R84": [
+    [
+     75,
+     "**−2.05% < 2×CV 门（3.2%）⇒ R84 按 `W925` 判据不做**（DONE_NEG）。乐观情形（int4 权重顺带省掉部分解包指令，约再 −3.4% 总指令）也只到 −2.4%，仍在门下。"
+    ]
+   ]
+  },
+  "head": "# W942 · R61 结题：MMQ 的 **VALUBusy = 67.1%**（A 级 PMC）⇒ R60 stream-k 判死，R84 的依据升级"
+ },
+ {
+  "w": "W943",
+  "file": "W943_R63_R84_ISA_CENSUS.md",
+  "bytes": 3669,
+  "banner": false,
+  "A": 3,
+  "C": 0,
+  "claims": {
+   "R84": [
+    [
+     51,
+     "⇒ **R84 判 DONE_NEG（不做）**。R74（W4A4 精度门）随之挂起 —— 没有内核要接，精度门就不必先付。"
+    ]
+   ],
+   "R74": [
+    [
+     51,
+     "⇒ **R84 判 DONE_NEG（不做）**。R74（W4A4 精度门）随之挂起 —— 没有内核要接，精度门就不必先付。"
+    ]
+   ],
+   "R60": [
+    [
+     64,
+     "| 同步 `s_waitcnt` | 6.0% | 205 条；`R60` 的 stream-k 会改它，但 `W942` 已判 VALU-bound、不做 |"
+    ]
+   ]
+  },
+  "head": "# W943 · R63 结题（ISA 计数：无可消项）+ **R84 改判**（分母换成真 kernel 后落到门下）"
+ },
+ {
+  "w": "W944",
+  "file": "W944_REASSESS_GFX906_PROJECTS.md",
+  "bytes": 5827,
+  "banner": false,
+  "A": 4,
+  "C": 0,
+  "claims": {
+   "R86": [
+    [
+     92,
+     "若单内核增益 <20%，R86 判否；≥40% 才值得动生产路径。"
+    ]
+   ]
+  },
+  "head": "# W944 · 重新评估：上一轮\"MMQ 五门全关\"是**取样偏差** —— 漏掉了布局层（weight repack）"
+ },
+ {
+  "w": "W945",
+  "file": "W945_MX_Q51_REPACK_SOURCE.md",
+  "bytes": 6806,
+  "banner": false,
+  "A": 2,
+  "C": 1,
+  "claims": {
+   "R46": [
+    [
+     146,
+     "判据：**Δ ≥ 40% 才动生产路径**；<20% 判否；20–40% 记为\"边际\"，与 R46 对比后再定。"
+    ]
+   ]
+  },
+  "head": "# W945 · 源码级评估：mx-llama.cpp 的 Q5_1 repack 到底是什么（逐行对照我们的 Q5_1 装载）"
+ },
+ {
+  "w": "W946",
+  "file": "W946_GFX906_PROJECTS_LANDSCAPE.md",
+  "bytes": 6742,
+  "banner": false,
+  "A": 3,
+  "C": 0,
+  "claims": {
+   "R54": [
+    [
+     34,
+     "| **GDN LDS-resident prefill** | 含在 1251 里 | 我们 `R54` 判否（megakernel 在 T≥4 才赢）；但它是\"LDS 常驻\"不是 megakernel | 需重看，**R54 的结论不能"
+    ],
+    [
+     34,
+     "| **GDN LDS-resident prefill** | 含在 1251 里 | 我们 `R54` 判否（megakernel 在 T≥4 才赢）；但它是\"LDS 常驻\"不是 megakernel | 需重看，**R54 的结论不能"
+    ]
+   ],
+   "R51": [
+    [
+     69,
+     "| 指令层（tile / 内层循环 / dot 指令） | 最高（R51/R58/R60/R63/R84 全查） | **最低**（已全关，且三家外证一致：结构性） | milpster 四家族回归、mx 不做 dot8、furnace 也"
+    ]
+   ],
+   "R58": [
+    [
+     69,
+     "| 指令层（tile / 内层循环 / dot 指令） | 最高（R51/R58/R60/R63/R84 全查） | **最低**（已全关，且三家外证一致：结构性） | milpster 四家族回归、mx 不做 dot8、furnace 也"
+    ]
+   ],
+   "R60": [
+    [
+     69,
+     "| 指令层（tile / 内层循环 / dot 指令） | 最高（R51/R58/R60/R63/R84 全查） | **最低**（已全关，且三家外证一致：结构性） | milpster 四家族回归、mx 不做 dot8、furnace 也"
+    ]
+   ],
+   "R63": [
+    [
+     69,
+     "| 指令层（tile / 内层循环 / dot 指令） | 最高（R51/R58/R60/R63/R84 全查） | **最低**（已全关，且三家外证一致：结构性） | milpster 四家族回归、mx 不做 dot8、furnace 也"
+    ]
+   ],
+   "R84": [
+    [
+     69,
+     "| 指令层（tile / 内层循环 / dot 指令） | 最高（R51/R58/R60/R63/R84 全查） | **最低**（已全关，且三家外证一致：结构性） | milpster 四家族回归、mx 不做 dot8、furnace 也"
+    ]
+   ],
+   "R89": [
+    [
+     79,
+     "| **R89** | **QSA prompt attention 只读选中 key** | furnace **pp4096@48K 622→1150（+85%）** | **当场判否（A 级源码）**：`qsa_prompt_attn"
+    ],
+    [
+     86,
+     "0. **`qsa_prompt_attn.cu` 已读**（本轮，R89 判否）：`prompt_attn_kernel` 第 131 行 `n = steps[qi*kStepCount + kStepWidth]`（选中 cell 数"
+    ]
+   ]
+  },
+  "head": "# W946 · gfx906 项目全景（8 家）—— 同模型同卡的那家把 prefill 从 796 做到 1561"
+ },
+ {
+  "w": "W947",
+  "file": "W947_BACKTRACK_AND_DOT8_V1.md",
+  "bytes": 2636,
+  "banner": false,
+  "A": 8,
+  "C": 2,
+  "claims": {},
+  "head": "# W947 · 全局回溯（4 条重开）+ dot8 移植第一版：指令可用、数学已证、内核数值未对齐"
+ },
+ {
+  "w": "W948",
+  "file": "W948_REPORT_LINT_AND_LLAMA_VERSION.md",
+  "bytes": 2832,
+  "banner": false,
+  "A": 0,
+  "C": 0,
+  "claims": {},
+  "head": "# W948 · 报告固化（lint）+ llama.cpp 版本真相：**三家 gfx906 fork 都比我们旧，上游 master 才新**"
+ },
+ {
+  "w": "W951",
+  "file": "W951_DOT8_PORT_PLAN.md",
+  "bytes": 2958,
+  "banner": false,
+  "A": 5,
+  "C": 0,
+  "claims": {},
+  "head": "# W951 · dot8 移植：数值已修好（实测），完整方案与判据"
+ }
+]

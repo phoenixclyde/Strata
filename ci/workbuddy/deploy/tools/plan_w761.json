@@ -1,0 +1,46 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W761：记 W760 的参数固化（P43 采纳 8192 / P40 否决）+ 机械压缩",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "现役：`--pcie-frac 0.20`·`--spec-min-p 0.70`·`--prompt-cache-every 8192`·`--conversation-cache-mib 4096`",
+   "new": "现役：`--pcie-frac 0.20`·`--spec-min-p 0.70`·`--prompt-cache-every 8192`·`--conversation-cache-mib 4096`·`--mtp-window 8192`（W760 采纳）"
+  },
+  {
+   "kind": "substr",
+   "old": "LIVE config `strata-huihui-ud-iq4_xs.json`（须含 `backend:hip`）；指纹现算。**未设即默认** `--mtp-window`=**32768**（上游建议 8192，P43）",
+   "new": "LIVE config `strata-huihui-ud-iq4_xs.json`（须含 `backend:hip`）；指纹现算。**W760：P43 采纳 8192**（原默认 32768，64K +3.39%）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **未做**（`W750_MASTER_PLAN.md`）：`--mtp-window`(P43)·`--kv` 门·`lookup-chain`(P42)·§4 族(P40/P41)·**并发(P97)**；R5(P39)·R1/R2 已关",
+   "new": "- **未做**（`W750_MASTER_PLAN.md`）：`--kv` 门·`lookup-chain`(P42)·§4 族(P41)·**并发(P97)**。**W760：P43 采纳、P40 否决**；R5(P39)·R1/R2 已关"
+  },
+  {
+   "kind": "substr",
+   "old": "- **`/metrics` 的 `requests` 表倒序**；生产日志混入**测试脚本/他臂**的行 => 引用前剔",
+   "new": "- **`requests` 表倒序**；生产日志混入**测试脚本/他臂**的行 => 引用前剔"
+  },
+  {
+   "kind": "substr",
+   "old": "臂内 spread 才真判据（W739）。",
+   "new": "臂内 spread 才真判据（W739）"
+  },
+  {
+   "kind": "substr",
+   "old": "（`EXPERT_V2`·`TSUM`，`STRIX_HALO.md §4`）",
+   "new": "（`EXPERT_V2`·`TSUM`，`STRIX_HALO §4`）"
+  },
+  {
+   "kind": "substr",
+   "old": "解包 1,375 GMAC/s。",
+   "new": "解包 1,375。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 权威件：`PARAM_REGISTER.tsv`·`W713_PLAN.md`·`W737`-`W756`；其余按号",
+   "new": "- 权威件：`PARAM_REGISTER.tsv`·`W713_PLAN.md`·`W737`-`W760`；其余按号"
+  }
+ ]
+}

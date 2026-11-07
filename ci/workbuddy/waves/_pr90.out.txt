@@ -1,0 +1,14 @@
+=== gfx906 构建补丁 v3 (0.1.40.2) · root=D:/strata166/tmp/src402/Strata-0.1.40.2 ===
+  [ok  ] include/strata/platform/hip_compat/strata_hip.h :: H1 cudaFuncSetAttribute 模板内联函数 上游已修（验证通过）
+  [ok  ] src/kernels/cuda/fused_gr.cu :: H2 fused_gr_read_multi 返回 false（gfx906 split 分支） 上游已修（验证通过）
+  [ok  ] src/core/mtp.cpp :: H3 mtp.cpp stream-priority 门含 GFX906 上游已修（验证通过）
+  [ok  ] src/core/vmm.cpp :: H4 vmm.cpp <cuda.h> 门含 GFX906        上游已修（验证通过）
+  [patch] CMakeLists.txt :: H5 CUDA 分支 q6_k 实例门 加 OR STRATA_HIP_GFX906 已改（99668 -> 99745 chars）
+
+=== 汇总  patched=1  verified=4  not_applicable=0  failed=0 ===
+   patched  : CMakeLists.txt::H5 CUDA 分支 q6_k 实例门 加 OR STRATA_HIP_GFX906
+   verified : include/strata/platform/hip_compat/strata_hip.h::H1 cudaFuncSetAttribute 模板内联函数
+   verified : src/kernels/cuda/fused_gr.cu::H2 fused_gr_read_multi 返回 false（gfx906 split 分支）
+   verified : src/core/mtp.cpp::H3 mtp.cpp stream-priority 门含 GFX906
+   verified : src/core/vmm.cpp::H4 vmm.cpp <cuda.h> 门含 GFX906
+PATCH_V3_OK

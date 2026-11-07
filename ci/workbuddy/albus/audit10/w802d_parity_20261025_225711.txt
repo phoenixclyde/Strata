@@ -1,0 +1,8 @@
+# W802d parity 20261025_225711
+=== PARITY arm=S0 share=0
+PARITY S0 q0 md5=480b38db8db7c146 len=153 finish=length
+PARITY S0 q1 md5=ff5619a9a65cd9ec len=96 finish=stop
+=== PARITY arm=SA share=auto
+PARITY SA q0 md5=28ec6d88d7a80536 len=53 finish=length
+PARITY SA q1 md5=7c6bc29b879fbdb3 len=86 finish=stop
+restored 45s

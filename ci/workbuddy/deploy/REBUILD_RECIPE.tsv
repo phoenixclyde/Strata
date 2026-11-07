@@ -1,0 +1,29 @@
+# 装机件重建配方（唯一账） · W1037 立
+#
+# 起因（机主 2026-11-07 07:1x「你的门又有问题了吧。你自己看看什么丢了」）：
+# /data/bin/strata-0.1.57-010 是 K10（0.9.0 树 + mmq 头 @4c1004c）的二进制，它的源树已经没了。
+# 也就是说：装机件里有一份**无法由仓库重建**的东西。deploy_gate 的 D2 只校验「有回滚件」，
+# D6 只校验「有报告」，**没有一条门要求「这个二进制能再编出来一次」**。
+#
+# 本表就是那条缺失判据的载体：/data/bin 里每一件被当作候选/在产用的引擎必须有一行，
+# 且四列齐全（repo_sha / llama_base / llama_mmq / build_dir）。缺列 = 不算候选。
+# LOST = 已登记在案的不可重建（note 里必须有 P<数字>）。
+# note 含「未装机」的行不参与 --live 存在性检查。
+#
+# 列：exe  md5  size_B  repo_sha  llama_base  llama_mmq  build_dir  note
+#
+strata-0.1.57-001	5e63174dbd7cc04e5fa1b5fc455b2a73	42947088	tag mi50-0.2.11-r33-14 (6501c28f)	b11062 / 3cf03257f219afbe7334045ff7c6a06ac68c627d	b11062（同 base，未换 MMQ）	build-r28（镜像 strata-gfx906:0.2.11-101 内，/src=该 tag）	回滚件（2026-11-07 07:50 起退居回滚）
+strata-0.1.57-pa1	36bc1be73b45affdbbe95392dba349ad	43043424	gfx906/port-all @ 8b44f3d1	b11062 / 3cf03257	b11062	build-port2（/src=pr/port-all，/llama.cpp=llama.cpp）	W1037 候选，**A/B 窗口内临时装机后已还原**；五开关 strings 5/5，见 P425
+strata-0.1.57-pa0	e99455a07eeaeb522de029507d7d25b7	43042024	gfx906/port-all @ 79516b21	b11062 / 3cf03257	b11062	build-port2（同上）	W1036 候选；A5 在该件里是死代码，见 P425
+strata-0.1.57-010	6de7b93740296826f75683a7d6a44216	38025888	0.9.0 树 / 未记录 sha	b12110 / 未记录 sha	4c1004c49221b07c3b8108977e3d1991fc9f45cc	**TREE LOST** —— 源树已不在 166 上（只剩二进制）	**反例**：K10 唯一证据只剩二进制与账本 P390；本表因此存在。重建配方见 P433
+strata-0.1.57-k10p	e0a6987f732a401f780f5dad5812812f	43207464	gfx906/lcpp-k10 @ fa8e6761	b12110（ref/llama_b12110）	4c1004c49221b07c3b8108977e3d1991fc9f45cc	build-k10p（/src=pr/k10，/llama.cpp=tmp/w1037/llama-k10）	回滚件（2026-11-07 08:07 起退居回滚）；TQ overlay ON；见 P437/P438
+strata-0.1.57-b12180	d24f8293b575fbcee6c097239d9599cb	43207464	gfx906/lcpp-k10 @ fa8e6761	bcb0152876e8f0b684ba70d3defcab6cdf35adb5（master，2026-11-06）	4c1004c49221b07c3b8108977e3d1991fc9f45cc	build-masterp（/src=pr/k10，/llama.cpp=tmp/w1037/llama-master）	**在产**（2026-11-07 08:07 装机）；b12180 == master `bcb01528`；TQ overlay ON；见 P439/P440
+strata-0.1.57-pa2	234febafff8bcb502c2d462b3e5700c2	43041712	gfx906/port-all @ 未提交（W1037 未提交工作树）	b11062 / 3cf03257	b11062	build-port2（/src=pr/port-all，/llama.cpp=llama.cpp）	**OPT 接到预填派发**后的候选，未装机；注意它的 llama 仍是 b11062，不是在产的 b12180；见 P441
+strata-0.1.57-pa3	b2ba6304ddc848100ba72140e49ef9a9	43306640	gfx906/port-all @ 8b5e547f	b12180 / bcb0152876e8f0b684ba70d3defcab6cdf35adb5	4c1004c49221b07c3b8108977e3d1991fc9f45cc	build-pa3（/src=pr/port-all，/llama.cpp=tmp/w1037/llama-master）	W1039 候选；clean rebuild 位相同，见 P445
+strata-0.1.57-pa4	49937458627b0a40038e237cae352a06	43569792	gfx906/port-all @ 8b5e547f（+pa4 未提交补丁）	b12180 / bcb0152876e8f0b684ba70d3defcab6cdf35adb5	4c1004c49221b07c3b8108977e3d1991fc9f45cc	build-pa3（同上，增量）	W1039 候选：OPT 派发搬进 swizzle 分支；**未提交**，见 P447/P448；A/B 窗口内临时装机后已还原
+strata-0.1.57-pa5	c639b60c5981267c8d82ee3a4b0750e8	43475584	gfx906/port-all @ pa5 提交	b12180 / bcb0152876e8f0b684ba70d3defcab6cdf35adb5	4c1004c49221b07c3b8108977e3d1991fc9f45cc	build-pa3（/src=pr/port-all，/llama.cpp=llama-master）	W1039 候选：dp4a 量化改 warp-per-group，attn −10.6~−11.3%；**数值门未开，未装机**，见 P451
+strata-0.1.57-pa7	f04b91a6ebcbc649449632c39e8fdf01	43576168	gfx906/port-all @ 62d10e25 + pa7 未提交补丁	b12180 / bcb0152876e8f0b684ba70d3defcab6cdf35adb5	4c1004c49221b07c3b8108977e3d1991fc9f45cc	build-pa3（/src=pr/port-all, /llama.cpp=tmp/w1037/llama-master）	诊断位 16/32（CTLREAD / F16Q），八开关 strings 全 1，**未装机**（P459）
+strata-0.1.57-kvg	a85743d7f554159e8ac1e2d432d2e5ea	43214976	gfx906/lcpp-k10 @ af797b90	b12180 / bcb0152876e8f0b684ba70d3defcab6cdf35adb5	4c1004c49221b07c3b8108977e3d1991fc9f45cc	build-masterp（/src=pr/k10, /llama.cpp=tmp/w1037/llama-master）	W1039/R104 候选：gfx906 的 HIP VMM 路径（vmm.cpp 两处条件改 OR）+ STRATA_KV_GROW=1；`nm -D` 有 4 个 VMM 符号、在产 b12180 为 0；**W1040 已装机**：config `ee69ebc272ce41a116f50ecb3bf0edc2`，开关走 CLI `--kv-grow`（不是 env `STRATA_KV_GROW=1`，两者等价）；见 P490/P495
+strata-0.1.57-attn	3b758f88ddad25cdad236be267810a9e	43452008	gfx906/attn-opt @ deb41e12	b12180 / bcb0152876e8f0b684ba70d3defcab6cdf35adb5	4c1004c49221b07c3b8108977e3d1991fc9f45cc	build-masterp（/src=pr/k10, /llama.cpp=tmp/w1037/llama-master）	W1042/R103 移植：把 port-all@62d10e25 的 qsa_decode_attn.cu 整文件覆盖到 k10@af797b90（共同祖先 e181bda5 上该文件逐字节相同）；W1042 候选阶段生产仍 kvg；四臂数值/计时/needle 见 P499。**W1044 已装机**：config `3dde8801…`（env 10，`STRATA_GFX906_ATTN_DP4A=1` 来自 `P512`）；G1–G5 全过，见 `P513`/`P514`/`P515`。
+strata-0.1.57-dot48	3b758f88ddad25cdad236be267810a9e	43452008	gfx906/dot48 @ e0ce7c96	b12180 / bcb0152876e8f0b684ba70d3defcab6cdf35adb5	4c1004c49221b07c3b8108977e3d1991fc9f45cc	build-masterp（/src=pr/k10, /llama.cpp=tmp/w1037/llama-master）	W1042 机主指令「移植 dot8 和 dot4 两个核心」：dot4 生效层 strata_hip.h 早已硬件化（ISA 384 条），dot8 新增 strata_dp8a + gfx906_dot.hpp + 自检。**与 attn 逐字节相同**：dot8 尚无生产调用点被 DCE（P501/R108）。自检 ISA v_dot4=1/v_dot8=1
+strata-0.1.57-hc4	df33d3a60eb4c8515b6f34e090af7e40	43675416	gfx906/hc-dp4a @ 179bd6b5	b12180 / bcb0152876e8f0b684ba70d3defcab6cdf35adb5	4c1004c49221b07c3b8108977e3d1991fc9f45cc	build-masterp（/src=pr/k10, /llama.cpp=tmp/w1037/llama-master）	W1046/R109 B3 候选，默认 off 的 STRATA_HC_DOWN_DP4A；gr_parity 0 failures、fused_gr ISA dot4=720/dot8=0。**未装机**，数值与停机 A/B 待做（P524）

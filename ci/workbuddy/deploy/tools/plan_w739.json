@@ -1,0 +1,96 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W739：EXPERT_V2/TSUM gfx906 A/B 实测（P36/P37 REJECTED）+ 改答案须按 index 对齐",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- 生产：`strata166-407`（`-406`=回滚位）/8090；**引擎补丁面 0/serve 覆写 2**（telemetry v5 + `web/app.js`；**不提上游**；重建后重跑 `patches/apply_telemetry_pcie.sh`）。",
+   "new": "- 生产：`strata166-407`（`-406`=回滚位）/8090；**引擎补丁面 0/serve 覆写 2**（**不提上游**；重建后重跑 `patches/apply_telemetry_pcie.sh`）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **容器名/版本/指纹一律写指针**（已四次暴露）。",
+   "new": "- **容器名/版本/指纹一律写指针**。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 查容器内文件走 `docker exec`（宿主假阴性）；探针落盘+`python -u`+断言 rc。",
+   "new": "- 查容器内文件走 `docker exec`（宿主假阴性）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 改既有长件前**先备份该件**（曾误删 §6）。",
+   "new": "- 改既有长件前**先备份该件**。"
+  },
+  {
+   "kind": "substr",
+   "old": "`auto 2900 [plan.json]`。禁裸 Edit/自写脚本/先改后核；**探针须落 `deploy/tmp/`、数字须与证据自洽**（W735）。",
+   "new": "`auto 2900 [plan.json]`。禁 Edit/自写脚本/先改后核；**探针须落 `deploy/tmp/`、数字须与证据自洽**。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **`--prefill` 会改答案**（段长度变）=> **不改 P10**。",
+   "new": "- **`--prefill` 会改答案** => **不改 P10**。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 分辨力：预填 1.2~1.7%、解码 9.5~15%（低于不可判）。",
+   "new": "- 分辨力：预填 1.2~1.7%、解码 9.5~15%。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **筛候选**：收益上限=该环节时延占比 => 省「重复预填」（多轮~90%）才两位数（P31/P34）；一票否决：**改答案/破位**。",
+   "new": "- **筛候选**：收益上限=该环节时延占比；省「重复预填」（多轮~90%）才两位数（P31/P34）；一票否决：**改答案/破位**。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **166 的 PCIe**：有效链路 **Gen3 x16**（根口上限）；`pcie_bw` 读 ~1 s 须独立线程；`product_name` = **FRU 串** => 容量按**实读显存**纠正。",
+   "new": "- **166 的 PCIe**：有效链路 **Gen3 x16**；`pcie_bw` 读 ~1 s 须独立线程；`product_name` = **FRU 串** => 容量按**实读显存**纠正。"
+  },
+  {
+   "kind": "substr",
+   "old": "（W734 下限 1）；JS 路径 `/web/app.js`。",
+   "new": "（W734）；JS 路径 `/web/app.js`。"
+  },
+  {
+   "kind": "substr",
+   "old": "；**i4 解包+dot4=1,375（0.24x）** => int4 须原生 nibble；**布局改动只在 multi-token 侧赚钱**。",
+   "new": "；**i4 解包+dot4=1,375（0.24x）** => int4 须原生 nibble；布局只在 multi-token 侧赚钱。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **已交上游（W736）**：PR #1731（`app.js` 轴）/#1732（gfx906 守卫）/#1733（AMD PCIe）· issue #1734/#1735 · 评论 4 条。",
+   "new": "- **已交上游（W736）**：PR #1731-1733 · issue #1734/#1735 · 评论 4 条。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **未探索（W737）**：drafter 面（`--mtp-q4`/`--lookup-chain`）·`--kv` 四档**质量门**·**接受长度从未测**；`AMD_HIP.md:504` 自认 **Not done: a single-card run**（= 我们）。",
+   "new": "- **未探索（W737）**：drafter 面（`--mtp-q4`/`--lookup-chain`）·`--kv` 四档**质量门**·**接受长度从未测**（见 `W738_KQUANT_ENGINE_PORT.md`）。"
+  },
+  {
+   "kind": "substr",
+   "old": "·`W738_KQUANT_ENGINE_PORT.md`；其余 `deploy/W7*.md` 按号查。",
+   "new": "·`W738_KQUANT_ENGINE_PORT.md`·`W739_V2_TSUM_AB.md`；其余 `deploy/W7*.md` 按号查。"
+  },
+  {
+   "kind": "substr",
+   "old": "（`EXPERT_V2`·`TSUM`·`LFUSE`·`QFUSE`·`SH_STREAM`，见 `docs/STRIX_HALO.md §4`，只在 gfx1151 自动开）",
+   "new": "（`EXPERT_V2`·`TSUM` 及同族，见 `docs/STRIX_HALO.md §4`，只 gfx1151 自动开）"
+  },
+  {
+   "kind": "substr",
+   "old": "（4.44x fp32，唯一可用 int8 dot）",
+   "new": "（4.44x fp32，唯一 int8 dot）"
+  },
+  {
+   "kind": "substr",
+   "old": "**零 K-quant**（K-quant 流 `EXPERT_V2K` 已在树）。",
+   "new": "**零 K-quant**（K-quant 流 `EXPERT_V2K` 已在树）。**W739 已体检该族：`EXPERT_V2` 慢 5.60% 但位等、`TSUM` 中性但不可复现 => P36/P37 均 REJECTED**。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **「默认关」!=「不可达」**：判可达性须核宏。**同路径开关不可组合测**（W723）。",
+   "new": "- **「默认关」!=「不可达」**：判可达性须核宏。**同路径开关不可组合测**（W723）。\n- **判「改答案」须按 index 跨臂对齐**：本服务同 prompt 连发 5 次输出**按会话态递进**（互不相同），但同 index 可跨臂逐字节复现；交错臂的臂内 spread 才是真判据（W739 为 0.13%）。"
+  }
+ ]
+}

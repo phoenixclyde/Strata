@@ -1,0 +1,20 @@
+# W803 KL gate mode=probe 20261025_232613 short_read=300
+  order: B
+start env_n=11 args_n=33
+  corpus sha16=72e3419be0c94ddf bytes=22940
+  mark=44511
+=== ARM B share=auto ready=48s corpus=kl_probe.json
+  ENVCHECK want=14 got=14 STRATA_PREFILL_CPU_SHARE=auto
+  t0  shape0  U prompt_tokens=244    fresh~244   wall=4.5s e3b0c44298fc1c14
+  t1  probe   U prompt_tokens=397    fresh~153   wall=2.5s e3b0c44298fc1c14
+  t2  shape   U prompt_tokens=1020   fresh~623   wall=2.6s e3b0c44298fc1c14
+  t3  probe   U prompt_tokens=1207   fresh~187   wall=3.1s e3b0c44298fc1c14
+CLIENT_DONE B
+  LOG strata serve: prompt 244 tokens = 0 reused + 244 read in 4452 ms (54.8 tok/s), 1 generated in 53 ms (18.8 tok/s), drafts accepted 0 of 0, 1 checkpoints
+  LOG strata serve: prompt 397 tokens = 239 reused + 158 read in 2457 ms (64.3 tok/s), 1 generated in 30 ms (33.5 tok/s), drafts accepted 0 of 0, 2 checkpoints
+  LOG strata serve: prompt 1020 tokens = 392 reused + 628 read in 2550 ms (246.3 tok/s), 1 generated in 30 ms (33.6 tok/s), drafts accepted 0 of 0, 3 checkpoints
+  LOG strata serve: prompt 1207 tokens = 1015 reused + 192 read in 3098 ms (62.0 tok/s), 1 generated in 31 ms (32.6 tok/s), drafts accepted 0 of 0, 4 checkpoints
+  cpu_gate_share_lines=43
+  LOGPOS rows=595 bytes=622770
+restored 95s
+final env_n=14 share=0

@@ -1,0 +1,671 @@
+=== branch/source identity ===
+deb41e12
+0
+=== qsa_pattn.cu: score functions and call sites ===
+1:// src/kernels/cuda/qsa_pattn.cu - see include/strata/kernels/qsa_pattn.hpp.
+12:// qsa_pattn_parity compares the outputs with qsa_decode_attn_batch's byte for byte on synthetic selections.
+14:#include "strata/kernels/qsa_pattn.hpp"
+35:int pattn_mode() {
+41:        std::fprintf(stderr, "strata pattn: STRATA_PATTN_SM60=%d: the prompt path's QSA attention on the sm_6x score / "
+42:                             "value kernels (bit for bit qsa_decode_attn_batch; int8 K/V)\n", x);
+45:        std::fprintf(stderr, "strata pattn: STRATA_PATTN_SM60 is set, but this build has no sm_6x kernels "
+60:              "qsa_pattn is compiled for core/geometry.hpp");
+138:__device__ __forceinline__ void load_q_perm(const float* __restrict__ qh, int lane, float4 (&qa)[G], float4 (&qb)[G]) {
+146:__device__ __forceinline__ void dequant8(const int8_t* krow, float sc, int lane, float (&k8)[8]) {
+152:__device__ __forceinline__ float dot8(const float (&k8)[8], const float4& qa, const float4& qb) {
+156:template <int UNR = 1>
+157:__device__ __forceinline__ void score_chunk_x(const float4 (&qa)[G], const float4 (&qb)[G], const int8_t (*sk)[HD],
+175:            dequant8(sk[c2], sks[c2][lane >> 3], lane, k8);
+178:            for (int s = 0; s < G; ++s) p2[s] = dot8(k8, qa[s], qb[s]);
+179:            dequant8(sk[c1], sks[c1][lane >> 3], lane, k8);
+181:            for (int s = 0; s < G; ++s) r[s] = dot8(k8, qa[s], qb[s]) + __shfl_xor_sync(0xffffffffu, p2[s], 16);
+205:// ps_score_kernel with score_chunk_x (q loaded in the permuted slot order)
+206:template <int UNR>
+207:__global__ void __launch_bounds__(THREADS, 2) ps_score_x_kernel(const float* __restrict__ q, QsaAttnPools p,
+235:    load_q_perm(q + (size_t) (kvh * G) * HD, lane, qa, qb);
+239:    score_chunk_x<UNR>(qa, qb, sk, sks, srow, sp, n_here, scale, warp, lane);
+256:__global__ void __launch_bounds__(64) ps_value_d4_kernel(QsaAttnPools p, const int32_t* __restrict__ steps,
+402:bool qsa_pattn_batch(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps, int64_t cap,
+405:    return sm6x_device() && qsa_pattn_batch_any_arch(q, pools, ids, steps, cap, s, scratch, scratch_floats, attn, n_q, stream);
+408:bool qsa_pattn_batch_any_arch(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps,
+420:    // the scratch holds the blocks of one batch of queries (probabilities, rows, m and l of every chunk), evenly split
+422:    const int64_t max_batch = (int64_t) (scratch_floats / per_q);
+423:    if (max_batch < 1) return false;
+424:    const int64_t n_batches = (n_q + max_batch - 1) / max_batch;
+425:    const int64_t batch = (n_q + n_batches - 1) / n_batches;
+426:    for (int64_t t0 = 0; t0 < n_q; t0 += batch) {
+427:        const int64_t nb = n_q - t0 < batch ? n_q - t0 : batch;
+440:        // a launch that did not start: say so once, and let the caller run the usual attention over the whole chunk
+444:            std::fprintf(stderr, "strata pattn: launch failed (%s); the usual attention runs instead\n", cudaGetErrorString(e));
+452:bool qsa_pattn_batch(const float*, const QsaAttnPools&, const int32_t*, const int32_t*, int64_t, const QsaShapes&,
+454:bool qsa_pattn_batch_any_arch(const float*, const QsaAttnPools&, const int32_t*, const int32_t*, int64_t, const QsaShapes&,
+=== qsa_prompt_attn.cu: score functions and call sites ===
+42:// cards compile the MMA to a trap; qsa_prompt_attn_batch refuses such a device at run time, so the old kernel runs
+43:// there.  Turing compiles cp_async16 to a trap as well and takes the v1 kernel instead of launch_i8.
+95:template <int KV_MODE, bool PF = false>
+119:template <int KV_MODE, bool PF = false>
+120:__global__ void __launch_bounds__(THREADS) prompt_attn_kernel(const float* __restrict__ q, QsaAttnPools p,
+353:                sc[0] = fmaf(tg[0], s0, sc[0]);
+354:                sc[1] = fmaf(tg[1], s1, sc[1]);
+355:                sc[2] = fmaf(tg[2], s0, sc[2]);
+356:                sc[3] = fmaf(tg[3], s1, sc[3]);
+397:                S.lsum[r] = fmaf(S.lsum[r], a, sum);
+471:                acc[j][0] = fmaf(acc[j][0], a0, tmp[j][0] * vdown);
+472:                acc[j][1] = fmaf(acc[j][1], a0, tmp[j][1] * vdown);
+473:                acc[j][2] = fmaf(acc[j][2], a1, tmp[j][2] * vdown);
+474:                acc[j][3] = fmaf(acc[j][3], a1, tmp[j][3] * vdown);
+543:__global__ void __launch_bounds__(THREADS) prompt_attn_i8_kernel(const float* __restrict__ q, QsaAttnPools p,
+725:                S.lsum[r] = fmaf(S.lsum[r], a, sum);
+776:                acc[j][0] = fmaf(acc[j][0], a0, tmp[j][0] * vdown);
+777:                acc[j][1] = fmaf(acc[j][1], a0, tmp[j][1] * vdown);
+778:                acc[j][2] = fmaf(acc[j][2], a1, tmp[j][2] * vdown);
+779:                acc[j][3] = fmaf(acc[j][3], a1, tmp[j][3] * vdown);
+804:__global__ void __launch_bounds__(THREADS) decode_attn_i8_split_kernel(const float* __restrict__ q, QsaAttnPools p,
+953:                S.lsum[r] = fmaf(S.lsum[r], a, sum);
+1004:                acc[j][0] = fmaf(acc[j][0], a0, tmp[j][0] * vdown);
+1005:                acc[j][1] = fmaf(acc[j][1], a0, tmp[j][1] * vdown);
+1006:                acc[j][2] = fmaf(acc[j][2], a1, tmp[j][2] * vdown);
+1007:                acc[j][3] = fmaf(acc[j][3], a1, tmp[j][3] * vdown);
+1030:__global__ void __launch_bounds__(HD) decode_attn_merge_kernel(const float* __restrict__ part, int n_head, int nsp,
+1041:        L = fmaf(l, w, L);
+1042:        o = fmaf(ps[(size_t) h * HD + d], w, o);
+1049:bool launch_i8(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps, int64_t cap,
+1079:        std::fprintf(stderr, "qsa_prompt_attn_batch: %s\n", cudaGetErrorString(e));
+1153:__global__ void __launch_bounds__(THREADS, 3) prompt_attn_i8v3_kernel(const float* __restrict__ q, QsaAttnPools p,
+1309:                S.lsum[r] = fmaf(S.lsum[r], a, sum);
+1376:                acc[j][0] = fmaf(acc[j][0], a0, join3(ch[0], cl[0], cm[0]) * pinv[0]);
+1377:                acc[j][1] = fmaf(acc[j][1], a0, join3(ch[1], cl[1], cm[1]) * pinv[0]);
+1378:                acc[j][2] = fmaf(acc[j][2], a1, join3(ch[2], cl[2], cm[2]) * pinv[1]);
+1379:                acc[j][3] = fmaf(acc[j][3], a1, join3(ch[3], cl[3], cm[3]) * pinv[1]);
+1400:bool launch_i8v3(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps, int64_t cap,
+1427:        std::fprintf(stderr, "qsa_prompt_attn_batch (v3): %s\n", cudaGetErrorString(e));
+1433:template <int KV_MODE, bool PF = false>
+1434:bool launch(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps, int64_t cap,
+1458:        std::fprintf(stderr, "qsa_prompt_attn_batch: %s\n", cudaGetErrorString(e));
+1492:    __trap();   // m8n8k4 is a Volta instruction; the host only launches this kernel on sm_70
+1496:template <int KV_MODE>
+1517:template <int KV_MODE>
+1518:__global__ void __launch_bounds__(THREADS) prompt_attn_v70_kernel(const float* __restrict__ q, QsaAttnPools p,
+1740:                S.lsum[r] = fmaf(S.lsum[r], a, sum);
+1811:                        acc[rb][nt][i] = fmaf(acc[rb][nt][i], a_[(i >> 1) & 1], (tmp[rb][nt][i] + tmpl[rb][nt][i]) * vdown);
+1847:template <int KV_MODE>
+1848:bool launch70(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps, int64_t cap,
+1872:        std::fprintf(stderr, "qsa_prompt_attn_batch (sm_70): %s\n", cudaGetErrorString(e));
+1878:template <int KV_MODE>
+1879:bool launch70(const float*, const QsaAttnPools&, const int32_t*, const int32_t*, int64_t, const QsaShapes&, float*,
+1890:// FP32-level accuracy, deterministic, but not bitwise equal to qsa_decode_attn_batch (another summation order).
+1923:template <int R, int VS = WVS>
+1965:template <bool SPLIT, bool GATE, bool RPF, int TR>
+2135:                S.lsum[r] = fmaf(S.lsum[r], a, sum);
+2176:                for (int i = 0; i < 8; ++i) acc[j][i] = fmaf(acc[j][i], a[i], tmp[j][i] * vdown);
+2224:template <bool SPLIT, bool GATE = false, bool RPF = false, int TR = 0>
+2225:__global__ void __launch_bounds__(THREADS) prompt_attn_wmma_kernel(const float* __restrict__ q, QsaAttnPools p,
+2236:// (STRATA_HIP_WMMA=1).  STRATA_HIP_WMMA=auto (151-amd) takes the matrix-core kernel on a gfx12 card for a batch of
+2239:// 0.0003 (28 prompts) / 0.0014 (8 long documents) on an R9700.  A launch that fails switches the path off for the rest of
+2301:template <bool SPLIT, bool GATE>
+2302:void pa_launch(dim3 grid, cudaStream_t st, const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps,
+2313:bool launch_wmma(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps, int64_t cap,
+2357:                pa_launch<false, true>(grid, st, qq, pools, idq, stq, (int) s.n_head_kv, (int) s.page_size, scale_log2, nullptr, (int) cap, qfq, o16q, gate_ld);
+2359:                pa_launch<true, true>(grid, st, qq, pools, idq, stq, (int) s.n_head_kv, (int) s.page_size, scale_log2, nullptr, (int) cap, qfq, o16q, gate_ld);
+2361:            pa_launch<false, false>(grid, st, qq, pools, idq, stq, (int) s.n_head_kv, (int) s.page_size, scale_log2, attn + q0 * s.n_head * HD, (int) cap, nullptr, nullptr, 0);
+2363:            pa_launch<true, false>(grid, st, qq, pools, idq, stq, (int) s.n_head_kv, (int) s.page_size, scale_log2, attn + q0 * s.n_head * HD, (int) cap, nullptr, nullptr, 0);
+2367:        std::fprintf(stderr, "qsa_prompt_attn_batch (wmma): %s; the FP32 prompt attention runs from here on\n", cudaGetErrorString(e));
+2380:// log-sum-exp rescale.  int8 KV on sm_80+ only (false otherwise: the caller keeps qsa_decode_attn_batch).  The
+2455:bool qsa_prompt_attn_batch_gated(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps,
+2463:        return launch_wmma(q, pools, ids, steps, cap, s, nullptr, n_q, (cudaStream_t) stream, qf, o16, ld16);
+2470:bool qsa_prompt_attn_batch(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps,
+2474:    {   // sm_75 or newer: the MMA above compiles for both.  sm_80+ runs the cp.async kernel (launch_i8); Turing has
+2475:        // no cp.async, so it runs the v1 kernel (launch<1>, same accuracy, another summation order).  An older card
+2493:            // kernels, so forcing them there killed the engine ("prefill copy_i32: unspecified launch failure" on a
+2511:        return launch_wmma(q, pools, ids, steps, cap, s, attn, n_q, (cudaStream_t) stream);
+2529:        return launch<4>(q, pools, ids, steps, cap, s, attn, n_q, st);
+2533:        if (volta) return launch70<3>(q, pools, ids, steps, cap, s, attn, n_q, st);
+2534:        return launch<3>(q, pools, ids, steps, cap, s, attn, n_q, st);
+2542:        if (volta) return launch70<1>(q, pools, ids, steps, cap, s, attn, n_q, st);
+2550:            if (pf_env == 1 || (pf_env < 0 && t75 && strata::sm75_series())) return launch<1, true>(q, pools, ids, steps, cap, s, attn, n_q, st);
+2551:            return launch<1>(q, pools, ids, steps, cap, s, attn, n_q, st);
+2562:        if (!turing && (g_pa_imma == 1 || (g_pa_imma == 2 && strata::prompt_attn_imma_default(false, 80, strata::qwen_defaults_026())))) return launch_i8v3(q, pools, ids, steps, cap, s, attn, n_q, st);
+2563:        return launch_i8(q, pools, ids, steps, cap, s, attn, n_q, st);
+2566:    if (volta) return launch70<0>(q, pools, ids, steps, cap, s, attn, n_q, st);
+2567:    return launch<0>(q, pools, ids, steps, cap, s, attn, n_q, st);
+=== production dispatch: who calls qsa_pattn/qsa_prompt_attn ===
+gfx906/attn-opt:src/kernels/cuda/qsa_pattn.cu:1:// src/kernels/cuda/qsa_pattn.cu - see include/strata/kernels/qsa_pattn.hpp.
+gfx906/attn-opt:src/kernels/cuda/qsa_pattn.cu:12:// qsa_pattn_parity compares the outputs with qsa_decode_attn_batch's byte for byte on synthetic selections.
+gfx906/attn-opt:src/kernels/cuda/qsa_pattn.cu:14:#include "strata/kernels/qsa_pattn.hpp"
+gfx906/attn-opt:src/kernels/cuda/qsa_pattn.cu:35:int pattn_mode() {
+gfx906/attn-opt:src/kernels/cuda/qsa_pattn.cu:60:              "qsa_pattn is compiled for core/geometry.hpp");
+gfx906/attn-opt:src/kernels/cuda/qsa_pattn.cu:402:bool qsa_pattn_batch(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps, int64_t cap,
+gfx906/attn-opt:src/kernels/cuda/qsa_pattn.cu:405:    return sm6x_device() && qsa_pattn_batch_any_arch(q, pools, ids, steps, cap, s, scratch, scratch_floats, attn, n_q, stream);
+gfx906/attn-opt:src/kernels/cuda/qsa_pattn.cu:408:bool qsa_pattn_batch_any_arch(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps,
+gfx906/attn-opt:src/kernels/cuda/qsa_pattn.cu:452:bool qsa_pattn_batch(const float*, const QsaAttnPools&, const int32_t*, const int32_t*, int64_t, const QsaShapes&,
+gfx906/attn-opt:src/kernels/cuda/qsa_pattn.cu:454:bool qsa_pattn_batch_any_arch(const float*, const QsaAttnPools&, const int32_t*, const int32_t*, int64_t, const QsaShapes&,
+gfx906/attn-opt:src/kernels/cuda/qsa_prompt_attn.cu:1:// src/kernels/cuda/qsa_prompt_attn.cu - see include/strata/kernels/qsa_prompt_attn.hpp.
+gfx906/attn-opt:src/kernels/cuda/qsa_prompt_attn.cu:10:#include "strata/kernels/qsa_prompt_attn.hpp"
+gfx906/attn-opt:src/kernels/cuda/qsa_prompt_attn.cu:33:static_assert(HD == strata::core::kCompiledGeometry.head_dim && G == strata::core::kCompiledGeometry.n_head / strata::core::kCompiledGeometry.n_head_kv, "qsa_prompt_attn is compiled for core/geometry.hpp");
+gfx906/attn-opt:src/kernels/cuda/qsa_prompt_attn.cu:42:// cards compile the MMA to a trap; qsa_prompt_attn_batch refuses such a device at run time, so the old kernel runs
+gfx906/attn-opt:src/kernels/cuda/qsa_prompt_attn.cu:1079:        std::fprintf(stderr, "qsa_prompt_attn_batch: %s\n", cudaGetErrorString(e));
+gfx906/attn-opt:src/kernels/cuda/qsa_prompt_attn.cu:1427:        std::fprintf(stderr, "qsa_prompt_attn_batch (v3): %s\n", cudaGetErrorString(e));
+gfx906/attn-opt:src/kernels/cuda/qsa_prompt_attn.cu:1458:        std::fprintf(stderr, "qsa_prompt_attn_batch: %s\n", cudaGetErrorString(e));
+gfx906/attn-opt:src/kernels/cuda/qsa_prompt_attn.cu:1872:        std::fprintf(stderr, "qsa_prompt_attn_batch (sm_70): %s\n", cudaGetErrorString(e));
+gfx906/attn-opt:src/kernels/cuda/qsa_prompt_attn.cu:2367:        std::fprintf(stderr, "qsa_prompt_attn_batch (wmma): %s; the FP32 prompt attention runs from here on\n", cudaGetErrorString(e));
+gfx906/attn-opt:src/kernels/cuda/qsa_prompt_attn.cu:2375:int g_pa_imma = -1;   // STRATA_PROMPT_ATTN_IMMA: -1 not read yet; qsa_prompt_attn_set_imma (tests) overrides it
+gfx906/attn-opt:src/kernels/cuda/qsa_prompt_attn.cu:2431:void qsa_prompt_attn_set_imma(int on) { g_pa_imma = on < 0 ? -1 : (on ? 1 : 0); }
+gfx906/attn-opt:src/kernels/cuda/qsa_prompt_attn.cu:2432:bool qsa_prompt_attn_matrix_cores_requested() {
+gfx906/attn-opt:src/kernels/cuda/qsa_prompt_attn.cu:2443:bool qsa_prompt_attn_matrix_cores_gfx12() {
+gfx906/attn-opt:src/kernels/cuda/qsa_prompt_attn.cu:2447:    return qsa_prompt_attn_matrix_cores_requested() && hip_wmma_arch(dev) == 2;
+gfx906/attn-opt:src/kernels/cuda/qsa_prompt_attn.cu:2453:bool qsa_hip_wmma_active() { return qsa_prompt_attn_matrix_cores_requested(); }
+gfx906/attn-opt:src/kernels/cuda/qsa_prompt_attn.cu:2455:bool qsa_prompt_attn_batch_gated(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps,
+gfx906/attn-opt:src/kernels/cuda/qsa_prompt_attn.cu:2470:bool qsa_prompt_attn_batch(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps,
+gfx906/attn-opt:src/kernels/cuda/qsa_prompt_attn.cu:2523:        // opt-in STRATA_PROMPT_ATTN_Q4_TC=1 (#1581, c3c: qsa_prompt_attn_parity at 4096/512 and 1500/512 on an RTX 2080 Super).
+gfx906/attn-opt:src/kernels/gdn_chunk_parity.cpp:6:// That is FP32-level, NOT bit-exact - the precedent is qsa_prompt_attn.hpp.  So this test does not ask for
+gfx906/attn-opt:src/kernels/gdn_chunk_parity.cpp:238:    // (FP32-level, not bit-exact - qsa_prompt_attn.hpp's precedent); the wmma chunked path additionally
+gfx906/attn-opt:src/kernels/kv_hybrid_parity.cpp:16:#include "strata/kernels/qsa_prompt_attn.hpp"
+gfx906/attn-opt:src/kernels/kv_hybrid_parity.cpp:324:    // The tensor-core prompt path (qsa_prompt_attn, 0.1.22+) takes hybrid pools as KV_MODE 3: INT8 K, and V
+gfx906/attn-opt:src/kernels/kv_hybrid_parity.cpp:326:    // (accuracy-level, not bitwise - qsa_prompt_attn.hpp says the same of its int8 mode), so: tolerance check
+gfx906/attn-opt:src/kernels/kv_hybrid_parity.cpp:330:        const bool took = k::qsa_prompt_attn_batch(d_q, pools, d_ids, d_step, cells, s, d_at4, 1, nullptr);
+gfx906/attn-opt:src/kernels/kv_hybrid_parity.cpp:334:            std::printf("[5/5] qsa_prompt_attn mode 3: PASS (refused on HIP - the old kernel runs)\n");
+gfx906/attn-opt:src/kernels/kv_hybrid_parity.cpp:341:                std::printf("[5/5] qsa_prompt_attn mode 3: PASS (refused below sm_70 - the old kernel runs)\n");
+gfx906/attn-opt:src/kernels/kv_hybrid_parity.cpp:343:                std::printf("[5/5] qsa_prompt_attn mode 3: FAIL (refused the hybrid pools)\n");
+gfx906/attn-opt:src/kernels/kv_hybrid_parity.cpp:356:            std::printf("[5/5] qsa_prompt_attn mode 3 (tensor cores): %s (vs dequant ref %.2e)\n",
+gfx906/attn-opt:src/kernels/qsa_pattn_parity.cpp:1:// src/kernels/qsa_pattn_parity.cpp - STRATA_PATTN_SM60's score and value kernels (qsa_pattn.cu, PR #3943) against the
+gfx906/attn-opt:src/kernels/qsa_pattn_parity.cpp:6:// (qsa_decode_attn_merge_only, v2 0).  The candidate is qsa_pattn_batch_any_arch (no compute-capability test), so the
+gfx906/attn-opt:src/kernels/qsa_pattn_parity.cpp:9:// the checked entry qsa_pattn_batch must take the shapes and the production qsa_decode_attn_batch must give the same
+gfx906/attn-opt:src/kernels/qsa_pattn_parity.cpp:16:// decode layout (so qsa_pattn_batch runs several batches).  The pattn scratch and the output are filled with
+gfx906/attn-opt:src/kernels/qsa_pattn_parity.cpp:19://   qsa_pattn_parity [--device N]     exit 0: every case is bit-identical; 77: no GPU or a build without the kernels
+gfx906/attn-opt:src/kernels/qsa_pattn_parity.cpp:22:#include "strata/kernels/qsa_pattn.hpp"
+gfx906/attn-opt:src/kernels/qsa_pattn_parity.cpp:40:        std::fprintf(stderr, "qsa_pattn_parity: %s: %s\n", what, cudaGetErrorString(e));
+gfx906/attn-opt:src/kernels/qsa_pattn_parity.cpp:163:        const bool took = k::qsa_pattn_batch_any_arch(q, pools, ids, steps, cap, s, scratch_new, scratch_floats, attn_new,
+gfx906/attn-opt:src/kernels/qsa_pattn_parity.cpp:181:            if (!k::qsa_pattn_batch(q, pools, ids, steps, cap, s, scratch_new, scratch_floats, attn_new, n_q, nullptr)) {
+gfx906/attn-opt:src/kernels/qsa_pattn_parity.cpp:182:                std::printf("FAIL: qsa_pattn_batch declined on a compute capability 6 card (cap %lld n_q %d)\n",
+gfx906/attn-opt:src/kernels/qsa_pattn_parity.cpp:189:                    std::printf("FAIL: qsa_pattn_batch differs from the reference (cap %lld n_q %d)\n", (long long) cap, n_q);
+gfx906/attn-opt:src/kernels/qsa_pattn_parity.cpp:213:            std::fprintf(stderr, "usage: qsa_pattn_parity [--device N]\n");
+gfx906/attn-opt:src/kernels/qsa_pattn_parity.cpp:226:    std::printf("qsa_pattn_parity on device %d (%s, %d.%d)%s\n", device, prop.name, prop.major, prop.minor,
+gfx906/attn-opt:src/kernels/qsa_pattn_parity.cpp:257:    std::printf("qsa_pattn_parity: %lld cases, %lld differ, %lld nonzero output values in all -> %s\n", cases, failed,
+gfx906/attn-opt:src/kernels/qsa_prompt_attn_parity.cpp:1:// src/kernels/qsa_prompt_attn_parity.cpp - perf-review D-1: the tensor-core prompt attention (qsa_prompt_attn.hpp)
+gfx906/attn-opt:src/kernels/qsa_prompt_attn_parity.cpp:11:// Usage: qsa_prompt_attn_parity [context=32768] [queries=2048] [reps=5]
+gfx906/attn-opt:src/kernels/qsa_prompt_attn_parity.cpp:14:#include "strata/kernels/qsa_prompt_attn.hpp"
+gfx906/attn-opt:src/kernels/qsa_prompt_attn_parity.cpp:213:    if (fmt == 1) k::qsa_prompt_attn_set_imma(0);
+gfx906/attn-opt:src/kernels/qsa_prompt_attn_parity.cpp:215:        if (!k::qsa_prompt_attn_batch(d_q, pl, d_ids, d_steps, cap, s, d_new, nq, nullptr)) {
+gfx906/attn-opt:src/kernels/qsa_prompt_attn_parity.cpp:216:            std::fprintf(stderr, "qsa_prompt_attn_batch refused the pools\n");
+gfx906/attn-opt:src/kernels/qsa_prompt_attn_parity.cpp:223:        k::qsa_prompt_attn_set_imma(1);
+gfx906/attn-opt:src/kernels/qsa_prompt_attn_parity.cpp:224:        const bool ok = k::qsa_prompt_attn_batch(d_q, pl, d_ids, d_steps, cap, s, d_im, nq, nullptr);
+gfx906/attn-opt:src/kernels/qsa_prompt_attn_parity.cpp:225:        k::qsa_prompt_attn_set_imma(0);
+gfx906/attn-opt:src/kernels/qsa_prompt_attn_parity.cpp:226:        if (!ok) { std::fprintf(stderr, "qsa_prompt_attn_batch refused the pools (imma)\n"); std::exit(2); }
+gfx906/attn-opt:src/kernels/qsa_prompt_attn_parity.cpp:323:    k::qsa_prompt_attn_set_imma(-1);
+gfx906/attn-opt:src/prefill/prefill.cpp:45:#include "strata/kernels/qsa_pattn.hpp"
+gfx906/attn-opt:src/prefill/prefill.cpp:46:#include "strata/kernels/qsa_prompt_attn.hpp"
+gfx906/attn-opt:src/prefill/prefill.cpp:407:    static const bool wmma = strata::kernels::qsa_prompt_attn_matrix_cores_requested();
+gfx906/attn-opt:src/prefill/prefill.cpp:419:            return !(e != nullptr && e[0] == '0') && strata::kernels::qsa_prompt_attn_matrix_cores_gfx12();
+gfx906/attn-opt:src/prefill/prefill.cpp:574:// epilogue of the matrix-core prompt attention (qsa_prompt_attn_batch_gated; the same bits as gate_attn).  Only where that
+gfx906/attn-opt:src/prefill/prefill.cpp:4401:                    // accuracy but not bitwise (qsa_prompt_attn.hpp). Q4_0 KV, or STRATA_PROMPT_ATTN_OLD=1: the
+gfx906/attn-opt:src/prefill/prefill.cpp:4407:                                       strata::kernels::qsa_prompt_attn_batch_gated(m.q, pools, m.sel_ids, m.steps_dev, m.cap, s, m.Qf,
+gfx906/attn-opt:src/prefill/prefill.cpp:4417:                    // STRATA_PATTN_SM60=1 (qsa_pattn.hpp, sm_6x, int8 K/V): the decode kernels' output bit for bit from a
+gfx906/attn-opt:src/prefill/prefill.cpp:4420:                    if (!gated && (old_attn || !strata::kernels::qsa_prompt_attn_batch(m.q, pools, m.sel_ids, m.steps_dev, m.cap, s,
+gfx906/attn-opt:src/prefill/prefill.cpp:4422:#if !defined(STRATA_GPU_METAL)   // qsa_pattn.cu is in the CUDA / HIP kernel library only
+gfx906/attn-opt:src/prefill/prefill.cpp:4423:                        if (!(strata::kernels::pattn_mode() != 0 &&
+gfx906/attn-opt:src/prefill/prefill.cpp:4424:                              strata::kernels::qsa_pattn_batch(m.q, pools, m.sel_ids, m.steps_dev, m.cap, s, m.attn_scratch,
+gfx906/attn-opt:src/prefill/prefill.cpp:7534:                                           strata::kernels::qsa_prompt_attn_batch_gated(m.q, pools, m.sel_ids, m.steps_dev, m.cap, s,
+gfx906/attn-opt:src/prefill/prefill.cpp:7536:                        if (!gated && (old_attn || !strata::kernels::qsa_prompt_attn_batch(m.q, pools, m.sel_ids, m.steps_dev, m.cap, s,
+=== qsa_pattn.cu 1-220 ===
+// src/kernels/cuda/qsa_pattn.cu - see include/strata/kernels/qsa_pattn.hpp.
+//
+// Every value below is computed by the operation the production path uses, on the same operands, in the same order:
+//   - score of (cell, head): each lane l's partial k8[0] * q[8l] + ... + k8[7] * q[8l + 7] with k8[e] = (float) code * sc,
+//     the 32 partials summed in warp_sum's pairs (reduce12's tree), times `scale`;
+//   - chunk softmax: m = warp_max over fmaxf(s[lane], s[lane + 32]); e = __expf(s - m) (0 for a masked or absent cell);
+//     l = warp_sum(e[lane] + e[lane + 32]);
+//   - chunk value: acc[h] = fmaf(e[c][h], v, acc[h]) over the chunk's cells in ascending order, masked cells skipped,
+//     v = (float) code * sc;
+//   - merge (attn_merge_kernel): M = fmaxf over the chunks' m; for each chunk in order with m != -FLT_MAX:
+//     w = __expf(m - M), L = fmaf(l, w, L), acc = fmaf(acc_c, w, acc); out = L > 0 ? acc / L : 0.
+// qsa_pattn_parity compares the outputs with qsa_decode_attn_batch's byte for byte on synthetic selections.
+// Only the default variant of the contributor's PR (#3943) is kept: ps_score_x_kernel + ps_value_d4_kernel.
+#include "strata/kernels/qsa_pattn.hpp"
+#include "strata/kernels/kv_q8.hpp"
+#include "strata/core/geometry.hpp"
+
+#include <cuda_runtime.h>
+
+#include <cfloat>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#if !defined(__HIPCC__) && defined(STRATA_EXPERIMENTAL_SM60)
+#define STRATA_PATTN_BUILT 1   // the CUDA build with STRATA_EXPERIMENTAL_SM60 only (not HIP, not Metal)
+#include <cuda_fp16.h>
+#else
+#define STRATA_PATTN_BUILT 0
+#endif
+
+namespace strata::kernels {
+
+// STRATA_PATTN_SM60=1 turns it on (a tester switch, read once).  In a build without the sm_6x kernels it says so and stays off.
+int pattn_mode() {
+    static const int m = [] {
+        const char* v = std::getenv("STRATA_PATTN_SM60");
+        const int x = v != nullptr && *v != '\0' ? std::atoi(v) : 0;
+        if (x == 0) return 0;
+#if STRATA_PATTN_BUILT
+        std::fprintf(stderr, "strata pattn: STRATA_PATTN_SM60=%d: the prompt path's QSA attention on the sm_6x score / "
+                             "value kernels (bit for bit qsa_decode_attn_batch; int8 K/V)\n", x);
+        return 1;
+#else
+        std::fprintf(stderr, "strata pattn: STRATA_PATTN_SM60 is set, but this build has no sm_6x kernels "
+                             "(CUDA with STRATA_EXPERIMENTAL_SM60 only); the usual attention runs\n");
+        return 0;
+#endif
+    }();
+    return m;
+}
+
+#if STRATA_PATTN_BUILT
+namespace {
+
+constexpr int HD = 256;
+constexpr int G = 12;
+static_assert(HD == strata::core::kCompiledGeometry.head_dim &&
+              G == strata::core::kCompiledGeometry.n_head / strata::core::kCompiledGeometry.n_head_kv,
+              "qsa_pattn is compiled for core/geometry.hpp");
+constexpr int CHUNK = 64;
+constexpr int THREADS = 256;
+constexpr int WARPS = THREADS / 32;
+constexpr int NSC = HD / KV_Q8_GROUP;   // scales per row (4)
+
+__device__ __forceinline__ float warp_sum_x(float v) {
+    v += __shfl_xor_sync(0xffffffffu, v, 16); v += __shfl_xor_sync(0xffffffffu, v, 8);
+    v += __shfl_xor_sync(0xffffffffu, v, 4); v += __shfl_xor_sync(0xffffffffu, v, 2);
+    v += __shfl_xor_sync(0xffffffffu, v, 1);
+    return v;
+}
+__device__ __forceinline__ float warp_max_x(float v) {
+    v = fmaxf(v, __shfl_xor_sync(0xffffffffu, v, 16)); v = fmaxf(v, __shfl_xor_sync(0xffffffffu, v, 8));
+    v = fmaxf(v, __shfl_xor_sync(0xffffffffu, v, 4)); v = fmaxf(v, __shfl_xor_sync(0xffffffffu, v, 2));
+    v = fmaxf(v, __shfl_xor_sync(0xffffffffu, v, 1));
+    return v;
+}
+
+// pool row of cell `c0 + t` of query selection `ids` (attn_chunk_kernel_pre75's srow), -1 masked / absent
+__device__ __forceinline__ long long cell_row(const QsaAttnPools& p, const int32_t* __restrict__ ids, int c0, int t,
+                                              int n_here, int n_kv_heads, int kvh, int page_size) {
+    long long r = -1;
+    if (t < n_here) {
+        const int cell = __ldg(ids + c0 + t);
+        const long long page = (long long) __ldg(p.page_table + cell / page_size);
+        if (page >= 0) r = (page * n_kv_heads + kvh) * page_size + (cell % page_size);
+    }
+    return r;
+}
+
+// the chunk's K codes (16-byte loads) and scales (as float) into shared memory; masked / absent cells read row 0
+__device__ __forceinline__ void stage_rows(const int8_t* __restrict__ codes, const uint16_t* __restrict__ scales,
+                                           const long long* srow, int n_here, int t, int8_t (*sk)[HD],
+                                           float (*sks)[NSC]) {
+    uint4 kv[4];
+#pragma unroll
+    for (int j = 0; j < 4; ++j) {
+        const int idx = t + THREADS * j, c = idx >> 4, part = idx & 15;
+        const long long row = srow[c];
+        const long long rr = (c < n_here && row >= 0) ? row : 0;
+        kv[j] = __ldg(reinterpret_cast<const uint4*>(codes + rr * HD) + part);
+    }
+    float sc;
+    {
+        const int c = t >> 2, g = t & 3;
+        const long long row = srow[c];
+        const long long rr = (c < n_here && row >= 0) ? row : 0;
+        sc = __half2float(__ushort_as_half(__ldg(scales + rr * NSC + g)));
+    }
+#pragma unroll
+    for (int j = 0; j < 4; ++j) reinterpret_cast<uint4*>(&sk[0][0])[t + THREADS * j] = kv[j];
+    sks[t >> 2][t & 3] = sc;
+}
+
+constexpr int PS_BLK = G * CHUNK + 2 * CHUNK + 2 * G;   // floats per (query, KV head, chunk): e, rows (int64), m, l
+constexpr int NCM = 33;   // chunks the value kernel keeps (cap <= 2112)
+
+// ---------------------------------------------------------------------------------------------------------------------
+// ps_score_x_kernel: the score phase two cells at a time with a select-free reduce-scatter.  reduce12's selects exist
+// because the two lanes of an exchange send different slots; here every lane keeps the same slots and sends the same
+// slots, and the lane-dependent part is moved into which query head each register slot holds (q is loaded once, so the
+// permutation costs nothing per cell) and which of the two cells is "first":
+//   slot i (0..11) of lane L holds head P_L(i) = 6 ((i / 6) ^ b3) + ((i % 6 + 3 b2) % 6)       (b_k: bit k of L)
+//   first = cell B if b4 else cell A, second = the other one; part1[i] / part2[i] = lane partials of (first / second,
+//   head P_L(i)) - the same expression as attn_chunk_kernel_pre75.
+//   level 16: r[i]  = part1[i] + shfl(part2[i], 16)   (partner: b4 flipped, so its second is my first, same P)
+//   level 8 : r6[i] = r[i] + shfl(r[i + 6], 8)         (P_{L^8}(i) = P_L(i + 6))
+//   level 4 : r3[i] = r6[i] + shfl(r6[i + 3], 4)       (P_{L^4}(i) = P_L(i + 3), i < 3)
+//   level 2 / 1: reduce24's (heads 6 b3 + 3 b2 + {0, 1, 2}; o0 head +2 b1, o1 head +1 where b1 = 0)
+// At every level the value at lane L is its partial at L plus its partial at L ^ o, the same operands warp_sum adds,
+// so every score is reduce12's bit for bit.  A pair with an absent / masked cell runs the same code on row 0's staged
+// codes and that cell's outputs are not stored (it gets -FLT_MAX).  25 shuffles, 25 adds and 4 selects per pair
+// instead of 2 x (15 + 15 + ~30).
+__device__ __forceinline__ int px_head(int i, int lane) {
+    const int b3 = (lane >> 3) & 1, b2 = (lane >> 2) & 1;
+    return 6 * ((i / 6) ^ b3) + ((i % 6 + 3 * b2) % 6);
+}
+__device__ __forceinline__ void load_q_perm(const float* __restrict__ qh, int lane, float4 (&qa)[G], float4 (&qb)[G]) {
+#pragma unroll
+    for (int i = 0; i < G; ++i) {
+        const float4* p4 = reinterpret_cast<const float4*>(qh + (size_t) px_head(i, lane) * HD + lane * 8);
+        qa[i] = __ldg(p4);
+        qb[i] = __ldg(p4 + 1);
+    }
+}
+__device__ __forceinline__ void dequant8(const int8_t* krow, float sc, int lane, float (&k8)[8]) {
+    const uint2 raw = *reinterpret_cast<const uint2*>(krow + lane * 8);
+    const int8_t* cb = reinterpret_cast<const int8_t*>(&raw);
+#pragma unroll
+    for (int e = 0; e < 8; ++e) k8[e] = (float) cb[e] * sc;
+}
+__device__ __forceinline__ float dot8(const float (&k8)[8], const float4& qa, const float4& qb) {
+    return k8[0] * qa.x + k8[1] * qa.y + k8[2] * qa.z + k8[3] * qa.w + k8[4] * qb.x + k8[5] * qb.y + k8[6] * qb.z +
+           k8[7] * qb.w;
+}
+template <int UNR = 1>
+__device__ __forceinline__ void score_chunk_x(const float4 (&qa)[G], const float4 (&qb)[G], const int8_t (*sk)[HD],
+                                              const float (*sks)[NSC], const long long* srow, float (*sp)[CHUNK],
+                                              int n_here, float scale, int warp, int lane) {
+    const bool h16 = (lane & 16) != 0, h2 = (lane & 2) != 0, even = (lane & 1) == 0;
+    const int hb = 6 * ((lane >> 3) & 1) + 3 * ((lane >> 2) & 1);
+    const int h0 = hb + (h2 ? 2 : 0), h1 = hb + 1;
+#pragma unroll UNR
+    for (int i = 0; i < CHUNK / WARPS; i += 2) {
+        const int ca = warp + WARPS * i, cb = warp + WARPS * (i + 1);
+        const bool va = ca < n_here && srow[ca] >= 0, vb = cb < n_here && srow[cb] >= 0;
+        if (!va && !vb) {
+            if (lane < G) { sp[lane][ca] = -FLT_MAX; sp[lane][cb] = -FLT_MAX; }
+            continue;
+        }
+        const int c1 = h16 ? cb : ca, c2 = h16 ? ca : cb;   // first / second (the staged rows of absent cells are row 0's)
+        float r[G];
+        {
+            float k8[8];
+            dequant8(sk[c2], sks[c2][lane >> 3], lane, k8);
+            float p2[G];
+#pragma unroll
+            for (int s = 0; s < G; ++s) p2[s] = dot8(k8, qa[s], qb[s]);
+            dequant8(sk[c1], sks[c1][lane >> 3], lane, k8);
+#pragma unroll
+            for (int s = 0; s < G; ++s) r[s] = dot8(k8, qa[s], qb[s]) + __shfl_xor_sync(0xffffffffu, p2[s], 16);
+        }
+        float r6[6];
+#pragma unroll
+        for (int s = 0; s < 6; ++s) r6[s] = r[s] + __shfl_xor_sync(0xffffffffu, r[s + 6], 8);
+        float r3[3];
+#pragma unroll
+        for (int s = 0; s < 3; ++s) r3[s] = r6[s] + __shfl_xor_sync(0xffffffffu, r6[s + 3], 4);
+        const float x0 = (h2 ? r3[2] : r3[0]) + __shfl_xor_sync(0xffffffffu, h2 ? r3[0] : r3[2], 2);
+        const float x1 = r3[1] + __shfl_xor_sync(0xffffffffu, r3[1], 2);
+        const float o0 = x0 + __shfl_xor_sync(0xffffffffu, x0, 1);
+        const float o1 = x1 + __shfl_xor_sync(0xffffffffu, x1, 1);
+        const bool vmine = h16 ? vb : va;
+        if (even && vmine) {
+            sp[h0][c1] = o0 * scale;
+            if (!h2) sp[h1][c1] = o1 * scale;
+        }
+        if (lane < G) {
+            if (!va) sp[lane][ca] = -FLT_MAX;
+            if (!vb) sp[lane][cb] = -FLT_MAX;
+        }
+    }
+}
+
+// ps_score_kernel with score_chunk_x (q loaded in the permuted slot order)
+template <int UNR>
+__global__ void __launch_bounds__(THREADS, 2) ps_score_x_kernel(const float* __restrict__ q, QsaAttnPools p,
+                                                                const int32_t* __restrict__ ids,
+                                                                const int32_t* __restrict__ step, int n_kv_heads,
+                                                                int page_size, float scale, float* __restrict__ blocks,
+                                                                int n_chunks, int cap) {
+    q += (size_t) blockIdx.z * (size_t) (n_kv_heads * G) * HD;
+    ids += (size_t) blockIdx.z * (size_t) cap;
+    step += (size_t) blockIdx.z * kStepCount;
+    const int chunk = blockIdx.x, kvh = blockIdx.y;
+    float* const blk = blocks + (((size_t) blockIdx.z * n_kv_heads + kvh) * n_chunks + chunk) * PS_BLK;
+    __shared__ __align__(16) int8_t sk[CHUNK][HD];
+    __shared__ __align__(16) float sks[CHUNK][NSC];
+    __shared__ float sp[G][CHUNK];
+    __shared__ long long srow[CHUNK];
+=== qsa_prompt_attn.cu 1-240 ===
+// src/kernels/cuda/qsa_prompt_attn.cu - see include/strata/kernels/qsa_prompt_attn.hpp.
+#include "strata/core/emulate.hpp"
+#include "strata/core/sm120_series.hpp"
+#include "strata/core/defaults_026.hpp"
+#include "strata/core/sm75_series.hpp"
+#include "strata/core/geometry.hpp"
+#include "strata/core/gfx12_platform_defaults.hpp"
+#include <cstdlib>
+#include <cstring>
+#include "strata/kernels/qsa_prompt_attn.hpp"
+#include "strata/kernels/gfx_arch.hpp"
+#include "strata/kernels/kv_q8.hpp"
+#include "strata/kernels/kv_q4.hpp"
+
+#include <cuda_fp16.h>
+#include <cuda_runtime.h>
+#include <algorithm>
+#include <cmath>
+
+#include <atomic>
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+#include <cstdlib>
+#include <cstring>
+#include <type_traits>
+
+namespace strata::kernels {
+namespace {
+
+constexpr int HD = 256;           // head_dim
+constexpr int G = 12;             // query heads per KV head
+static_assert(HD == strata::core::kCompiledGeometry.head_dim && G == strata::core::kCompiledGeometry.n_head / strata::core::kCompiledGeometry.n_head_kv, "qsa_prompt_attn is compiled for core/geometry.hpp");
+#ifndef D1_CH
+#define D1_CH 32
+#endif
+constexpr int CH = D1_CH;         // cells per chunk
+constexpr int THREADS = 128;      // 4 warps: scores by cell (8 each), p.v by dimension (64 each = one int8 scale group)
+constexpr int QS = HD + 8;        // q row stride in halves (bank-conflict-free fragment loads)
+
+// The MMA below needs sm_75 or newer (Turing runs it as two k=8 steps); cp.async needs sm_80. Builds for pre-sm_75
+// cards compile the MMA to a trap; qsa_prompt_attn_batch refuses such a device at run time, so the old kernel runs
+// there.  Turing compiles cp_async16 to a trap as well and takes the v1 kernel instead of launch_i8.
+#if defined(__HIPCC__)          // AMD: no mma.sync / cp.async; the host keeps the old kernel (below)
+#define STRATA_PA_SM80 0
+#elif !defined(__CUDA_ARCH__) || __CUDA_ARCH__ >= 800
+#define STRATA_PA_SM80 1
+#else
+#define STRATA_PA_SM80 0
+#endif
+
+// m16n8k16 with f16 inputs needs sm_80.  Turing (sm_75) has m16n8k8 with the SAME A/B/C register mapping, so the
+// k=16 step is two k=8 steps on the fragments as they are already laid out: a[0]/a[1] are rows gid/gid+8 at k columns
+// 2*tig..2*tig+1 (b[0]'s k rows), a[2]/a[3] the same rows at k columns 2*tig+8..2*tig+9 (b[1]'s k rows).  The
+// products then add into the same FP32 C registers in the order hi-part-0, hi-part-1, which is the order the k16
+// instruction accumulates in as well - but the sum now rounds twice, so the two paths do not agree bit for bit.
+__device__ __forceinline__ void mma16816(float* c, const uint32_t* a, const uint32_t* b) {
+#if !STRATA_PA_SM80 && (defined(__HIPCC__) || !defined(__CUDA_ARCH__) || __CUDA_ARCH__ < 750)
+    __trap();   // AMD and pre-Turing builds: no mma.sync (the host keeps the old kernel there)
+#elif !STRATA_PA_SM80
+    asm volatile("mma.sync.aligned.m16n8k8.row.col.f32.f16.f16.f32 {%0,%1,%2,%3}, {%4,%5}, {%6}, {%0,%1,%2,%3};\n"
+                 : "+f"(c[0]), "+f"(c[1]), "+f"(c[2]), "+f"(c[3])
+                 : "r"(a[0]), "r"(a[1]), "r"(b[0]));
+    asm volatile("mma.sync.aligned.m16n8k8.row.col.f32.f16.f16.f32 {%0,%1,%2,%3}, {%4,%5}, {%6}, {%0,%1,%2,%3};\n"
+                 : "+f"(c[0]), "+f"(c[1]), "+f"(c[2]), "+f"(c[3])
+                 : "r"(a[2]), "r"(a[3]), "r"(b[1]));
+#else
+    asm volatile("mma.sync.aligned.m16n8k16.row.col.f32.f16.f16.f32 {%0,%1,%2,%3}, {%4,%5,%6,%7}, {%8,%9}, "
+                 "{%0,%1,%2,%3};\n"
+                 : "+f"(c[0]), "+f"(c[1]), "+f"(c[2]), "+f"(c[3])
+                 : "r"(a[0]), "r"(a[1]), "r"(a[2]), "r"(a[3]), "r"(b[0]), "r"(b[1]));
+#endif
+}
+
+// Two int8 codes (low byte first) as an exact half2: 1024 + (c + 128) built in the mantissa, minus 1152.
+__device__ __forceinline__ uint32_t i8x2_to_h2(uint32_t x) {
+    uint32_t y = ((x & 0xffu) | ((x & 0xff00u) << 8)) ^ 0x00800080u;
+    y |= 0x64006400u;
+    __half2 h = *reinterpret_cast<__half2*>(&y);
+    h = __hsub2(h, __halves2half2(__float2half(1152.f), __float2half(1152.f)));
+    return *reinterpret_cast<uint32_t*>(&h);
+}
+
+__device__ __forceinline__ uint32_t pack_h2(float lo_k, float hi_k) {   // element k in the low half
+    __half2 h = __floats2half2_rn(lo_k, hi_k);
+    return *reinterpret_cast<uint32_t*>(&h);
+}
+
+// KV_MODE 1: int8 codes + fp16 scale per 64 values. KV_MODE 0: fp16 values (scales 1).
+// KV_MODE 3 (hybrid K8V4): K as mode 1, V as mode 0 - the row's q4_0 blocks are dequantized to fp16 at
+// gather, so everything downstream of the load is the mode-0 V path; the caller un-rotates the output.
+// KV_MODE 4 (Q4_0 K and V, `--kv q4_0`): mode 1 with a scale per 32 values - each q4_0 block's codes enter as exact
+// int8 (code - 8) and its fp16 scale is applied in FP32, as mode 1's are; the caller rotates q and un-rotates the
+// output (kv_q4.hpp).
+template <int KV_MODE, bool PF = false>
+struct Smem {
+    using KElem = typename std::conditional<KV_MODE == 0, __half, int8_t>::type;
+    using VElem = typename std::conditional<KV_MODE == 1 || KV_MODE == 4, int8_t, __half>::type;
+    static constexpr int KROW = KV_MODE == 0 ? HD + 8 : HD + 16;   // elements; 16-byte aligned rows, banks spread
+    static constexpr int VROW = (KV_MODE == 1 || KV_MODE == 4) ? HD + 16 : HD + 8;
+    static constexpr int NG = KV_MODE == 4 ? HD / QK4_0 : 4;      // scale groups per row (q4_0: 8 of 32, else 4 of 64)
+    __half qh[16][QS];
+    __half ql[16][QS];
+    // int8 K/V (mode 1): K is read only by the scores and V only by p.v, so they share one buffer - V is stored over K
+    // after the scores (prompt_attn_kernel).  37.9 -> 29.2 KB: two blocks fit an SM's 64 KB on Turing instead of one.
+    struct Rows { KElem k[CH][KROW]; VElem v[CH][VROW]; };
+    struct SharedRows { union { KElem k[CH][KROW]; VElem v[CH][VROW]; }; };
+    typename std::conditional<KV_MODE == 1 && PF, SharedRows, Rows>::type kv;
+    float ks[CH][NG];
+    float vs[CH][NG];
+    float s[16][CH + 1];
+    float qmax[THREADS / 32];
+    float alpha[16];
+    float lsum[16];
+    float mrow[16];
+    long long row[CH];
+};
+
+template <int KV_MODE, bool PF = false>
+__global__ void __launch_bounds__(THREADS) prompt_attn_kernel(const float* __restrict__ q, QsaAttnPools p,
+                                                              const int32_t* __restrict__ ids,
+                                                              const int32_t* __restrict__ steps, int n_kv_heads,
+                                                              int page_size, float scale_log2, float* __restrict__ attn,
+                                                              int cap) {
+    extern __shared__ __align__(16) unsigned char smem_raw[];
+    Smem<KV_MODE, PF>& S = *reinterpret_cast<Smem<KV_MODE, PF>*>(smem_raw);
+    const int qi = blockIdx.x, kvh = blockIdx.y;
+    const int n_head = n_kv_heads * G;
+    q += (size_t) qi * n_head * HD + (size_t) kvh * G * HD;
+    attn += (size_t) qi * n_head * HD + (size_t) kvh * G * HD;
+    ids += (size_t) qi * cap;
+    const int n = __ldg(steps + (size_t) qi * kStepCount + kStepWidth);
+    const int t = threadIdx.x, lane = t & 31, warp = t >> 5;
+    const int gid = lane >> 2, tig = lane & 3;
+
+    // q: 12 heads + 4 zero rows, scaled by a power of two that puts its largest value near 2^14 (exact, and the
+    // lo halves stay out of FP16's subnormal range), then split into hi + lo halves
+    float qm = 0.0f;
+    for (int i = t; i < G * HD; i += THREADS) qm = fmaxf(qm, fabsf(q[i]));
+#pragma unroll
+    for (int o = 16; o > 0; o >>= 1) qm = fmaxf(qm, __shfl_xor_sync(0xffffffffu, qm, o));
+    if (lane == 0) S.qmax[warp] = qm;
+    __syncthreads();
+    qm = fmaxf(fmaxf(S.qmax[0], S.qmax[1]), fmaxf(S.qmax[2], S.qmax[3]));
+    int qe = 0;
+    if (qm > 0.0f) frexpf(qm, &qe);                 // qm < 2^qe
+    const float qup = ldexpf(1.0f, 14 - qe), qdown = ldexpf(scale_log2, qe - 14);
+    for (int i = t; i < 16 * HD; i += THREADS) {
+        const int h = i / HD, d = i % HD;
+        const float x = h < G ? q[(size_t) h * HD + d] * qup : 0.0f;
+        const __half hi = __float2half_rn(x);
+        S.qh[h][d] = hi;
+        S.ql[h][d] = __float2half_rn(x - __half2float(hi));
+    }
+    if (t < 16) { S.mrow[t] = -INFINITY; S.lsum[t] = 0.0f; }
+
+    float acc[8][4];
+#pragma unroll
+    for (int j = 0; j < 8; ++j) acc[j][0] = acc[j][1] = acc[j][2] = acc[j][3] = 0.0f;
+
+    // int8 K/V: the next chunk's rows are loaded into registers while this chunk computes (Turing has no cp.async, and
+    // at 1 block per SM the gather's latency was the kernel's largest stall), then stored to shared memory exactly as
+    // the gather below stores them: the same bytes in the same places, the same arithmetic after.
+    constexpr bool PREFETCH = KV_MODE == 1 && PF;
+    constexpr int KP = HD / 16;                               // 16-byte pieces per int8 row
+    constexpr int PPT = PREFETCH ? CH * KP / THREADS : 1;     // pieces per thread
+    static_assert(!PREFETCH || (CH * KP) % THREADS == 0 && CH * 4 == THREADS, "prefetch layout");
+    uint4 pk[PPT], pv[PPT];
+    float pa = 0.0f, pb = 0.0f;
+    auto row_of = [&](int c0, int c) -> long long {          // as S.row below; -1 past the chunk's cells
+        if (c >= min(CH, n - c0)) return -1;
+        const int cell = ids[c0 + c];
+        const long long page = (long long) p.page_table[cell / page_size];
+        return (page * n_kv_heads + kvh) * page_size + (cell % page_size);
+    };
+    auto fetch = [&](int c0) {
+        if constexpr (PREFETCH) {
+#pragma unroll
+            for (int j = 0; j < PPT; ++j) {
+                const int i = t + j * THREADS, c = i / KP, pc = i % KP;
+                const long long r = row_of(c0, c);
+                pk[j] = r >= 0 ? __ldg(reinterpret_cast<const uint4*>(p.k_q + r * HD) + pc) : make_uint4(0, 0, 0, 0);
+                pv[j] = r >= 0 ? __ldg(reinterpret_cast<const uint4*>(p.v_q + r * HD) + pc) : make_uint4(0, 0, 0, 0);
+            }
+            const int c = t / 4, g = t % 4;
+            const long long r = row_of(c0, c);
+            pa = r >= 0 ? __half2float(__ushort_as_half(p.k_scale[r * (HD / KV_Q8_GROUP) + g])) : 0.0f;
+            pb = r >= 0 ? __half2float(__ushort_as_half(p.v_scale[r * (HD / KV_Q8_GROUP) + g])) : 0.0f;
+        }
+    };
+    if constexpr (PREFETCH) fetch(0);
+
+    for (int c0 = 0; c0 < n; c0 += CH) {
+        const int nh = min(CH, n - c0);
+        if constexpr (PREFETCH) {
+            __syncthreads();   // the previous chunk's p.v is done with k, v, s
+#pragma unroll
+            for (int j = 0; j < PPT; ++j) {
+                const int i = t + j * THREADS, c = i / KP, pc = i % KP;
+                *reinterpret_cast<uint4*>(reinterpret_cast<unsigned char*>(&S.kv.k[c][0]) + pc * 16) = pk[j];
+            }
+            S.ks[t / 4][t % 4] = pa;
+            S.vs[t / 4][t % 4] = pb;
+            __syncthreads();
+        } else {
+        if (t < CH) {
+            long long r = -1;
+            if (t < nh) {
+                const int cell = ids[c0 + t];
+                const long long page = (long long) p.page_table[cell / page_size];
+                r = (page * n_kv_heads + kvh) * page_size + (cell % page_size);
+            }
+            S.row[t] = r;
+        }
+        __syncthreads();   // rows ready; the previous chunk's p.v is done with k, v, s
+        // gather the chunk's K and V rows (16-byte pieces; K8V4's V as q4_0 blocks dequantized to fp16)
+        // and their scales
+        if constexpr (KV_MODE == 4) {
+            // q4_0 K and V: one (K or V, cell, block) per item - the block's 16 code bytes (2-byte aligned: eight
+            // 16-bit loads) become 32 exact int8 codes (element j in the low nibble of byte j, j + 16 in the high
+            // one), its fp16 scale goes to ks/vs
+            constexpr int BLKS = HD / QK4_0;
+            constexpr int BYTES = BLKS * (int) sizeof(block_q4_0);
+            for (int i = t; i < 2 * CH * BLKS; i += THREADS) {
+                const int kv = i / (CH * BLKS), rem = i % (CH * BLKS), c = rem / BLKS, b = rem % BLKS;
+                const long long r = S.row[c];
+                uint4 lo = make_uint4(0, 0, 0, 0), hi = make_uint4(0, 0, 0, 0);
+                float d = 0.0f;
+                if (r >= 0) {
+                    const block_q4_0* blk = reinterpret_cast<const block_q4_0*>((kv == 0 ? p.k_q4 : p.v_q4) + r * BYTES) + b;
+                    d = __half2float(__ushort_as_half(__ldg(&blk->d)));
+                    const uint16_t* q16 = reinterpret_cast<const uint16_t*>(blk->qs);
+                    uint32_t w[4];
+#pragma unroll
+                    for (int j = 0; j < 4; ++j)
+                        w[j] = (uint32_t) __ldg(q16 + 2 * j) | ((uint32_t) __ldg(q16 + 2 * j + 1) << 16);
+                    // per byte: the low nibble minus 8 is element j, the high one minus 8 element j + 16
+                    lo = make_uint4(__vsub4(w[0] & 0x0F0F0F0Fu, 0x08080808u), __vsub4(w[1] & 0x0F0F0F0Fu, 0x08080808u),
+                                    __vsub4(w[2] & 0x0F0F0F0Fu, 0x08080808u), __vsub4(w[3] & 0x0F0F0F0Fu, 0x08080808u));
+                    hi = make_uint4(__vsub4((w[0] >> 4) & 0x0F0F0F0Fu, 0x08080808u),
+

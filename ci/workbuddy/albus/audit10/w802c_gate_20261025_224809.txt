@@ -1,0 +1,58 @@
+# W802c cpu_share 采纳门  20261025_224809  order=A(0) B(auto) B A   无仪器
+  setcs share=0 env_n=11
+  mark=43319
+=== ARM A share=0 rep 1 ready=49s
+  ENVCHECK got=11 (want 10，无 TIMING)
+PARITY A1 md5=e3b0c44298fc1c14 len=0 finish=length
+BUILD wall=11.32 read=7581 prompt_ms=10898.9
+T0 ask=80   read=101   prompt_ms=  1724.5 decode_ms=  1330.8 tok_s= 48.1 wall= 3.07
+T1 ask=280  read=316   prompt_ms=  2343.4 decode_ms=  1402.8 tok_s= 45.6 wall= 3.76
+T2 ask=80   read=125   prompt_ms=  1831.2 decode_ms=   946.4 tok_s= 67.6 wall= 2.79
+T3 ask=280  read=340   prompt_ms=  2375.6 decode_ms=  1463.1 tok_s= 43.7 wall= 3.85
+DONE
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=31223 prompt_tps=699.1 decode_tps=59.9 out=320 wall=36.6s
+  [M] n=1 reused0=1 | prompt_tps median=699.1  decode_tps median=59.9
+  setcs share=auto env_n=11
+  mark=43422
+=== ARM B share=auto rep 1 ready=56s
+  ENVCHECK got=11 (want 10，无 TIMING)
+PARITY B1 md5=e3b0c44298fc1c14 len=0 finish=length
+BUILD wall=11.36 read=7581 prompt_ms=10883.8
+T0 ask=80   read=101   prompt_ms=  1268.6 decode_ms=  1279.4 tok_s= 50.0 wall= 2.56
+T1 ask=280  read=316   prompt_ms=  1571.6 decode_ms=  1390.8 tok_s= 46.0 wall= 2.98
+T2 ask=80   read=125   prompt_ms=  1321.6 decode_ms=   915.0 tok_s= 69.9 wall= 2.25
+T3 ask=280  read=340   prompt_ms=  1850.9 decode_ms=  1456.8 tok_s= 43.9 wall= 3.32
+DONE
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=31250 prompt_tps=698.5 decode_tps=59.5 out=320 wall=36.6s
+  [M] n=1 reused0=1 | prompt_tps median=698.5  decode_tps median=59.5
+  setcs share=auto env_n=11
+  mark=43525
+=== ARM B share=auto rep 2 ready=54s
+  ENVCHECK got=11 (want 10，无 TIMING)
+PARITY B2 md5=e3b0c44298fc1c14 len=0 finish=length
+BUILD wall=11.40 read=7581 prompt_ms=10947.1
+T0 ask=80   read=101   prompt_ms=  1100.0 decode_ms=  1480.0 tok_s= 43.2 wall= 2.59
+T1 ask=280  read=316   prompt_ms=  1917.8 decode_ms=  1396.9 tok_s= 45.8 wall= 3.33
+T2 ask=80   read=125   prompt_ms=  1162.1 decode_ms=   976.4 tok_s= 65.5 wall= 2.15
+T3 ask=280  read=340   prompt_ms=  1805.9 decode_ms=  1354.0 tok_s= 47.3 wall= 3.17
+DONE
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=31297 prompt_tps=697.4 decode_tps=53.8 out=320 wall=37.3s
+  [M] n=1 reused0=1 | prompt_tps median=697.4  decode_tps median=53.8
+  setcs share=0 env_n=11
+  mark=43630
+=== ARM A share=0 rep 2 ready=73s
+  ENVCHECK got=11 (want 10，无 TIMING)
+PARITY A2 md5=e3b0c44298fc1c14 len=0 finish=length
+BUILD wall=11.44 read=7581 prompt_ms=11020.7
+T0 ask=80   read=101   prompt_ms=  1489.9 decode_ms=  1443.3 tok_s= 44.3 wall= 2.95
+T1 ask=280  read=316   prompt_ms=  2367.1 decode_ms=  1405.2 tok_s= 45.5 wall= 3.78
+T2 ask=80   read=125   prompt_ms=  1563.1 decode_ms=   948.4 tok_s= 67.5 wall= 2.52
+T3 ask=280  read=340   prompt_ms=  2355.5 decode_ms=  1463.4 tok_s= 43.7 wall= 3.83
+DONE
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=31662 prompt_tps=689.4 decode_tps=60.8 out=320 wall=36.9s
+  [M] n=1 reused0=1 | prompt_tps median=689.4  decode_tps median=60.8
+restored 62s

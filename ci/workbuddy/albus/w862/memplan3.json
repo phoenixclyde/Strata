@@ -1,0 +1,55 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "## 4 队列/待办(下=P138 ple-io;解码参数面已关)",
+   "new": "## 4 队列/待办(下=R23 开R行数1.52x未部署;P138)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改参唯一道**:register->gen_config --write->推166->restart\n",
+   "new": "- **改参唯一道**:register->gen_config --write->推166->restart\n- **重编须逐字抄build.ninja的flags**(漏DNDEBUG -47%,错compat -45%);**改工作树=改生产资产**\n"
+  },
+  {
+   "kind": "substr",
+   "old": "**禁哈希**(W794);**share后prefill逐次不同=>n>=2**(规则X);**删失观测不当事件**(Y);**相位表>=2%须全列**(Z)",
+   "new": "禁哈希(W794);share后prefill逐次不同=>n>=2(X);删失观测不当事件(Y);相位表>=2%须全列(Z)"
+  },
+  {
+   "kind": "substr",
+   "old": "**arch_default只给gfx12/1151**=>gfx906空表,19+5项全关;**USE_HIP宏缺**=>CUDA默认泄漏(W800)",
+   "new": "arch_default只给gfx12/1151=>gfx906空表,19+5项全关;USE_HIP缺=>CUDA默认泄漏(W800)"
+  },
+  {
+   "kind": "substr",
+   "old": "**解码侧门**:贪心长生成+底噪0+36题;swizzle>RT_SKIP>GDN(扰动);相位DECODE_TIMING,GPU72%/commit.04(W807/8)",
+   "new": "解码侧门:贪心长生成+底噪0+36题;swizzle>RT_SKIP>GDN;相位DECODE_TIMING,GPU72%(W807/8)"
+  },
+  {
+   "kind": "substr",
+   "old": "**KV门**(P51):LOGPOS**只量提示侧**(解码侧逐字节同,W806);read越大 attn 越贵(155->247ms/1k)",
+   "new": "KV门(P51):LOGPOS只量提示侧(解码侧逐字节同,W806);read越大attn越贵(155->247ms/1k)"
+  },
+  {
+   "kind": "substr",
+   "old": "**自比同形状**;比ms/step;排冷热;含adapt+join;dot8=0(P38)",
+   "new": "自比同形状/ms/step/排冷热/含adapt+join;dot8=0(P38)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **重启丢前2请求**;A/B交错(P98);臂漂1.7%=>**先相位判**",
+   "new": "- 重启丢前2请求;A/B交错(P98);臂漂1.7%=>先相位判"
+  },
+  {
+   "kind": "substr",
+   "old": "**相位会迁移**:省的ms从相邻涨回;闭合!=只有它动(W797)",
+   "new": "相位会迁移:省的ms从相邻涨回;闭合!=只有它动(W797)"
+  },
+  {
+   "kind": "substr",
+   "old": "**MMQ**:墙钟36.4%/dp4a 18%(P112/113)",
+   "new": "MMQ:墙钟36.4%/dp4a18%(P112/113)"
+  }
+ ]
+}

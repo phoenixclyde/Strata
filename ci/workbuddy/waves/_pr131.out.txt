@@ -1,0 +1,100 @@
+校准给出的 settings = {"--pcie-frac": "0.20", "--spec-min-p": "0.70"}
+校准自报 report = {"default": {"pcie_frac": 0.36, "spec_min_p": 0.5, "pool_workers": 21}, "pcie_sweep": {"0.0": [35.18803606773697], "0.2": [35.68143171744766], "0.35": [32.75835594001126], "0.36": [33.70816106180707], "0.55": [30.951517349776324], "0.75": [29.048656499636895]}, "min_p_sweep": {"0.3": [33.7437060079614], "0.5": [35.722259432909134], "0.7": [36.96323890380894]}, "confirm": {"0.36/0.5": [33.734812745433935, 32.92350429548845, 34.17343015805211], "0.2/0.7": [37.577430056072565, 37.41705399163963, 35.05408736135835]}, "workers": {"21": [35.90765001262378, 36.091921612857746], "14": [34.32647697712462, 35.2481136751666], "10": [33.97839186642245, 34.501347708894876], "5": [29.26383173296754, 28.904997403066638]}, "adapt": {"default": [40.38329315311709, 39.055830630015365], "1/80/0.97": [34.05083302930804, 33.0760749724366], "1/160/0.97": [34.49221271966675, 32.37903435823539]}, "seconds": 929, "tok_s": 39.7}
+A_args_tail = --max-context 262144 --kv k8v4 --prefill auto --expert-profile-save /data/profiles/ud-iq4_xs-learned.bin
+B_args_tail = --kv k8v4 --prefill auto --expert-profile-save /data/profiles/ud-iq4_xs-learned.bin --pcie-frac 0.20
+ADDED = ['--pcie-frac']
+
+========================================================================
+交错 A/B 开始：A=baseline(register)  B=baseline+calibrated
+========================================================================
+
+######################################################################
+# ROUND 1  ARM A  cfg=cfg_A.json
+######################################################################
+547d280c4c7c5d69f2440c9b8a16b975  /home/albus/strata166/data/strata-ud-iq4_xs.json
+restarted_rc=0
+  [A-r1  10s] http=000
+  [A-r1  20s] http=000
+  [A-r1  30s] http=000
+  [A-r1  40s] http=200
+===== ARM A-r1 =====
+[warmup] ...
+  warmup decode=28.54 t/s
+  prefill#1 prompt=18083  449.1 tok/s (2.23 ms/token)
+  prefill#2 prompt=18083  455.8 tok/s (2.19 ms/token)
+  prefill#3 prompt=18083  456.2 tok/s (2.19 ms/token)
+  decode#1 completion=512  39.22 tok/s
+  decode#2 completion=512  44.50 tok/s
+  decode#3 completion=512  43.73 tok/s
+SUMMARY A-r1 prefill median=455.8 min=449.1 max=456.2 spread=1.5%
+SUMMARY A-r1 decode  median=43.7 min=39.2 max=44.5 spread=12.1%
+  [engine] 
+
+######################################################################
+# ROUND 2  ARM B  cfg=cfg_B.json
+######################################################################
+a03d612015a4e88c1cb532bdfa2d7e29  /home/albus/strata166/data/strata-ud-iq4_xs.json
+restarted_rc=0
+  [B-r2  10s] http=000
+  [B-r2  20s] http=000
+  [B-r2  30s] http=000
+  [B-r2  40s] http=200
+===== ARM B-r2 =====
+[warmup] ...
+  warmup decode=36.86 t/s
+  prefill#1 prompt=18083  450.7 tok/s (2.22 ms/token)
+  prefill#2 prompt=18083  455.6 tok/s (2.19 ms/token)
+  prefill#3 prompt=18083  456.7 tok/s (2.19 ms/token)
+  decode#1 completion=512  41.08 tok/s
+  decode#2 completion=512  46.86 tok/s
+  decode#3 completion=512  46.80 tok/s
+SUMMARY B-r2 prefill median=455.6 min=450.7 max=456.7 spread=1.3%
+SUMMARY B-r2 decode  median=46.8 min=41.1 max=46.9 spread=12.3%
+  [engine] 
+
+######################################################################
+# ROUND 3  ARM A  cfg=cfg_A.json
+######################################################################
+547d280c4c7c5d69f2440c9b8a16b975  /home/albus/strata166/data/strata-ud-iq4_xs.json
+restarted_rc=0
+  [A-r3  10s] http=000
+  [A-r3  20s] http=000
+  [A-r3  30s] http=000
+  [A-r3  40s] http=200
+===== ARM A-r3 =====
+[warmup] ...
+  warmup decode=31.15 t/s
+  prefill#1 prompt=18083  449.7 tok/s (2.22 ms/token)
+  prefill#2 prompt=18083  456.4 tok/s (2.19 ms/token)
+  prefill#3 prompt=18083  455.3 tok/s (2.20 ms/token)
+  decode#1 completion=512  39.83 tok/s
+  decode#2 completion=512  43.84 tok/s
+  decode#3 completion=512  42.21 tok/s
+SUMMARY A-r3 prefill median=455.3 min=449.7 max=456.4 spread=1.5%
+SUMMARY A-r3 decode  median=42.2 min=39.8 max=43.8 spread=9.5%
+  [engine] 
+
+######################################################################
+# ROUND 4  ARM B  cfg=cfg_B.json
+######################################################################
+a03d612015a4e88c1cb532bdfa2d7e29  /home/albus/strata166/data/strata-ud-iq4_xs.json
+restarted_rc=0
+  [B-r4  10s] http=000
+  [B-r4  20s] http=000
+  [B-r4  30s] http=000
+  [B-r4  40s] http=200
+===== ARM B-r4 =====
+[warmup] ...
+  warmup decode=35.96 t/s
+  prefill#1 prompt=18083  450.1 tok/s (2.22 ms/token)
+  prefill#2 prompt=18083  456.0 tok/s (2.19 ms/token)
+  prefill#3 prompt=18083  457.7 tok/s (2.18 ms/token)
+  decode#1 completion=512  41.64 tok/s
+  decode#2 completion=512  47.05 tok/s
+  decode#3 completion=512  46.79 tok/s
+SUMMARY B-r4 prefill median=456.0 min=450.1 max=457.7 spread=1.7%
+SUMMARY B-r4 decode  median=46.8 min=41.6 max=47.1 spread=11.6%
+  [engine] 
+
+========================================================================
+DONE

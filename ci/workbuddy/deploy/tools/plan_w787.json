@@ -1,0 +1,15 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- **复用绑chunk8192**：<8k reused=0(cc只park不restore);>16k 8192/16384;补final可88x(R1/P93)",
+   "new": "- **真实多轮复用正常**(P94):第2轮reused=7344/prompt_ms685(22x);<8k零复用=错误测法(分支/加标签/ctx重复);补final(P93)已废"
+  },
+  {
+   "kind": "substr",
+   "old": "- **prefill热态=GPU+CPU双满(算力地板,file tier 0)**;decode仅占墙钟S43%/M10%/L0.5% => 按端到端排",
+   "new": "- **prefill热态=GPU+CPU双满(地板,file tier 0)**;单轮decode占S43/M10/L0.5%,**多轮复用后decode占大头**"
+  }
+ ]
+}

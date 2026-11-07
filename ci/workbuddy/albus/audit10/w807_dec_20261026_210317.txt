@@ -1,0 +1,99 @@
+# W807 decode-side gate (greedy long generation) 20261026_210317 arms='A A2 B C D' maxt=600
+  start env_n=12 keys=11
+  CFGCHECK keys=11 env_n=12 rtskip=7 drop=''
+  mark=60640
+=== ARM A rtskip=7 drop='none' ready=81s
+  ENVCHECK want=11 got=12 OK
+  p0  ptok=76   ctok=8    finish=length 2.1s chars=52
+  p1  ptok=65   ctok=8    finish=length 1.6s chars=51
+  p2  ptok=62   ctok=8    finish=length 1.7s chars=53
+  p3  ptok=56   ctok=8    finish=length 1.6s chars=64
+  p4  ptok=62   ctok=8    finish=length 1.6s chars=44
+  p5  ptok=61   ctok=8    finish=length 1.6s chars=47
+WROTE /home/albus/strata166/data/w807_decq_A_warm.json
+  p0  ptok=76   ctok=544  finish=stop   12.4s chars=3049
+  p1  ptok=65   ctok=551  finish=stop   12.4s chars=3367
+  p2  ptok=62   ctok=479  finish=stop   11.2s chars=2805
+  p3  ptok=56   ctok=514  finish=stop   12.2s chars=3053
+  p4  ptok=62   ctok=536  finish=stop   12.1s chars=3214
+  p5  ptok=61   ctok=541  finish=stop   13.0s chars=3175
+WROTE /home/albus/strata166/data/w807_decq_A.json
+  tail_skip_line=strata serve: route tail skip: 31109 missed experts skipped (32256 entries) since the star
+  CFGCHECK keys=11 env_n=12 rtskip=7 drop=''
+  mark=60751
+=== ARM A2 rtskip=7 drop='none' ready=50s
+  ENVCHECK want=11 got=12 OK
+  p0  ptok=76   ctok=8    finish=length 1.9s chars=52
+  p1  ptok=65   ctok=8    finish=length 1.6s chars=51
+  p2  ptok=62   ctok=8    finish=length 1.7s chars=53
+  p3  ptok=56   ctok=8    finish=length 1.6s chars=64
+  p4  ptok=62   ctok=8    finish=length 1.6s chars=44
+  p5  ptok=61   ctok=8    finish=length 1.6s chars=47
+WROTE /home/albus/strata166/data/w807_decq_A2_warm.json
+  p0  ptok=76   ctok=544  finish=stop   12.4s chars=3049
+  p1  ptok=65   ctok=551  finish=stop   12.4s chars=3367
+  p2  ptok=62   ctok=479  finish=stop   11.2s chars=2805
+  p3  ptok=56   ctok=514  finish=stop   12.2s chars=3053
+  p4  ptok=62   ctok=536  finish=stop   12.1s chars=3214
+  p5  ptok=61   ctok=541  finish=stop   13.0s chars=3175
+WROTE /home/albus/strata166/data/w807_decq_A2.json
+  tail_skip_line=strata serve: route tail skip: 31109 missed experts skipped (32256 entries) since the star
+  CFGCHECK keys=11 env_n=12 rtskip=0 drop=''
+  mark=60861
+=== ARM B rtskip=0 drop='none' ready=57s
+  ENVCHECK want=11 got=12 OK
+  p0  ptok=76   ctok=8    finish=length 2.0s chars=50
+  p1  ptok=65   ctok=8    finish=length 1.7s chars=51
+  p2  ptok=62   ctok=8    finish=length 1.7s chars=53
+  p3  ptok=56   ctok=8    finish=length 1.6s chars=64
+  p4  ptok=62   ctok=8    finish=length 1.6s chars=44
+  p5  ptok=61   ctok=8    finish=length 1.7s chars=47
+WROTE /home/albus/strata166/data/w807_decq_B_warm.json
+  p0  ptok=76   ctok=536  finish=stop   12.7s chars=3061
+  p1  ptok=65   ctok=564  finish=stop   12.7s chars=3374
+  p2  ptok=62   ctok=536  finish=stop   12.7s chars=3108
+  p3  ptok=56   ctok=515  finish=stop   11.8s chars=3076
+  p4  ptok=62   ctok=505  finish=stop   12.0s chars=3137
+  p5  ptok=61   ctok=553  finish=stop   13.0s chars=3221
+WROTE /home/albus/strata166/data/w807_decq_B.json
+  tail_skip_line=
+  CFGCHECK keys=11 env_n=10 rtskip=7 drop='STRATA_GDN_HEAD,STRATA_GDN_PP'
+  mark=60958
+=== ARM C rtskip=7 drop='STRATA_GDN_HEAD,STRATA_GDN_PP' ready=73s
+  ENVCHECK want=9 got=10 OK
+  p0  ptok=76   ctok=8    finish=length 2.2s chars=52
+  p1  ptok=65   ctok=8    finish=length 1.8s chars=51
+  p2  ptok=62   ctok=8    finish=length 1.7s chars=53
+  p3  ptok=56   ctok=8    finish=length 1.6s chars=64
+  p4  ptok=62   ctok=8    finish=length 1.6s chars=44
+  p5  ptok=61   ctok=8    finish=length 1.6s chars=47
+WROTE /home/albus/strata166/data/w807_decq_C_warm.json
+  p0  ptok=76   ctok=544  finish=stop   12.4s chars=3049
+  p1  ptok=65   ctok=551  finish=stop   12.4s chars=3367
+  p2  ptok=62   ctok=479  finish=stop   11.2s chars=2805
+  p3  ptok=56   ctok=514  finish=stop   12.3s chars=3053
+  p4  ptok=62   ctok=536  finish=stop   12.1s chars=3214
+  p5  ptok=61   ctok=541  finish=stop   13.0s chars=3175
+WROTE /home/albus/strata166/data/w807_decq_C.json
+  tail_skip_line=strata serve: route tail skip: 31109 missed experts skipped (32256 entries) since the star
+  CFGCHECK keys=11 env_n=11 rtskip=7 drop='STRATA_GFX906_ATTN_QUERY_SWIZZLE'
+  mark=61069
+=== ARM D rtskip=7 drop='STRATA_GFX906_ATTN_QUERY_SWIZZLE' ready=92s
+  ENVCHECK want=10 got=11 OK
+  p0  ptok=76   ctok=8    finish=length 2.1s chars=52
+  p1  ptok=65   ctok=8    finish=length 1.6s chars=51
+  p2  ptok=62   ctok=8    finish=length 1.7s chars=53
+  p3  ptok=56   ctok=8    finish=length 1.6s chars=64
+  p4  ptok=62   ctok=8    finish=length 1.7s chars=44
+  p5  ptok=61   ctok=8    finish=length 1.6s chars=47
+WROTE /home/albus/strata166/data/w807_decq_D_warm.json
+  p0  ptok=76   ctok=544  finish=stop   12.5s chars=3049
+  p1  ptok=65   ctok=551  finish=stop   12.5s chars=3367
+  p2  ptok=62   ctok=508  finish=stop   11.7s chars=2936
+  p3  ptok=56   ctok=524  finish=stop   12.4s chars=3100
+  p4  ptok=62   ctok=529  finish=stop   12.1s chars=3071
+  p5  ptok=61   ctok=576  finish=stop   13.4s chars=3218
+WROTE /home/albus/strata166/data/w807_decq_D.json
+  tail_skip_line=strata serve: route tail skip: 32756 missed experts skipped (33924 entries) since the star
+restored 50s
+  trap-restored (any exit path)

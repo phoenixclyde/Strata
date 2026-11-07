@@ -1,0 +1,77 @@
+push ok=True size=867
+rc = 0
+=== 前 80 行里的启动信息 ===
+1:[strata] 2026-10-06 17:37:23 engine started: /src/build-906/strata --serve --pack /data/packs/ud-iq4_xs --native /weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf --resident-budget-gib 76 --expert-profile /src/data/expert-profile.bin --expert-cache auto --spec 4 --spec-min-p 0.5 --mtp /data/mtp/rt --max-context 131072 --kv int8 --prefill auto
+3:strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+4:strata generate: native pack: /data/packs/ud-iq4_xs experts (largest blob 3.48 MB), token embedding Q8_0 in mapped host memory (644 MiB, 0.6 s)
+8:strata generate: profile /src/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots
+10:strata mtp: draft layer loaded, 950 MiB of VRAM (experts 675, dense 111), files read in 1.92 s (408 MiB/s)
+13:strata generate: experts via mmap (--mmap-experts; the GGUF shards in place, no experts.bin)
+14:strata generate: the file tier reads through the file cache (120.4 GiB available, 55.4 GiB of it still to be taken by the RAM copy, 0.0 GiB of experts read from the files: the file cache can keep them)
+16:strata generate: expert cache auto: 24.09 GiB free, 700 MiB reserved (+218 MiB for the draft head) -> 7153 slots
+17:strata generate: expert cache 10289 slots, 23.19 GiB of VRAM; policy is
+18:strata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,
+19:                 so a reply can differ slightly from a run without the cache (same quality:
+20:                 bench/results/2026-09-27-cache-parity).
+23:strata generate: pre-filled 10289 of 10289 slots from the profile in 8.1 s (3090 MB/s); slot 0 verified
+25:strata generate: R4 hit path ON - resident experts are computed on the GPU
+26:strata generate: 21 expert-pool workers + the host thread
+28:strata generate: token graph hit path: 10289 resident experts, decided on the device
+29:FileExpertSource: RAM budget 76.00 GiB: 14287 of the 32.24 GiB of experts the GPU cache does not hold, by profile rank; the rest are read from the files
+30:FileExpertSource: allocating 32.24 GiB page-locked cache complement
+31:FileExpertSource: copied cache complement through layer 8/48 (6.55 GiB, 2 s)
+32:FileExpertSource: copied cache complement through layer 16/48 (10.25 GiB, 3 s)
+33:FileExpertSource: copied cache complement through layer 24/48 (16.00 GiB, 4 s)
+34:FileExpertSource: copied cache complement through layer 32/48 (20.82 GiB, 6 s)
+35:FileExpertSource: copied cache complement through layer 40/48 (27.98 GiB, 8 s)
+36:FileExpertSource: copied cache complement through layer 48/48 (32.24 GiB, 9 s)
+37:FileExpertSource: mapped pinned cache complement ready: resident 32.24 GiB, pinned 32.24 GiB in 20 s; page-locked and mapped
+
+=== 含 experts 的句式（数字抹去后去重）===
+
+=== resident RAM 行的全部取值（去重）===
+resident RAM: 32.24 GiB of experts in RAM, 1152 exchanged with the VRAM t
+resident RAM: 32.24 GiB of experts in RAM, 1180 exchanged with the VRAM t
+resident RAM: 32.24 GiB of experts in RAM, 1397 exchanged with the VRAM t
+resident RAM: 32.24 GiB of experts in RAM, 1493 exchanged with the VRAM t
+resident RAM: 32.24 GiB of experts in RAM, 192 exchanged with the VRAM ti
+resident RAM: 32.24 GiB of experts in RAM, 2032 exchanged with the VRAM t
+resident RAM: 32.24 GiB of experts in RAM, 2252 exchanged with the VRAM t
+resident RAM: 32.24 GiB of experts in RAM, 2329 exchanged with the VRAM t
+
+=== 容器 402 启动日志里的专家/常驻行 ===
+3:[strata] loading the most-used experts into RAM (up to 76 GiB; the rest are read from the model files as needed) and locking part of them for the GPU.
+6:[strata] filling the GPU's expert cache (9758 experts, 21.98 GiB of VRAM) ...
+13:[strata] done: 2 tokens in 1 s (14.3 tok/s) (stop, cancel=False), expert cache 54.5% hit (+14.6% of the routed experts over PCIe)
+17:[strata] done: 66 tokens in 6 s (31.9 tok/s) (stop, cancel=False), expert cache 80.3% hit (+6.2% of the routed experts over PCIe)
+23:[strata] loading the most-used experts into RAM (up to 76 GiB; the rest are read from the model files as needed) and locking part of them for the GPU.
+26:[strata] filling the GPU's expert cache (9758 experts, 21.98 GiB of VRAM) ...
+34:[strata] done: 16 tokens in 2 s (32.9 tok/s) (length, cancel=False), expert cache 78.9% hit (+5.9% of the routed experts over PCIe)
+43:[strata] done: 48 tokens in 41 s (33.2 tok/s) (length, cancel=False), expert cache 87.3% hit (+3.4% of the routed experts over PCIe)
+52:[strata] done: 48 tokens in 41 s (39.2 tok/s) (length, cancel=False), expert cache 93.6% hit (+1.5% of the routed experts over PCIe)
+
+=== 容器 402 启动日志总行数 ===
+183
+
+=== 引擎 help 里与 expert 有关的开关 ===
+                       (vs int8's 1,056); streams with --kv-resident too
+  --kv-resident N      KV streaming: keep N cells of each QSA layer in VRAM (min 20480) and the
+                       whole K/V in pinned RAM; the freed VRAM goes to expert slots. 0 (default):
+  --kv-grow            the K/V takes VRAM only for the cells the requests reach and the expert
+                       --expert-profile; STRATA_KV_GROW=1/0 also). Default: the whole --max-context
+  --native-router       experimental pinned CUDA 512-expert top-10 routing
+  --cpu-oracle-q8-0     experimental pinned CPU expert quantization and dot reduction
+                       expert cache is on. Individual --native-* flags stay for A/B.
+  --expert-cache-cpu-order  experimental GPU expert reduction matching CPU order
+  --dump-routing PATH  write the routed expert ids and weights per layer per position (P0.S8)
+  --shared-late        A/B: shared expert after the CPU pool (default: overlapped with it)
+  --vram-elastic       --serve (#533, opt-in, NVIDIA): the expert cache in segments (--vram-segment-mib,
+                       the largest chunk up to 8192 whose buffers the expert cache can lend;
+  --no-pool            skip the CPU expert pool (the GPU-only floor)
+  --expert-profile P   R4.2e: pre-load the VRAM tier from a `profile.bin` (see
+  --expert-profile-save P  --serve, #477: save what the adaptive tier learned (the experts in
+                       QUIT and every --expert-profile-save-every MIN minutes (default 10;
+                       0 = on QUIT only) between requests; start from it with --expert-profile P
+  --expert-cache N     R4: keep N expert blobs resident in VRAM and compute their rows on the
+                       with --expert-cache-per-layer: 54.4% hits, CPU pool drain 19.1 -> 10.3
+

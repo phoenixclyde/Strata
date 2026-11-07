@@ -1,0 +1,6 @@
+# W805b chunk size A=auto(8192) B=auto:16384  20261026_192347 size=36000 reps=2
+  mark=56951
+=== ARM A ready=68s
+  ENVCHECK want=15 got=13 :: no chunk line
+!! ABORT env_n 13
+  trap-restored (any exit path)

@@ -1,0 +1,21 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W771：纠正上一条写错的长期事实 —— 凭据通道其实可用（真 Git for Windows 的 GCM 配方），建 PR/评论可全自动；顺带两条压缩保持 <=2900。",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- **提 PR 无 API token** => `git push` 到 fork 可自动，**开 PR 须手动点链接**（W736/W770）",
+   "new": "- **GitHub API**：真 Git for Windows 的 GCM（`C:/Program Files/Git/cmd/git.exe` + 钉 helper、**不设** `GCM_INTERACTIVE/PROVIDER`）可取凭据 => **建 PR/评论可全自动**（W736/W770；便携版 Git 的 helper 无效）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **166 PCIe**：有效 **Gen3 x16**；`pcie_bw` 读 ~1s 须独立线程；`product_name`=FRU 串 => 按实读显存纠正",
+   "new": "- **166 PCIe**：有效 **Gen3 x16**；`pcie_bw` 读 ~1s 须独立线程；`product_name`=FRU 串 => 按实读纠正"
+  },
+  {
+   "kind": "substr",
+   "old": "- **自比须同形状**；比 `ms/step`（`tok/s` 受草稿净出污染）；**现役最快**；不可复现先排缓存冷热",
+   "new": "- **自比须同形状**；比 `ms/step`（`tok/s` 受草稿净出污染）；**现役最快**；不可复现先排冷热"
+  }
+ ]
+}

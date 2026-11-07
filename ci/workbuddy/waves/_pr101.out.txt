@@ -1,0 +1,60 @@
+=== [1] 传更新后的两个文件 ===
+  patch_gfx906_402.py              ok=True size=8022 md5=b515b026448dd4728f6670c07d721848
+     rc=0 remote_size=8022 remote_md5=b515b026448dd4728f6670c07d721848 match=True | R_SIZE=8022 | R_MD5=b515b026448dd4728f6670c07d721848 | R_BASHSYNTAX=NA_or_FAIL | R_CR=0 | R_LF=168
+  Dockerfile-0.1.40.2              ok=True size=5644 md5=d6f36c40cbc63958f010cbe0e10aa291
+     rc=0 remote_size=5644 remote_md5=d6f36c40cbc63958f010cbe0e10aa291 match=True | R_SIZE=5644 | R_MD5=d6f36c40cbc63958f010cbe0e10aa291 | R_BASHSYNTAX=OK | R_CR=0 | R_LF=94
+
+=== [2] 重建镜像（后台）+ 观察 ===
+rc = 0
+--- 进程 ---
+BUILD_FINISHED
+--- 补丁步骤输出 ---
+#12 0.230 === gfx906 构建补丁 v3 (0.1.40.2) · root=/src ===
+#12 0.230   [ok  ] include/strata/platform/hip_compat/strata_hip.h :: H1 cudaFuncSetAttribute 模板内联函数 上游已修（验证通过）
+#12 0.230   [ok  ] src/kernels/cuda/fused_gr.cu :: H2 fused_gr_read_multi 返回 false（gfx906 split 分支） 上游已修（验证通过）
+#12 0.230   [ok  ] src/core/mtp.cpp :: H3 mtp.cpp stream-priority 门含 GFX906 上游已修（验证通过）
+#12 0.230   [ok  ] src/core/vmm.cpp :: H4 vmm.cpp <cuda.h> 门含 GFX906        上游已修（验证通过）
+#12 0.230   [patch] CMakeLists.txt :: H5 CUDA 分支 q6_k 实例门 加 OR STRATA_HIP_GFX906 已改（99668 -> 99745 chars）
+#12 0.230   [patch] include/strata/platform/hip_compat/strata_hip.h :: H6 补 cudaEventBlockingSync 映射 已改（16583 -> 16634 chars）
+#12 0.230 
+#12 0.230 === 汇总  patched=2  verified=4  not_applicable=0  failed=0 ===
+#12 0.230    patched  : CMakeLists.txt::H5 CUDA 分支 q6_k 实例门 加 OR STRATA_HIP_GFX906
+#12 0.230    patched  : include/strata/platform/hip_compat/strata_hip.h::H6 补 cudaEventBlockingSync 映射
+#12 0.230    verified : include/strata/platform/hip_compat/strata_hip.h::H1 cudaFuncSetAttribute 模板内联函数
+#12 0.230    verified : src/kernels/cuda/fused_gr.cu::H2 fused_gr_read_multi 返回 false（gfx906 split 分支）
+#12 0.230    verified : src/core/mtp.cpp::H3 mtp.cpp stream-priority 门含 GFX906
+#12 0.230    verified : src/core/vmm.cpp::H4 vmm.cpp <cuda.h> 门含 GFX906
+#12 0.230 PATCH_V3_OK
+--- 复核 grep 段 ---
+#12 [ 8/11] RUN set -eux; python3 /tmp/patch_gfx906_402.py;     echo "---- 复核改动处（grep 不中即构建失败）----";     grep -n "inline hipError_t cudaFuncSetAttribute" /src/include/strata/platform/hip_compat/strata_hip.h;     grep -n "define cudaEventBlockingSync hipEventBlockingSync" /src/include/strata/platform/hip_compat/strata_hip.h;     grep -n "the gfx906 STRATA_GR_SPLIT read" /src/src/kernels/cuda/fused_gr.cu;     grep -n "!defined(STRATA_USE_HIP) && !defined(STRATA_HIP_GFX906)" /src/src/core/mtp.cpp;     grep -n "!defined(STRATA_USE_HIP) && !defined(STRATA_HIP_GFX906)" /src/src/core/vmm.cpp;     grep -n "STRATA_Q6K_EXPERTS OR STRATA_HIP_GFX906" /src/CMakeLists.txt
+#12 0.188 + python3 /tmp/patch_gfx906_402.py
+#12 0.230 === gfx906 构建补丁 v3 (0.1.40.2) · root=/src ===
+#12 0.230   [ok  ] include/strata/platform/hip_compat/strata_hip.h :: H1 cudaFuncSetAttribute 模板内联函数 上游已修（验证通过）
+#12 0.230   [ok  ] src/kernels/cuda/fused_gr.cu :: H2 fused_gr_read_multi 返回 false（gfx906 split 分支） 上游已修（验证通过）
+#12 0.230   [ok  ] src/core/mtp.cpp :: H3 mtp.cpp stream-priority 门含 GFX906 上游已修（验证通过）
+#12 0.230   [ok  ] src/core/vmm.cpp :: H4 vmm.cpp <cuda.h> 门含 GFX906        上游已修（验证通过）
+#12 0.230   [patch] CMakeLists.txt :: H5 CUDA 分支 q6_k 实例门 加 OR STRATA_HIP_GFX906 已改（99668 -> 99745 chars）
+#12 0.230   [patch] include/strata/platform/hip_compat/strata_hip.h :: H6 补 cudaEventBlockingSync 映射 已改（16583 -> 16634 chars）
+#12 0.230 
+#12 0.230 === 汇总  patched=2  verified=4  not_applicable=0  failed=0 ===
+#12 0.230    patched  : CMakeLists.txt::H5 CUDA 分支 q6_k 实例门 加 OR STRATA_HIP_GFX906
+#12 0.230    patched  : include/strata/platform/hip_compat/strata_hip.h::H6 补 cudaEventBlockingSync 映射
+#12 0.230    verified : include/strata/platform/hip_compat/strata_hip.h::H1 cudaFuncSetAttribute 模板内联函数
+#12 0.230    verified : src/kernels/cuda/fused_gr.cu::H2 fused_gr_read_multi 返回 false（gfx906 split 分支）
+#12 0.230    verified : src/core/mtp.cpp::H3 mtp.cpp stream-priority 门含 GFX906
+#12 0.230    verified : src/core/vmm.cpp::H4 vmm.cpp <cuda.h> 门含 GFX906
+#12 0.230 PATCH_V3_OK
+#12 0.236 ---- 复核改动处（grep 不中即构建失败）----
+#12 0.236 + echo ---- 复核改动处（grep 不中即构建失败）----
+--- 编译进度 ---
+[11/11]
+--- 尾部 8 行 ---
+#15 DONE 0.0s
+
+#16 exporting to image
+#16 exporting layers
+#16 exporting layers 4.8s done
+#16 writing image sha256:125cb5b1bbfd8be5f88aa484aff0d8475fdee3a944461cc40f64ef89eb3ab205 done
+#16 naming to docker.io/library/strata-gfx906:0.1.40.2 done
+#16 DONE 4.8s
+

@@ -1,0 +1,11 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W722b：把 W722 报告登记进 §0 权威件清单",
+ "ops": [
+  {
+   "kind": "line_replace",
+   "line": 10,
+   "new": "- 权威件：`PARAM_REGISTER.tsv`（参数唯一真值）· `W713_PLAN.md`（方案 + 全量账）· `W713_UPGRADE.md` · `W713_AUDIT{,2}.md` · `W716_BASELINE.md` · `W717_P31_PARITY.md` · `W718_P23_CPUSHARE.md` · `W719_P33_PREFIX.md` · `W720_P28_P32.md` · `W721_VIEW.md` · `W722_MEM_SKILL.md`。"
+  }
+ ]
+}

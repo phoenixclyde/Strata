@@ -1,0 +1,321 @@
+#### cols=1 rows=1 ####
+q8_group_bench: AMD Radeon Graphics | 60 CU | peak ref 711 GB/s | ncols=1 rows=1
+
+group=single: 9 matrices, 106.54 MB, x=2560 (1 vector, quantized once)
+  GDN qkv      2560->10240    27.85 MB     58.4 us 477239.0 GB/s 67122.2%
+  GDN gate     2560->6144     16.71 MB     29.8 us 560885.9 GB/s 78886.9%
+  GDN/QSA out  6144->2560     16.71 MB     28.4 us 588207.5 GB/s 82729.6%
+  QSA q        2560->12288    33.42 MB     54.9 us 608821.5 GB/s 85628.9%
+  QSA k/v      2560->512       1.39 MB      5.5 us 252846.4 GB/s 35562.1%
+  HC down     10240->320       3.48 MB     12.2 us 286417.7 GB/s 40283.8%
+  HC up         320->10240     3.48 MB     12.0 us 290625.6 GB/s 40875.6%
+  shared g/u   2560->640       1.74 MB      5.6 us 309759.2 GB/s 43566.7%
+  shared down   640->2560      1.74 MB      6.3 us 275450.6 GB/s 38741.3%
+  sum of isolated   :    213.1 us  (106.54 MB per layer)
+  serial   1 stream :    194.7 us   547.3 GB/s   77.0% of bw
+  streams 2        :    163.6 us   651.0 GB/s   91.6% of bw   (1.19x)
+  streams 3        :    170.5 us   624.8 GB/s   87.9% of bw   (1.14x)
+  streams 5        :    166.1 us   641.2 GB/s   90.2% of bw   (1.17x)
+  streams 6        :    172.5 us   617.6 GB/s   86.9% of bw   (1.13x)
+  streams 9        :    170.4 us   625.4 GB/s   88.0% of bw   (1.14x)
+#### cols=1 rows=0 ####
+q8_group_bench: AMD Radeon Graphics | 60 CU | peak ref 711 GB/s | ncols=1 rows=0
+
+group=single: 9 matrices, 106.54 MB, x=2560 (1 vector, quantized once)
+  GDN qkv      2560->10240    27.85 MB     60.3 us 462070.1 GB/s 64988.8%
+  GDN gate     2560->6144     16.71 MB     29.0 us 576997.5 GB/s 81153.0%
+  GDN/QSA out  6144->2560     16.71 MB     31.6 us 528330.7 GB/s 74308.1%
+  QSA q        2560->12288    33.42 MB     53.0 us 630361.9 GB/s 88658.5%
+  QSA k/v      2560->512       1.39 MB      6.1 us 229361.0 GB/s 32258.9%
+  HC down     10240->320       3.48 MB     12.2 us 284545.6 GB/s 40020.5%
+  HC up         320->10240     3.48 MB     10.6 us 327227.3 GB/s 46023.5%
+  shared g/u   2560->640       1.74 MB      5.4 us 320244.3 GB/s 45041.4%
+  shared down   640->2560      1.74 MB      7.0 us 249978.5 GB/s 35158.7%
+  sum of isolated   :    215.2 us  (106.54 MB per layer)
+  serial   1 stream :    189.5 us   562.3 GB/s   79.1% of bw
+  streams 2        :    165.0 us   645.7 GB/s   90.8% of bw   (1.15x)
+  streams 3        :    161.6 us   659.1 GB/s   92.7% of bw   (1.17x)
+  streams 5        :    163.0 us   653.5 GB/s   91.9% of bw   (1.16x)
+  streams 6        :    161.5 us   659.7 GB/s   92.8% of bw   (1.17x)
+  streams 9        :    160.6 us   663.2 GB/s   93.3% of bw   (1.18x)
+#### cols=2 rows=1 ####
+q8_group_bench: AMD Radeon Graphics | 60 CU | peak ref 711 GB/s | ncols=2 rows=1
+
+group=single: 9 matrices, 106.54 MB, x=2560 (1 vector, quantized once)
+  GDN qkv      2560->10240    27.85 MB     69.3 us 401788.5 GB/s 56510.3%
+  GDN gate     2560->6144     16.71 MB     40.1 us 416928.2 GB/s 58639.7%
+  GDN/QSA out  6144->2560     16.71 MB     36.1 us 463248.2 GB/s 65154.5%
+  QSA q        2560->12288    33.42 MB     67.0 us 498810.5 GB/s 70156.2%
+  QSA k/v      2560->512       1.39 MB      6.2 us 223903.4 GB/s 31491.3%
+  HC down     10240->320       3.48 MB     14.7 us 237561.5 GB/s 33412.3%
+  HC up         320->10240     3.48 MB     13.7 us 254882.6 GB/s 35848.5%
+  shared g/u   2560->640       1.74 MB      6.4 us 273718.2 GB/s 38497.6%
+  shared down   640->2560      1.74 MB      7.7 us 225498.8 GB/s 31715.7%
+  sum of isolated   :    261.1 us  (106.54 MB per layer)
+  serial   1 stream :    255.5 us   417.0 GB/s   58.6% of bw
+  streams 2        :    205.0 us   519.8 GB/s   73.1% of bw   (1.25x)
+  streams 3        :    210.0 us   507.4 GB/s   71.4% of bw   (1.22x)
+  streams 5        :    202.7 us   525.7 GB/s   73.9% of bw   (1.26x)
+  streams 6        :    213.3 us   499.5 GB/s   70.2% of bw   (1.20x)
+  streams 9        :    203.8 us   522.8 GB/s   73.5% of bw   (1.25x)
+#### cols=2 rows=0 ####
+q8_group_bench: AMD Radeon Graphics | 60 CU | peak ref 711 GB/s | ncols=2 rows=0
+
+group=single: 9 matrices, 106.54 MB, x=2560 (1 vector, quantized once)
+  GDN qkv      2560->10240    27.85 MB     66.2 us 421003.3 GB/s 59212.8%
+  GDN gate     2560->6144     16.71 MB     35.2 us 474669.2 GB/s 66760.8%
+  GDN/QSA out  6144->2560     16.71 MB     33.9 us 493566.1 GB/s 69418.6%
+  QSA q        2560->12288    33.42 MB     58.0 us 576281.0 GB/s 81052.2%
+  QSA k/v      2560->512       1.39 MB      6.5 us 215584.8 GB/s 30321.3%
+  HC down     10240->320       3.48 MB     14.6 us 237885.7 GB/s 33457.9%
+  HC up         320->10240     3.48 MB     12.9 us 269815.1 GB/s 37948.7%
+  shared g/u   2560->640       1.74 MB      6.3 us 274408.6 GB/s 38594.7%
+  shared down   640->2560      1.74 MB      7.8 us 224105.4 GB/s 31519.7%
+  sum of isolated   :    241.3 us  (106.54 MB per layer)
+  serial   1 stream :    217.7 us   489.4 GB/s   68.8% of bw
+  streams 2        :    173.5 us   614.0 GB/s   86.4% of bw   (1.25x)
+  streams 3        :    181.7 us   586.4 GB/s   82.5% of bw   (1.20x)
+  streams 5        :    176.1 us   604.9 GB/s   85.1% of bw   (1.24x)
+  streams 6        :    178.1 us   598.1 GB/s   84.1% of bw   (1.22x)
+  streams 9        :    174.5 us   610.4 GB/s   85.8% of bw   (1.25x)
+#### cols=3 rows=1 ####
+q8_group_bench: AMD Radeon Graphics | 60 CU | peak ref 711 GB/s | ncols=3 rows=1
+
+group=single: 9 matrices, 106.54 MB, x=2560 (1 vector, quantized once)
+  GDN qkv      2560->10240    27.85 MB    118.2 us 235647.8 GB/s 33143.2%
+  GDN gate     2560->6144     16.71 MB     83.6 us 199858.2 GB/s 28109.5%
+  GDN/QSA out  6144->2560     16.71 MB     48.5 us 344523.5 GB/s 48456.2%
+  QSA q        2560->12288    33.42 MB    113.1 us 295622.8 GB/s 41578.4%
+  QSA k/v      2560->512       1.39 MB      9.5 us 146413.0 GB/s 20592.5%
+  HC down     10240->320       3.48 MB     26.1 us 133418.8 GB/s 18764.9%
+  HC up         320->10240     3.48 MB     55.9 us 62320.1 GB/s 8765.1%
+  shared g/u   2560->640       1.74 MB      9.8 us 178365.7 GB/s 25086.6%
+  shared down   640->2560      1.74 MB     11.2 us 155211.0 GB/s 21830.0%
+  sum of isolated   :    475.8 us  (106.54 MB per layer)
+  serial   1 stream :    461.0 us   231.1 GB/s   32.5% of bw
+  streams 2        :    259.7 us   410.2 GB/s   57.7% of bw   (1.77x)
+  streams 3        :    328.5 us   324.3 GB/s   45.6% of bw   (1.40x)
+  streams 5        :    260.9 us   408.4 GB/s   57.4% of bw   (1.77x)
+  streams 6        :    300.6 us   354.5 GB/s   49.9% of bw   (1.53x)
+  streams 9        :    262.5 us   405.9 GB/s   57.1% of bw   (1.76x)
+#### cols=3 rows=0 ####
+q8_group_bench: AMD Radeon Graphics | 60 CU | peak ref 711 GB/s | ncols=3 rows=0
+
+group=single: 9 matrices, 106.54 MB, x=2560 (1 vector, quantized once)
+  GDN qkv      2560->10240    27.85 MB     58.8 us 473763.6 GB/s 66633.4%
+  GDN gate     2560->6144     16.71 MB     34.3 us 487460.8 GB/s 68559.9%
+  GDN/QSA out  6144->2560     16.71 MB     37.3 us 447661.7 GB/s 62962.3%
+  QSA q        2560->12288    33.42 MB     61.5 us 543306.5 GB/s 76414.4%
+  QSA k/v      2560->512       1.39 MB     10.0 us 138602.2 GB/s 19494.0%
+  HC down     10240->320       3.48 MB     26.3 us 132343.4 GB/s 18613.7%
+  HC up         320->10240     3.48 MB     16.6 us 210044.0 GB/s 29542.1%
+  shared g/u   2560->640       1.74 MB      9.7 us 178951.5 GB/s 25169.0%
+  shared down   640->2560      1.74 MB      9.0 us 193255.3 GB/s 27180.8%
+  sum of isolated   :    263.6 us  (106.54 MB per layer)
+  serial   1 stream :    249.4 us   427.1 GB/s   60.1% of bw
+  streams 2        :    203.2 us   524.2 GB/s   73.7% of bw   (1.23x)
+  streams 3        :    202.1 us   527.1 GB/s   74.1% of bw   (1.23x)
+  streams 5        :    204.3 us   521.4 GB/s   73.3% of bw   (1.22x)
+  streams 6        :    206.3 us   516.4 GB/s   72.6% of bw   (1.21x)
+  streams 9        :    199.7 us   533.5 GB/s   75.0% of bw   (1.25x)
+#### cols=4 rows=1 ####
+q8_group_bench: AMD Radeon Graphics | 60 CU | peak ref 711 GB/s | ncols=4 rows=1
+
+group=single: 9 matrices, 106.54 MB, x=2560 (1 vector, quantized once)
+  GDN qkv      2560->10240    27.85 MB    131.2 us 212217.6 GB/s 29847.8%
+  GDN gate     2560->6144     16.71 MB     86.7 us 192767.0 GB/s 27112.1%
+  GDN/QSA out  6144->2560     16.71 MB     66.4 us 251836.8 GB/s 35420.1%
+  QSA q        2560->12288    33.42 MB    128.9 us 259388.2 GB/s 36482.2%
+  QSA k/v      2560->512       1.39 MB     11.0 us 126474.9 GB/s 17788.3%
+  HC down     10240->320       3.48 MB     34.4 us 101287.3 GB/s 14245.8%
+  HC up         320->10240     3.48 MB     40.3 us 86441.3 GB/s 12157.7%
+  shared g/u   2560->640       1.74 MB     11.3 us 154228.1 GB/s 21691.7%
+  shared down   640->2560      1.74 MB     14.9 us 116559.0 GB/s 16393.7%
+  sum of isolated   :    525.0 us  (106.54 MB per layer)
+  serial   1 stream :    518.5 us   205.5 GB/s   28.9% of bw
+  streams 2        :    336.6 us   316.5 GB/s   44.5% of bw   (1.54x)
+  streams 3        :    388.2 us   274.4 GB/s   38.6% of bw   (1.34x)
+  streams 5        :    332.5 us   320.4 GB/s   45.1% of bw   (1.56x)
+  streams 6        :    363.2 us   293.3 GB/s   41.3% of bw   (1.43x)
+  streams 9        :    336.3 us   316.8 GB/s   44.6% of bw   (1.54x)
+#### cols=4 rows=0 ####
+q8_group_bench: AMD Radeon Graphics | 60 CU | peak ref 711 GB/s | ncols=4 rows=0
+
+group=single: 9 matrices, 106.54 MB, x=2560 (1 vector, quantized once)
+  GDN qkv      2560->10240    27.85 MB     65.6 us 424778.5 GB/s 59743.8%
+  GDN gate     2560->6144     16.71 MB     39.4 us 424080.1 GB/s 59645.6%
+  GDN/QSA out  6144->2560     16.71 MB     44.0 us 379683.2 GB/s 53401.3%
+  QSA q        2560->12288    33.42 MB     66.7 us 500813.4 GB/s 70437.9%
+  QSA k/v      2560->512       1.39 MB     11.0 us 126057.0 GB/s 17729.5%
+  HC down     10240->320       3.48 MB     34.5 us 100930.4 GB/s 14195.6%
+  HC up         320->10240     3.48 MB     23.1 us 150670.7 GB/s 21191.4%
+  shared g/u   2560->640       1.74 MB     11.2 us 154935.1 GB/s 21791.1%
+  shared down   640->2560      1.74 MB     11.8 us 147529.5 GB/s 20749.6%
+  sum of isolated   :    307.4 us  (106.54 MB per layer)
+  serial   1 stream :    295.7 us   360.2 GB/s   50.7% of bw
+  streams 2        :    244.3 us   436.1 GB/s   61.3% of bw   (1.21x)
+  streams 3        :    242.8 us   438.8 GB/s   61.7% of bw   (1.22x)
+  streams 5        :    243.3 us   437.9 GB/s   61.6% of bw   (1.22x)
+  streams 6        :    239.1 us   445.5 GB/s   62.7% of bw   (1.24x)
+  streams 9        :    235.8 us   451.8 GB/s   63.5% of bw   (1.25x)
+#### cols=5 rows=1 ####
+q8_group_bench: AMD Radeon Graphics | 60 CU | peak ref 711 GB/s | ncols=5 rows=1
+
+group=single: 9 matrices, 106.54 MB, x=2560 (1 vector, quantized once)
+  GDN qkv      2560->10240    27.85 MB    142.9 us 194867.4 GB/s 27407.5%
+  GDN gate     2560->6144     16.71 MB     89.7 us 186236.8 GB/s 26193.6%
+  GDN/QSA out  6144->2560     16.71 MB     75.9 us 220186.3 GB/s 30968.5%
+  QSA q        2560->12288    33.42 MB    141.4 us 236374.4 GB/s 33245.3%
+  QSA k/v      2560->512       1.39 MB     12.3 us 112822.4 GB/s 15868.1%
+  HC down     10240->320       3.48 MB     43.0 us 80977.2 GB/s 11389.2%
+  HC up         320->10240     3.48 MB     31.9 us 108993.7 GB/s 15329.6%
+  shared g/u   2560->640       1.74 MB     12.6 us 138294.3 GB/s 19450.7%
+  shared down   640->2560      1.74 MB     16.8 us 103745.5 GB/s 14591.5%
+  sum of isolated   :    566.6 us  (106.54 MB per layer)
+  serial   1 stream :    559.7 us   190.3 GB/s   26.8% of bw
+  streams 2        :    384.3 us   277.2 GB/s   39.0% of bw   (1.46x)
+  streams 3        :    423.1 us   251.8 GB/s   35.4% of bw   (1.32x)
+  streams 5        :    378.5 us   281.5 GB/s   39.6% of bw   (1.48x)
+  streams 6        :    404.6 us   263.3 GB/s   37.0% of bw   (1.38x)
+  streams 9        :    380.9 us   279.7 GB/s   39.3% of bw   (1.47x)
+#### cols=5 rows=0 ####
+q8_group_bench: AMD Radeon Graphics | 60 CU | peak ref 711 GB/s | ncols=5 rows=0
+
+group=single: 9 matrices, 106.54 MB, x=2560 (1 vector, quantized once)
+  GDN qkv      2560->10240    27.85 MB     72.5 us 384314.5 GB/s 54052.7%
+  GDN gate     2560->6144     16.71 MB     43.7 us 382044.3 GB/s 53733.4%
+  GDN/QSA out  6144->2560     16.71 MB     49.5 us 337455.5 GB/s 47462.1%
+  QSA q        2560->12288    33.42 MB     73.8 us 453001.9 GB/s 63713.3%
+  QSA k/v      2560->512       1.39 MB     12.3 us 112932.2 GB/s 15883.6%
+  HC down     10240->320       3.48 MB     43.0 us 80924.5 GB/s 11381.8%
+  HC up         320->10240     3.48 MB     27.0 us 128818.1 GB/s 18117.9%
+  shared g/u   2560->640       1.74 MB     12.5 us 138868.0 GB/s 19531.4%
+  shared down   640->2560      1.74 MB     13.1 us 132646.3 GB/s 18656.3%
+  sum of isolated   :    347.6 us  (106.54 MB per layer)
+  serial   1 stream :    335.2 us   317.8 GB/s   44.7% of bw
+  streams 2        :    275.6 us   386.6 GB/s   54.4% of bw   (1.22x)
+  streams 3        :    274.6 us   388.0 GB/s   54.6% of bw   (1.22x)
+  streams 5        :    277.1 us   384.5 GB/s   54.1% of bw   (1.21x)
+  streams 6        :    276.5 us   385.3 GB/s   54.2% of bw   (1.21x)
+  streams 9        :    272.0 us   391.7 GB/s   55.1% of bw   (1.23x)
+#### cols=6 rows=1 ####
+q8_group_bench: AMD Radeon Graphics | 60 CU | peak ref 711 GB/s | ncols=6 rows=1
+
+group=single: 9 matrices, 106.54 MB, x=2560 (1 vector, quantized once)
+  GDN qkv      2560->10240    27.85 MB    153.8 us 181153.3 GB/s 25478.7%
+  GDN gate     2560->6144     16.71 MB     93.7 us 178428.4 GB/s 25095.4%
+  GDN/QSA out  6144->2560     16.71 MB     87.2 us 191585.3 GB/s 26945.9%
+  QSA q        2560->12288    33.42 MB    153.7 us 217406.5 GB/s 30577.6%
+  QSA k/v      2560->512       1.39 MB     13.2 us 105726.9 GB/s 14870.2%
+  HC down     10240->320       3.48 MB     44.6 us 78069.4 GB/s 10980.2%
+  HC up         320->10240     3.48 MB     35.5 us 97962.4 GB/s 13778.1%
+  shared g/u   2560->640       1.74 MB     13.4 us 130259.7 GB/s 18320.6%
+  shared down   640->2560      1.74 MB     19.0 us 91428.2 GB/s 12859.1%
+  sum of isolated   :    614.1 us  (106.54 MB per layer)
+  serial   1 stream :    608.4 us   175.1 GB/s   24.6% of bw
+  streams 2        :    429.2 us   248.2 GB/s   34.9% of bw   (1.42x)
+  streams 3        :    464.1 us   229.6 GB/s   32.3% of bw   (1.31x)
+  streams 5        :    422.2 us   252.3 GB/s   35.5% of bw   (1.44x)
+  streams 6        :    446.1 us   238.8 GB/s   33.6% of bw   (1.36x)
+  streams 9        :    427.7 us   249.1 GB/s   35.0% of bw   (1.42x)
+#### cols=6 rows=0 ####
+q8_group_bench: AMD Radeon Graphics | 60 CU | peak ref 711 GB/s | ncols=6 rows=0
+
+group=single: 9 matrices, 106.54 MB, x=2560 (1 vector, quantized once)
+  GDN qkv      2560->10240    27.85 MB     85.6 us 325346.8 GB/s 45759.0%
+  GDN gate     2560->6144     16.71 MB     52.7 us 317046.3 GB/s 44591.6%
+  GDN/QSA out  6144->2560     16.71 MB     52.3 us 319568.5 GB/s 44946.3%
+  QSA q        2560->12288    33.42 MB     85.9 us 389270.3 GB/s 54749.7%
+  QSA k/v      2560->512       1.39 MB     13.1 us 106052.4 GB/s 14915.9%
+  HC down     10240->320       3.48 MB     44.6 us 78142.1 GB/s 10990.4%
+  HC up         320->10240     3.48 MB     34.9 us 99625.1 GB/s 14012.0%
+  shared g/u   2560->640       1.74 MB     13.4 us 130030.5 GB/s 18288.4%
+  shared down   640->2560      1.74 MB     16.3 us 107036.9 GB/s 15054.4%
+  sum of isolated   :    398.8 us  (106.54 MB per layer)
+  serial   1 stream :    386.5 us   275.6 GB/s   38.8% of bw
+  streams 2        :    321.8 us   331.1 GB/s   46.6% of bw   (1.20x)
+  streams 3        :    320.7 us   332.2 GB/s   46.7% of bw   (1.21x)
+  streams 5        :    319.8 us   333.2 GB/s   46.9% of bw   (1.21x)
+  streams 6        :    322.1 us   330.7 GB/s   46.5% of bw   (1.20x)
+  streams 9        :    317.9 us   335.2 GB/s   47.1% of bw   (1.22x)
+#### cols=7 rows=1 ####
+q8_group_bench: AMD Radeon Graphics | 60 CU | peak ref 711 GB/s | ncols=7 rows=1
+
+group=single: 9 matrices, 106.54 MB, x=2560 (1 vector, quantized once)
+  GDN qkv      2560->10240    27.85 MB    148.9 us 187037.2 GB/s 26306.2%
+  GDN gate     2560->6144     16.71 MB     86.9 us 192217.4 GB/s 27034.8%
+  GDN/QSA out  6144->2560     16.71 MB     90.3 us 185163.8 GB/s 26042.7%
+  QSA q        2560->12288    33.42 MB    152.3 us 219411.7 GB/s 30859.6%
+  QSA k/v      2560->512       1.39 MB     14.7 us 94688.6 GB/s 13317.7%
+  HC down     10240->320       3.48 MB     50.7 us 68623.8 GB/s 9651.7%
+  HC up         320->10240     3.48 MB     41.2 us 84474.4 GB/s 11881.1%
+  shared g/u   2560->640       1.74 MB     14.9 us 116929.7 GB/s 16445.8%
+  shared down   640->2560      1.74 MB     20.2 us 86197.7 GB/s 12123.5%
+  sum of isolated   :    620.2 us  (106.54 MB per layer)
+  serial   1 stream :    613.9 us   173.5 GB/s   24.4% of bw
+  streams 2        :    496.3 us   214.7 GB/s   30.2% of bw   (1.24x)
+  streams 3        :    512.5 us   207.9 GB/s   29.2% of bw   (1.20x)
+  streams 5        :    487.4 us   218.6 GB/s   30.7% of bw   (1.26x)
+  streams 6        :    503.9 us   211.4 GB/s   29.7% of bw   (1.22x)
+  streams 9        :    489.9 us   217.5 GB/s   30.6% of bw   (1.25x)
+#### cols=7 rows=0 ####
+q8_group_bench: AMD Radeon Graphics | 60 CU | peak ref 711 GB/s | ncols=7 rows=0
+
+group=single: 9 matrices, 106.54 MB, x=2560 (1 vector, quantized once)
+  GDN qkv      2560->10240    27.85 MB     92.4 us 301471.7 GB/s 42401.1%
+  GDN gate     2560->6144     16.71 MB     57.2 us 292088.7 GB/s 41081.4%
+  GDN/QSA out  6144->2560     16.71 MB     58.5 us 285716.7 GB/s 40185.2%
+  QSA q        2560->12288    33.42 MB     93.4 us 357877.1 GB/s 50334.3%
+  QSA k/v      2560->512       1.39 MB     14.8 us 94406.0 GB/s 13277.9%
+  HC down     10240->320       3.48 MB     50.8 us 68499.6 GB/s 9634.3%
+  HC up         320->10240     3.48 MB     38.8 us 89623.6 GB/s 12605.3%
+  shared g/u   2560->640       1.74 MB     14.9 us 117118.3 GB/s 16472.3%
+  shared down   640->2560      1.74 MB     17.5 us 99590.9 GB/s 14007.2%
+  sum of isolated   :    438.3 us  (106.54 MB per layer)
+  serial   1 stream :    428.3 us   248.8 GB/s   35.0% of bw
+  streams 2        :    355.8 us   299.4 GB/s   42.1% of bw   (1.20x)
+  streams 3        :    355.9 us   299.3 GB/s   42.1% of bw   (1.20x)
+  streams 5        :    354.3 us   300.7 GB/s   42.3% of bw   (1.21x)
+  streams 6        :    357.5 us   298.0 GB/s   41.9% of bw   (1.20x)
+  streams 9        :    353.9 us   301.1 GB/s   42.3% of bw   (1.21x)
+#### cols=8 rows=1 ####
+q8_group_bench: AMD Radeon Graphics | 60 CU | peak ref 711 GB/s | ncols=8 rows=1
+
+group=single: 9 matrices, 106.54 MB, x=2560 (1 vector, quantized once)
+  GDN qkv      2560->10240    27.85 MB    169.6 us 164269.7 GB/s 23104.0%
+  GDN gate     2560->6144     16.71 MB     95.8 us 174426.4 GB/s 24532.6%
+  GDN/QSA out  6144->2560     16.71 MB    104.3 us 160286.8 GB/s 22543.9%
+  QSA q        2560->12288    33.42 MB    173.4 us 192807.2 GB/s 27117.8%
+  QSA k/v      2560->512       1.39 MB     16.3 us 85440.4 GB/s 12016.9%
+  HC down     10240->320       3.48 MB     59.6 us 58390.3 GB/s 8212.4%
+  HC up         320->10240     3.48 MB     47.0 us 74116.5 GB/s 10424.3%
+  shared g/u   2560->640       1.74 MB     16.5 us 105200.0 GB/s 14796.1%
+  shared down   640->2560      1.74 MB     22.6 us 76879.0 GB/s 10812.8%
+  sum of isolated   :    705.1 us  (106.54 MB per layer)
+  serial   1 stream :    700.7 us   152.0 GB/s   21.4% of bw
+  streams 2        :    561.5 us   189.7 GB/s   26.7% of bw   (1.25x)
+  streams 3        :    572.8 us   186.0 GB/s   26.2% of bw   (1.22x)
+  streams 5        :    548.1 us   194.4 GB/s   27.3% of bw   (1.28x)
+  streams 6        :    564.8 us   188.6 GB/s   26.5% of bw   (1.24x)
+  streams 9        :    548.7 us   194.2 GB/s   27.3% of bw   (1.28x)
+#### cols=8 rows=0 ####
+q8_group_bench: AMD Radeon Graphics | 60 CU | peak ref 711 GB/s | ncols=8 rows=0
+
+group=single: 9 matrices, 106.54 MB, x=2560 (1 vector, quantized once)
+  GDN qkv      2560->10240    27.85 MB    117.6 us 236761.6 GB/s 33299.8%
+  GDN gate     2560->6144     16.71 MB     70.8 us 236100.5 GB/s 33206.8%
+  GDN/QSA out  6144->2560     16.71 MB     60.3 us 277113.1 GB/s 38975.1%
+  QSA q        2560->12288    33.42 MB    119.4 us 280029.2 GB/s 39385.3%
+  QSA k/v      2560->512       1.39 MB     16.3 us 85335.7 GB/s 12002.2%
+  HC down     10240->320       3.48 MB     59.6 us 58398.1 GB/s 8213.5%
+  HC up         320->10240     3.48 MB     52.2 us 66683.8 GB/s 9378.9%
+  shared g/u   2560->640       1.74 MB     16.5 us 105378.2 GB/s 14821.1%
+  shared down   640->2560      1.74 MB     20.1 us 86420.2 GB/s 12154.7%
+  sum of isolated   :    532.9 us  (106.54 MB per layer)
+  serial   1 stream :    526.0 us   202.5 GB/s   28.5% of bw
+  streams 2        :    438.3 us   243.1 GB/s   34.2% of bw   (1.20x)
+  streams 3        :    444.4 us   239.7 GB/s   33.7% of bw   (1.18x)
+  streams 5        :    436.1 us   244.3 GB/s   34.4% of bw   (1.21x)
+  streams 6        :    441.9 us   241.1 GB/s   33.9% of bw   (1.19x)
+  streams 9        :    437.3 us   243.6 GB/s   34.3% of bw   (1.20x)
+

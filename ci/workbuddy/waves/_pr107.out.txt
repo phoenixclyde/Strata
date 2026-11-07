@@ -1,0 +1,29 @@
+rc = 0
+等待冷启动（最多 300s）...
+READY after 20s (http=200)
+
+===== [1] /v1/models =====
+{"object": "list", "data": [{"id": "qwen3.8-flash-next-ud-iq4_xs", "object": "model", "status": {"value": "loaded"}, "meta": {"n_ctx": 262144}, "architecture": {"input_modalities": ["text"], "output_modalities": ["text"]}}]}
+
+===== [2] 一次真实推理（关思考，短）=====
+{"id": "chatcmpl-b22b466f007a401bbf6a7971", "object": "chat.completion", "created": 1791388833, "model": "qwen3.8-flash-next-ud-iq4_xs", "choices": [{"index": 0, "message": {"role": "assistant", "content": "OK"}, "finish_reason": "stop"}], "usage": {"prompt_tokens": 17, "completion_tokens": 2, "total_tokens": 19, "prompt_tokens_details": {"cached_tokens": 0}}, "timings": {"cache_n": 0, "prompt_n": 17, "prompt_ms": 512.2, "prompt_per_token_ms": 30.129, "prompt_per_second": 33.2, "predicted_n": 2, "predicted_ms": 194.7, "predicted_per_token_ms": 97.35, "predicted_per_second": 10.3, "draft_n": 3, "draft_n_accepted": 3}}
+
+===== [3] 工具调用能力 =====
+finish_reason = tool_calls
+tool_calls = [{"id": "call_cda260d2c602444f933e357d", "type": "function", "function": {"name": "get_weather", "arguments": "{\"city\":\"Shanghai\"}"}}]
+
+===== [4] 容器内确认引擎是 0.1.40.2 =====
+-rwxr-xr-x 1 root root 24862088 Oct  7 15:53 /src/build-906/strata
+10cb60648180ca7463f51848bbd88a21  /src/build-906/strata
+project(strata VERSION 0.1.40.2 LANGUAGES CXX)
+--- 引擎进程命令行 ---
+      1       00:42 python3 serve/server.py --engine strata --config /data/strata-ud-iq4_xs.json --port 8090
+     10       00:41 /src/build-906/strata --serve --pack /data/packs/ud-iq4_xs --native /weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf --resident-budget-gib 76 --expert-profile /src/data/expert-profile.bin --expert-cache auto --spec 4 --spec-min-p 0.5 --mtp /data/mtp/rt --max-context 262144 --kv k8v4 --prefill auto
+
+===== [5] 终态 =====
+status=running  restart=unless-stopped  started=2026-10-07T15:59:58.361825313Z
+GPU[0]		: VRAM Total Used Memory (B): 33930874880
+               total        used        free      shared  buff/cache   available
+Mem:             125          42           4          35         114          82
+2026-10-08T00:00:40+08:00
+

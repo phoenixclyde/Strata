@@ -1,0 +1,115 @@
+# W800c stream_min 20261025_211057  arms: A=absent B=128 C=64  sizes 120,230,430,810,3098
+== ARM A rep 1 ready=58s val='' log0=39309
+BUILD wall=11.25 reused=0 read=7582 prompt_ms=11210.2
+   req   read   reused prompt_ms    ms/tok
+     0    145     7577    1851.4     12.77
+     1    255     7577    2262.4      8.87
+     2    470     7577    3218.7      6.85
+     3    839     7577    4078.3      4.86
+     4   2993     7577    6070.1      2.03
+DONE
+strata trace: lent 798 slots for 1024 tokens in 0.2 ms
+strata prefill timing: 896 tokens, GPU timeline 3123 ms, wall 3133 ms, host staging 54 ms: embed+steps 41 (1.3%) hc read 212 (6.8%) gdn 171 (5.5%) qsa proj 79 (2.5%) qsa indexer 0 (0.0%) qsa select 2 (0.1%) qsa attn 78 (2.5%) router+shared 177 (5.7%) host grouping 16 (0.5%) gather 6 (0.2%) wait copy 555 (17.8%) dequant 383 (12.3%) gemm gate/up 826 (26.5%) gemm down 405 (13.0%) combine 7 (0.2%) ple 5 (0.2%) gdn conv+gates 7 (0.2%) gdn recurrence 52 (1.7%) gdn out proj 74 (2.4%) hc write 24 (0.8%)
+strata trace: read 896 tokens (batched) in 3133.3 ms
+strata trace: refilled 798 slots on 1 stage(s) in 151.8 ms
+strata trace: lent 1884 slots for 7680 tokens in 0.2 ms
+strata prefill timing: 7577 tokens, GPU timeline 10513 ms, wall 10560 ms, host staging 155 ms: embed+steps 3 (0.0%) hc read 894 (8.5%) gdn 1305 (12.4%) qsa proj 565 (5.4%) qsa indexer 0 (0.0%) qsa select 52 (0.5%) qsa attn 1952 (18.6%) router+shared 285 (2.7%) host grouping 50 (0.5%) gather 32 (0.3%) wait copy 28 (0.3%) dequant 462 (4.4%) gemm gate/up 2500 (23.8%) gemm down 1196 (11.4%) combine 62 (0.6%) ple 44 (0.4%) gdn conv+gates 53 (0.5%) gdn recurrence 416 (4.0%) gdn out proj 476 (4.5%) hc write 135 (1.3%)
+strata trace: read 7577 tokens (batched) in 10560.4 ms
+strata trace: refilled 1884 slots on 1 stage(s) in 368.5 ms
+strata trace: lent 192 slots for 256 tokens in 0.1 ms
+strata prefill timing: 140 tokens, GPU timeline 1399 ms, wall 1401 ms, host staging 180 ms: embed+steps 0 (0.0%) hc read 109 (7.8%) gdn 66 (4.7%) qsa proj 41 (2.9%) qsa indexer 0 (0.0%) qsa select 2 (0.2%) qsa attn 42 (3.0%) router+shared 35 (2.5%) host grouping 11 (0.8%) gather 2 (0.2%) wait copy 334 (23.9%) dequant 232 (16.6%) gemm gate/up 309 (22.1%) gemm down 159 (11.3%) combine 1 (0.1%) ple 2 (0.1%) gdn conv+gates 2 (0.2%) gdn recurrence 9 (0.6%) gdn out proj 32 (2.3%) hc write 12 (0.8%)
+strata trace: read 140 tokens (batched) in 1401.6 ms
+strata trace: refilled 192 slots on 1 stage(s) in 37.2 ms
+strata trace: lent 192 slots for 256 tokens in 0.1 ms
+strata prefill timing: 250 tokens, GPU timeline 1849 ms, wall 1852 ms, host staging 214 ms: embed+steps 0 (0.0%) hc read 114 (6.2%) gdn 68 (3.7%) qsa proj 45 (2.4%) qsa indexer 0 (0.0%) qsa select 3 (0.2%) qsa attn 74 (4.0%) router+shared 38 (2.0%) host grouping 12 (0.7%) gather 3 (0.1%) wait copy 492 (26.6%) dequant 283 (15.3%) gemm gate/up 434 (23.5%) gemm down 216 (11.7%) combine 2 (0.1%) ple 2 (0.1%) gdn conv+gates 3 (0.2%) gdn recurrence 15 (0.8%) gdn out proj 32 (1.8%) hc write 14 (0.7%)
+strata trace: read 250 tokens (batched) in 1852.1 ms
+strata trace: refilled 192 slots on 1 stage(s) in 36.1 ms
+strata trace: lent 222 slots for 512 tokens in 0.1 ms
+strata prefill timing: 465 tokens, GPU timeline 2512 ms, wall 2516 ms, host staging 263 ms: embed+steps 0 (0.0%) hc read 128 (5.1%) gdn 111 (4.4%) qsa proj 53 (2.1%) qsa indexer 0 (0.0%) qsa select 6 (0.2%) qsa attn 138 (5.5%) router+shared 48 (1.9%) host grouping 14 (0.6%) gather 3 (0.1%) wait copy 652 (26.0%) dequant 345 (13.7%) gemm gate/up 608 (24.2%) gemm down 300 (12.0%) combine 4 (0.2%) ple 3 (0.1%) gdn conv+gates 4 (0.2%) gdn recurrence 26 (1.1%) gdn out proj 50 (2.0%) hc write 17 (0.7%)
+strata trace: read 465 tokens (batched) in 2516.5 ms
+strata trace: refilled 222 slots on 1 stage(s) in 42.5 ms
+strata trace: lent 798 slots for 1024 tokens in 0.1 ms
+strata prefill timing: 834 tokens, GPU timeline 3432 ms, wall 3439 ms, host staging 320 ms: embed+steps 1 (0.0%) hc read 184 (5.4%) gdn 223 (6.5%) qsa proj 79 (2.3%) qsa indexer 0 (0.0%) qsa select 11 (0.3%) qsa attn 248 (7.2%) router+shared 64 (1.9%) host grouping 16 (0.5%) gather 4 (0.1%) wait copy 791 (23.1%) dequant 415 (12.1%) gemm gate/up 810 (23.6%) gemm down 420 (12.2%) combine 7 (0.2%) ple 5 (0.2%) gdn conv+gates 7 (0.2%) gdn recurrence 49 (1.4%) gdn out proj 75 (2.2%) hc write 23 (0.7%)
+strata trace: read 834 tokens (batched) in 3440.1 ms
+strata trace: refilled 798 slots on 1 stage(s) in 152.5 ms
+strata trace: lent 1133 slots for 3072 tokens in 0.1 ms
+strata prefill timing: 2988 tokens, GPU timeline 5405 ms, wall 5425 ms, host staging 413 ms: embed+steps 3 (0.1%) hc read 387 (7.2%) gdn 555 (10.3%) qsa proj 238 (4.4%) qsa indexer 0 (0.0%) qsa select 41 (0.8%) qsa attn 889 (16.4%) router+shared 189 (3.5%) host grouping 32 (0.6%) gather 11 (0.2%) wait copy 36 (0.7%) dequant 521 (9.6%) gemm gate/up 1371 (25.4%) gemm down 651 (12.1%) combine 25 (0.5%) ple 18 (0.3%) gdn conv+gates 21 (0.4%) gdn recurrence 166 (3.1%) gdn out proj 190 (3.5%) hc write 60 (1.1%)
+strata trace: read 2988 tokens (batched) in 5425.9 ms
+strata trace: refilled 1133 slots on 1 stage(s) in 218.6 ms
+
+== ARM B rep 1 ready=98s val='128' log0=39497
+BUILD wall=11.27 reused=0 read=7582 prompt_ms=11229.5
+   req   read   reused prompt_ms    ms/tok
+     0    145     7577    3858.5     26.61
+     1    255     7577    3882.2     15.22
+     2    470     7577    4010.2      8.53
+     3    839     7577    3913.4      4.66
+     4   2993     7577    6108.0      2.04
+DONE
+strata trace: lent 798 slots for 1024 tokens in 0.2 ms
+strata prefill timing: 896 tokens, GPU timeline 3538 ms, wall 3548 ms, host staging 83 ms: embed+steps 47 (1.3%) hc read 219 (6.2%) gdn 172 (4.9%) qsa proj 81 (2.3%) qsa indexer 0 (0.0%) qsa select 3 (0.1%) qsa attn 84 (2.4%) router+shared 241 (6.8%) host grouping 23 (0.6%) gather 7 (0.2%) wait copy 712 (20.1%) dequant 541 (15.3%) gemm gate/up 828 (23.4%) gemm down 409 (11.6%) combine 8 (0.2%) ple 6 (0.2%) gdn conv+gates 8 (0.2%) gdn recurrence 51 (1.4%) gdn out proj 72 (2.0%) hc write 27 (0.8%)
+strata trace: read 896 tokens (batched) in 3548.8 ms
+strata trace: refilled 798 slots on 1 stage(s) in 150.2 ms
+strata trace: lent 1884 slots for 7680 tokens in 0.2 ms
+strata prefill timing: 7577 tokens, GPU timeline 10504 ms, wall 10552 ms, host staging 183 ms: embed+steps 3 (0.0%) hc read 895 (8.5%) gdn 1306 (12.4%) qsa proj 565 (5.4%) qsa indexer 0 (0.0%) qsa select 52 (0.5%) qsa attn 1952 (18.6%) router+shared 285 (2.7%) host grouping 44 (0.4%) gather 30 (0.3%) wait copy 28 (0.3%) dequant 460 (4.4%) gemm gate/up 2500 (23.8%) gemm down 1196 (11.4%) combine 62 (0.6%) ple 44 (0.4%) gdn conv+gates 53 (0.5%) gdn recurrence 416 (4.0%) gdn out proj 477 (4.5%) hc write 135 (1.3%)
+strata trace: read 7577 tokens (batched) in 10552.0 ms
+strata trace: refilled 1884 slots on 1 stage(s) in 361.4 ms
+strata trace: lent 700 slots for 256 tokens in 0.1 ms
+strata prefill timing: 140 tokens, GPU timeline 3323 ms, wall 3325 ms, host staging 262 ms: embed+steps 2 (0.1%) hc read 119 (3.6%) gdn 71 (2.1%) qsa proj 45 (1.4%) qsa indexer 0 (0.0%) qsa select 3 (0.1%) qsa attn 44 (1.3%) router+shared 34 (1.0%) host grouping 16 (0.5%) gather 3 (0.1%) wait copy 1974 (59.4%) dequant 466 (14.0%) gemm gate/up 312 (9.4%) gemm down 171 (5.1%) combine 2 (0.1%) ple 2 (0.1%) gdn conv+gates 3 (0.1%) gdn recurrence 9 (0.3%) gdn out proj 33 (1.0%) hc write 14 (0.4%)
+strata trace: read 140 tokens (batched) in 3325.8 ms
+strata trace: refilled 700 slots on 1 stage(s) in 133.2 ms
+strata trace: lent 700 slots for 256 tokens in 0.1 ms
+strata prefill timing: 250 tokens, GPU timeline 3325 ms, wall 3328 ms, host staging 344 ms: embed+steps 4 (0.1%) hc read 124 (3.7%) gdn 71 (2.1%) qsa proj 61 (1.8%) qsa indexer 0 (0.0%) qsa select 4 (0.1%) qsa attn 77 (2.3%) router+shared 36 (1.1%) host grouping 18 (0.6%) gather 3 (0.1%) wait copy 1686 (50.7%) dequant 505 (15.2%) gemm gate/up 436 (13.1%) gemm down 226 (6.8%) combine 3 (0.1%) ple 2 (0.1%) gdn conv+gates 4 (0.1%) gdn recurrence 15 (0.5%) gdn out proj 33 (1.0%) hc write 16 (0.5%)
+strata trace: read 250 tokens (batched) in 3328.8 ms
+strata trace: refilled 700 slots on 1 stage(s) in 132.8 ms
+strata trace: lent 729 slots for 512 tokens in 0.1 ms
+strata prefill timing: 465 tokens, GPU timeline 3398 ms, wall 3403 ms, host staging 424 ms: embed+steps 5 (0.1%) hc read 137 (4.0%) gdn 113 (3.3%) qsa proj 54 (1.6%) qsa indexer 0 (0.0%) qsa select 7 (0.2%) qsa attn 144 (4.2%) router+shared 45 (1.3%) host grouping 21 (0.6%) gather 4 (0.1%) wait copy 1276 (37.5%) dequant 545 (16.0%) gemm gate/up 633 (18.6%) gemm down 306 (9.0%) combine 5 (0.1%) ple 4 (0.1%) gdn conv+gates 5 (0.1%) gdn recurrence 27 (0.8%) gdn out proj 49 (1.4%) hc write 20 (0.6%)
+strata trace: read 465 tokens (batched) in 3403.3 ms
+strata trace: refilled 729 slots on 1 stage(s) in 137.5 ms
+strata trace: lent 798 slots for 1024 tokens in 0.2 ms
+strata prefill timing: 834 tokens, GPU timeline 3314 ms, wall 3322 ms, host staging 504 ms: embed+steps 3 (0.1%) hc read 185 (5.6%) gdn 166 (5.0%) qsa proj 80 (2.4%) qsa indexer 0 (0.0%) qsa select 12 (0.4%) qsa attn 258 (7.8%) router+shared 60 (1.8%) host grouping 21 (0.6%) gather 5 (0.1%) wait copy 661 (20.0%) dequant 528 (15.9%) gemm gate/up 785 (23.7%) gemm down 384 (11.6%) combine 8 (0.2%) ple 6 (0.2%) gdn conv+gates 8 (0.2%) gdn recurrence 47 (1.4%) gdn out proj 72 (2.2%) hc write 26 (0.8%)
+strata trace: read 834 tokens (batched) in 3322.3 ms
+strata trace: refilled 798 slots on 1 stage(s) in 150.8 ms
+strata trace: lent 1133 slots for 3072 tokens in 0.1 ms
+strata prefill timing: 2988 tokens, GPU timeline 5404 ms, wall 5424 ms, host staging 593 ms: embed+steps 3 (0.1%) hc read 387 (7.2%) gdn 555 (10.3%) qsa proj 238 (4.4%) qsa indexer 0 (0.0%) qsa select 41 (0.8%) qsa attn 889 (16.4%) router+shared 189 (3.5%) host grouping 30 (0.5%) gather 11 (0.2%) wait copy 37 (0.7%) dequant 521 (9.6%) gemm gate/up 1371 (25.4%) gemm down 653 (12.1%) combine 25 (0.5%) ple 18 (0.3%) gdn conv+gates 21 (0.4%) gdn recurrence 166 (3.1%) gdn out proj 191 (3.5%) hc write 60 (1.1%)
+strata trace: read 2988 tokens (batched) in 5425.0 ms
+strata trace: refilled 1133 slots on 1 stage(s) in 217.0 ms
+
+== ARM C rep 1 ready=61s val='64' log0=39685
+BUILD wall=11.23 reused=0 read=7582 prompt_ms=11187.0
+   req   read   reused prompt_ms    ms/tok
+     0    145     7577    4036.5     27.84
+     1    255     7577    3869.0     15.17
+     2    470     7577    3920.6      8.34
+     3    839     7577    3953.9      4.71
+     4   2993     7577    6089.0      2.03
+DONE
+strata trace: lent 798 slots for 1024 tokens in 0.2 ms
+strata prefill timing: 896 tokens, GPU timeline 3589 ms, wall 3600 ms, host staging 89 ms: embed+steps 45 (1.3%) hc read 224 (6.2%) gdn 172 (4.8%) qsa proj 81 (2.2%) qsa indexer 1 (0.0%) qsa select 3 (0.1%) qsa attn 84 (2.3%) router+shared 163 (4.6%) host grouping 23 (0.6%) gather 7 (0.2%) wait copy 705 (19.6%) dequant 549 (15.3%) gemm gate/up 948 (26.4%) gemm down 415 (11.6%) combine 8 (0.2%) ple 6 (0.2%) gdn conv+gates 8 (0.2%) gdn recurrence 51 (1.4%) gdn out proj 72 (2.0%) hc write 27 (0.7%)
+strata trace: read 896 tokens (batched) in 3600.2 ms
+strata trace: refilled 798 slots on 1 stage(s) in 150.5 ms
+strata trace: lent 1884 slots for 7680 tokens in 0.1 ms
+strata prefill timing: 7577 tokens, GPU timeline 10506 ms, wall 10554 ms, host staging 186 ms: embed+steps 3 (0.0%) hc read 895 (8.5%) gdn 1306 (12.4%) qsa proj 564 (5.4%) qsa indexer 0 (0.0%) qsa select 52 (0.5%) qsa attn 1952 (18.6%) router+shared 285 (2.7%) host grouping 44 (0.4%) gather 30 (0.3%) wait copy 28 (0.3%) dequant 462 (4.4%) gemm gate/up 2500 (23.8%) gemm down 1197 (11.4%) combine 62 (0.6%) ple 43 (0.4%) gdn conv+gates 53 (0.5%) gdn recurrence 417 (4.0%) gdn out proj 476 (4.5%) hc write 135 (1.3%)
+strata trace: read 7577 tokens (batched) in 10554.2 ms
+strata trace: refilled 1884 slots on 1 stage(s) in 364.7 ms
+strata trace: lent 700 slots for 256 tokens in 0.2 ms
+strata prefill timing: 140 tokens, GPU timeline 3525 ms, wall 3528 ms, host staging 265 ms: embed+steps 2 (0.0%) hc read 243 (6.9%) gdn 70 (2.0%) qsa proj 46 (1.3%) qsa indexer 0 (0.0%) qsa select 3 (0.1%) qsa attn 44 (1.2%) router+shared 34 (1.0%) host grouping 17 (0.5%) gather 3 (0.1%) wait copy 2050 (58.1%) dequant 466 (13.2%) gemm gate/up 312 (8.9%) gemm down 171 (4.9%) combine 2 (0.1%) ple 2 (0.1%) gdn conv+gates 3 (0.1%) gdn recurrence 9 (0.3%) gdn out proj 33 (0.9%) hc write 14 (0.4%)
+strata trace: read 140 tokens (batched) in 3528.4 ms
+strata trace: refilled 700 slots on 1 stage(s) in 132.4 ms
+strata trace: lent 700 slots for 256 tokens in 0.2 ms
+strata prefill timing: 250 tokens, GPU timeline 3348 ms, wall 3351 ms, host staging 341 ms: embed+steps 2 (0.0%) hc read 124 (3.7%) gdn 71 (2.1%) qsa proj 60 (1.8%) qsa indexer 0 (0.0%) qsa select 4 (0.1%) qsa attn 77 (2.3%) router+shared 36 (1.1%) host grouping 18 (0.5%) gather 3 (0.1%) wait copy 1719 (51.3%) dequant 500 (14.9%) gemm gate/up 435 (13.0%) gemm down 225 (6.7%) combine 3 (0.1%) ple 2 (0.1%) gdn conv+gates 4 (0.1%) gdn recurrence 15 (0.5%) gdn out proj 33 (1.0%) hc write 16 (0.5%)
+strata trace: read 250 tokens (batched) in 3351.8 ms
+strata trace: refilled 700 slots on 1 stage(s) in 133.3 ms
+strata trace: lent 729 slots for 512 tokens in 0.1 ms
+strata prefill timing: 465 tokens, GPU timeline 3339 ms, wall 3344 ms, host staging 419 ms: embed+steps 2 (0.1%) hc read 137 (4.1%) gdn 114 (3.4%) qsa proj 54 (1.6%) qsa indexer 0 (0.0%) qsa select 7 (0.2%) qsa attn 144 (4.3%) router+shared 45 (1.4%) host grouping 21 (0.6%) gather 3 (0.1%) wait copy 1267 (37.9%) dequant 524 (15.7%) gemm gate/up 607 (18.2%) gemm down 305 (9.1%) combine 5 (0.1%) ple 4 (0.1%) gdn conv+gates 5 (0.1%) gdn recurrence 27 (0.8%) gdn out proj 49 (1.5%) hc write 20 (0.6%)
+strata trace: read 465 tokens (batched) in 3344.6 ms
+strata trace: refilled 729 slots on 1 stage(s) in 140.0 ms
+strata trace: lent 798 slots for 1024 tokens in 0.2 ms
+strata prefill timing: 834 tokens, GPU timeline 3336 ms, wall 3343 ms, host staging 503 ms: embed+steps 3 (0.1%) hc read 185 (5.6%) gdn 166 (5.0%) qsa proj 80 (2.4%) qsa indexer 0 (0.0%) qsa select 12 (0.4%) qsa attn 258 (7.7%) router+shared 60 (1.8%) host grouping 21 (0.6%) gather 5 (0.1%) wait copy 683 (20.5%) dequant 525 (15.8%) gemm gate/up 785 (23.5%) gemm down 385 (11.5%) combine 8 (0.2%) ple 6 (0.2%) gdn conv+gates 8 (0.2%) gdn recurrence 47 (1.4%) gdn out proj 72 (2.2%) hc write 26 (0.8%)
+strata trace: read 834 tokens (batched) in 3343.8 ms
+strata trace: refilled 798 slots on 1 stage(s) in 152.9 ms
+strata trace: lent 1133 slots for 3072 tokens in 0.1 ms
+strata prefill timing: 2988 tokens, GPU timeline 5403 ms, wall 5423 ms, host staging 591 ms: embed+steps 1 (0.0%) hc read 387 (7.2%) gdn 555 (10.3%) qsa proj 238 (4.4%) qsa indexer 0 (0.0%) qsa select 41 (0.8%) qsa attn 889 (16.5%) router+shared 189 (3.5%) host grouping 29 (0.5%) gather 11 (0.2%) wait copy 36 (0.7%) dequant 522 (9.7%) gemm gate/up 1371 (25.4%) gemm down 653 (12.1%) combine 25 (0.5%) ple 18 (0.3%) gdn conv+gates 21 (0.4%) gdn recurrence 166 (3.1%) gdn out proj 190 (3.5%) hc write 60 (1.1%)
+strata trace: read 2988 tokens (batched) in 5423.6 ms
+strata trace: refilled 1133 slots on 1 stage(s) in 216.7 ms
+

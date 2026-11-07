@@ -1,0 +1,11 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W768 恢复波：把上一波被 L3/L4 静默削掉的 §3「非专家」细节（lm_head/qkv/shexp、hc_* 85%、上游 bench 指针）恢复；并已修好 T315 保护集的行号基准（改前->改后），使本波新加内容不再被削",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- **非专家**：Q8_0 303· BF16 483/1407 MiB=> routeK T1 不成立",
+   "new": "- **非专家**：Q8_0 303 含 lm_head/qkv/shexp · BF16 483/1407 MiB 中 hc_* 约 85% => routeK T1 不成立；上游 bench 规范见 COMMUNITY_BENCHMARKS.md、AMD_HIP:504 单卡未做"
+  }
+ ]
+}

@@ -1,0 +1,36 @@
+rc = 0
+===== [1] 撤掉 systemd 方案（回退我自己的多余动作）=====
+Removed "/etc/systemd/system/multi-user.target.wants/strata166.service".
+unit 还在吗: ls: cannot access '/etc/systemd/system/strata166.service': No such file or directory
+multi-user.target.wants 软链还在吗: ls: cannot access '/etc/systemd/system/multi-user.target.wants/strata166.service': No such file or directory
+--- 现在还有哪些 unit 提到 docker ---
+  (无：与另 5 个容器一致)
+
+===== [2] 清掉 --rm 的临时容器 =====
+Error response from daemon: No such container: strata166-402
+strata166-401 | Exited (137) About a minute ago
+strata166 | Exited (137) 23 hours ago
+--- VRAM 回地板确认 ---
+GPU[0]		: VRAM Total Used Memory (B): 10854400
+
+===== [3] 用 Docker restart policy 重建（与另 5 个同机制）=====
+3f1970166d0fa3cd3a530d9147ec1977abd8a4a132f3eee0d3a3f2afbb512873
+run_rc=0
+
+===== [4] 复核 restart policy 已生效 =====
+name=/strata166-402  image=strata-gfx906:0.1.40.2
+restart={"Name":"unless-stopped","MaximumRetryCount":0}
+status=running
+strata166-402 | Up 10 seconds | 0.0.0.0:8090->8090/tcp, [::]:8090->8090/tcp
+
+===== [5] 重启自动拉起 —— 机制自证（不做真重启）=====
+  docker.service enabled : enabled
+  docker.service active  : active
+  带 restart policy 的容器（daemon 重启后会自拉起）:
+    strata166-402        unless-stopped
+    open-webui           always
+    netdata              unless-stopped
+    comfyui-cu130        unless-stopped
+    portainer            always
+    searxng              unless-stopped
+

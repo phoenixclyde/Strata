@@ -1,0 +1,121 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W733：FRU 归属 + serve 覆写对上游的偏差 + 判据覆盖面第 5 次 + 登记 W733 报告",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- 生产：**`strata-gfx906:0.1.41`/`strata166-407`**（huihui；`-406` = 回滚位）/ 8090；**引擎补丁面 0 / serve 覆写 1**（telemetry PCIe，W728；重建后重跑 `patches/apply_telemetry_pcie.sh`）。\n  切换/回滚：`switch_strata.sh`。",
+   "new": "- 生产：**`strata-gfx906:0.1.41`/`strata166-407`**（huihui；`-406`=回滚位）/8090；**引擎补丁面 0/serve 覆写 1**（telemetry PCIe v4，W733；**只自用不提上游**，AMD 侧双向合计 vs NVML 纯 RX；重建后重跑 `patches/apply_telemetry_pcie.sh`）。切换/回滚 `switch_strata.sh`。"
+  },
+  {
+   "kind": "substr",
+   "old": "（真值）· `W713_PLAN.md`（全量账）· `W716_BASELINE.md` · `W717_P31_PARITY.md` · `W718_P23_CPUSHARE.md` · `W719_P33_PREFIX.md` · `W720_P28_P32.md` · `W721_VIEW.md` `W724_UPSTREAM_PR.md` · `W725_SWEEP.md` · `W726_MONITOR_BACKEND.md` · `W727_SETUPKEYS_MTP.md` · `W728_PCIE_TELEMETRY.md`",
+   "new": "（真值）·`W713_PLAN.md`（全量账）·`W716_BASELINE.md`·`W717_P31_PARITY.md`·`W718_P23_CPUSHARE.md`·`W719_P33_PREFIX.md`·`W720_P28_P32.md`·`W721_VIEW.md`·`W724_UPSTREAM_PR.md`·`W725_SWEEP.md`·`W726_MONITOR_BACKEND.md`·`W727_SETUPKEYS_MTP.md`·`W728_PCIE_TELEMETRY.md`·`W733_TELEMETRY_AUDIT.md`"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改参数唯一合法通道**：register -> `gen_config.py --write` -> **推 166** -> restart -> `verify_config.py` FAIL=0。\n  漏推则「本机==166」不成立 => 必对两侧 md5sum。",
+   "new": "- **改参数唯一通道**：register -> `gen_config.py --write` -> 推 166 -> restart -> `verify_config.py` FAIL=0；漏推则「本机==166」假 => 必对两侧 md5sum。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 查容器内文件走 `docker exec`（宿主假阴性）；探针落盘 + `python -u` + 断言 rc。",
+   "new": "- 查容器内文件走 `docker exec`（宿主假阴性）；探针落盘+`python -u`+断言 rc。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **多文件走同一 stdout 通道**：每件先补结尾换行再打 marker。",
+   "new": "- 多文件同走 stdout 须先补结尾换行再打 marker。"
+  },
+  {
+   "kind": "substr",
+   "old": "`--pcie-frac 0.20` · `--spec-min-p 0.70` · `--prompt-cache-every 8192` · `--conversation-cache-mib 4096`。\n实测否决：`--prompt-cache-tail` · `every 4096` · `--pool-workers`。",
+   "new": "现役：`--pcie-frac 0.20`·`--spec-min-p 0.70`·`--prompt-cache-every 8192`·`--conversation-cache-mib 4096`；否决：`--prompt-cache-tail`·`every 4096`·`--pool-workers`。"
+  },
+  {
+   "kind": "substr",
+   "old": "（顶层须含 `\"backend\":\"hip\"`）；**指纹一律现算**。",
+   "new": "（顶层须含 `\"backend\":\"hip\"`）；**指纹现算**。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **「前缀须与 prefill chunk 整数倍对齐」为实测规律非源码确证**（待追）。",
+   "new": "- 「前缀须与 prefill chunk 整数倍对齐」= 实测规律（非源码确证，待追）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **筛候选启发式（W721）**：收益上限 = 该环节在时延里的占比 => 省「重复预填」（多轮~90%）才两位数（P31/P34）；**先读源码算作用面**，多半零发车关；一票否决：**改答案/破位**。",
+   "new": "- **筛候选（W721）**：收益上限=该环节时延占比 => 省「重复预填」（多轮~90%）才两位数（P31/P34）；先读源码算作用面；一票否决：**改答案/破位**。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **166 的 PCIe**：MI50 有效链路 = **Gen3 x16**（根口上限；本卡跳 Gen4）；`pcie_bw` 读一次 ~1 s 须独立线程缓存；同机另有 RTX 2070 + ASPEED；`product_name` 写 16GB 而实物 32GB。",
+   "new": "- **166 的 PCIe**：MI50 有效链路 **Gen3 x16**（根口上限，本卡跳 Gen4）；`pcie_bw` 读 ~1 s 须独立线程缓存；同机另有 RTX 2070+ASPEED；`product_name`（FRU 串）写 16GB 而实物 32GB => **不改**（硬编码会坑他家）。"
+  },
+  {
+   "kind": "substr",
+   "old": "并区分「设备自身跳」与「整条路径」。",
+   "new": "并区分「设备自身跳」与「整条路径」；覆写加 `pcie_path`（W733）。"
+  },
+  {
+   "kind": "substr",
+   "old": "2) PR `telemetry.py` 补 PCIe",
+   "new": "2) PR `telemetry.py` 补 PCIe（须拆两件，W733）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **已关**：P30 · P31（4096）· P23 · P33 · P28（破位）· P32（<1%）· C4/C5 · P29 · C3 · vision 核验 · #1454。",
+   "new": "- **已关**：P23·P28·P29·P30·P31·P32·P33·C3/C4/C5·vision 核验·#1454。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **不得引用**：`waves/_w727.out.txt`（无效）。",
+   "new": "- **禁用**：`waves/_w727.out.txt`。"
+  },
+  {
+   "kind": "substr",
+   "old": "- PR **#1396**（gfx906 修复）**ported 进 0.1.41（保留署名，`a732a19b6f`）**，closed-not-merged => **引擎**补丁面归零。\n- 两轮独立审计：`W713_AUDIT{,2}.md`（P0/P1）。",
+   "new": "- PR **#1396**（gfx906 修复）**ported 进 0.1.41（保留署名）**，closed-not-merged。两轮独立审计 `W713_AUDIT{,2}.md`（P0/P1）。\n- 缺陷多死于**判据覆盖面**（W733 第 5 次）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 交付件禁用码位 10 个（见 `mem_slim.py` 的 `BAN`），须 CR=0。",
+   "new": "- 交付件禁用码位见 `mem_slim.py` 的 `BAN`；须 CR=0。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **性能读数须声明 `Z0=off`**（省电档，W706）。",
+   "new": "- **性能读数须声明 `Z0=off`**（省电档）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **`--prefill` 会改答案**：4096 在 6,831-token 段长度变了 => **不改 P10**。",
+   "new": "- **`--prefill` 会改答案**（6,831-token 段长度变）=> **不改 P10**。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 分辨力：预填 1.2~1.7%，解码 9.5~15%（低于此不可判）。",
+   "new": "- 分辨力：预填 1.2~1.7%、解码 9.5~15%（低于不可判）。"
+  },
+  {
+   "kind": "substr",
+   "old": "（通道见 `W724_UPSTREAM_PR.md` §9）",
+   "new": "（通道见 W724 §9）"
+  },
+  {
+   "kind": "substr",
+   "old": "- 改既有长件前**先备份该件**（曾误删 `W713_PLAN` §6）。",
+   "new": "- 改既有长件前**先备份该件**（曾误删 §6）。"
+  },
+  {
+   "kind": "substr",
+   "old": "（P30 恒 false；P28 在 gfx906 宏内）",
+   "new": "（P30 恒 false；P28 在 gfx906 内）"
+  },
+  {
+   "kind": "substr",
+   "old": "；覆写加 `pcie_path`（W733）。",
+   "new": "；覆写加 `pcie_path`。"
+  }
+ ]
+}

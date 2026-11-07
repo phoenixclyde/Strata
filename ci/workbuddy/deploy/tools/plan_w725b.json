@@ -1,0 +1,11 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W725b：补回 P34 编号",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "才两位数，省搬运/显存/kernel 的仅 0~3%",
+   "new": "才两位数（P31/P34），省搬运/显存/kernel 的仅 0~3%"
+  }
+ ]
+}

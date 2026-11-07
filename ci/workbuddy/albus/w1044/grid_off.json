@@ -1,0 +1,97 @@
+{
+ "label": "off",
+ "code": "XK-4471-QN",
+ "grid": {
+  "16000@0%": {
+   "hit": true,
+   "prompt_tokens": 16137,
+   "cached": 0,
+   "secs": 24.0,
+   "finish": "stop",
+   "answer": " the vault? Answer with the code only. [off-16000-0-1794043478126]\"\n\nNeed output code only. Need ensure no extra. The code is XK-4471-QN. Need final only that.\n",
+   "nwords": 10000,
+   "salt": "off-16000-0-1794043478126"
+  },
+  "16000@50%": {
+   "hit": true,
+   "prompt_tokens": 15986,
+   "cached": 0,
+   "secs": 23.0,
+   "finish": "stop",
+   "answer": " \"The access code for the vault is XK-4471-QN . Remember it.\" Then more words. Need answer code only. Need ensure exact code: XK-4471-QN. Need final only code.\n",
+   "nwords": 10000,
+   "salt": "off-16000-50-1794043502089"
+  },
+  "16000@100%": {
+   "hit": true,
+   "prompt_tokens": 16020,
+   "cached": 0,
+   "secs": 21.8,
+   "finish": "stop",
+   "answer": "s code for vault is XK-4471-QN. Remember it. Question: what is the access code for the vault? Answer with the code only. Need final only code. Ensure no extra.\n",
+   "nwords": 10000,
+   "salt": "off-16000-100-1794043525060"
+  },
+  "32000@0%": {
+   "hit": true,
+   "prompt_tokens": 31895,
+   "cached": 0,
+   "secs": 42.7,
+   "finish": "stop",
+   "answer": "y. [off-32000-0-1794043546849]\"\n\nNeed output code only. Need ensure maybe hidden? The access code explicitly XK-4471-QN. Need final only code. Ensure no extra.\n",
+   "nwords": 20000,
+   "salt": "off-32000-0-1794043546849"
+  },
+  "32000@50%": {
+   "hit": true,
+   "prompt_tokens": 32076,
+   "cached": 0,
+   "secs": 42.6,
+   "finish": "stop",
+   "answer": "code for the vault? Answer with the code only. [off-32000-50-1794043589592]\" Need output code only. Need ensure maybe code is XK-4471-QN. Need final only code.\n",
+   "nwords": 20000,
+   "salt": "off-32000-50-1794043589592"
+  },
+  "32000@100%": {
+   "hit": true,
+   "prompt_tokens": 32020,
+   "cached": 0,
+   "secs": 41.7,
+   "finish": "stop",
+   "answer": "s code for vault is XK-4471-QN. Remember it. Question: what is the access code for the vault? Answer with the code only. Need final only code. Ensure no extra.\n",
+   "nwords": 20000,
+   "salt": "off-32000-100-1794043632220"
+  },
+  "64000@0%": {
+   "hit": true,
+   "prompt_tokens": 63920,
+   "cached": 0,
+   "secs": 83.3,
+   "finish": "stop",
+   "answer": "ss code for the vault? Answer with the code only. [off-64000-0-1794043673950]\" Need output code only. Need likely XK-4471-QN. Ensure no extra. Final only code.\n",
+   "nwords": 40000,
+   "salt": "off-64000-0-1794043673950"
+  },
+  "64000@50%": {
+   "hit": true,
+   "prompt_tokens": 63589,
+   "cached": 0,
+   "secs": 82.6,
+   "finish": "stop",
+   "answer": "s code for the vault? Answer with the code only. [off-64000-50-1794043757298]\" Need output code only. Need ensure exact code: XK-4471-QN. Need final only code.\n",
+   "nwords": 40000,
+   "salt": "off-64000-50-1794043757298"
+  },
+  "64000@100%": {
+   "hit": true,
+   "prompt_tokens": 63618,
+   "cached": 0,
+   "secs": 81.5,
+   "finish": "stop",
+   "answer": "s code for vault is XK-4471-QN. Remember it. Question: what is the access code for the vault? Answer with the code only. Need final only code. Ensure no extra.\n",
+   "nwords": 40000,
+   "salt": "off-64000-100-1794043839874"
+  }
+ },
+ "invalid": []
+}

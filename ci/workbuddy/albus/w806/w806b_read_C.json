@@ -1,0 +1,84 @@
+{
+ "tag": "C",
+ "sizes": [
+  150,
+  220,
+  300,
+  600
+ ],
+ "reps": 2,
+ "results": [
+  {
+   "rep": 0,
+   "target": 150,
+   "chars": 537,
+   "sha16": "68f774b445cc34d8",
+   "ok": true,
+   "prompt_tokens": 191,
+   "wall_s": 1.75
+  },
+  {
+   "rep": 0,
+   "target": 220,
+   "chars": 805,
+   "sha16": "d0ab7326c51152db",
+   "ok": true,
+   "prompt_tokens": 244,
+   "wall_s": 1.64
+  },
+  {
+   "rep": 0,
+   "target": 300,
+   "chars": 1228,
+   "sha16": "82dc1d860c660862",
+   "ok": true,
+   "prompt_tokens": 387,
+   "wall_s": 2.54
+  },
+  {
+   "rep": 0,
+   "target": 600,
+   "chars": 2126,
+   "sha16": "a894e20b2373873b",
+   "ok": true,
+   "prompt_tokens": 620,
+   "wall_s": 2.01
+  },
+  {
+   "rep": 1,
+   "target": 150,
+   "chars": 621,
+   "sha16": "9ad5301e375ca6c4",
+   "ok": true,
+   "prompt_tokens": 219,
+   "wall_s": 1.55
+  },
+  {
+   "rep": 1,
+   "target": 220,
+   "chars": 848,
+   "sha16": "7ec55dd7d94bd5c1",
+   "ok": true,
+   "prompt_tokens": 267,
+   "wall_s": 1.42
+  },
+  {
+   "rep": 1,
+   "target": 300,
+   "chars": 1066,
+   "sha16": "7ac9a5e449ed3c94",
+   "ok": true,
+   "prompt_tokens": 320,
+   "wall_s": 1.5
+  },
+  {
+   "rep": 1,
+   "target": 600,
+   "chars": 2110,
+   "sha16": "bc820cf82d956f37",
+   "ok": true,
+   "prompt_tokens": 495,
+   "wall_s": 1.8
+  }
+ ]
+}

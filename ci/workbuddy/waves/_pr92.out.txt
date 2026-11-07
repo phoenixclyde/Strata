@@ -1,0 +1,101 @@
+rc = 0
+===== [1] 找 0.1.40.1 构建上下文 =====
+/home/albus/strata166/build-ctx-401/transfer/strata-src-0.1.40.1.zip
+/home/albus/strata166/transfer/llama.cpp-3cf0325.tar.gz
+/home/albus/strata166/build-ctx/transfer/llama.cpp-3cf0325.tar.gz
+/home/albus/strata166/build-ctx-401/transfer/llama.cpp-3cf0325.tar.gz
+/home/albus/strata166/build-ctx-401/patch_gfx906.py
+
+===== [2] 可能的构建目录（含 docker/ 与 transfer/ 的） =====
+--- /home/albus/routeK_up ---
+total 468
+drwxrwxr-x 20 albus albus  4096 Oct  1 23:04 .
+drwxr-x--- 57 albus albus  8192 Oct  5 23:40 ..
+drwxrwxr-x  3 albus albus    20 Sep 29 02:11 .agents
+-rw-rw-r--  1 albus albus  7453 Sep 29 02:11 AGENTS.md
+drwxrwxr-x 11 albus albus  4096 Sep 29 02:11 benchmarks
+-rw-rw-r--  1 albus albus  5646 Sep 29 02:11 build_and_push_docker.sh
+drwxrwxr-x 10 albus albus  4096 Sep 29 02:11 .buildkite
+-rwxrwxr-x  1 albus albus  1016 Sep 29 02:11 build_rust.sh
+-rw-rw-r--  1 albus albus  7378 Sep 29 02:11 build_vllm_ppc64le.sh
+   transfer/:
+ls: cannot access '/home/albus/routeK_up/transfer': No such file or directory
+--- /home/albus/routeB/vllm-gfx906-mobydick ---
+total 388
+drwxrwxr-x 22 albus albus  4096 Sep  8 20:51 .
+drwxrwxr-x 21 albus albus 16384 Sep 21 22:21 ..
+-rw-rw-r--  1 albus albus  5654 Sep  8 16:50 AGENTS.md
+drwxrwxr-x 11 albus albus  4096 Sep  8 16:50 benchmarks
+drwxr-xr-x  5 root  root    105 Sep  8 21:13 build
+-rw-rw-r--  1 albus albus  5646 Sep  8 16:50 build_and_push_docker.sh
+drwxrwxr-x 10 albus albus  4096 Sep  8 16:50 .buildkite
+-rwxrwxr-x  1 albus albus  1016 Sep  8 16:50 build_rust.sh
+-rw-rw-r--  1 albus albus  7376 Sep  8 16:50 build_vllm_ppc64le.sh
+   transfer/:
+ls: cannot access '/home/albus/routeB/vllm-gfx906-mobydick/transfer': No such file or directory
+--- /home/albus/routeB/redo-v5 ---
+total 388
+drwxrwxr-x 18 albus albus  4096 Sep 10 21:02 .
+drwxrwxr-x 21 albus albus 16384 Sep 21 22:21 ..
+-rw-rw-r--  1 albus albus  5654 Sep 10 21:02 AGENTS.md
+drwxrwxr-x 11 albus albus  4096 Sep 10 21:02 benchmarks
+-rw-rw-r--  1 albus albus  5646 Sep 10 20:11 build_and_push_docker.sh
+drwxrwxr-x 10 albus albus  4096 Sep 10 21:02 .buildkite
+-rwxrwxr-x  1 albus albus  1016 Sep 10 20:11 build_rust.sh
+-rw-rw-r--  1 albus albus  7376 Sep 10 21:02 build_vllm_ppc64le.sh
+-rw-rw-r--  1 albus albus   641 Sep 10 20:11 .clang-format
+   transfer/:
+ls: cannot access '/home/albus/routeB/redo-v5/transfer': No such file or directory
+--- /home/albus/routeB/_clone_test/fa-integration ---
+total 348
+drwxrwxr-x 19 albus albus  4096 Sep 14 11:30 .
+drwxrwxr-x  3 albus albus    28 Sep 14 11:30 ..
+-rw-rw-r--  1 albus albus  5654 Sep 14 11:30 AGENTS.md
+drwxrwxr-x 11 albus albus  4096 Sep 14 11:30 benchmarks
+-rw-rw-r--  1 albus albus  5646 Sep 14 11:30 build_and_push_docker.sh
+drwxrwxr-x 10 albus albus  4096 Sep 14 11:30 .buildkite
+-rwxrwxr-x  1 albus albus  1016 Sep 14 11:30 build_rust.sh
+-rw-rw-r--  1 albus albus  7376 Sep 14 11:30 build_vllm_ppc64le.sh
+-rw-rw-r--  1 albus albus   641 Sep 14 11:30 .clang-format
+   transfer/:
+ls: cannot access '/home/albus/routeB/_clone_test/fa-integration/transfer': No such file or directory
+--- /home/albus/routeB/gfx906-fa-vllm ---
+total 104
+drwxrwxr-x 10 albus albus  4096 Sep 14 11:31 .
+drwxrwxr-x 21 albus albus 16384 Sep 21 22:21 ..
+-rw-rw-r--  1 albus albus  1020 Sep 14 11:31 AUTHORS
+drwxrwxr-x  2 albus albus    66 Sep 14 11:31 docker
+drwxrwxr-x  2 albus albus    51 Sep 14 11:31 docs
+drwxrwxr-x  2 albus albus  4096 Sep 14 11:31 extension
+drwxrwxr-x  8 albus albus   163 Sep 28 20:57 .git
+drwxrwxr-x  3 albus albus    23 Sep 14 11:31 .github
+-rw-rw-r--  1 albus albus   355 Sep 14 11:31 .gitignore
+   transfer/:
+ls: cannot access '/home/albus/routeB/gfx906-fa-vllm/transfer': No such file or directory
+--- /home/albus/routeC/vllm ---
+total 448
+drwxrwxr-x 20 albus albus  4096 Sep 14 19:05 .
+drwxrwxr-x  4 albus albus    40 Sep 19 01:38 ..
+drwxrwxr-x  3 albus albus    20 Sep 14 19:05 .agents
+-rw-rw-r--  1 albus albus  7357 Sep 14 19:05 AGENTS.md
+drwxrwxr-x 11 albus albus  4096 Sep 14 19:05 benchmarks
+-rw-rw-r--  1 albus albus  5646 Sep 14 19:05 build_and_push_docker.sh
+drwxrwxr-x 10 albus albus  4096 Sep 14 19:05 .buildkite
+-rwxrwxr-x  1 albus albus  1016 Sep 14 19:05 build_rust.sh
+-rw-rw-r--  1 albus albus  7376 Sep 14 19:05 build_vllm_ppc64le.sh
+   transfer/:
+ls: cannot access '/home/albus/routeC/vllm/transfer': No such file or directory
+
+===== [3] 166 能否直连 gh-proxy 下载（测速）=====
+curl_rc=0  elapsed=8s
+-rw-rw-r-- 1 albus albus 18570716 Oct  7 23:48 /tmp/strata-src-0.1.40.2.zip
+sha256 = 7d595d4ae04b1e163ddd642c5e307d1931b17c36c26a267be0c201f90173383b
+
+===== [4] 磁盘 =====
+Filesystem                    Size  Used Avail Use% Mounted on
+/dev/mapper/ubuntu--vg-lv--0  935G  682G  253G  73% /
+
+===== [5] docker 版本 / buildx =====
+28.5.0
+github.com/docker/buildx v0.29.1 a32761aeb3debd39be1eca514af3693af0db334b
+

@@ -1,0 +1,77 @@
+rc = 0
+===== [1] 安装 unit =====
+-rw-r--r-- 1 root root 1145 Oct  7 23:55 /etc/systemd/system/strata166.service
+--- systemd-analyze verify ---
+/etc/systemd/system/strata166.service:14: Unit uses KillMode=none. This is unsafe, as it disables systemd's process lifecycle management for the service. Please update the service to use a safer KillMode=, such as 'mixed' or 'control-group'. Support for KillMode=none is deprecated and will eventually be removed.
+verify_rc=0
+
+===== [2] unit 关键字段回读 =====
+# /etc/systemd/system/strata166.service
+[Unit]
+Description=Strata gfx906 inference server (v0.1.40.2, Qwen3.8-Flash-Next UD-IQ4_XS, port 8090)
+Documentation=file:///home/albus/strata166/configs/workbuddy-strata166.md
+After=docker.service network-online.target
+Requires=docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=30
+TimeoutStartSec=900
+TimeoutStopSec=200
+KillMode=none
+
+# 防名字冲突（上一次异常退出可能留下同名容器）
+ExecStartPre=-/usr/bin/docker rm -f strata166-402
+
+# 容器前台运行；serve 退出 => docker run 返回 => systemd 按 Restart=always 重启
+ExecStart=/usr/bin/docker run --rm --name strata166-402 \
+  --device=/dev/kfd --device=/dev/dri --group-add video \
+  --ipc=host --ulimit memlock=-1 \
+  -p 8090:8090 \
+  -v /home/albus/strata166/data:/data \
+  -v /home/albus/strata166/weights:/weights:ro \
+  -e HSA_OVERRIDE_GFX_VERSION=9.0.6 \
+  -e STRATA_SRC=/src \
+  strata-gfx906:0.1.40.2 \
+  bash -lc 'cd /src && exec python3 serve/server.py --engine strata --config /data/strata-ud-iq4_xs.json --port 8090'
+
+===== [3] 停旧容器 strata166-401 =====
+2026-10-07T23:55:23+08:00
+strata166-401
+stop_rc=0
+strata166-401 | Exited (137) 8 seconds ago
+strata166 | Exited (137) 23 hours ago
+--- VRAM（应回地板）---
+GPU[0]		: VRAM Total Used Memory (B): 10854400
+
+===== [4] enable --now =====
+Created symlink /etc/systemd/system/multi-user.target.wants/strata166.service → /etc/systemd/system/strata166.service.
+2026-10-07T23:59:01+08:00
+--- systemctl status ---
+● strata166.service - Strata gfx906 inference server (v0.1.40.2, Qwen3.8-Flash-Next UD-IQ4_XS, port 8090)
+     Loaded: loaded (/etc/systemd/system/strata166.service; enabled; preset: enabled)
+     Active: active (running) since Wed 2026-10-07 23:58:36 CST; 25s ago
+       Docs: file:///home/albus/strata166/configs/workbuddy-strata166.md
+    Process: 2773373 ExecStartPre=/usr/bin/docker rm -f strata166-402 (code=exited, status=0/SUCCESS)
+   Main PID: 2773384 (docker)
+      Tasks: 11 (limit: 142979)
+     Memory: 10.1M (peak: 20.4M)
+        CPU: 56ms
+     CGroup: /system.slice/strata166.service
+             └─2773384 /usr/bin/docker run --rm --name strata166-402 --device=/dev/kfd --device=/dev/dri --group-add video --ipc=host --ulimit memlock=-1 -p 8090:8090 -v /home/albus/strata166/data:/data -v /home/albus/strata166/weights:/weights:ro -e HSA_OVERRIDE_GFX_VERSION=9.0.6 -e STRATA_SRC=/src strata-gfx906:0.1.40.2 bash -lc "cd /src && exec python3 serve/server.py --engine strata --config /data/strata-ud-iq4_xs.json --port 8090"
+
+Oct 07 23:58:36 ubuntu2204lts systemd[1]: Starting strata166.service - Strata gfx906 inference server (v0.1.40.2, Qwen3.8-Flash-Next UD-IQ4_XS, port 8090)...
+Oct 07 23:58:36 ubuntu2204lts docker[2773373]: Error response from daemon: No such container: strata166-402
+Oct 07 23:58:36 ubuntu2204lts systemd[1]: Started strata166.service - Strata gfx906 inference server (v0.1.40.2, Qwen3.8-Flash-Next UD-IQ4_XS, port 8090).
+Oct 07 23:58:37 ubuntu2204lts docker[2773384]: loading the model (the first start takes a minute or two) ...
+Oct 07 23:58:37 ubuntu2204lts docker[2773384]: [strata] starting the engine: reading the model's weights ...
+Oct 07 23:58:42 ubuntu2204lts docker[2773384]: [strata] loading the most-used experts into RAM (up to 76 GiB; the rest are read from the model files as needed) and locking part of them for the GPU.
+Oct 07 23:58:42 ubuntu2204lts docker[2773384]:          YOUR PC CAN BE SLOW OR STOP RESPONDING FOR 1-3 MINUTES NOW - this is normal.
+Oct 07 23:58:42 ubuntu2204lts docker[2773384]:          Please wait and don't close this window; the browser opens when it is ready.
+Oct 07 23:58:42 ubuntu2204lts docker[2773384]: [strata] filling the GPU's expert cache (9758 experts, 21.98 GiB of VRAM) ...
+Oct 07 23:58:50 ubuntu2204lts docker[2773384]: [strata] almost ready ...
+--- docker ps ---
+strata166-402 | Up 24 seconds | 0.0.0.0:8090->8090/tcp, [::]:8090->8090/tcp
+

@@ -1,0 +1,26 @@
+# W805b chunk size A=auto(8192) B=auto:16384  20261026_192839 size=36000 reps=2
+  mark=57053
+=== ARM A ready=44s
+  ENVCHECK want=13 got=13 :: no chunk line
+  rep0 target=36000 chars=126059 prompt_tokens=28878  wall=45.72s 
+  rep1 target=36000 chars=126034 prompt_tokens=28911  wall=44.04s 
+READ_DONE A
+  LOG strata serve: prompt 28878 tokens = 0 reused + 28878 read in 45551 ms (634.0 tok/s), 1 generated in 52 ms (19.4 tok/s), drafts accepted 0 of 0, 4 checkpoints
+  LOG strata serve: prompt 28911 tokens = 0 reused + 28911 read in 43963 ms (657.6 tok/s), 1 generated in 31 ms (32.0 tok/s), drafts accepted 0 of 0, 4 checkpoints
+  PH strata prefill timing: 28873 tokens, GPU timeline 44939 ms, wall 44968 ms, host staging 444 ms: embed+steps 333 (0.7%) hc read 3517 (7.8%) gdn 4936 (11.0%) qsa proj 2379 (5.3%) qsa indexer 1 (0.0%) qsa select 829 (1.8%) qsa attn 8352 (18.6%) router+shared 1294 (2.9%) host grouping 162 (0.4%) gather 119 (0.3%) wait copy 130 (0.3%) dequant 1960 (4.4%) gemm gate/up 9737 (21.7%) gemm down 4680 (10.4%) combine 236 (0.5%) ple 2117 (4.7%) gdn conv+gates 201 (0.4%) gdn recurrence 1596 (3.6%) gdn out proj 1844 (4.1%) hc write 516 (1.1%)
+  PH strata prefill timing: 28906 tokens, GPU timeline 42782 ms, wall 42810 ms, host staging 820 ms: embed+steps 314 (0.7%) hc read 3468 (8.1%) gdn 4930 (11.5%) qsa proj 2187 (5.1%) qsa indexer 2 (0.0%) qsa select 829 (1.9%) qsa attn 8375 (19.6%) router+shared 1161 (2.7%) host grouping 168 (0.4%) gather 117 (0.3%) wait copy 125 (0.3%) dequant 1943 (4.5%) gemm gate/up 9915 (23.2%) gemm down 4679 (10.9%) combine 236 (0.6%) ple 171 (0.4%) gdn conv+gates 201 (0.5%) gdn recurrence 1597 (3.7%) gdn out proj 1849 (4.3%) hc write 516 (1.2%)
+  MEM strata verify: capturing the 4-token window (571 MiB of VRAM free)
+  MEM strata verify: capturing the 1-token window (535 MiB of VRAM free)
+  mark=57120
+=== ARM B ready=53s
+  ENVCHECK want=13 got=13 :: no chunk line
+  rep0 target=36000 chars=126059 prompt_tokens=28878  wall=43.62s 
+  rep1 target=36000 chars=126034 prompt_tokens=28911  wall=40.23s 
+READ_DONE B
+  LOG strata serve: prompt 28878 tokens = 0 reused + 28878 read in 43446 ms (664.7 tok/s), 1 generated in 50 ms (20.0 tok/s), drafts accepted 0 of 0, 2 checkpoints
+  LOG strata serve: prompt 28911 tokens = 0 reused + 28911 read in 40155 ms (720.0 tok/s), 1 generated in 31 ms (32.5 tok/s), drafts accepted 0 of 0, 2 checkpoints
+  PH strata prefill timing: 28873 tokens, GPU timeline 42537 ms, wall 42657 ms, host staging 248 ms: embed+steps 118 (0.3%) hc read 3459 (8.1%) gdn 4911 (11.5%) qsa proj 2162 (5.1%) qsa indexer 1 (0.0%) qsa select 816 (1.9%) qsa attn 8308 (19.5%) router+shared 1107 (2.6%) host grouping 136 (0.3%) gather 128 (0.3%) wait copy 55 (0.1%) dequant 783 (1.8%) gemm gate/up 8377 (19.7%) gemm down 4028 (9.5%) combine 239 (0.6%) ple 3821 (9.0%) gdn conv+gates 204 (0.5%) gdn recurrence 1593 (3.7%) gdn out proj 1801 (4.2%) hc write 489 (1.1%)
+  PH strata prefill timing: 28906 tokens, GPU timeline 38798 ms, wall 38938 ms, host staging 473 ms: embed+steps 83 (0.2%) hc read 3398 (8.8%) gdn 4914 (12.7%) qsa proj 2164 (5.6%) qsa indexer 1 (0.0%) qsa select 818 (2.1%) qsa attn 8343 (21.5%) router+shared 1071 (2.8%) host grouping 136 (0.4%) gather 135 (0.3%) wait copy 54 (0.1%) dequant 791 (2.0%) gemm gate/up 8383 (21.6%) gemm down 4021 (10.4%) combine 240 (0.6%) ple 158 (0.4%) gdn conv+gates 204 (0.5%) gdn recurrence 1594 (4.1%) gdn out proj 1801 (4.6%) hc write 489 (1.3%)
+  MEM strata verify: capturing the 4-token window (572 MiB of VRAM free)
+  MEM strata verify: capturing the 1-token window (536 MiB of VRAM free)
+  trap-restored (any exit path)

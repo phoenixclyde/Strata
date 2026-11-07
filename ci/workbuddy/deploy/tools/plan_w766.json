@@ -1,0 +1,126 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W766：固化 W764/W765（备份纪律适用面、verify_config 判据面边界、P46-49）+ 压缩",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- 改既有长件前先备份",
+   "new": "- 改既有长件前先备份（**含 register/config/verify_config**，W765）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **反汇编只答源答不了的**（实际发射/ISA 可编码/源同否）；**dump 记 md5+mtime**；`isa_probe.py`",
+   "new": "- **反汇编只答源答不了的**（实际发射/ISA 可编码/源同否）；**dump 记 md5+mtime**；`isa_probe.py`\n- **`verify_config.py` 只判配置面**（不读 `/proc`）=> 判运行期须另取引擎 cmdline/environ（W764）"
+  },
+  {
+   "kind": "substr",
+   "old": "；R5(P39)·R1/R2 已关",
+   "new": "；R5(P39)·R1/R2 关·W763 补 P46-49"
+  },
+  {
+   "kind": "substr",
+   "old": "- 权威件：`PARAM_REGISTER.tsv`·`W713_PLAN.md`·`W737`-`W760`；其余按号",
+   "new": "- 权威件：`PARAM_REGISTER.tsv`·`W713_PLAN.md`·`W737`-`W765`；其余按号"
+  },
+  {
+   "kind": "substr",
+   "old": "- 生产：`strata166-407`（`-406`=回滚位）/8090；**引擎补丁面 0/serve 覆写 2**（重建后跑 `apply_telemetry_pcie.sh`）",
+   "new": "- 生产：`strata166-407`（`-406` 回滚位）/8090；**补丁面 0/覆写 2**（重建后跑 `apply_telemetry_pcie.sh`）"
+  },
+  {
+   "kind": "substr",
+   "old": "LIVE config `strata-huihui-ud-iq4_xs.json`（须含 `backend:hip`）；指纹现算。**W760：P43 采纳 8192**（原默认 32768，64K +3.39%）",
+   "new": "LIVE config `strata-huihui-ud-iq4_xs.json`（须含 `backend:hip`）；指纹现算。**W760：P43 采纳 8192**（原 32768）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **gfx1151 专属开关族**（`EXPERT_V2`·`TSUM`，`STRIX_HALO §4`）=> register 0 登记。**W739：`EXPERT_V2` 慢 5.60%、`TSUM` 不可复现 => P36/P37 REJECTED**",
+   "new": "- **gfx1151 族**（`EXPERT_V2`·`TSUM`，`STRIX_HALO §4`）；**W739：`EXPERT_V2` 慢 5.60%、`TSUM` 不可复现 => P36/P37 REJECTED**"
+  },
+  {
+   "kind": "substr",
+   "old": "- **禁用** `waves/_w727.out.txt`\n",
+   "new": ""
+  },
+  {
+   "kind": "substr",
+   "old": "routeK 同卡 L2=8MB/HBM~805（W749）",
+   "new": "routeK 同卡 L2=8MB/HBM~805"
+  },
+  {
+   "kind": "substr",
+   "old": "审计 `W713_AUDIT{,2}`·`W735`·`W752_AUDIT`（P0=0/P1=4）",
+   "new": "审计 `W713_AUDIT{,2}`·`W735`·`W752`·`W765`（P0=0/P1=4）"
+  },
+  {
+   "kind": "substr",
+   "old": "**探针落 `deploy/tmp/`、数字与证据自洽**",
+   "new": "**探针落 `deploy/tmp/`、数证自洽**"
+  },
+  {
+   "kind": "substr",
+   "old": "生产日志混入**测试脚本/他臂**的行 => 引用前剔",
+   "new": "生产日志混入**测试脚本/他臂**行 => 引用前剔"
+  },
+  {
+   "kind": "substr",
+   "old": "=> routeK T1 前提不成立（W754）；上游 bench 规范 `COMMUNITY_BENCHMARKS.md`，`AMD_HIP.md:504` 自认单卡未做（W756）",
+   "new": "=> routeK T1 不成立；上游 bench 规范 `COMMUNITY_BENCHMARKS.md`、`AMD_HIP:504` 单卡未做（W754/W756）"
+  },
+  {
+   "kind": "substr",
+   "old": "；判不可复现先排缓存冷热（W739-W748）",
+   "new": "；判不可复现先排缓存冷热"
+  },
+  {
+   "kind": "substr",
+   "old": "- **166 的 PCIe**：有效链路 **Gen3 x16**；`pcie_bw` 读 ~1 s 须独立线程；`product_name`=**FRU 串** => 按实读显存纠正",
+   "new": "- **166 PCIe**：有效链路 **Gen3 x16**；`pcie_bw` 读 ~1 s 须独立线程；`product_name`=**FRU 串** => 按实读显存纠正"
+  },
+  {
+   "kind": "substr",
+   "old": "（见 §5）；本地树只作副本",
+   "new": "（§5）；本地树只作副本"
+  },
+  {
+   "kind": "substr",
+   "old": "·`--mtp-window 8192`（W760 采纳）；否决：`--prompt-cache-tail`·`every 4096`·`--pool-workers`",
+   "new": "·`--mtp-window 8192`；否决：`--prompt-cache-tail`/`every 4096`/`--pool-workers`"
+  },
+  {
+   "kind": "substr",
+   "old": "- 默认 16384：8k~16k 无复用；`<8k` 恒 `reused=0`；`>16k` 时 8192=16384、32768 归 0",
+   "new": "- 默认 16384：8k~16k 无复用；`<8k` 恒 `reused=0`；`>16k` 8192=16384、32768 归 0"
+  },
+  {
+   "kind": "substr",
+   "old": "- **温 TTFT 两口径**：重发=上限、追加=多轮，不可混比",
+   "new": "- **温 TTFT 两口径**：重发=上限、追加=多轮，不可混"
+  },
+  {
+   "kind": "substr",
+   "old": "- **dot**：dot4 25,877；dot8 49,600；解包 1,375。**W740：dot4 62,596/dot8 0 => dp4a+解包**；换 dot8 须双方 i4（P38）",
+   "new": "- **dot**：dot4 25,877/49,600/解包 1,375。**W740：dot4 62,596/dot8 0 => dp4a+解包**；换 dot8 须双方 i4（P38）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **反汇编只答源答不了的**（实际发射/ISA 可编码/源同否）",
+   "new": "- **反汇编只答源答不了的**（发射/ISA 可编码/源同否）"
+  },
+  {
+   "kind": "substr",
+   "old": "；否决：改答案/破位",
+   "new": "；否决 改答案/破位"
+  },
+  {
+   "kind": "substr",
+   "old": "`W737`-`W765`；其余按号",
+   "new": "`W737`-`W765`；余按号"
+  },
+  {
+   "kind": "substr",
+   "old": "- **自有库**：上游 `KIntegrated/vllm-gfx906-mobydick`，我方 fork 同名",
+   "new": "- **自有库**：上游 `KIntegrated/vllm-gfx906-mobydick`，fork 同名"
+  }
+ ]
+}

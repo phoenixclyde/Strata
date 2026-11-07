@@ -1,0 +1,145 @@
+START 2026-10-25_16:54:19 ts=20261025_165419
+bak=/home/albus/strata166/data/strata-huihui-ud-iq4_xs.json.bak_w794_20261025_165419
+image=strata-gfx906:0.2.4p4
+=== ARM A 16:54:19 ===
+arm A env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt')]
+health 45s
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=34910 prompt_tps=625.2 decode_tps=57.2 out=320 wall=40.5s
+  [M] n=1 reused0=1 | prompt_tps median=625.2  decode_tps median=57.2
+strata prefill timing: 893 tokens, GPU timeline 3292 ms, wall 3303 ms, host staging 67 ms: embed+steps 47 (1.4%) hc read 226 (6.9%) gdn 171 (5.2%) qsa proj 80 (2.4%) qsa indexer 0 (0.0%) qsa select 1 (0.0%) qsa attn 84 (2.5%) router+shared 243 (7.4%) host grouping 18 (0.6%) gather 7 (0.2%) wait copy 587 (17.8%) dequant 382 (11.6%) gemm gate/up 825 (25.1%) gemm down 404 (12.3%) combine 7 (0.2%) ple 5 (0.2%) gdn conv+gates 7 (0.2%) gdn recurrence 99 (3.0%) gdn out proj 74 (2.3%) hc write 24 (0.7%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 47 ms, waiting for each chunk 56 ms, after each chunk (the draft layer, progress) 8 ms, PLE 19 ms
+strata prefill timing: 21822 tokens, GPU timeline 34205 ms, wall 34238 ms, host staging 356 ms: embed+steps 231 (0.7%) hc read 2624 (7.7%) gdn 3722 (10.9%) qsa proj 1653 (4.8%) qsa indexer 1 (0.0%) qsa select 702 (2.1%) qsa attn 6742 (19.7%) router+shared 878 (2.6%) host grouping 126 (0.4%) gather 88 (0.3%) wait copy 100 (0.3%) dequant 1403 (4.1%) gemm gate/up 7643 (22.3%) gemm down 3423 (10.0%) combine 179 (0.5%) ple 127 (0.4%) gdn conv+gates 152 (0.4%) gdn recurrence 2677 (7.8%) gdn out proj 1345 (3.9%) hc write 387 (1.1%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 6 ms, waiting for each chunk 239 ms, after each chunk (the draft layer, progress) 254 ms, PLE 20 ms
+Traceback (most recent call last):
+  File "<stdin>", line 9, in <module>
+AttributeError: 'NoneType' object has no attribute 'encode'
+=== ARM B 16:56:00 ===
+arm B env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt')]
+health 84s
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=33954 prompt_tps=642.8 decode_tps=54.5 out=320 wall=39.8s
+  [M] n=1 reused0=1 | prompt_tps median=642.8  decode_tps median=54.5
+strata prefill timing: 893 tokens, GPU timeline 3279 ms, wall 3291 ms, host staging 57 ms: embed+steps 47 (1.4%) hc read 230 (7.0%) gdn 174 (5.3%) qsa proj 79 (2.4%) qsa indexer 0 (0.0%) qsa select 1 (0.0%) qsa attn 78 (2.4%) router+shared 245 (7.5%) host grouping 16 (0.5%) gather 8 (0.2%) wait copy 566 (17.3%) dequant 380 (11.6%) gemm gate/up 827 (25.2%) gemm down 410 (12.5%) combine 7 (0.2%) ple 5 (0.2%) gdn conv+gates 7 (0.2%) gdn recurrence 99 (3.0%) gdn out proj 74 (2.3%) hc write 24 (0.7%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 47 ms, waiting for each chunk 57 ms, after each chunk (the draft layer, progress) 8 ms, PLE 12 ms
+strata prefill timing: 21822 tokens, GPU timeline 33220 ms, wall 33254 ms, host staging 381 ms: embed+steps 187 (0.6%) hc read 2624 (7.9%) gdn 3758 (11.3%) qsa proj 1657 (5.0%) qsa indexer 1 (0.0%) qsa select 702 (2.1%) qsa attn 6202 (18.7%) router+shared 880 (2.6%) host grouping 130 (0.4%) gather 87 (0.3%) wait copy 102 (0.3%) dequant 1416 (4.3%) gemm gate/up 7133 (21.5%) gemm down 3738 (11.3%) combine 178 (0.5%) ple 128 (0.4%) gdn conv+gates 152 (0.5%) gdn recurrence 2414 (7.3%) gdn out proj 1345 (4.0%) hc write 387 (1.2%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 6 ms, waiting for each chunk 240 ms, after each chunk (the draft layer, progress) 210 ms, PLE 13 ms
+Traceback (most recent call last):
+  File "<stdin>", line 9, in <module>
+AttributeError: 'NoneType' object has no attribute 'encode'
+=== ARM C 16:58:20 ===
+arm C env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_GFX906_ATTN_REDUCE12', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt')]
+health 43s
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=39121 prompt_tps=557.9 decode_tps=55.4 out=320 wall=44.9s
+  [M] n=1 reused0=1 | prompt_tps median=557.9  decode_tps median=55.4
+strata prefill timing: 893 tokens, GPU timeline 3223 ms, wall 3234 ms, host staging 55 ms: embed+steps 47 (1.5%) hc read 224 (6.9%) gdn 173 (5.4%) qsa proj 79 (2.5%) qsa indexer 0 (0.0%) qsa select 1 (0.0%) qsa attn 122 (3.8%) router+shared 169 (5.3%) host grouping 17 (0.5%) gather 6 (0.2%) wait copy 560 (17.4%) dequant 379 (11.8%) gemm gate/up 822 (25.5%) gemm down 404 (12.5%) combine 7 (0.2%) ple 5 (0.2%) gdn conv+gates 7 (0.2%) gdn recurrence 99 (3.1%) gdn out proj 74 (2.3%) hc write 24 (0.7%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 47 ms, waiting for each chunk 56 ms, after each chunk (the draft layer, progress) 8 ms, PLE 9 ms
+strata prefill timing: 21822 tokens, GPU timeline 38390 ms, wall 38424 ms, host staging 367 ms: embed+steps 163 (0.4%) hc read 2617 (6.8%) gdn 3712 (9.7%) qsa proj 1631 (4.2%) qsa indexer 1 (0.0%) qsa select 701 (1.8%) qsa attn 11764 (30.6%) router+shared 873 (2.3%) host grouping 142 (0.4%) gather 90 (0.2%) wait copy 101 (0.3%) dequant 1418 (3.7%) gemm gate/up 7136 (18.6%) gemm down 3431 (8.9%) combine 178 (0.5%) ple 130 (0.3%) gdn conv+gates 152 (0.4%) gdn recurrence 2421 (6.3%) gdn out proj 1342 (3.5%) hc write 387 (1.0%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 8 ms, waiting for each chunk 239 ms, after each chunk (the draft layer, progress) 183 ms, PLE 15 ms
+Traceback (most recent call last):
+  File "<stdin>", line 9, in <module>
+AttributeError: 'NoneType' object has no attribute 'encode'
+=== ARM A 17:00:04 ===
+arm A env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt')]
+health 45s
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=34459 prompt_tps=633.4 decode_tps=57.2 out=320 wall=40.1s
+  [M] n=1 reused0=1 | prompt_tps median=633.4  decode_tps median=57.2
+strata prefill timing: 893 tokens, GPU timeline 3204 ms, wall 3216 ms, host staging 53 ms: embed+steps 51 (1.6%) hc read 240 (7.5%) gdn 171 (5.3%) qsa proj 79 (2.5%) qsa indexer 0 (0.0%) qsa select 1 (0.0%) qsa attn 84 (2.6%) router+shared 175 (5.5%) host grouping 15 (0.5%) gather 6 (0.2%) wait copy 559 (17.5%) dequant 379 (11.8%) gemm gate/up 822 (25.7%) gemm down 404 (12.6%) combine 7 (0.2%) ple 5 (0.2%) gdn conv+gates 7 (0.2%) gdn recurrence 99 (3.1%) gdn out proj 74 (2.3%) hc write 24 (0.8%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 50 ms, waiting for each chunk 57 ms, after each chunk (the draft layer, progress) 8 ms, PLE 15 ms
+strata prefill timing: 21822 tokens, GPU timeline 33758 ms, wall 33791 ms, host staging 356 ms: embed+steps 176 (0.5%) hc read 2624 (7.8%) gdn 3718 (11.0%) qsa proj 1652 (4.9%) qsa indexer 1 (0.0%) qsa select 701 (2.1%) qsa attn 6743 (20.0%) router+shared 879 (2.6%) host grouping 126 (0.4%) gather 87 (0.3%) wait copy 100 (0.3%) dequant 1408 (4.2%) gemm gate/up 7503 (22.2%) gemm down 3429 (10.2%) combine 179 (0.5%) ple 128 (0.4%) gdn conv+gates 152 (0.4%) gdn recurrence 2419 (7.2%) gdn out proj 1345 (4.0%) hc write 387 (1.1%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 5 ms, waiting for each chunk 238 ms, after each chunk (the draft layer, progress) 199 ms, PLE 20 ms
+Traceback (most recent call last):
+  File "<stdin>", line 9, in <module>
+AttributeError: 'NoneType' object has no attribute 'encode'
+=== ARM B 17:01:45 ===
+arm B env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt')]
+health 60s
+  [M] cpt=1.62 chars/token
+Traceback (most recent call last):
+  File "/home/albus/strata166/tmp/w776_bench.py", line 93, in <module>
+    run_tier(tag, *which)
+  File "/home/albus/strata166/tmp/w776_bench.py", line 72, in run_tier
+    lr = last_req()
+         ^^^^^^^^^^
+  File "/home/albus/strata166/tmp/w776_bench.py", line 31, in last_req
+    m = metrics()
+        ^^^^^^^^^
+  File "/home/albus/strata166/tmp/w776_bench.py", line 26, in metrics
+    with urllib.request.urlopen(URL + "/metrics", timeout=10) as r:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 515, in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 532, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 1373, in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 1348, in do_open
+    r = h.getresponse()
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/http/client.py", line 1457, in getresponse
+    response.begin()
+  File "/usr/lib/python3.12/http/client.py", line 336, in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/http/client.py", line 305, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+http.client.RemoteDisconnected: Remote end closed connection without response
+strata prefill timing: 893 tokens, GPU timeline 3167 ms, wall 3178 ms, host staging 56 ms: embed+steps 48 (1.5%) hc read 224 (7.1%) gdn 171 (5.4%) qsa proj 80 (2.5%) qsa indexer 0 (0.0%) qsa select 1 (0.0%) qsa attn 78 (2.5%) router+shared 166 (5.2%) host grouping 16 (0.5%) gather 6 (0.2%) wait copy 558 (17.6%) dequant 379 (12.0%) gemm gate/up 820 (25.9%) gemm down 403 (12.7%) combine 7 (0.2%) ple 5 (0.2%) gdn conv+gates 7 (0.2%) gdn recurrence 99 (3.1%) gdn out proj 74 (2.3%) hc write 24 (0.8%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 48 ms, waiting for each chunk 57 ms, after each chunk (the draft layer, progress) 8 ms, PLE 10 ms
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/urllib/request.py", line 1344, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+  File "/usr/lib/python3.12/http/client.py", line 1365, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1411, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1360, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1120, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1064, in send
+    self.connect()
+  File "/usr/lib/python3.12/http/client.py", line 1030, in connect
+    self.sock = self._create_connection(
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/socket.py", line 852, in create_connection
+    raise exceptions[0]
+  File "/usr/lib/python3.12/socket.py", line 837, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [Errno 111] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<stdin>", line 7, in <module>
+  File "/usr/lib/python3.12/urllib/request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 515, in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 532, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 1373, in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 1347, in do_open
+    raise URLError(err)
+urllib.error.URLError: <urlopen error [Errno 111] Connection refused>
+=== ARM C 17:03:25 ===
+arm C env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_GFX906_ATTN_REDUCE12', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt')]

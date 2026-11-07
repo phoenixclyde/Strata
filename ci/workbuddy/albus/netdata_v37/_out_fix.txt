@@ -1,0 +1,16 @@
+RC=0
+=== STDOUT ===
+== build FROM rk-netdata-base:6ac52ba4145c -> rk-netdata:20261105_023840
+
+#12 exporting to image
+#12 exporting layers 0.1s done
+#12 writing image sha256:49d367c78c44b4d3ad9b7d7c79deaa2b9be80c625c7023046d0d9c14691fb51f done
+#12 naming to docker.io/library/rk-netdata:20261105_023840 done
+#12 DONE 0.1s
+TAG=rk-netdata:20261105_023840
+ID=sha256:49d367c78c44b4d3ad9b7d7c79deaa2b9be80c625c7023046d0d9c14691fb51f
+52:IMG="sha256:49d367c78c44b4d3ad9b7d7c79deaa2b9be80c625c7023046d0d9c14691fb51f"
+== 层数
+12
+
+=== STDERR ===

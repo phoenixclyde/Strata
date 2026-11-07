@@ -1,0 +1,61 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W734：serve 覆写 2 个文件 + FRU 容量一致性规则 + spark 轴下限与前端 JS 路径",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- 生产：**`strata-gfx906:0.1.41`/`strata166-407`**（huihui；`-406`=回滚位）/8090；**引擎补丁面 0/serve 覆写 1**（telemetry PCIe v4，W733；**只自用不提上游**，AMD 侧双向合计 vs NVML 纯 RX；重建后重跑 `patches/apply_telemetry_pcie.sh`）。切换/回滚 `switch_strata.sh`。",
+   "new": "- 生产：**`strata-gfx906:0.1.41`/`strata166-407`**（huihui；`-406`=回滚位）/8090；**引擎补丁面 0/serve 覆写 2**（telemetry v5 + `web/app.js`，W733/W734；**不提上游**；重建后重跑 `patches/apply_telemetry_pcie.sh`）。切换/回滚 `switch_strata.sh`。"
+  },
+  {
+   "kind": "substr",
+   "old": "；`product_name`（FRU 串）写 16GB 而实物 32GB => **不改**（硬编码会坑他家）。",
+   "new": "；`product_name` = **FRU 串**（16GB vs 实物 32GB）=> 容量按**实读显存**纠正（通用规则，非硬编码）。"
+  },
+  {
+   "kind": "substr",
+   "old": "；覆写加 `pcie_path`。",
+   "new": "；`spark()` 无显式上限即按序列最大值缩放（空闲抖动显成满幅；W734 下限置 1）；前端 JS 路径 `/web/app.js`；`pcie_path`。"
+  },
+  {
+   "kind": "substr",
+   "old": "；须 CR=0。",
+   "new": "；CR=0。"
+  },
+  {
+   "kind": "substr",
+   "old": "本机 shim 会把 `/data/x.py`",
+   "new": "本机 shim 把 `/data/x.py`"
+  },
+  {
+   "kind": "substr",
+   "old": "）；**指纹现算**。",
+   "new": "）；指纹现算。"
+  },
+  {
+   "kind": "substr",
+   "old": " 3) feature request「子 chunk 边界 checkpoint」",
+   "new": "3) feature「子 chunk 边界 checkpoint」"
+  },
+  {
+   "kind": "substr",
+   "old": "## 4 待办（全量账见 `W713_PLAN.md` §6）",
+   "new": "## 4 待办（见 `W713_PLAN.md` §6）"
+  },
+  {
+   "kind": "substr",
+   "old": "- 外部未迁：`D:/Strata/`。",
+   "new": "- 外部未迁 `D:/Strata/`。"
+  },
+  {
+   "kind": "substr",
+   "old": "## 3 机制（证据等级已分级）",
+   "new": "## 3 机制（按证据等级）"
+  },
+  {
+   "kind": "substr",
+   "old": "- PR **#1396**（gfx906 修复）**ported",
+   "new": "- PR **#1396** **ported"
+  }
+ ]
+}

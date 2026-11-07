@@ -1,0 +1,21 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W772 修 §4 账实不符：P33 原错列在\"已关\"（register 实为 CANDIDATE）；未做清单补全为 register 的 7 个 CANDIDATE；\"已交上游\"补 PR #1855。净省 => 反解器不动刀。",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- **已交上游（W736）**：PR #1731-1733·issue #1734/#1735·评论 4",
+   "new": "- **已交上游**：PR #1731-1733·**#1855**·issue #1734/#1735 -- 等回音"
+  },
+  {
+   "kind": "substr",
+   "old": "- **已关**：P23·P28·P29·P30·P31·P32·P33·C3/C4/C5·vision·#1454",
+   "new": "- **已关**：P23·P28·P29·P30·P31·P32·C3/C4/C5·vision·#1454；**P33 例外（见下）**"
+  },
+  {
+   "kind": "substr",
+   "old": "- **gfx1151 族**（`EXPERT_V2`/`TSUM`，`STRIX_HALO §4`）；**W739：慢 5.6%/不复现 => P36/P37 REJECTED**\n- **未做**（KV 门见 P50）：`lookup-chain`(P42)·§4 族(P41)·**并发(P97)**；**W760：P43 采纳、P40 否决**；R5(P39)·R1/R2 关·W763 补 P46-49",
+   "new": "- **CANDIDATE 7（全未测）**：P33(pin 长文档)·P41(§4 族)·P42(lookup-chain)·P46(io-预取)·P47(drafter)·P48(misc)·P97(并发)\n- **已裁**：W760 P43 采纳(8192)/P40 否决；**W770 P50（needle `k8v4` 6/6）**；P36/P37·P39 关"
+  }
+ ]
+}

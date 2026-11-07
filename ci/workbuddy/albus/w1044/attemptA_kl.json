@@ -1,0 +1,34 @@
+{
+ "1K": {
+  "tokens": 1000,
+  "kl_cand": 0.0003710316567784578,
+  "kl_anchor": 0.0015508275528271474,
+  "argmax_cand_same": true,
+  "argmax_anchor_same": true,
+  "bytes_identical_floor": true
+ },
+ "8K": {
+  "tokens": 8000,
+  "kl_cand": 0.0034529968351455394,
+  "kl_anchor": 0.011125048534643349,
+  "argmax_cand_same": true,
+  "argmax_anchor_same": true,
+  "bytes_identical_floor": true
+ },
+ "20K": {
+  "tokens": 20000,
+  "kl_cand": 0.18749794616190116,
+  "kl_anchor": 0.38386680819411273,
+  "argmax_cand_same": false,
+  "argmax_anchor_same": false,
+  "bytes_identical_floor": true
+ },
+ "32K": {
+  "tokens": 32768,
+  "kl_cand": 7.076309532646036e-08,
+  "kl_anchor": 2.1059847625163035e-08,
+  "argmax_cand_same": true,
+  "argmax_anchor_same": true,
+  "bytes_identical_floor": true
+ }
+}

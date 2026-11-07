@@ -1,0 +1,137 @@
+# W807b RT_SKIP task gate 20261026_211740 max_tokens=64 tasks=36 arms='A A2 B'
+  corpus sha16=3d6b664484ef7189 bytes=39719
+  start env_n=12 keys=11
+  CFGCHECK keys=11 env_n=12 rtskip=7
+  mark=61251
+=== ARM A rtskip=7 ready=47s
+  ENVCHECK want=11 got=12 OK
+  t00 kind=0 expect=6      got=6        OK   finish=stop ptok=492 wall=2.9s
+  t01 kind=1 expect=4430   got=4430     OK   finish=stop ptok=605 wall=2.9s
+  t02 kind=2 expect=2      got=2        OK   finish=stop ptok=564 wall=3.0s
+  t03 kind=3 expect=4423   got=4423     OK   finish=stop ptok=483 wall=2.7s
+  t04 kind=0 expect=12     got=12       OK   finish=stop ptok=490 wall=2.7s
+  t05 kind=1 expect=4475   got=4475     OK   finish=stop ptok=568 wall=2.8s
+  t06 kind=2 expect=1      got=1        OK   finish=stop ptok=529 wall=2.6s
+  t07 kind=3 expect=4453   got=4453     OK   finish=stop ptok=563 wall=2.8s
+  t08 kind=0 expect=7      got=7        OK   finish=stop ptok=530 wall=2.7s
+  t09 kind=1 expect=4416   got=4416     OK   finish=stop ptok=528 wall=2.8s
+  t10 kind=2 expect=3      got=3        OK   finish=stop ptok=609 wall=2.7s
+  t11 kind=3 expect=4443   got=4443     OK   finish=stop ptok=521 wall=2.7s
+  t12 kind=0 expect=15     got=15       OK   finish=stop ptok=493 wall=2.7s
+  t13 kind=1 expect=4431   got=4431     OK   finish=stop ptok=526 wall=2.8s
+  t14 kind=2 expect=1      got=1        OK   finish=stop ptok=495 wall=2.6s
+  t15 kind=3 expect=4474   got=4474     OK   finish=stop ptok=601 wall=2.8s
+  t16 kind=0 expect=5      got=5        OK   finish=stop ptok=531 wall=2.7s
+  t17 kind=1 expect=4444   got=4444     OK   finish=stop ptok=490 wall=2.6s
+  t18 kind=2 expect=1      got=1        OK   finish=stop ptok=609 wall=2.7s
+  t19 kind=3 expect=4473   got=4473     OK   finish=stop ptok=601 wall=2.8s
+  t20 kind=0 expect=7      got=7        OK   finish=stop ptok=570 wall=2.6s
+  t21 kind=1 expect=4403   got=4423     MISS  finish=stop ptok=566 wall=2.7s
+  t22 kind=2 expect=1      got=1        OK   finish=stop ptok=492 wall=2.5s
+  t23 kind=3 expect=4450   got=4450     OK   finish=stop ptok=484 wall=2.6s
+  t24 kind=0 expect=39     got=39       OK   finish=stop ptok=609 wall=2.7s
+  t25 kind=1 expect=4426   got=4426     OK   finish=stop ptok=567 wall=2.8s
+  t26 kind=2 expect=4      got=4        OK   finish=stop ptok=527 wall=2.6s
+  t27 kind=3 expect=4458   got=4458     OK   finish=stop ptok=485 wall=2.6s
+  t28 kind=0 expect=16     got=16       OK   finish=stop ptok=568 wall=2.8s
+  t29 kind=1 expect=4414   got=4414     OK   finish=stop ptok=605 wall=2.8s
+  t30 kind=2 expect=3      got=3        OK   finish=stop ptok=568 wall=2.6s
+  t31 kind=3 expect=4414   got=4414     OK   finish=stop ptok=562 wall=2.7s
+  t32 kind=0 expect=17     got=14       MISS  finish=stop ptok=568 wall=2.6s
+  t33 kind=1 expect=4435   got=4435     OK   finish=stop ptok=528 wall=2.7s
+  t34 kind=2 expect=0      got=0        OK   finish=stop ptok=529 wall=2.6s
+  t35 kind=3 expect=4475   got=4475     OK   finish=stop ptok=600 wall=2.7s
+  SCORE 34/36
+TASK_DONE A
+  SCORE A = 34/36
+  tail_skip_line=
+  CFGCHECK keys=11 env_n=12 rtskip=7
+  mark=61456
+=== ARM A2 rtskip=7 ready=68s
+  ENVCHECK want=11 got=12 OK
+  t00 kind=0 expect=6      got=6        OK   finish=stop ptok=492 wall=2.9s
+  t01 kind=1 expect=4430   got=4430     OK   finish=stop ptok=605 wall=3.0s
+  t02 kind=2 expect=2      got=2        OK   finish=stop ptok=564 wall=2.7s
+  t03 kind=3 expect=4423   got=4423     OK   finish=stop ptok=483 wall=2.7s
+  t04 kind=0 expect=12     got=12       OK   finish=stop ptok=490 wall=2.7s
+  t05 kind=1 expect=4475   got=4475     OK   finish=stop ptok=568 wall=2.8s
+  t06 kind=2 expect=1      got=1        OK   finish=stop ptok=529 wall=2.6s
+  t07 kind=3 expect=4453   got=4453     OK   finish=stop ptok=563 wall=2.8s
+  t08 kind=0 expect=7      got=7        OK   finish=stop ptok=530 wall=2.7s
+  t09 kind=1 expect=4416   got=4416     OK   finish=stop ptok=528 wall=2.7s
+  t10 kind=2 expect=3      got=3        OK   finish=stop ptok=609 wall=2.7s
+  t11 kind=3 expect=4443   got=4443     OK   finish=stop ptok=521 wall=2.7s
+  t12 kind=0 expect=15     got=15       OK   finish=stop ptok=493 wall=2.7s
+  t13 kind=1 expect=4431   got=4431     OK   finish=stop ptok=526 wall=2.7s
+  t14 kind=2 expect=1      got=1        OK   finish=stop ptok=495 wall=2.5s
+  t15 kind=3 expect=4474   got=4474     OK   finish=stop ptok=601 wall=2.8s
+  t16 kind=0 expect=5      got=5        OK   finish=stop ptok=531 wall=2.7s
+  t17 kind=1 expect=4444   got=4444     OK   finish=stop ptok=490 wall=2.6s
+  t18 kind=2 expect=1      got=1        OK   finish=stop ptok=609 wall=2.7s
+  t19 kind=3 expect=4473   got=4473     OK   finish=stop ptok=601 wall=2.8s
+  t20 kind=0 expect=7      got=7        OK   finish=stop ptok=570 wall=2.6s
+  t21 kind=1 expect=4403   got=4423     MISS  finish=stop ptok=566 wall=2.7s
+  t22 kind=2 expect=1      got=1        OK   finish=stop ptok=492 wall=2.5s
+  t23 kind=3 expect=4450   got=4450     OK   finish=stop ptok=484 wall=2.6s
+  t24 kind=0 expect=39     got=39       OK   finish=stop ptok=609 wall=2.8s
+  t25 kind=1 expect=4426   got=4426     OK   finish=stop ptok=567 wall=2.7s
+  t26 kind=2 expect=4      got=4        OK   finish=stop ptok=527 wall=2.6s
+  t27 kind=3 expect=4458   got=4458     OK   finish=stop ptok=485 wall=2.6s
+  t28 kind=0 expect=16     got=16       OK   finish=stop ptok=568 wall=2.8s
+  t29 kind=1 expect=4414   got=4414     OK   finish=stop ptok=605 wall=2.8s
+  t30 kind=2 expect=3      got=3        OK   finish=stop ptok=568 wall=2.6s
+  t31 kind=3 expect=4414   got=4414     OK   finish=stop ptok=562 wall=2.7s
+  t32 kind=0 expect=17     got=14       MISS  finish=stop ptok=568 wall=2.7s
+  t33 kind=1 expect=4435   got=4435     OK   finish=stop ptok=528 wall=2.6s
+  t34 kind=2 expect=0      got=0        OK   finish=stop ptok=529 wall=2.6s
+  t35 kind=3 expect=4475   got=4475     OK   finish=stop ptok=600 wall=2.7s
+  SCORE 34/36
+TASK_DONE A2
+  SCORE A2 = 34/36
+  tail_skip_line=
+  CFGCHECK keys=11 env_n=12 rtskip=0
+  mark=61660
+=== ARM B rtskip=0 ready=65s
+  ENVCHECK want=11 got=12 OK
+  t00 kind=0 expect=6      got=6        OK   finish=stop ptok=492 wall=3.0s
+  t01 kind=1 expect=4430   got=4430     OK   finish=stop ptok=605 wall=3.0s
+  t02 kind=2 expect=2      got=2        OK   finish=stop ptok=564 wall=2.8s
+  t03 kind=3 expect=4423   got=4423     OK   finish=stop ptok=483 wall=2.8s
+  t04 kind=0 expect=12     got=None     MISS  finish=stop ptok=490 wall=2.6s
+  t05 kind=1 expect=4475   got=4475     OK   finish=stop ptok=568 wall=2.8s
+  t06 kind=2 expect=1      got=1        OK   finish=stop ptok=529 wall=2.7s
+  t07 kind=3 expect=4453   got=4453     OK   finish=stop ptok=563 wall=2.8s
+  t08 kind=0 expect=7      got=7        OK   finish=stop ptok=530 wall=2.7s
+  t09 kind=1 expect=4416   got=4416     OK   finish=stop ptok=528 wall=2.8s
+  t10 kind=2 expect=3      got=3        OK   finish=stop ptok=609 wall=2.8s
+  t11 kind=3 expect=4443   got=4443     OK   finish=stop ptok=521 wall=2.7s
+  t12 kind=0 expect=15     got=15       OK   finish=stop ptok=493 wall=2.6s
+  t13 kind=1 expect=4431   got=4431     OK   finish=stop ptok=526 wall=2.7s
+  t14 kind=2 expect=1      got=1        OK   finish=stop ptok=495 wall=2.7s
+  t15 kind=3 expect=4474   got=4474     OK   finish=stop ptok=601 wall=2.8s
+  t16 kind=0 expect=5      got=5        OK   finish=stop ptok=531 wall=2.7s
+  t17 kind=1 expect=4444   got=4444     OK   finish=stop ptok=490 wall=2.6s
+  t18 kind=2 expect=1      got=1        OK   finish=stop ptok=609 wall=2.7s
+  t19 kind=3 expect=4473   got=4473     OK   finish=stop ptok=601 wall=2.8s
+  t20 kind=0 expect=7      got=7        OK   finish=stop ptok=570 wall=2.7s
+  t21 kind=1 expect=4403   got=4423     MISS  finish=stop ptok=566 wall=2.7s
+  t22 kind=2 expect=1      got=1        OK   finish=stop ptok=492 wall=2.5s
+  t23 kind=3 expect=4450   got=4450     OK   finish=stop ptok=484 wall=2.6s
+  t24 kind=0 expect=39     got=39       OK   finish=stop ptok=609 wall=2.8s
+  t25 kind=1 expect=4426   got=4426     OK   finish=stop ptok=567 wall=2.7s
+  t26 kind=2 expect=4      got=4        OK   finish=stop ptok=527 wall=2.6s
+  t27 kind=3 expect=4458   got=4458     OK   finish=stop ptok=485 wall=3.6s
+  t28 kind=0 expect=16     got=16       OK   finish=stop ptok=568 wall=2.9s
+  t29 kind=1 expect=4414   got=4414     OK   finish=stop ptok=605 wall=2.8s
+  t30 kind=2 expect=3      got=3        OK   finish=stop ptok=568 wall=2.7s
+  t31 kind=3 expect=4414   got=4414     OK   finish=stop ptok=562 wall=2.7s
+  t32 kind=0 expect=17     got=14       MISS  finish=stop ptok=568 wall=2.6s
+  t33 kind=1 expect=4435   got=4435     OK   finish=stop ptok=528 wall=2.6s
+  t34 kind=2 expect=0      got=0        OK   finish=stop ptok=529 wall=2.7s
+  t35 kind=3 expect=4475   got=4475     OK   finish=stop ptok=600 wall=2.7s
+  SCORE 33/36
+TASK_DONE B
+  SCORE B = 33/36
+  tail_skip_line=
+restored 86s
+  trap-restored (any exit path)

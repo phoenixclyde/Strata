@@ -1,0 +1,26 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W845-W847：生产 pack 改 ud-q4_k_xl；镜像升到 0.2.9 全树+组件 0.1.55；立「升级一次到位，禁分批跳版」",
+ "ops": [
+  {
+   "kind": "line_replace",
+   "line": 2,
+   "new": "> 窗<=3000；上游 Niko1221/Strata @v0.2.9(引擎0.1.55)；166 ~/strata166/；归档 MEMORY_DETAIL.md"
+  },
+  {
+   "kind": "line_replace",
+   "line": 6,
+   "new": "- 生产:`strata166-407`/8090(**0.2.9全树**;遥测入镜像,禁apply_telemetry)"
+  },
+  {
+   "kind": "line_replace",
+   "line": 9,
+   "new": "- 镜像=0.2.9全树(/src=分支树)+组件0.1.55;换二进制 cp->.new+mv"
+  },
+  {
+   "kind": "line_replace",
+   "line": 14,
+   "new": "- 容器内文件走docker exec;镜像内建;升级一次到位(禁分批跳版)"
+  }
+ ]
+}

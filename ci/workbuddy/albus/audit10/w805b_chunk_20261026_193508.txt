@@ -1,0 +1,20 @@
+# W805b chunk size A=auto(8192) B=auto:16384  20261026_193508 size=36000 reps=1 order=BA
+  mark=57238
+=== ARM B ready=42s
+  ENVCHECK want=13 got=13 :: no chunk line
+  rep0 target=36000 chars=126059 prompt_tokens=28878  wall=43.81s 
+READ_DONE B
+  LOG strata serve: prompt 28878 tokens = 0 reused + 28878 read in 43632 ms (661.9 tok/s), 1 generated in 50 ms (19.9 tok/s), drafts accepted 0 of 0, 2 checkpoints
+  PH strata prefill timing: 28873 tokens, GPU timeline 42712 ms, wall 42840 ms, host staging 261 ms: embed+steps 139 (0.3%) hc read 3535 (8.3%) gdn 4909 (11.5%) qsa proj 2160 (5.1%) qsa indexer 1 (0.0%) qsa select 817 (1.9%) qsa attn 8309 (19.5%) router+shared 1119 (2.6%) host grouping 135 (0.3%) gather 137 (0.3%) wait copy 53 (0.1%) dequant 788 (1.8%) gemm gate/up 8486 (19.9%) gemm down 4030 (9.4%) combine 239 (0.6%) ple 3769 (8.8%) gdn conv+gates 204 (0.5%) gdn recurrence 1593 (3.7%) gdn out proj 1799 (4.2%) hc write 489 (1.1%)
+  MEM strata verify: capturing the 4-token window (572 MiB of VRAM free)
+  MEM strata verify: capturing the 1-token window (536 MiB of VRAM free)
+  mark=57299
+=== ARM A ready=102s
+  ENVCHECK want=13 got=13 :: no chunk line
+  rep0 target=36000 chars=126059 prompt_tokens=28878  wall=45.60s 
+READ_DONE A
+  LOG strata serve: prompt 28878 tokens = 0 reused + 28878 read in 45429 ms (635.7 tok/s), 1 generated in 51 ms (19.7 tok/s), drafts accepted 0 of 0, 4 checkpoints
+  PH strata prefill timing: 28873 tokens, GPU timeline 44818 ms, wall 44848 ms, host staging 471 ms: embed+steps 388 (0.9%) hc read 3527 (7.9%) gdn 4933 (11.0%) qsa proj 2188 (4.9%) qsa indexer 1 (0.0%) qsa select 829 (1.8%) qsa attn 8357 (18.6%) router+shared 1292 (2.9%) host grouping 167 (0.4%) gather 120 (0.3%) wait copy 132 (0.3%) dequant 1983 (4.4%) gemm gate/up 9728 (21.7%) gemm down 4664 (10.4%) combine 236 (0.5%) ple 2115 (4.7%) gdn conv+gates 201 (0.4%) gdn recurrence 1594 (3.6%) gdn out proj 1849 (4.1%) hc write 516 (1.2%)
+  MEM strata verify: capturing the 4-token window (571 MiB of VRAM free)
+  MEM strata verify: capturing the 1-token window (535 MiB of VRAM free)
+  trap-restored (any exit path)

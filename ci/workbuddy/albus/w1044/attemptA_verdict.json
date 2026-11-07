@@ -1,0 +1,15 @@
+{
+ "G1": true,
+ "G2": false,
+ "G3": false,
+ "G4": true,
+ "G5": true,
+ "go": false,
+ "reasons": {
+  "G1": "A/B byte-identical at every point",
+  "G2": "4 lengths, violations=['32K']",
+  "G3": "ratio@20K=0.488 ratio@32K=3.36 limit=0.977",
+  "G4": "keys_equal=True hits off=9 on=9 invalid=0",
+  "G5": "2 shapes, violations=none"
+ }
+}

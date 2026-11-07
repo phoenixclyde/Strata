@@ -1,0 +1,34 @@
+rc = 0
+=== [A] 取全部命令，定位链接行 ===
+139 /tmp/allcmd.txt
+链接行号 = 139
+574 /tmp/link.txt
+--- 链接行里的 mmq 归档引用 ---
+libstrata_mmq.a
+--- 链接行里 -o 的用法 ---
+-o strata
+
+=== [B] 构造替换（去掉 q6_k 实例）===
+原归档 q6_k 成员 = 1
+新归档 q6_k 成员 = 0
+替换命中 m_noh5 次数 = 1
+替换命中 strata_noh5 次数 = 1
+--- 替换后链接行里的 -o 与 mmq ---
+-o /tmp/strata_noh5
+
+ctrl_rc=0
+-rwxr-xr-x 1 root root 24862088 Oct  7 16:19 /tmp/strata_ok
+
+=== [E] 若反证未复现，检查符号是否来自别处 ===
+新归档里 mul_mat_q_case 的 q6_k 定义 = 1
+engines 归档里是否有 q6_k 实例 = libstrata_engine.a: 0
+libstrata_prefill.a: 0
+libstrata_kernels.a: 0
+libstrata_core.a: 0
+cleaned
+
+--- STDERR ---
+bash: line 36: error: command not found
+bash: line 37: cannot: command not found
+ld.lld: error: no input files
+

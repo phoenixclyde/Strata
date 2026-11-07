@@ -1,0 +1,65 @@
+name: Downstream gate
+
+# The checks that can run without a GPU, on every change that could break the engine.
+# Upstream's own workflows only look at serve/ and the CLI; nothing covered src/ until now,
+# so a commit could change the R table or drop the runtime rollback switch unobserved.
+#
+# This is deliberately not a build: compiling the engine needs ROCm and 8-10 minutes of a
+# self-hosted machine.  See deploy/CI_CD_BLUEPRINT.md for why that stays local.
+#
+# W1002: added the round gate.  Before this, the report lint, the experiment artifacts and
+# the port-status file all existed but NOTHING called them, so a round could (and did) finish
+# with no four-section report, no evidence in git, and 16 unpushed commits.
+
+on:
+  push:
+    branches: [main, gfx906/mi50, 'ci/**']
+    paths:
+      - 'src/**'
+      - 'include/**'
+      - 'CMakeLists.txt'
+      - 'ci/**'
+      - '.github/workflows/downstream-gate.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'include/**'
+      - 'CMakeLists.txt'
+      - 'ci/**'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  static:
+    name: Static gate (no GPU)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Syntax of the 166 tooling
+        # These scripts run on the GPU host, but they are code too: a typo in deploy.sh
+        # costs a service outage, and nothing else looks at them. W1002: also the
+        # experiment repro script, which lives deeper than ci/*.sh.
+        run: |
+          for f in ci/*.sh ci/strata-ci ci/repack_ab/*.sh; do bash -n "$f" && echo "ok   $f"; done
+          python3 -m py_compile ci/*.py ci/repack_ab/*.py && echo "ok   ci/*.py + ci/repack_ab/*.py"
+      - name: Config-face checks
+        run: python3 ci/gate.py --repo . --source-only
+      - name: Round gate (evidence, report lint, port status)
+        # Fails if the A/B artifacts are missing/stale, if report_lint stops rejecting
+        # a broken four-section report, or if the CI wiring itself was removed.
+        run: |
+          python3 ci/repack_ab/verify.py
+          python3 ci/round_gate.py --ci

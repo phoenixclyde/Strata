@@ -1,0 +1,61 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W768 恢复波 2（终）：恢复被 L3 去括号削掉的 KV 行并把结论移到括号外；同时自己压够并保护 §4 那行（上一波因它触发 lost=[39,41,42,46,50,97] 而 abort）",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- **KV 门已建**：门 = 上游原生 `STRATA_LOGPOS`；**self=0**；须**两请求**；`--kv` KL 中位 i8 .042<k8v4 .070<q4_0 .105",
+   "new": "- **KV 门已建**（W767）：门 = 上游原生 `STRATA_LOGPOS`；**self=0**；须**两请求**，fresh <= `--short-read` 才走 verify 窗口被评分（源 `generate.cpp:9397`）；`--kv` KL 中位 i8 .042 < k8v4 .070 < q4_0 .105。**W768：归因不成立** --- 同 `--kv` 只改 `--expert-cache` 6000->9000 即给 KL .366 / argmax 87%，与主效应同量级 => **分布差异不是质量判据**"
+  },
+  {
+   "kind": "substr",
+   "old": "**并发(P97)**。**W760",
+   "new": "**并发(P97)**；**W760"
+  },
+  {
+   "kind": "substr",
+   "old": "- 查容器内文件走 `docker exec`（宿主假阴性）",
+   "new": "- 查容器内文件走 `docker exec`"
+  },
+  {
+   "kind": "substr",
+   "old": "（**含 register/config/verify_config**，W765）",
+   "new": "（含 register/config/verify_config，W765）"
+  },
+  {
+   "kind": "substr",
+   "old": "- 多文件同走 stdout 须先补结尾换行",
+   "new": "- 多文件同走 stdout 须补结尾换行"
+  },
+  {
+   "kind": "substr",
+   "old": "禁 Edit/自写脚本/先改后核；**探针落",
+   "new": "禁 Edit/自写脚本；**探针落"
+  },
+  {
+   "kind": "substr",
+   "old": "生产日志混入**他臂**行 => 引用前剔",
+   "new": "日志混入**他臂**行 => 引用前剔"
+  },
+  {
+   "kind": "substr",
+   "old": "- **温 TTFT 两口径**：重发=上限",
+   "new": "- **温 TTFT**：重发=上限"
+  },
+  {
+   "kind": "substr",
+   "old": "省「重复预填」（~90%）才两位数",
+   "new": "省「重复预填」~90% 才两位数"
+  },
+  {
+   "kind": "substr",
+   "old": "`pcie_bw` 读 ~1 s 须独立线程",
+   "new": "`pcie_bw` 读 ~1s 须独立线程"
+  },
+  {
+   "kind": "substr",
+   "old": "- 前端件照上游参考件；JS `/web/app.js`",
+   "new": "- 前端照上游参考件"
+  }
+ ]
+}

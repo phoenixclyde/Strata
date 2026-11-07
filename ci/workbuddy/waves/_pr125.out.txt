@@ -1,0 +1,47 @@
+rc = 0
+WROTE /home/albus/strata166/data/strata-calib.json 742 B
+--- 与生产 config 的差异（逐键） ---
+  args           : ['--pack', '/data/packs/ud-iq4_xs', '--native', '/weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf', '--resident-budget-gib', '76', '--expert-profile', '/src/data/expert-profile.bin', '--expert-cache', 'auto', '--spec', '4', '--spec-min-p', '0.5', '--mtp', '/data/mtp/rt', '--max-context', '262144', '--kv', 'k8v4', '--prefill', 'auto', '--expert-profile-save', '/data/profiles/ud-iq4_xs-learned.bin'] -> ['--pack', '/data/packs/ud-iq4_xs', '--native', '/weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf', '--resident-budget-gib', '76', '--expert-profile', '/src/data/expert-profile.bin', '--expert-cache', 'auto', '--spec', '4', '--spec-min-p', '0.5', '--mtp', '/data/mtp/rt', '--max-context', '262144', '--kv', 'k8v4', '--prefill', 'auto', '--expert-profile-save', '/data/profiles/calib-learned.bin']
+  log            : '/data/strata-ud-iq4_xs.log' -> '/data/strata-calib.log'
+  model_name     : 'qwen3.8-flash-next-ud-iq4_xs' -> 'qwen3.8-flash-next-ud-iq4_xs-calib'
+  port           : 8090 -> 8099
+--- 生成结果 ---
+{
+ "exe": "/src/build-906/strata",
+ "args": [
+  "--pack",
+  "/data/packs/ud-iq4_xs",
+  "--native",
+  "/weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+  "--resident-budget-gib",
+  "76",
+  "--expert-profile",
+  "/src/data/expert-profile.bin",
+  "--expert-cache",
+  "auto",
+  "--spec",
+  "4",
+  "--spec-min-p",
+  "0.5",
+  "--mtp",
+  "/data/mtp/rt",
+  "--max-context",
+  "262144",
+  "--kv",
+  "k8v4",
+  "--prefill",
+  "auto",
+  "--expert-profile-save",
+  "/data/profiles/calib-learned.bin"
+ ],
+ "cwd": "/src",
+ "tokenizer": "/data/packs/ud-iq4_xs/tokenizer",
+ "model_name": "qwen3.8-flash-next-ud-iq4_xs-calib",
+ "log": "/data/strata-calib.log",
+ "host": "0.0.0.0",
+ "port": 8099,
+ "env": {
+  "HSA_OVERRIDE_GFX_VERSION": "9.0.6"
+ }
+}
+

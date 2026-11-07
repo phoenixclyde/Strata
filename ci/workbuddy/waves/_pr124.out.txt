@@ -1,0 +1,37 @@
+rc = 0
+=== A) tokenizer 三件 ===
+total 9624
+drwxr-xr-x 2 root root     114 Oct  6 17:35 .
+drwxr-xr-x 3 root root     131 Oct  6 17:35 ..
+-rw-r--r-- 1 root root    9993 Oct  6 17:35 chat_template.jinja
+-rw-r--r-- 1 root root 3353258 Oct  6 17:35 merges.txt
+-rw-r--r-- 1 root root  744960 Oct  6 17:35 token_type.json
+-rw-r--r-- 1 root root     541 Oct  6 17:35 tokenizer.json
+-rw-r--r-- 1 root root 5737005 Oct  6 17:35 vocab.json
+--- 逐个判 ---
+  vocab.json         YES
+  merges.txt         YES
+  token_type.json    YES
+
+=== B) calibrate 能不能 import（无参应打 usage）===
+usage: calibrate.py <strata-*.json>
+B_RC=0
+
+=== C) 磁盘与 python ===
+/dev/mapper/ubuntu--vg-lv--0  935G  683G  253G  73% /
+Python 3.12.3
+
+=== D) 引擎 --help 里这 6 个旋钮的原文 ===
+  --spec-min-p P       how sure the draft layer must be to extend a verify window by another guess
+                       (setup writes 0.5; --calibrate measures it on this PC, see docs/DETAILS.md)
+  --lookup-chain K     opt-in: after the MTP's drafts, add up to K prompt-lookup drafts that continue
+                       them (the window grows to at most 8; default 0 = off)
+--
+  --pool-workers N     R2.2: CPU expert pool worker count.  Default 0 = every physical core
+                       except the one the host loop spins on (with --pool-affinity auto or
+                       p-cores on a hybrid CPU: P-cores minus 1).  A sweep is how the pool's
+                       deviation from `cpu_s2` is attributed.
+
+=== E) 现有 engine started 行（校准要照它起步）===
+[strata] 2026-10-07 16:51:10 engine started: /src/build-906/strata --serve --pack /data/packs/ud-iq4_xs --native /weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf --resident-budget-gib 76 --expert-profile /src/data/expert-profile.bin --expert-cache auto --spec 4 --spec-min-p 0.5 --mtp /data/mtp/rt --max-context 262144 --kv k8v4 --prefill auto --expert-profile-save /data/profiles/ud-iq4_xs-learned.bin
+

@@ -1,0 +1,15 @@
+# W804 task gate 20261026_003314 max_tokens=64 tasks=12
+  arms: A=share 0 / B=auto / C=auto(同配置第二遍)
+  corpus sha16=f6a5065751284fdb
+  mark=52411
+=== ARM A ready=54s
+  ENVCHECK want=13 got=13 STRATA_PREFILL_CPU_SHARE=0
+Traceback (most recent call last):
+  File "/home/albus/strata166/tmp/mt_task.py", line 38, in <module>
+    r = ask(t["prompt"])
+        ^^^^^^^^^^^^^^^^
+  File "/home/albus/strata166/tmp/mt_task.py", line 18, in ask
+    body = {"model": "default-big", "messages": [{"role": "user", "content": prompt + SUFFIX}],
+                                                                                      ^^^^^^
+NameError: name 'SUFFIX' is not defined
+!! ABORT no JSON A

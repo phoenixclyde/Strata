@@ -1,0 +1,60 @@
+# W860-B3：gfx906 的 f16 config（Tensile 新格式，不是 LibraryLogic 夹具）
+#
+# 为什么要新写：我们之前一直在改 Tensile/Tests/.../_codegen/data/gfx1100/SB.yaml，
+# 那是 **LibraryLogic（生成结果）**，不是生成输入。Tensile 的生成输入是 BenchmarkProblems +
+# ForkParameters（见 AMD 官方 TensileLite 文档）。树里的 fp16_tn_gfx11.yaml 把自己标成
+# `skip-gfx906 # not supported by arch`，原因是它的 MatrixInstruction 是 MFMA，
+# 而 gfx906 没有矩阵指令 ⇒ 必须把 MatrixInstruction 设成全 0 走 VALU 路径。
+TestParameters:
+  marks: []   # 我们就是要跑 gfx906
+
+GlobalParameters:
+  MinimumRequiredVersion: 5.0.0
+  SleepPercent: 0
+  NumElementsToValidate: 0
+  DataInitTypeBeta: 0
+  DataInitTypeAlpha: 1
+  PrintSolutionRejectionReason: True
+  Device: 0
+  CMakeBuildType: Release
+
+BenchmarkProblems:
+  - # ProblemType：与引擎 f16_inplace 同形（f16 输入输出、f32 累加、无 bias、无 activation）
+    - OperationType: GEMM
+      DataType: h
+      DestDataType: h
+      ComputeDataType: s
+      HighPrecisionAccumulate: True
+      TransposeA: false
+      TransposeB: false
+      UseBeta: false
+      UseBias: 0
+      Batched: false
+      Activation: false
+    - # BenchmarkProblemSizeGroup
+      InitialSolutionParameters:
+      BenchmarkCommonParameters:
+        - KernelLanguage: ["Assembly"]
+      ForkParameters:
+        # ★ 非 MI（VALU）的表达方式：不给 MatrixInstruction，而是给
+        #   WorkGroup[3] + ThreadTile[2]（Solution.py:851-854 就是这么反推 EnableMatrixInstruction=False 的）
+        - WorkGroup:
+          - [64, 4, 1]
+        - ThreadTile:
+          - [8, 8]
+        # gfx906 是 wave64（gfx11/12 才是 wave32）
+        - WavefrontSize: [64]
+        - DepthU: [16, 32]
+        - PrefetchGlobalRead: [2]
+        - PrefetchLocalRead: [1]
+        - GlobalSplitU: [1]
+        - SourceSwap: [false]
+        - LdsPadA: [-1]
+        - LdsPadB: [-1]
+        - 1LDSBuffer: [-1]
+        - ScheduleIterAlg: [1]
+        - ExpandPointerSwap: [false]
+      BenchmarkJoinParameters:
+      BenchmarkFinalParameters:
+        - ProblemSizes:
+          - Exact: [256, 256, 256]      # 无 batch ⇒ 三维 M,N,K；先用小规模验证能生成

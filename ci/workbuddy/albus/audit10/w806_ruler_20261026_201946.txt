@@ -1,0 +1,9 @@
+# W806 determinism ruler 20261026_201946 short_read=300 arms='A B C D E F'
+  start env_n=12 args_n=33 prefill=auto
+  CFGCHECK keys=11 env_n=14
+  mark=58538
+=== ARM A drop='none' ready=41s
+  ENVCHECK want=13 got=14 MISMATCH
+    only-in-proc: STRATA_SRC=/src
+!! ABORT env mismatch
+  trap-restored (any exit path)

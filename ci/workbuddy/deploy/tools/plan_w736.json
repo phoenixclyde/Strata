@@ -1,0 +1,16 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W736：登记 PR 候选清单指针（W736_PR_CANDIDATES.md）",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "·`W733_TELEMETRY_AUDIT.md`",
+   "new": "·`W733_TELEMETRY_AUDIT.md`·`W736_PR_CANDIDATES.md`"
+  },
+  {
+   "kind": "substr",
+   "old": "；**探针/测试须落 `deploy/tmp/`、数字须与所引证据自洽**（W735 同族第 6 次）。",
+   "new": "；**探针须落 `deploy/tmp/`、数字须与证据自洽**（W735）。"
+  }
+ ]
+}

@@ -1,0 +1,46 @@
+=== 临时容器是否清干净 ===
+strata166-402|Up 3 minutes
+strata166-401|Exited (137) About an hour ago
+strata166|Exited (137) 24 hours ago
+
+=== profiles 目录（宿主真实路径）===
+total 396
+drwxrwxr-x 2 albus albus     60 Oct  8 01:17 .
+drwxrwxr-x 5 albus albus   4096 Oct  8 01:00 ..
+-rw-r--r-- 1 root  root  196632 Oct  8 01:15 calib-learned.bin
+-rw-r--r-- 1 root  root  196632 Oct  8 01:17 ud-iq4_xs-learned.bin
+
+=== 校准留下的文件 ===
+total 56
+drwxrwxr-x  2 albus albus 4096 Oct  8 01:17 .
+drwxrwxr-x 14 albus albus  180 Oct  8 00:59 ..
+-rw-rw-r--  1 albus albus 6580 Oct  8 01:16 calib_out.json
+-rw-rw-r--  1 albus albus  791 Oct  8 01:16 calib_run.log
+-rw-rw-r--  1 albus albus   47 Oct  8 01:17 calib_settings.json
+-rw-rw-r--  1 albus albus  744 Oct  8 01:17 cfg_A.json
+-rw-rw-r--  1 albus albus  772 Oct  8 01:17 cfg_B.json
+-rw-rw-r--  1 albus albus  796 Oct  8 01:17 _genAB.py
+-rw-rw-r--  1 albus albus  962 Oct  8 00:59 _mkcalibcfg.py
+-rw-rw-r--  1 albus albus    0 Oct  8 01:00 run_calib.out
+-rwxrwxr-x  1 albus albus 1719 Oct  8 01:00 run_calib.sh
+-rw-rw-r--  1 albus albus  154 Oct  8 01:16 watchdog2.log
+-rw-rw-r--  1 albus albus    0 Oct  8 01:01 watchdog2.out
+-rwxrwxr-x  1 albus albus 1038 Oct  8 01:01 watchdog2.sh
+-rw-rw-r--  1 albus albus  213 Oct  8 01:00 watchdog.log
+-rw-rw-r--  1 albus albus    0 Oct  8 01:00 watchdog.out
+-rwxrwxr-x  1 albus albus  820 Oct  8 01:00 watchdog.sh
+
+=== 生产 config 现行 ===
+547d280c4c7c5d69f2440c9b8a16b975  /home/albus/strata166/data/strata-ud-iq4_xs.json
+args tail: --kv k8v4 --prefill auto --expert-profile-save /data/profiles/ud-iq4_xs-learned.bin
+env: {'HSA_OVERRIDE_GFX_VERSION': '9.0.6'}
+
+=== A/B 进度（本地驱动写的 cfg_A/cfg_B + bench）===
+-rw-rw-r-- 1 albus albus 744 Oct  8 01:17 /home/albus/strata166/w709/cfg_A.json
+-rw-rw-r-- 1 albus albus 772 Oct  8 01:17 /home/albus/strata166/w709/cfg_B.json
+engine_started_tail:
+(无校准旋钮)
+
+--- STDERR ---
+grep: /data/strata-ud-iq4_xs.log: No such file or directory
+

@@ -1,0 +1,7 @@
+RC=0
+=== STDOUT ===
+BAK /home/albus/netdata/ops/recreate_netdata.sh.bak_v37_20261105_005003
+OK /home/albus/netdata/ops/recreate_netdata.sh 6025 845adbe5ad262d96049741d6ee9654f4
+IMG_LINE: ['IMG="sha256:c9e2bf07e9221990e771ba25cba483ab00cc6f4b0bd7cc130d0c15487ca31025"']
+
+=== STDERR ===

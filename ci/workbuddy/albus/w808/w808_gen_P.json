@@ -1,0 +1,36 @@
+{
+ "tag": "P",
+ "max_tokens": 200,
+ "results": [
+  {
+   "i": 0,
+   "ok": true,
+   "wall_s": 5.69,
+   "prompt_ms": 1222.2,
+   "decode_ms": 4430.7,
+   "output_tokens": 200,
+   "decode_tps": 45.14,
+   "finish": "length"
+  },
+  {
+   "i": 1,
+   "ok": true,
+   "wall_s": 4.86,
+   "prompt_ms": 974.3,
+   "decode_ms": 3875.6,
+   "output_tokens": 200,
+   "decode_tps": 51.6,
+   "finish": "length"
+  },
+  {
+   "i": 2,
+   "ok": true,
+   "wall_s": 4.84,
+   "prompt_ms": 888.4,
+   "decode_ms": 3941.4,
+   "output_tokens": 200,
+   "decode_tps": 50.74,
+   "finish": "length"
+  }
+ ]
+}

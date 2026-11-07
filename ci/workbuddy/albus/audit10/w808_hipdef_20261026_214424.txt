@@ -1,0 +1,39 @@
+# W808 HIP-default A/B 20261026_214424 maxt=200 arms='P H F O'
+  start env_n=12 keys=11
+  CFGCHECK keys=11 env_n=12 add='none'
+  mark=62660
+=== ARM P add='none' ready=94s
+  ENVCHECK want=11 got=12 OK
+  p0  ptok=76   out=200  decode=4430.7  ms  45.1 tok/s  wall=5.7s
+  p1  ptok=65   out=200  decode=3875.6  ms  51.6 tok/s  wall=4.9s
+  p2  ptok=62   out=200  decode=3941.4  ms  50.7 tok/s  wall=4.8s
+  MEDIAN decode_tps = 50.74  (n=3)
+WROTE /home/albus/strata166/data/w808_gen_P.json
+  CFGCHECK keys=11 env_n=13 add='STRATA_HEAD_MIX_MULTI=1'
+  mark=62734
+=== ARM H add='STRATA_HEAD_MIX_MULTI=1' ready=76s
+  ENVCHECK want=12 got=13 OK
+  p0  ptok=76   out=200  decode=4326.3  ms  46.2 tok/s  wall=5.5s
+  p1  ptok=65   out=200  decode=3954.4  ms  50.6 tok/s  wall=4.9s
+  p2  ptok=62   out=200  decode=3791.5  ms  52.7 tok/s  wall=4.7s
+  MEDIAN decode_tps = 50.58  (n=3)
+WROTE /home/albus/strata166/data/w808_gen_H.json
+  CFGCHECK keys=11 env_n=13 add='STRATA_FUSE_HITS=1'
+  mark=62808
+=== ARM F add='STRATA_FUSE_HITS=1' ready=49s
+  ENVCHECK want=12 got=13 OK
+  p0  ptok=76   out=200  decode=4257.7  ms  47.0 tok/s  wall=5.4s
+  p1  ptok=65   out=200  decode=3819.1  ms  52.4 tok/s  wall=4.7s
+  p2  ptok=62   out=200  decode=3965.9  ms  50.4 tok/s  wall=4.9s
+  MEDIAN decode_tps = 50.43  (n=3)
+WROTE /home/albus/strata166/data/w808_gen_F.json
+  CFGCHECK keys=11 env_n=13 add='STRATA_ONE_TOKEN_COMMIT=1'
+  mark=62881
+=== ARM O add='STRATA_ONE_TOKEN_COMMIT=1' ready=90s
+  ENVCHECK want=12 got=13 OK
+  p0  ptok=76   out=200  decode=4342.8  ms  46.1 tok/s  wall=5.5s
+  p1  ptok=65   out=200  decode=3849.5  ms  52.0 tok/s  wall=4.8s
+  p2  ptok=62   out=200  decode=4206.2  ms  47.5 tok/s  wall=5.1s
+  MEDIAN decode_tps = 47.55  (n=3)
+WROTE /home/albus/strata166/data/w808_gen_O.json
+restored 94s

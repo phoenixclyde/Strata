@@ -1,0 +1,781 @@
+file	line	text
+albus/w831/mem_tidy.md	7	- **仍未结清 4 项**（已进 AUDIT_INDEX）：`--spec-min-p`/`--pool-workers` 判"未判"；数值债差 3 项未测；§6.8 覆盖面 20/29；宽窗口 bit-exact 未验。
+albus/w832/mem_w832.md	10	⇒ 判 **UNRESOLVED**：保留生产值 0.70/0.20，**但不再写"最优点"**；旧数字 `0.50 只高 0.4%`、`0.20 全局最优` 作废（都小于噪声）。
+albus/w832/sec4.md	28	2. 但**效应全部 ≤4.4%，小于 6.0% 的噪声底盘** ⇒ 结论只能是 **不可判（UNRESOLVED）**，
+albus/w833/sec43.md	3	**为什么这么测**：19 项里我们开了 2 项（`GDN_HEAD`/`GDN_PP`）、测过 5 项（全部 ±1.5%），**还剩 12 项从未测**。
+albus/w833/sec43.md	32	**下一步（若要救单项）**：用**单条长 prompt 探针**做二分 —— 起一组、发一条 1958-token 请求，看是否 non-finite，一次启动 ≈ 5 min。
+albus/w834/mem_w834.md	6	- **参数轴四项闭合**：`spec_min_p` UNRESOLVED、`pcie_frac` UNRESOLVED、`pool_workers` 无差异、`adapt 4/96` 默认正确。
+albus/w834/mem_w834.md	9	- 下一步已备好：数值债 5 项分项（`RT_SKIP=0` / `kv=fp16` / `PROMPT_F16=0` / `SELECT_SIMT=0` / `HC_Q8=0`），
+albus/w834/sec45.md	23	 | `--spec-min-p` | 0.70 | **UNRESOLVED**（效应 < 噪声） | §4.1，同实例配对，噪声 6.0% | 
+albus/w834/sec45.md	24	 | `--pcie-frac` | 0.20 | **UNRESOLVED**（同上） | §4.1 | 
+albus/w834/sec46.md	50	 | 3 | **Q3_K 的专家路径分派** | `kQ3_K` 只在 dense 的 `native_mmvq` 表与 DeepSeek 引擎里，专家/MMQ 路径没有显式分支 | 换 UD-Q3_K_XL 前必须先补；再叠加 KL 翻倍（0.047→0.107），**不建议** | 
+albus/w835/mem_w835.md	27	- **下一步第 0 步**：微基准（LDS ld=32 vs 33 / DPP vs bpermute / fdot2 vs f32-fma），不停服 ~30 min，
+albus/w835/mem_w835b.md	30	`#3073` `SELECT_SIMT=2` 是新取值未测；`#4781` 报 0.1.54 prompt rate 回归且指向 auto expert cache。
+albus/w840/mem_w840.md	9	**复本基线之间就差 +4.88%** ⇒ 该条件永不触发。结论（UNRESOLVED）仍成立，依据已改写。
+albus/w840/mem_w840.md	10	- **P0-3 三处「不可分辨」写成「无差异」**：P211（read 是 n=2 均值含冷样本、decode 单轮非 ABBA）→ UNRESOLVED；
+albus/w840/mem_w840.md	11	P214（pool read1300 实为 **3/3 同向**：4414>4380、4051>3960、4092>3949）→ UNRESOLVED；
+deploy/AUDIT10_W801_W809.md	18	我们从未测过（生产是默认 `direct` = 无缓冲 SSD 读）。这是下一轮的第一顺位。
+deploy/AUDIT11_W810_W825.md	11	`audit_gap2.py` 对候选做**全文**复核（避免"只在前 40 行没出现"的误判）。
+deploy/AUDIT11_W810_W825.md	43	## 2 P0（会误导下一步）
+deploy/AUDIT11_W810_W825.md	58	 | `W810:6-8, :285` | 「`ple` 93.6% 是等盘」「P141 CANDIDATE，-14% 提示」 | `P155 CORRECTION`：换 UD-Q4_K_XL 后 `ple` **0.5-0.9%**（本次实测 0.5%），价值掉 **25 倍** | 
+deploy/AUDIT11_W810_W825.md	86	 | 3 | `W810:226-229` | W813 RR 那格的基线 4429 | **跨会话借用**：W813 文件里 P/P2 臂**根本没测读长**（只有 decode p0-p2），4429 实为 W814 的 PA 臂值。同车无有效对照 | 
+deploy/AUDIT11_W810_W825.md	148	## 8 对下一步计划（W825）的影响
+deploy/AUDIT12_W826_W831.md	40	## 2 P0（会误导下一步）
+deploy/AUDIT12_W826_W831.md	154	| `W826` | 文末加 §5：实际顺序是"先升级后标定"，calibrate 只可作候选生成器 |
+deploy/AUDIT12_W826_W831.md	158	## 8 对下一步计划的影响
+deploy/AUDIT13_W832_W839.md	18	**但有三处「对外说法」必须改**，因为它们会直接误导下一步排队。
+deploy/AUDIT13_W832_W839.md	42	⇒ 该停机条件在这台机器上**结构性失效**。结论（参数轴记 UNRESOLVED、保留现值）本身仍成立——那是按主判据
+deploy/AUDIT13_W832_W839.md	49	 | W832 §4.2 / **P211** | 「0 收益 0 回归」（CONFIRMED） | read 是 **n=2 均值且含冷启动样本**（同臂 4391/4088 差 303 ms=7.4%，是臂间 46 ms 的 6.6 倍）；decode 单轮 A→B 非 ABBA | **UNRESOLVED** | 
+deploy/AUDIT13_W832_W839.md	50	 | W832 §4.5 / **P214** | 「符号翻正翻负 ⇒ 抖动」 | `w834_pool.out`：read1300 **三对全部 pw13 更快**（4414>4380、4051>3960、4092>3949），3/3 同向 | **UNRESOLVED**（n=3、无 ABBA） | 
+deploy/AUDIT13_W832_W839.md	89	| 登记表 | 226 行、11 列、无空行；**8 条改状态**（P210/P211/P213/P218/P219/P221/P223/P224）+ **2 条新增**（P228 审计、P229 GDN_PP 未测） |
+deploy/AUDIT13_W832_W839.md	95	## 6 对下一步的影响
+deploy/AUDIT13_W832_W839.md	97	1. **「数值债已结清」这个说法要收回一半**：GDN_HEAD 位等价成立（md5 相同），**GDN_PP 未测**。
+deploy/AUDIT13_W832_W839.md	99	2. **「参数轴闭合」要降级为「四项都测过，两项判不出」**：`--spec-min-p` / `--pcie-frac` UNRESOLVED、
+deploy/AUDIT13_W832_W839.md	100	`--pool-workers` UNRESOLVED、`--adapt-*` 默认正确。这四条都不该再用「最优」二字。
+deploy/AUDIT6_W776_W785.md	7	> 结论先行：**5 条 P1（会把下一步带偏）、5 条 P2（口径与一致性），P0 = 0**。
+deploy/AUDIT6_W776_W785.md	24	## 1 P1 发现（会带偏下一步）
+deploy/AUDIT6_W776_W785.md	159	4. **AUDIT 覆盖节律**：本轮之前有 10 轮没审计。建议每 3 轮或每次落生产后强制一次（本轮已把 A/B/C/D/E 五条写进 §5）。
+deploy/AUDIT6_W776_W785.md	180	- **性质**：判"外部"的时候只看了**能不能改**，没算**改的收益**。这条差点让最大杠杆永久留在待办里。
+deploy/AUDIT7_W786_W788.md	4	> W786 目标纠正、W787 R1 失败复盘、W788 HC 归因、**R5 的 TILEV 实验（含未验证切生产与回滚）**、
+deploy/AUDIT7_W786_W788.md	8	> 结论先行：**P0 = 0，P1 = 4，P2 = 7。** 其中两条 P1 是**推翻我自己前两轮的结论**，一条会让下一步的计划白跑 25 分钟编译。
+deploy/AUDIT7_W786_W788.md	35	## 2 P1（会把下一步带偏）
+deploy/AUDIT7_W786_W788.md	135	四条都不是"数据不够"，而是"证据在手但读法错"。所以下一步不必等新实验：**路径 A 可以直接判死，路径 B 才是唯一该做的动作**。
+deploy/AUDIT8_W789_W795.md	40	## 2 P1 发现（结论方向对、幅度错 / 会带偏下一步）
+deploy/AUDIT9_W796_W800.md	5	> W798 decode 侧 7 开关全否 + 规则 R、W799 多轮固定地板 + park-gain（P126 PENDING）、
+deploy/AUDIT9_W796_W800.md	81	⇒ `P126` 的 PENDING 理由（"地板未动 ⇒ 不是主因"）**必须作废**。但这仍是**每档 n=1**，不能直接采纳；
+deploy/AUDIT_INDEX.md	27	 | `--spec-min-p` / `--pcie-frac` | W832 §4.1（P210） | **UNRESOLVED**：效应 ≤4.4% < 噪声 6.0%，保留现值。注意原停机条件（`ms/win` <2%）结构性失效，见 AUDIT13 P0-2 | 
+deploy/AUDIT_INDEX.md	28	 | `--pool-workers` | W833 §4.5（P214） | **UNRESOLVED**（AUDIT13 改判）：n=3、无 ABBA；read1300 实为 3/3 同向 | 
+deploy/AUDIT_INDEX.md	29	 | 数值债 `GDN_PP` | P213/P229 | **未测**（GDN_HEAD 已确认位等价，GDN_PP 无臂） | 
+deploy/AUDIT_INDEX.md	32	 | 28 个 `STRATA_USE_HIP` 死块 | W839 §6、P227 | **未打开任何一块**；候选 `pcie_frac_auto` / `decode_defaults_arch_ok` | 
+deploy/HANDOFF_PROMPT.md	3	> 用法：新开会话，把 ```text 里那一整段粘进去。它自包含：项目、现场、约束、结论、下一步、坑。
+deploy/HANDOFF_PROMPT.md	33	- 参数轴不是"最优"：--spec-min-p / --pcie-frac / --pool-workers 全部 UNRESOLVED（效应小于噪声底盘），
+deploy/HANDOFF_PROMPT.md	41	【下一步，按价值排】1) 单块放开 STRATA_PCIE_FRAC_DEFAULT=auto / pcie_frac_auto（P227 候选，唯一可能改 decode 的死块）；
+deploy/SESSION_STATE.md	40	3. **参数轴不是"最优"，是"两项判不出"**：`--spec-min-p` / `--pcie-frac` / `--pool-workers` 全部 **UNRESOLVED**
+deploy/SESSION_STATE.md	82	而权威件 §4.1 已把该轴判 UNRESOLVED 关账）。
+deploy/UPSTREAM_CONTRIB.md	4	- 方法：每条候选都先在 `repo:Niko1221/Strata` 的 issue/PR 里检索过（含 `deterministic`、`reproducible`、
+deploy/UPSTREAM_CONTRIB.md	11	## 建议提交（4 条）
+deploy/UPSTREAM_CONTRIB.md	72	- **建议的修法**（二选一，都很小）：
+deploy/UPSTREAM_CONTRIB.md	104	## 不建议提交（会被当成噪音或已被覆盖）
+deploy/UPSTREAM_CONTRIB.md	106	| 候选 | 为什么不提 |
+deploy/UPSTREAM_CONTRIB.md	112	| PLE 表 mlock 失败 | 环境限制（`ulimit -l`），上游 INTEL.md:723 已明确建议**不要**调大 |
+deploy/UPSTREAM_CONTRIB.md	143	| `mlock` 需要 `ulimit -l`，容器里建议不要开大 | `docs/INTEL.md:723` |
+deploy/UPSTREAM_CONTRIB.md	170	3. **顺序**：我建议 **C1 → C3 → C4 → C2**（先拿最硬的一条确立可信度，再借评论挂上 C3/C4，最后才提 PR）。
+deploy/W708_STRATA402_BENCH.md	82	**次要论证（逐条排除，均为"不适用"而非"没测到"）**：
+deploy/W708_STRATA402_BENCH.md	91	 | `STRATA_MMVQ_IL` | **未验证** | 官方只写 "on by default, RTX 30 series and newer"；源码 `src/core/verify.cpp:73` 的 `g_mmvq_il()` **默认 true 且无 arch 门**，是否真的走该内核取决于运行时 `native_mmvq_il_supported()`（`:917`）。**本机是否命中未验，故不作为解释依据** | 
+deploy/W708_STRATA402_BENCH.md	211	 | 7 | P2 | "`MMVQ_IL` 在 AMD 不开"超出原文（note 只说 RTX 30+ 默认） | ✅ **已改**：§3 标为**未验证**，不作为解释依据 | 
+deploy/W708c_PARAM_AUDIT.md	1	# W708c -- 166 Strata 参数面审计：现状 / 未配候选 / 不该动
+deploy/W708c_PARAM_AUDIT.md	32	## 2. 未配候选（按"收益 x 可测性"排序）
+deploy/W708c_PARAM_AUDIT.md	62	## 4. 建议执行序（一次只动一个变量）
+deploy/W708d_PARAM_SOLIDIFY.md	4	> 承接 `W708c_PARAM_AUDIT.md`（现状 / 未配候选 / 不该动）。本件加两件机主要求的东西：
+deploy/W708d_PARAM_SOLIDIFY.md	30	 | `params/PARAM_REGISTER.tsv` | **唯一真值**。35 行 = 12 ADOPTED / 14 CANDIDATE(+1 BLOCKED) / 8 REJECTED | 每行带 `requires` / `conflicts_with` / `synergizes_with` / `evidence` / `verdict`；`id` 稳定（如 `P20`），跨波复用 | 
+deploy/W708d_PARAM_SOLIDIFY.md	36	**任何一步 fail 都不许进下一步**（本次就靠这条抓到了 cp 权限问题，见 §3）。
+deploy/W708d_PARAM_SOLIDIFY.md	74	### 2.5 建议的组合（协同）
+deploy/W709_AUDIT.md	22	**退路**：改为**机械化证据链审计**（我自己写核验器跑），并把"独立对抗性审计"**明确列为明天待办**。
+deploy/W709_AUDIT.md	51	 | **C2** | 「可复用前缀必须与 chunk 8192 对齐」 | **WEAK** | 只有 3 处观测（4096 无效 / 8192 有效 / 18k 复用 16384）；**无第二类独立实验**。已在交付件 §3.1 标为"与观测一致的解释，尚未被独立证实" | 
+deploy/W709_AUDIT.md	112	- 「chunk 对齐」机制：标为"**与观测一致的机制解释，尚未被独立证实**"。
+deploy/W709_AUDIT.md	114	- P34 的**适用区间**：补写"只在 ~10,000 token 一档实测；`> 16,384` 未测；`< 8,192` 无效"。
+deploy/W709_AUDIT.md	123	4. **P34 在 `> 16,384` 与 `< 8,192` token 的行为未测**。
+deploy/W709_AUDIT.md	131	## 6 明天的待办（按优先级）
+deploy/W709_AUDIT.md	135	3. 按 `W709_HANDOVER.md` §3 推进五项未测项（各有现成配方）。
+deploy/W709_HANDOVER.md	10	结论：**解码侧与多轮复用两项已调到实测最优**，另有两项实测否决、五项仍未测（配方见 §3）。
+deploy/W709_HANDOVER.md	30	| register | `D:/strata166/params/PARAM_REGISTER.tsv` = **35 行 / ADOPTED 16 / REJECTED 12 / CANDIDATE 7**（md5 `a91b677ea13905cb36ef56fa6224c36d`） |
+deploy/W709_HANDOVER.md	70	 | 项 | 为什么现在没测 | 怎么测（配方） | 
+deploy/W709_PARAM_OPTIMUM.md	15	 | 解码（另 2 组） | **不采纳**：`--pool-workers`（实测 21=默认 最优）、adapt 三件（实测 default 最优） | 各 4 / 3 个候选重启实测 | 
+deploy/W709_PARAM_OPTIMUM.md	18	 | 预填/会话（未测） | `STRATA_PREFILL_CPU_SHARE=auto`、`--conversation-cache-mib`、`pin=N`、`GR_SPLIT`、`GUMBEL` | 见 §6 的测量配方 | 
+deploy/W709_PARAM_OPTIMUM.md	74	 | 组 | 候选 -> 读数 | 最优 | 
+deploy/W709_PARAM_OPTIMUM.md	108	**[!] 证据等级**：本条只有"4096 无效 + 8192 有效 + 18k 复用 16384"三处观测支撑，属**与观测一致的机制解释，尚未被独立证实**（没有第二类独立实验，如改变 chunk 大小来看对齐点是否随之移动）；
+deploy/W709_PARAM_OPTIMUM.md	133	> **[!] 适用区间（未测部分）**：本项只在 **~10,000 token** 一档上实测。`> 16,384` token 的 prompt 默认已有 checkpoint、`8192` 只是多一个，**是否有增量收益未测**；`< 8192` token 无效（无 chunk 边界）。
+deploy/W709_PARAM_OPTIMUM.md	144	 | 项 | A（现行） | B（候选） | Δ | 判 | 
+deploy/W709_PARAM_OPTIMUM.md	171	**register 状态**：ADOPTED **16** ／ REJECTED **12** ／ CANDIDATE **7**。
+deploy/W709_PARAM_OPTIMUM.md	175	## 6 现状台账与未测清单
+deploy/W709_PARAM_OPTIMUM.md	184	 | `P26 --pool-workers` | 候选 | **REJECTED** | 实测 21（默认）最优 | 
+deploy/W709_PARAM_OPTIMUM.md	185	 | `P27 adapt 三件` | 候选 | **REJECTED** | 实测 default 最优 | 
+deploy/W709_PARAM_OPTIMUM.md	186	 | `P22 --prefill auto:*` | 候选 | **REJECTED** | 实测 -0.22% | 
+deploy/W709_PARAM_OPTIMUM.md	187	 | `P21 --prompt-cache-tail` | 候选 | **REJECTED** | 实测无效果（与 P34 重复） | 
+deploy/W709_PARAM_OPTIMUM.md	189	### 6.2 未测 / 不适用（明确列出，不许当"都配了"）
+deploy/W709_PARAM_OPTIMUM.md	193	 | `STRATA_PREFILL_CPU_SHARE=auto` | **未测** | 需**短 prompt**（chunk <1024）口径的 TTFT 探针；官方口径"prompt<1024 快 19~35%，2K 以上不变" | 
+deploy/W709_PARAM_OPTIMUM.md	194	 | `--conversation-cache-mib` / `pin=N` | **未测** | 需**多轮真实对话**口径（钉住长文档问答）；本波的 `reused` 自证给了现成判据 | 
+deploy/W709_PARAM_OPTIMUM.md	195	 | `STRATA_GR_SPLIT=1` | **未测** | ~3%/verify window，**低于解码分辨力（11.6~13%）** => 须多轮重复取分布 | 
+deploy/W709_PARAM_OPTIMUM.md	196	 | `STRATA_SPEC_GUMBEL=1` | **未测** | 需**采样口径**（temperature>0）；贪心时它是空操作 | 
+deploy/W709_PARAM_OPTIMUM.md	197	 | `--kv-grow` | **未测** | k8v4 下 KV 仅 ~214 MiB => 预期收益小 | 
+deploy/W712_PLAN.md	17	**待办**（原来四条 + 本波新增四条）：
+deploy/W712_PLAN.md	35	**建议顺序：~~A2~~、~~B1~~、~~C2~~（均已完成）-> **B1b** -> B2 -> B6 -> B4 -> B3 -> B5 -> C4 -> C5 -> C1 -> C3。**
+deploy/W712_PLAN.md	67	- 臂：`every 8192`（现役）vs `every 16384`（旧默认）vs `every 32768`（>16k 档候选，16384 的倍数）；
+deploy/W712_PLAN.md	80	register 里 `P30 STRATA_MMVQ_IL` 状态 CANDIDATE，备注"本机是否命中未验"。
+deploy/W712_PLAN.md	88	本机现役服务建议口径是 `temperature 0.6 / top_p 0.95 / top_k 20`（见 `configs/workbuddy-strata166.md` §4）
+deploy/W712_PLAN.md	97	## 2 本波新增的三条"非参数"待办（建议一并做掉）
+deploy/W712_PLAN.md	106	### 2.2 `docker logs` 拿不到终态 `engine started` 行（避坑，建议回写 W709_HANDOVER §4）
+deploy/W712_PLAN.md	110	本条建议补进 `W709_HANDOVER.md` §4 避坑清单（那是运行期避坑，属它的范围）。
+deploy/W712_PLAN.md	116	- 建议：**暂不加**，改为在 `PROJECT.md` §二 与两份 W712 件里显式记版本；等下一次真正改动 register 时顺手加。
+deploy/W712_PLAN.md	163	 | 2 | register 是否新增"引擎版本"行（会改指纹 35/16/12/7） | **不加**（按建议）=> 版本记在 `PROJECT.md` 与两份 W712 件里；下次真正改动 register 时再顺手加 | 
+deploy/W712_UPGRADE.md	4	> 本件 = **本波做了什么、怎么自证**；下一步方案见 `W712_PLAN.md`。
+deploy/W712_UPGRADE.md	157	 | 档（实测 token） | **A: 8192（现役）** | **B: 16384（旧默认）** | **C: 32768（候选）** | 
+deploy/W712_UPGRADE.md	178	（md5 `a91b677e...` -> `3bf819e3ccd3f54ed454154b14c3eb3f`，仍 **35 行 / ADOPTED 16 / REJECTED 12 / CANDIDATE 7**，已同步 166）。
+deploy/W712_UPGRADE.md	181	### 3.3 B1 派生的新假设（B1b，**尚未测**）：把 prefill chunk 调小，可能让短会话也吃上复用
+deploy/W712_UPGRADE.md	193	① 小 chunk 可能降低**长 prompt 的预填吞吐**（W709 只测过**调大**到 16384 无收益，**调小从未测**）；
+deploy/W712_UPGRADE.md	201	- **没有改任何参数**：register 的**值/状态一字未动**；§3.2 收口时把 B1 的边界结论写进了 P34 的 evidence/verdict（md5 `a91b677e...` -> `3bf819e3ccd3f54ed454154b14c3eb3f`，仍 35 行 / ADOPTED 16 / REJECTED 12 / CANDIDATE 7；重新 `gen_config --write` 后生产 config **逐字节未变**）。
+deploy/W713_AUDIT.md	18	| 未验证项 | 见 §4（PR 合并徽章、完整提交哈希、外部承认等） |
+deploy/W713_AUDIT.md	31	 | 5 | register P34 evidence + `MEMORY.md` §3 + `W709_HANDOVER.md` §2 | **机制表述强于证据**：「可复用前缀**必须**与 prefill chunk(8192) 对齐」被写成已确证机制。独立读源码（含 `serve/` 的 checkpoint 逻辑与 `--prompt-cache-every` help）**未见显式对齐断言**，help 里 "an existing chunk boundary" 只出现在 `--prompt-cache-tail`；且 `every=4096`+`chunk=8192` 得 `
+deploy/W713_AUDIT.md	32	 | 6 | `.workbuddy/memory/MEMORY.md`（注入窗口件） | 时效全错：① :13 改参通道写重启 `-402`（现役是 -404）② :31 待办里的 A2/P34 **已完成**却仍列待办 ③ :38「H5 仍需打 / H6 新增」 -  **0.1.41 起补丁面已归零**（H1~H6 上游全修）④ 全件无 0.1.41 / B1 / B1b 任何字样 | 长期记忆是**每会话注入**件：新会话会拿到过期状态与错误待办 | 按 `routek-memory-slim` 技能规程重写（见 §3）：**改前归档备份 + 五断言 + 关键串 + 符号保真**全过；
+deploy/W713_AUDIT.md	45	 | 6 | `deploy/W713_PLAN.md` §6.2#10 | 该待办**只有条目没有判据**（无出处、无验收） | 已补判据：`grep -c 'lend coverage' 166:data/strata-ud-iq4_xs.log`，>0 记证据并入账，=0 即关项 | 
+deploy/W713_AUDIT.md	47	 | 8 | `deploy/W713_PLAN.md` §6.2 | `--kv-grow`（P32）**从"未测清单"里漏掉**（W709 §3 的五项之一） | 已补进 B5 行（同族低优先项） | 
+deploy/W713_AUDIT.md	49	 | 10 | `deploy/configs/workbuddy-strata166.md:145` | 仍写 B1b"**尚未实测**"，且指向**已被取代**的 `W712_PLAN.md` | 已改为"B1b 已实测（10.58 -> 3.59 s，冷预填 -11%）但**尚未采纳**（未在 0.1.41 复核、答案是否变未测）"，并指向 `W713_PLAN.md` | 
+deploy/W713_AUDIT.md	85	| register（P34 表述改动后） | md5 `3dc808ceaf030f370db961001b5d6da1` / **35 行 / ADOPTED 16 / REJECTED 12 / CANDIDATE 7** / CR=0 / BAN=0；本机==166；**重新 `gen_config --write` 后生产 config 逐字节未变**（`d2b10f0c...`，identical=True） |
+deploy/W713_AUDIT2.md	46	 | 2 | `deploy/W713_PLAN.md` §2 | 档表仍把 **C1（审计重跑）列为待办**，而 §6.1 已判完成 | §2 的 C1 行标完成；§2 顺序行去掉 C1 | 
+deploy/W713_AUDIT2.md	48	 | 4 | `.workbuddy/memory/MEMORY.md` | 又带了过期 register 指纹（写 `3dc808ce...`，实际已是 `f82ccdd743ff...`）；待办里仍有已收口的 B1b | 按技能规程整篇重写：**去掉 register 字面值**（改成"每改必变，别抄进记忆、现算并与 166 对比"）、B1b 标收口、补两轮审计行；报数六件 **chars 2712 / 余量 288 / 4236 B / md5 `986c2bf740c7...` / cr 0 / BAN 0** | 
+deploy/W713_AUDIT2.md	59	| register 双机一致 | 本机 == 166 == `f82ccdd743ffe42aefae3e76dfdc37f5`；**35 行 / ADOPTED 16 / REJECTED 12 / CANDIDATE 7**；P10 值/状态仍 `auto`/`ADOPTED`（只动 evidence）；生成物 `d2b10f0c...bea` **未变** |
+deploy/W713_PLAN.md	21	 | **3** | **新增一条候选旋钮 + 两条旧候选复活**（见 §2） | 0.1.41 的 #1353（RAM-resident prompt reader）、#1347（会话缓存淘汰修复）、#1454（省 320 MiB） | 
+deploy/W713_PLAN.md	47	开关：`STRATA_STAGER_SSD=0/1` 强制走哪条 => **这本身就是一个新的单变量候选（P35）**。
+deploy/W713_PLAN.md	56	layer splits, batch and AMD are as before"** => **AMD 默认不受影响**，我们的 P23 候选仍按 AMD 口径自己测。
+deploy/W713_PLAN.md	84	我们 22 个参与线程正是这个旋钮要借的算力 => 候选有效，且**同一家族的 `STRATA_PREFILL_CPU_SHARE_MAX=3072`
+deploy/W713_PLAN.md	98	 | ~~B7~~ | ~~**`STRATA_STAGER_SSD`（新候选 P35）**~~ **已完成：无差 => REJECTED**：强制 prompt reader 走/不走 SSD 档 | #1353 的目标场景正是我们；机制判据看日志里的路径/线程档，吞吐辅助（预填分辨力 1.2-1.7%） | 
+deploy/W713_PLAN.md	175	3. **答案会变**（上面实测）=> 作为**基线参数**（P10）改动，等同于让每一条回复都换数值路径，**当前不建议采纳**。
+deploy/W713_PLAN.md	180	**更干净的替代路径（建议）**：向上游提 feature request ---- 让可复用 checkpoint 落在**子 chunk 边界**而不改 prefill chunk，这样既不换数值路径、又能补上短会话盲区。
+deploy/W713_PLAN.md	184	## 6 全量账：已做 / 没做 / 重做（基准 2026-10-08 23:0x CST；**2026-10-09 19:4x 再更新**：§6.2 #2 的 P31 与 P33 均已处置、#3 P23、#8 C4、#9 C5 已关；此前 02:2x 已关 #4、已建 §6.3 #1；**20:1x 再更新**：#2 的 P33 已处置、#6 的 P28/P32 已关；**20:2x** 补 #12 vision 核验（此前漏在账外）、#11 补入 W724 的 PR 候选）
+deploy/W713_PLAN.md	189	### 6.1 已做（**截至第 49 条**（第 39 条 = W767、第 40 条 = W768、第 41 条 = W769、第 42 条 = W770、第 43 条 = W772、第 44 条 = W773、第 45 条 = W773 审计、第 46 条 = W773 发车 P46、第 47 条 = W774 0.1.42 升级+登记 P55-P60、第 48 条 = W774 发车、第 49 条 = W774 收车出结论）（原写"20 项 + 第 21/22/23 条"，W752 审计 #7 指出标题停在 23 而表内已到 31），带证据；**register 行数/分布以现算为准*
+deploy/W713_PLAN.md	209	 | 17 | **W719：P33 契约确认 + 实测**（2026-10-09 19:4x） | `strata_prefix`（pin=N）契约补齐（**请求体顶层**，三种写法；非法值 400）；长文档 4 轮追问两臂**无增量**（该窗口 `evictions=0`；**W735 更正**：现役驱逐计数已到 5，"预算够"非恒真）=> register P33 保持 **CANDIDATE**；**副产品**：同实测在生产参数下复证 P31（轮 1 冷 11,785 ms -> 轮 2-4 826/1,207/946 ms，-93%~-90%）。见 `W719_P33_PREFIX.
+deploy/W713_PLAN.md	210	 | 18 | **W720：P28/P32 关项 + P29 口径勘定**（2026-10-09 19:4x） | 走『读源码即判、零发车』：**P28 `STRATA_GR_SPLIT` -> REJECTED**（~3% < 解码分辨力 9.5-15%，且 'sums in another order' **破坏位一致**，默认关）；**P32 `--kv-grow` -> REJECTED**（上限仅 +93 槽 / +0.95%）；**P29 `GUMBEL` 保持 CANDIDATE**（服务默认口径=贪心 => 默认下空操作）。**并修正 register 的引证行号**（AMD
+deploy/W713_PLAN.md	222	 | 25 | **W740：R1 ISA 探针 + R2 IQ4 dot 判决 + R3 MTP 接受长度**（2026-10-10 00:45-01:0x） | 机主令「按候选表做」，并三连问「为何反汇编 / 源在 166 / 我们自己的库」。读**自有库** `KIntegrated/vllm-gfx906-mobydick`（我们 fork，分支 `gfx906-patches-030`），其 `.agents/skills/gfx906-isa-disassembly/SKILL.md` 第一方写明反汇编只答「编译器实际发射 / ISA 可编码 / 二进制与源同否」。**R1**：新
+deploy/W713_PLAN.md	230	 | 29 | **W749：优化方向 / 方案 / 计划（含 routeK 源码级思路）**（2026-10-10 01:5x） | 机主令"下面你的优化方向、方案和计划，以及从 ki 的库而来的源码级思路"。**实读三个源**：Strata 源码树、自有库 `vllm-gfx906-mobydick@gfx906-patches-030`（7401 文件，落盘 5 件）、生产实测。**五类发现**：(1) `--mtp-window` **默认 32768 而我们没设**（`generate.cpp:552`），上游说 8192 对 64K +3.5%（P43）；(2) Strata 的草
+deploy/W713_PLAN.md	232	 | 30 | **W750：完整方案与计划（合并全部待办）**（2026-10-10 01:5x） | 机主令"结合待办你有没有完整方案和计划"。**四源合并去重**：register CANDIDATE **5 条**（P33/P40/P41/P42/P43）、§6.2 仅剩 1 项（上游，已交）、§6.3 是引用纪律非行动项、W749 的 10 条候选（与 register 大部分重叠）。=> **11 条行动项**，其中 **3 条零发车**。分 P0（W2 只读核查 / W10 常量入账 / W1 `--mtp-window` / W3 `SH_STREAM`）· P1（W5 `--
+deploy/W713_PLAN.md	236	 | 32 | **W752：审计 W747~W751（"说的 vs 落盘的"）**（2026-10-10 02:0x-02:1x） | 机主令"感觉你说的不一样。审计吧"。按 `routeb-audit` 四条铁律，**分两层**：**A 层（会话表述 vs 落盘，只有当前会话能审）** + **B 层（落盘件彼此之间，派 Explore 子 agent 独立审）**。合并 = **A 层 5 处（3xP1）+ B 层 13 处（5xP1 / 8xP2）**，去重后**修正 13 处**：(1) W750 §0 三处的 `CANDIDATE 5` -> **6**、`REJECTED 28/
+deploy/W713_PLAN.md	240	 | 34 | **W754：W2 非专家张量精度核查（P0 第 1 项）**（2026-10-10 02:1x） | 机主令"按计划推动"。**列义先取自源码**（`src/core/weights.cpp:136` 注释 + `:168-173` 的 19 字段 sscanf），再统 `index.txt` 的 1079 张量。**结果**：`kind=0 / bits=8 / group=32`（**Q8_0**）**303 个**且 dst=0（native 服务）---- 其中含 **`output.weight`（lm_head）· attn_qkv · attn_gate · f
+deploy/W713_PLAN.md	244	 | 36 | **W760：W1（`--mtp-window`）/ W3（`STRATA_SH_STREAM`）单变量 A/B + 参数固化**（2026-10-10 02:1x-02:5x） | 机主令"按计划推动"，随后澄清"我是说跑的结果，参数的固化"。**6 臂交错**（`A B C A2 B2 C2`），**64K 上下文**（`prompt_tokens=64064`，每臂 1 冷 + 4 温，`gen=64`，贪心）；臂 config 断言 `BASE_DIFF [log,port]` / `WIN_DIFF [args,log,port]`；现场确认 **臂 B 的 args
+deploy/W713_PLAN.md	246	 | 37 | **W763：参数固化倒查（10-09 晚 ~ 10-10 02:45）**（2026-10-10 02:4x） | 机主问"从昨天晚上到现在有没有遗漏了，该固化的参数是不是都固化了"。**机械倒查**：两日志 **43 波**、出现过的参数名（CLI 46 + ENV 22）逐个查 register。**查出 17 个真参数从未入账**：`STRATA_{IO_PREFETCH,FILL_AHEAD,FS_AHEAD,FETCH_THREADS}`（**io-prefetch 族**，正对本机"专家流式读"的瓶颈）、七个 drafter/spec CLI（`--coupled
+deploy/W713_PLAN.md	250	 | 40 | **W768：`--kv` 质量门的驻留对照 ---- 归因被否定**（2026-10-10 21:0x-21:2x） | 承 W767 §4 的未排除项（各臂 `--expert-cache auto` 随 KV 占量不同；引擎对命中/未命中的专家走不同代码路径）。设计成**正面反例**：**固定 `--kv`**、只改 `--expert-cache`。3 臂 （`rc6` k8v4@6000 / `rc9` k8v4@9000 / `rf6` fp16@6000），同语料同 **808 个位置**（tier1+tier2），每臂起车前从备份恢复**同一份 profile*
+deploy/W713_PLAN.md	251	 | 41 | **W769：驻留匹配的 `--kv` 对照 ---- 分布门被驻留布局主导**（2026-10-10 21:34-21:49） | 承 W768 的"下一步"（把 fp16 的 `--max-context` 压到使 KV 占量与 `k8v4@262144` 相等）。**可控点有源码依据**：`plan.hpp:144` `cache_bytes = pool - kv_bytes - fixed`、`:134` `kv_bytes = kv_bytes_per_token(g) * max_context` => 专家槽位由 KV 占量直接决定。4 臂：`k262`（k8v
+deploy/W713_PLAN.md	253	 | 43 | **W772：待办盘查 + 三处账实不符修正**（2026-10-10 23:1x-23:2x） | 机主问「后面还有待办吗」。**机械对照**（不靠印象）：`W750 §1` 的 11 条行动项 ---- **已做 5**（W1 `--mtp-window`/W760 · W2 非专家张量/W754 · W3 `SH_STREAM`/W760 · W5 `--kv` 质量门/W767-770 · W10 常量入账/W755）、**未做 5**（W4 逐桶账 · W6 §4 族 · W7 `--lookup-chain` · W8 `kShape` 标定 · W9 并发面）、*
+deploy/W713_PLAN.md	254	 | 44 | **W773：参数固化完整性倒查（该固化而没固化的）+ 补登记 P51/P52/P53**（2026-10-10 23:2x-23:4x） | 机主令「按项目已有流程严格执行、出结果要及时固化以免白跑」。**判据机械化**（不靠印象、且判据自身先过正控）：「真引擎参数」= 引擎 `--help` 全量 ∪ 源码里的 flag 字面；「已登记」= register 的 **name 列**能命中（复合写法 `STRATA_{A,B,C}` / `A / B` **先展开**）。**三次判据自纠**：(1) 首版用 `head -400` 抓的 help 当权威源 => `--mt
+deploy/W713_PLAN.md	256	 | 46 | **W773 发车 P46（io-预取族的 decode 面）+ 结论 `STRATA_IO_PREFETCH` = REJECTED（P54）**（2026-10-10 23:32 ~ 2026-10-11 00:12） | 机主令「按你计划据实办理」。**先把 `P46` 那条族行拆开**（四条不是一个东西）：`STRATA_IO_PREFETCH` = 唯一直接对口 decode（Linux file-tier I/O，未命中专家 + 下一层路由预测的专家改由 I/O 线程 whole-blob `pread` 预读，`DETAILS.md:223-227`；上游声明输出
+deploy/W713_PLAN.md	257	 | 47 | **W774：上游 v0.1.42 升级 + 读全 release notes + 登记 P55-P60**（2026-10-11 00:0x-00:4x） | 上游 main 自 10-08 前进到 **v0.1.42**（发布 2026-10-11 00:10 CST）。读全 23,126 字符 release notes + 逐 PR 核对：**我们 3 个 PR（#1731/#1732/#1733）全部被关闭并"with your authorship"合入 v0.1.42**（closed-not-merged = 维护者手工摘提交 + 署名，见 §6.3 更新）。新
+deploy/W713_PLAN.md	265	 | ~~1~~ | ~~**B7 / 新候选 P35 `STRATA_STAGER_SSD`**~~ **已完成 23:25**：三臂实测**无差**（<=0.1%）=> **#1353 对本机价值 = 0**，该开关无用；register 新增 **P98 = REJECTED** | 见 `deploy/tmp/_w713_b7_remote.log` | 
+deploy/W713_PLAN.md	266	 | 2 | ~~**B3 P31/P33**~~ **P31 已关 2026-10-09 19:1x**（**P33 亦已处置 19:4x**：契约补齐为请求体顶层三写法、非法值 400；长文档 4 轮两臂**无增量**（该窗口 `evictions=0`；W735 更正）=> 保持 CANDIDATE。见 `W719_P33_PREFIX.md`） | P31：上游 parity 工具终审 = `PASS: A/B/A output and checkpoint reuse, byte-exact main-model state`（主模型状态逐字节一致）=> 已采纳：register *
+deploy/W713_PLAN.md	275	 | 11 | **向上游提**（**对外件总账，2026-10-11 02:0x 并入机主对照表**）：<br>**#1396** PR 接收（ported）---- **仅编译验证、未跑过** -> 0.1.41<br>**#1731** PR 接收，署名 -> 0.1.42<br>**#1732** PR 接收，署名（**MI50 实测驱动**）-> 0.1.42<br>**#1733** PR 接收，署名 -> 0.1.42<br>**#1595** Issue **你赢了，改默认**（全驻留不武装）-> 0.1.42<br>**#1729** Issue **未认账**，待你补诊断数
+deploy/W713_PLAN.md	289	### 6.4 待办（W774 新增，2026-10-11 00:4x；**W775 追加 #15**，2026-10-11 04:1x）
+deploy/W713_PLAN.md	298	 | 6 | **补 #1729 的诊断数据**（维护者"未认账"，2026-10-11 02:0x 机主对照表新增） | **需写通道**（见 #4）；数据本身本机可复现 | 机主裁定：#1729（`STRATA_PREFILL_CPU_SHARE` 默认开导致 decode 腰斩）**维护者未认账、只加了内存保护**，**待我们补诊断数据**。**我们已有的素材**：**P23 已实测**（`W718_P23_CPUSHARE.md`）---- 本机宏判据 `STRATA_HIP_GFX906` 不定义 `STRATA_USE_HIP` => 走 CUDA 分支 => `g_share_d
+deploy/W713_PLAN.md	301	 | 9 | **P55/P56 在 0.1.42 上的复测**（新版同步派生） | * **W775delta 已定死靶：在现役 `k8v4` 下【主模型路径】不可达**（审计后收紧口径） | 上游 gfx906 社区报告 `bench/results/2026-10-08-gfx906-qsa-query-swizzle/`（2x Radeon Pro VII）实测 **`STRATA_GFX906_ATTN_QUERY_SWIZZLE` 组件侧 +14.646806%、整模型 +1.185% prompt / −1.049% latency、输出逐位相同**。**W774 五臂（sw1/
+deploy/W713_PLAN.md	302	 | 10 | **评估 0.1.42 新增的 `replay_cache_policy.py`**（New opt-ins 命中） | [OK] **W775delta 已完整收车（源码面 + 实测面）** | 0.1.42 release notes 的 "New opt-ins" 段列出该工具件。**源码面已核**：工具族**三件在位**（`/src/tools/`，含 `bench_eviction.py` 四策略对拍 + `make_profile.py` + `routing_kfold.py`）。**原假设「与 P31/P34 重叠」证伪** -- 它测 **expert cac
+deploy/W713_PLAN.md	303	 | 11 | **吸收上游 gfx906 社区报告**（新版同步派生） | 只读可做 | 上游 `bench/results/` 下已有多份 gfx906 报告。**已核**：我们的 **#1855 未被收录**；`2026-10-08-gfx906-qsa-query-swizzle` 已读（见 #9）。**待办**：把其余 gfx906 报告逐份读、与我们 register 的 P 编号逐条对齐，看有无**我们未登记而别人已实测**的结论（避免重复劳动/漏项）。 | 
+deploy/W713_PLAN.md	306	 | 14 | **全量 PR/issue 状态复核**（机主令"看一下你提交的所有 pr 或者 issue 是否回复"） | **已完成 2026-10-11** | 匿名+token 实读 `Niko1221/Strata`：我方 **5 件** -- **#1877 open**（`mergeable_state: clean`，`serve/telemetry.py +16 -1`，**0 comments**，尚未被审）；**#1855 open**（MI50 32GB 262k bench，**未被 0.1.42 收录**）；**#1733 / #1732 / #1731 均 cl
+deploy/W713_PLAN.md	307	 | 15 | **v0.1.42 changelog 全量合入待办主表**（机主令"你没有去看最新版的changelog和releasenote吗？之前不是让你合到待办的吗"） | **已完成 2026-10-11 04:1x** | 落点 = `W750_MASTER_PLAN.md` **§0.5（新增）**：按 W713 §1 三分法过全量 23,126 字符 => **(1)补丁面归零 3 条**（#1731/#1732/#1733，均已合入 0.1.42）、**(2)产生行动项 6 组 -> 新增 W12-W15**、**(3)无关封口（`P57`）**。同时刷新 §0.0 快照（
+deploy/W713_UPGRADE.md	39	=> 与官方在 4x R9700 上"无变化"的观察一致。**新候选 P35 `STRATA_STAGER_SSD`（强制走哪条路）仍留在账上**，用于判定我们走的是哪条。
+deploy/W713_UPGRADE.md	40	- **#1454/#1465 省 320 MiB 显存**：本波只跑服务面读数（未比对启动日志的专家槽位数）=> **未测**，留在账上。
+deploy/W713_UPGRADE.md	44	（官方明写 "layer splits, batch and AMD are as before" => **AMD 卡不受影响**；P23 在 AMD 仍属 opt-in，候选有效）·
+deploy/W715_HUIHUI_SWITCH.md	194	5. 旧待办仍在：0.1.41 解码分母重测、P31/P33 多轮缓存、P23/P28/P29/P30、C3 清理旧镜像容器、向上游提 feature request。
+deploy/W716_BASELINE.md	30	**判定：本机结构上不可能命中（编译期即定，不是"未验"）。** register P30 已由 CANDIDATE 改为 **REJECTED**，值记 `(不适用)`。
+deploy/W716_BASELINE.md	116	2. **W715 遗留 #4**：答案级受控 A/B 未做。考虑到本工作区已实锤"**贪心也不保证可复现**"，该对照需要多次重复取多数才有判据，性价比低 ---- 建议维持"结构性证据"（native 路径 + PLE 分片 + compat-bf16 差异）。
+deploy/W716_BASELINE.md	118	4. 其余待办不变：P31/P33 多轮缓存 · P23 CPU_SHARE · P29 GUMBEL · P28 GR_SPLIT · `--kv-grow` · C4 `_sshutil` 自包含 · C5 避坑回写 · C3 清理 · 向上游提 feature request。
+deploy/W716_BASELINE.md	129	- register 变更：P30 CANDIDATE -> REJECTED（本机 md5 `af072c2e0db9688a7f13c3aff4edeb60`；40 行 / ADOPTED 20 / REJECTED 14 / CANDIDATE 6），已推 166 并两侧对齐。
+deploy/W717_P31_PARITY.md	118	| register | P31：value `1024` -> **`4096`**、status `CANDIDATE` -> **`ADOPTED`**；evidence 重写（含 parity 全文与限定） |
+deploy/W717_P31_PARITY.md	119	| register 现状 | **41 行（含表头）/ 数据行 40**；分布 **ADOPTED 21 / REJECTED 14 / CANDIDATE 5**；md5 `cfac8c1d54749ebbb0eaf4302febaedc` |
+deploy/W717_P31_PARITY.md	165	## 5 副产品观察（转待办，未下结论）
+deploy/W717_P31_PARITY.md	177	## 6 待办更新（`W713_PLAN.md` §6 同步改）
+deploy/W717_P31_PARITY.md	179	- **§6.2 #2（P31/P33）**：P31 **已关**（本条）；**P33（`pin=N`，请求级）仍未测**。
+deploy/W718_P23_CPUSHARE.md	69	| register | P23：value `auto` -> **`0`**、status `CANDIDATE` -> **`ADOPTED`**；evidence 重写（含宏缺陷全套证据 + 两臂实测） |
+deploy/W718_P23_CPUSHARE.md	70	| register 现状 | **41 行（含表头）/ 数据行 40**；分布 **ADOPTED 22 / REJECTED 14 / CANDIDATE 4**；md5 `9353e5e8dadbf1508ff27be3956c7ac7` |
+deploy/W718_P23_CPUSHARE.md	95	## 5 给上游的建议（可提 issue）
+deploy/W719_P33_PREFIX.md	92	| register P33 | **保持 CANDIDATE**（请求级、零成本：不传即无影响）；evidence/verdict 更新为本波契约与实测 |
+deploy/W719_P33_PREFIX.md	93	| verdict | 仅在会话缓存**吃紧并出现 `evictions`** 时才可能受益；本机 4096 MiB 预算下该 4 轮长文档 `evictions=0` => **该窗口内无增量**。**W735 更正**："预算够"不是恒真 ---- 4 槽占满后新 park 确实会驱逐，现役 `/metrics` 的 `conversation_cache.evictions` 已到 5（`slots:4 parked:4`），故 P33 的适用条件是"缓存吃紧"，本机只是**大多数窗口**不触发。register 仍保持 CANDIDATE（请求级、零成本、不传即无影响）|
+deploy/W719_P33_PREFIX.md	94	| 实用建议 | 客户端若做"**一份长文档 + 大量短问**"且**同时有别的会话在抢缓存**，可传 `strata_prefix: {"messages": 1}`；单会话场景不必传 |
+deploy/W720_P28_P32.md	7	P29 = **保持 CANDIDATE**（服务默认口径是**贪心** => 默认下是空操作）。
+deploy/W720_P28_P32.md	8	分布：**40 行 / ADOPTED 22 / REJECTED 16 / CANDIDATE 2**；md5 `3727931d85ba2e41a4ef1e5353077327`（两侧一致）。
+deploy/W720_P28_P32.md	65	## 3 P29 `STRATA_SPEC_GUMBEL=1` -> 保持 CANDIDATE（口径勘定）
+deploy/W720_P28_P32.md	77	**判定**：**保持 CANDIDATE**（并 不 是"不适用"---- 它是客户端行为相关的条件开关，不像 P30 那样在引擎层恒 false）。
+deploy/W720_P28_P32.md	85	| P28 | `CANDIDATE -> REJECTED`；evidence 重写（含**行号修正**） |
+deploy/W720_P28_P32.md	86	| P32 | `CANDIDATE -> REJECTED`；evidence 重写（含算账） |
+deploy/W720_P28_P32.md	87	| P29 | 保持 `CANDIDATE`；evidence 补"服务默认贪心 => 默认口径空操作" |
+deploy/W720_P28_P32.md	88	| register | 分布 **ADOPTED 22 / REJECTED 16 / CANDIDATE 2**（共 40 行）；md5 `3727931d85ba2e41a4ef1e5353077327`；已推 166，**两侧一致** |
+deploy/W721_VIEW.md	21	 | **P33** `strata_prefix`（pin=N） | **驱逐**（保护共享前缀） | 该窗口预算够 => `evictions=0`（**W735 更正**：现役 `evictions=5`，"预算够"非恒真） | 两臂 `prompt_ms` 差在噪声内 | **CANDIDATE** | 
+deploy/W721_VIEW.md	22	 | **P32** `--kv-grow` | **显存**（未用 KV 还给 expert cache） | KV 全量 **204 MiB** vs cache **21.98 GiB** => 上限 **+89 槽（0.91%）**（W735 更正单位） | 算账（尚未发车，已可判） | **REJECTED** | 
+deploy/W721_VIEW.md	61	## 3 由此得出的筛选启发式（可直接复用于未来的候选）
+deploy/W721_VIEW.md	101	## 5 对剩余待办的预测
+deploy/W721_VIEW.md	114	这条视角的价值不在"又关了两项"，而在**下次拿到一个新候选时，不必再逐项发车试**：
+deploy/W723_COMBO.md	5	- **结论先说**：**技术上可共存（三处机制互不互斥），但不建议组合测** ---- 三项**全在分辨力以下**，
+deploy/W724_UPSTREAM_PR.md	1	# W724 ---- 上游 PR 可行性 + 首选候选：gfx906 的宏判据漏判
+deploy/W724_UPSTREAM_PR.md	5	- **结论**：**能**（有先例：PR #1396 已并入 0.1.41）。但**首选候选不是 feature**，而是 W718 顺带挖出的
+deploy/W724_UPSTREAM_PR.md	32	## 2 首选候选：`prefill.cpp:1839` 的宏判据漏判（1 行）
+deploy/W724_UPSTREAM_PR.md	254	## 10 追加（2026-10-09 21:3x，W728 波）---- 候选 2 从「建议」升级为「已实测的 patch」
+deploy/W724_UPSTREAM_PR.md	256	W726 时**候选 2（`serve/telemetry.py` 的 `_Amd.read()` 不读 PCIe）**只是一句空口建议。W728 已把它做成
+deploy/W725_SWEEP.md	1	# W725 ---- 六项待办清扫（机主裁定后执行）
+deploy/W725_SWEEP.md	4	- 缘起：机主对「还有待办吗」的清单逐条裁定：
+deploy/W725_SWEEP.md	17	**判定**：`CANDIDATE -> REJECTED`。**与 P30 的区别**：P30 是引擎层**结构性不可达**（HIP 分支恒 false）；
+deploy/W725_SWEEP.md	21	- register：**40 行 / ADOPTED 22 / REJECTED 17 / CANDIDATE 1**（仅剩 P33）；两侧 md5 一致 `6cf03586...`
+deploy/W725_SWEEP.md	102	层集合运算：`kept_layers=240`（所有有容器引用的镜像）、`候选=0`（5 张 strata 镜像**当时都还有容器**）。
+deploy/W725_SWEEP.md	193	**其性能/正确性影响未实测 => 不能凭源码断言**，列为"若要动 MTP 时再单测"的候选。
+deploy/W725_SWEEP.md	201	| `deploy/params/PARAM_REGISTER.tsv` | P29 `CANDIDATE -> REJECTED`；分布 **22/17/1**；两侧 md5 `6cf03586...`；备份 `.bak_w725_*` |
+deploy/W725_SWEEP.md	209	**待办变动**：`#5 P29` 关、`#12 vision 核验` 关、`#7 #1454 两条` 关、`#10 C3` 关、
+deploy/W726_MONITOR_BACKEND.md	147	**列为上游候选 2**（候选 1 = `prefill.cpp:1839` 的宏判据，见 `W724_UPSTREAM_PR.md`）。
+deploy/W726_MONITOR_BACKEND.md	164	=> 建议（已列入待办）：**给 register 加一个「必备键清单」**（上游 `SETUP_KEYS` 里我们该有的那部分），
+deploy/W727_SETUPKEYS_MTP.md	118	（我们刚在 0.1.41 把补丁面归零）。=> **列为上游候选 2**，进将来那个批次。
+deploy/W727_SETUPKEYS_MTP.md	192	| `deploy/params/PARAM_REGISTER.tsv` | 新增 **B01-B07**（必备键清单）+ **P35**（MTP 分支实测）；**49 行 / ADOPTED 23 / REJECTED 25 / CANDIDATE 1**；两侧 md5 `5a9a74f0...`；备份 `.bak_w727_*` / `.bak_w727b_*` |
+deploy/W728_PCIE_TELEMETRY.md	4	- 缘起：机主报「pcie 现在还是没数据」（W726 只做了根因定位与上游候选登记，未修）
+deploy/W728_PCIE_TELEMETRY.md	50	## 2 改动（= 上游候选 2 的 patch 正文）
+deploy/W728_PCIE_TELEMETRY.md	160	## 6 上游候选 2 升级
+deploy/W728_PCIE_TELEMETRY.md	162	W726 时候选 2 只是"sysfs 有数据、代码没读"的空口建议；本波把它变成了**已实测的 patch**
+deploy/W728_PCIE_TELEMETRY.md	165	**待办的对外件数不变，仍是 3 件**（2 PR + 1 feature request）---- 本条本来就是那 2 个 PR 之一，
+deploy/W728_PCIE_TELEMETRY.md	166	只是**证据强度提高了**（从"建议"变成"我们已在 gfx906 上跑通"）。
+deploy/W728_PCIE_TELEMETRY.md	177	| `deploy/params/PARAM_REGISTER.tsv` | 新增 **X00 `PATCH serve/telemetry.py (本地覆写)`**；**50 行 / ADOPTED 24 / REJECTED 25 / CANDIDATE 1**；两侧 md5 `43fdcc1d...`；备份 `.bak_w728_*` |
+deploy/W735_AUDIT.md	27	 | 4 | `W719_P33_PREFIX.md:63,93`、`W721_VIEW.md:57`、`W713_PLAN.md:207,221` | 「本机**全程** `evictions=0`」「驱逐 **0**」=> 据此把 P33 降级为「无作用面」 | 现役 `/metrics` `conversation_cache` = `slots:4 parked:4 **evictions:5**`（且随使用递增） | 已改：该项**只在那个 4 轮窗口**成立；P33 保持 CANDIDATE，但理由改为"该窗口无增量" | 
+deploy/W736_POST_DRAFTS.md	3	> 背景：三个 PR 分支已推好（见 `W736_PR_CANDIDATES.md` §7），但**创建 PR / 发评论 / 开 issue
+deploy/W736_PR_CANDIDATES.md	5	> 即 v0.1.41 之后**再无新提交**）---- 下面每个候选都**实测过它在此基准上仍未修**。
+deploy/W736_PR_CANDIDATES.md	10	 | 序 | 候选 | 改动量 | 上游是否仍未修 | 是否与已有 issue 重复 | 建议 | 
+deploy/W736_PR_CANDIDATES.md	15	 | **D** | `serve/telemetry.py` 的 `name()` 容量一致性 | 约 10 行 | **是**（实测只读 `product_name`） | 未搜到 | 可提，但**建议先开 issue 谈**（改的是驱动提供的字符串） | 
+deploy/W736_PR_CANDIDATES.md	24	 | 1 | `src/prefill/prefill.cpp:1838-1839` | `arm_cpu_share()` 的守卫写 `#if !defined(STRATA_USE_HIP)`；gfx906 兼容构建**不定义** `STRATA_USE_HIP`（`compile_commands.json` 计数 **0**，只有 26 处 `-DSTRATA_HIP_GFX906`）=> 该分支被编进去 => banner 打印 + `g_share_default=true` | **能（候选 A）** | 
+deploy/W736_PR_CANDIDATES.md	25	 | 2 | `src/core/expert_cache.cpp:5-6` | 上游**自己**的注释：*"the gfx906 compat build (PR #638), which compiles this file as HIP **without** `STRATA_USE_HIP`"*，且该文件守卫写作 `#if defined(STRATA_USE_HIP) \ | \ | defined(STRATA_HIP_GFX906)` | 作为 A 的**论据**（不是候选） | 
+deploy/W736_PR_CANDIDATES.md	34	 | 6 | `serve/telemetry.py` | `_Amd.read()` 补 PCIe：① 链路（`link()`：逐跳取 `max_link_speed/width` 最小值＝路径瓶颈）② `pcie_own_gen` ③ `pcie_path`（路径是否读全，读不全就不冒充瓶颈） | **能（候选 C1）** | 
+deploy/W736_PR_CANDIDATES.md	35	 | 7 | `serve/telemetry.py` | `bw()`：读 amdgpu `pcie_bw`，按 `(received+sent)*mps` 折算吞吐，**独立线程** 5 s 一刷（单次读阻塞约 1 s） | **能（候选 C2）但必须先谈方向口径** | 
+deploy/W736_PR_CANDIDATES.md	37	 | 9 | `serve/telemetry.py` | `name()`：把名字里的 `NNGB` 与 `mem_info_vram_total`（取整）比对，**只在矛盾时**替换 | **能（候选 D）** | 
+deploy/W736_PR_CANDIDATES.md	38	 | 10 | `serve/web/app.js` | `spark()` 轴下限 `1e-9` -> `1`；PCIe 副行改 2 位小数 + 窗口峰值 >= 1 MB/s 时补 `peak` | **能（候选 B）** | 
+deploy/W736_PR_CANDIDATES.md	54	## 2 可做 PR 的候选（逐条详细）
+deploy/W736_PR_CANDIDATES.md	56	### 候选 A（首选）：`prefill: the gfx906 compat build gets the CUDA branch of arm_cpu_share`
+deploy/W736_PR_CANDIDATES.md	77	- **建议动作**：以 `git@github.com:phoenixclyde/Strata.git` 的 fork 分支提交，正文引用 #1729/#1595/#1684 + §6 数据。
+deploy/W736_PR_CANDIDATES.md	79	### 候选 B：`web: the sparklines of unbounded series are scaled by their own noise`
+deploy/W736_PR_CANDIDATES.md	91	- **建议动作**：**这是最省的一条**（1 字符 + 说明），可作为独立小 PR 先发。
+deploy/W736_PR_CANDIDATES.md	93	### 候选 C：Linux AMD 的 Monitor PCIe 读数（建议拆两件）
+deploy/W736_PR_CANDIDATES.md	103	### 候选 D：`_Amd.name()` 的容量一致性（建议先开 issue）
+deploy/W736_PR_CANDIDATES.md	107	- **风险**：这是在改"驱动提供的字符串"，维护者可能认为不该由 serve 层纠正 => **建议先以 issue 提出**（标题类似 "the Monitor's GPU name is the board's FRU string and can disagree with the fitted memory"），而非直接 PR。
+deploy/W736_PR_CANDIDATES.md	109	### 不建议提新的：我们的「子 chunk 边界 checkpoint」
+deploy/W736_PR_CANDIDATES.md	113	## 3 不建议 PR 的（含理由）
+deploy/W736_PR_CANDIDATES.md	122	## 4 建议改为「issue 评论」而不是新 issue 的
+deploy/W736_PR_CANDIDATES.md	124	| 素材 | 建议落点 |
+deploy/W736_PR_CANDIDATES.md	128	| `expert_cache.cpp:5-6` 那句话可作为"gfx906 不定义 STRATA_USE_HIP"的**上游自证** | 引在候选 A 的 PR 正文里 |
+deploy/W736_PR_CANDIDATES.md	164	**局限（照实写进 PR）**：① 只测了 prompt 读取时间，**未测解码吞吐**（对比：#1729 报解码腰斩，我们这台没测）；
+deploy/W736_PR_CANDIDATES.md	181	建议顺序：先 **B**（1 字符、零争议），再 **A**（1 行、机制独到），最后 **C1**。
+deploy/W737_ROUTEK_PORT.md	1	# W737 routeK -> Strata：可移植面清点与候选清单（源码级修订版）
+deploy/W737_ROUTEK_PORT.md	48	 | 2 | 把 `dot_isa_probe.py` 的「`v_dot8_i32_i4` 存在但需要 i4 操作数」当成「routeK 从未测过它」的旁证 | 两处记录**都对**：速率表证明**能发出且满速**；`dot_isa_probe` 说的是**它对 Q8 的 i8x i8 用途无用**。**我把「对他们无用」误读成「没测过」** | **误读** | 
+deploy/W737_ROUTEK_PORT.md	49	 | 3 | 未提 `v_dot2_f32_f16` 这条**已被 routeK 自己用 objdump 推翻**的候选 | 主源有完整的更正链（`SUPERSEDED` 段 + `2026-08-29` objdump 复核）：生产内核 P·V 已是 `1024x v_pk_fma_f16` = 1 指令 / 2 MAC -> dot2 重写**收益为零**，只是精度改动 | **漏项（且正好是我最该看的那类）**：它给出的教训「**源码写法 != 实际发射**」直接否掉我在 §2 里那条「Strata 的 `fused_gr` 是展开的 8 个 fmaf」（那是**读注释**得出的） | 
+deploy/W737_ROUTEK_PORT.md	139	主源判定它对 Q8 的 i8 x i8 用途「irrelevant」--**不是不存在、不是打不出、不是没测**。
+deploy/W737_ROUTEK_PORT.md	148	- 理由：routeK 用这条**推翻了自己的一条候选**（见 §0.5-3）。原文逐字：
+deploy/W737_ROUTEK_PORT.md	225	 | C1 | **判死三步**：找当次失败日志 -> 抽**原始异常行** -> 看代码此后是否改过 | dflash2 曾因两车 `ALL FAILED` 被判整条线弃，回查才发现根因只有一行且当天已修 | 我们实践过近似的（W720「读源码即判」）；建议成文进 §1 | 
+deploy/W737_ROUTEK_PORT.md	238	- register 50 行：**ADOPTED 24 / REJECTED 25 / CANDIDATE 1**。
+deploy/W737_ROUTEK_PORT.md	275	## §8 候选清单（修订版）
+deploy/W738_KQUANT_ENGINE_PORT.md	89	- 处置：**候选 R0**（零正确性风险；但**须按 routeK 的「孤岛快、进服务丢」纪律**，服务态 A/B 才算数）。
+deploy/W738_KQUANT_ENGINE_PORT.md	188	**WMMA 依赖**（gfx1151 的矩阵核）=> **gfx906 不可用**（我们 P96 已判）。它们**不是**我们的候选。
+deploy/W738_KQUANT_ENGINE_PORT.md	192	## §5 候选清单（本轮修订；插到 `W737` 的 R1 之前）
+deploy/W739_V2_TSUM_AB.md	3	> 触发：机主令「你先把一和二做了」= 落 `W738` 候选里的前两项（R0a 开 `STRATA_EXPERT_V2`、R0b 试 `STRATA_TSUM`）。
+deploy/W739_V2_TSUM_AB.md	167	该开关走的是 `native_expert_grouped`（**decode 侧** MoE），长 prompt 下的占比更低 => 对预填的影响未测。
+deploy/W740_ISA_PROBE.md	6	> 本轮把候选表 W737 §8 的 **R1 / R2 / R3** 做掉。
+deploy/W740_ISA_PROBE.md	135	## 5 对候选表的修订（W737 §8）
+deploy/W741_PROD_BENCH.md	48	单轮、单并发、未固定 Z0、只测 512 / 3060 两个长度；**未测并发吞吐、未测 128k 以上上下文的解码退化**。本报告只作「当前生产能到多少」的快照。
+deploy/W741_PROD_BENCH.md	278	**其余 10+ 个全部未登记** => 本轮已登记为 **P40 / P41 / P42（CANDIDATE）**。
+deploy/W741_PROD_BENCH.md	289	- **R6**：`--lookup-chain` / `--suffix-draft`（默认 3）**从未测**。旁证：日志里有 `suffix drafts: 22 windows, 45 of 66 accepted`
+deploy/W741_PROD_BENCH.md	295	`--batch` / `--slots` / `--batch-mtp` 在 P97 登记为「单用户不需要，每槽吃 VRAM」=> **我们从未测过并发吞吐**。
+deploy/W741_PROD_BENCH.md	308	1. **补测 §4 未测开关**（先 `SH_STREAM`；上游对同 pack 给过 output +3.9-5.0%）-- **唯一有上游量级且完全未测的面**
+deploy/W741_PROD_BENCH.md	350	### 10.4 候选排序（我的建议，按「最可能真赚 x 门槛最低」）
+deploy/W741_PROD_BENCH.md	354	 | **1** | **`--mtp-window 8192`** | **64K output +3.5%**（32K -0.4%） | 低（单变量一跑；**明说不限架构**） | **P43 CANDIDATE** | 
+deploy/W741_PROD_BENCH.md	355	 | 2 | `STRATA_SH_STREAM=1` | UD-IQ4_XS decode **+1.8%**（prompt 不变） | 低（按位等价，只需 KL 免测） | P40 CANDIDATE | 
+deploy/W741_PROD_BENCH.md	356	 | 3 | §4 其余 10+ 个 | 全族 output +3.9-5.0% | 中（须逐个；排 WMMA） | P41 CANDIDATE | 
+deploy/W741_PROD_BENCH.md	357	 | 4 | `--lookup-chain`（上游用 3） | 未给单独数 | 低（我们从未测） | P42 CANDIDATE | 
+deploy/W749_OPT_PLAN.md	44	- **但"未测过的窗口尺寸"靠一条先验形状外推**，而那条形状的注释逐字写着：
+deploy/W749_OPT_PLAN.md	94	 | C2 | **并发吞吐**（`--batch/--slots` 从未测） | **完全空白**：单流已调到位，但"能同时服务几个"没有任何数据 | 
+deploy/W750_MASTER_PLAN.md	1	# W750 完整方案与计划（合并全部待办）
+deploy/W750_MASTER_PLAN.md	8	`W749_OPT_PLAN.md` 的候选、**上游 v0.1.42 changelog 的新增/变更项**、以及上游 PR/issue 的跟进，
+deploy/W750_MASTER_PLAN.md	18	**引擎已升到 0.1.42**（净修复 + 零回归）；未决 register 是 **CANDIDATE 6**（**2026-10-11 20:1x 现算（第二轮收口：B7 靶消失 + W9 机制不可行）**；W4x-B7 采纳 `P66`/`P65` => ADOPTED；W7W8 新增 `P72`；**收口把 7 项 CANDIDATE -> REJECTED**）
+deploy/W750_MASTER_PLAN.md	25	| register | `ADOPTED 27 / REJECTED 46 / **CANDIDATE 6** / **REFERENCE 8**`（**87 数据行**；**2026-10-11 20:1x 现算（第二轮收口）**；含 W4x-B7 的 `P09`->REJECTED/`P66`+`P65`->ADOPTED 与 W7W8 新增 `P72`；**本行此前误留固化前的 26/33/21/6，与同行的 CANDIDATE 名单（19）自相矛盾 ---- AUDIT5 补遗更正**）；CANDIDATE = `P33`·`P47`·`P48`·`P71` + **`P55`·`P
+deploy/W750_MASTER_PLAN.md	62	## 0.5 v0.1.42 changelog 合入待办（W775 新增，机主令）
+deploy/W750_MASTER_PLAN.md	104	 | **`STRATA_GFX906_ATTN_QUERY_SWIZZLE=1`（#1661, 0FL01）** | **命中**：gfx906 专属 INT8 QSA query-LDS 置换；**只改 shared-memory 布局，不改浮点操作数与顺序**（作者逐字，24 runs 逐位相同）；**我们 k8v4 经 MTP drafter 能真实走到该路径** | **`P55`（CANDIDATE）-> 挂 `W12`**：W774 首测 **prefill 中性**（ | delta | ≤0.4%）、**decode 弃权**（臂内 spread 16-21%）=> **须 
+deploy/W750_MASTER_PLAN.md	105	 | **`STRATA_GFX906_ATTN_REDUCE12=1`（#1718, 0FL01，依赖 P55）** | **命中**：score reduction 12 warp sum -> 一个 reduce-scatter，shuffle 60->16；**上游未经任何卡验证** | **`P56`（CANDIDATE）-> 同挂 `W12`**（与 P55 串联：sw1->sw2 臂） | 
+deploy/W750_MASTER_PLAN.md	106	 | **`STRATA_HEAD_MIX_MULTI=1` + `STRATA_ONE_TOKEN_COMMIT=1`（#1479）** | **命中**：**我们的发现被上游采纳为代码**（署名 co-author）；HIP 原硬关 -> 显式 opt-in；上游实测 **answers identical**、decode 不可区分 | **`P59`/`P60`（CANDIDATE）-> 同挂 `W12`**（hm1 臂；与 P55/P56 同车即可） | 
+deploy/W750_MASTER_PLAN.md	113	**decode 弃权**（臂内 spread 16-21% > 全部组间差）--**结论：不判死、不采纳、保留 CANDIDATE**，下一轮须先提高重复数。
+deploy/W750_MASTER_PLAN.md	126	`prevent_sleep` / `reasoning_effort` / `/metrics/prometheus` / `--gpus` 命名 / `CC`/`CXX` 等）：**可用未测**，登记 `P58`（REFERENCE），**不列行动项**。
+deploy/W750_MASTER_PLAN.md	130	> **新开待办**：`--ple-io direct` 对照车（0.1.42 内置开关，可原地 A/B 不必升版；上游 0.1.43.1 已判该自动切换在慢盘上错误，#2040）。**原「该待办关闭」撤回**。
+deploy/W750_MASTER_PLAN.md	134	> 触发：机主核问「release note 内容是否合进待办」。逐条核对 `W775delta_REL0142_LEDGER.md`（64 行）后，
+deploy/W750_MASTER_PLAN.md	150	- **封口面**（不适用 33 条 + 改答案类）= `P57`，**一封到底、不应入待办** => 处理正确。
+deploy/W750_MASTER_PLAN.md	151	- **已完成面**（X-5·X-15 -> W14；X-16·A-3 -> W15；S-15 已落地；S-16/`P58` 已关闭）=> **不入待办**。
+deploy/W750_MASTER_PLAN.md	169	 | **D1** | `P33`/`P41`/`P46` 是否重议 | `P33` = 请求级 `strata_prefix`（会话前缀 pin）；register verdict **已含** W735/W750 的更正（"其降级理由限该窗口"）。`P41` value=`1`、`P46` value=`(未设)`，两条 status **仍 CANDIDATE**（属实） | **不动 register**。分条重排只落在本表：P33 留档（请求级用法、非引擎开关 => 不发车）；`P41` 先筛后测；`P46` 提 `STRATA_FILL_AHEAD` 为中优先 | 
+deploy/W750_MASTER_PLAN.md	171	 | **D3** | 是否另立 `--kv int8` 车测 `P55`/`P56` | 现役 `k8v4` 质量无损（needle 6/6）+ decode +7.7~16.6%（W770）；`P55` 上游收益 = prompt +1.185% / decode **作者自评噪声级** | **暂不立**（登记条件性待办：仅当 `--kv int8` 本身成为候选时顺带测） | 
+deploy/W750_MASTER_PLAN.md	172	 | **D4** | W13 是否提 feature（淘汰策略） | **0.1.42 镜像逐字**：`expert_cache.hpp:143` **"it never evicts"**、`expert_cache.cpp:642/653` **"no eviction, deliberately"** => **引擎侧无实现、无开关**；工具 `tools/bench_eviction.py`（17,670 B）在位（`--policies fill-only,lru,lfu-decay,oracle`）。**上游 GitHub**：PR **#1089 open** / **#991
+deploy/W750_MASTER_PLAN.md	195	**已回填 13 行**（register `2c3e7223...`，**该时点** 75 数据行 / 状态计数不变；现况 86 行 / CANDIDATE 19，见 §0.0）：
+deploy/W750_MASTER_PLAN.md	197	**清单见 `W775delta_EXT_VALUE_REGISTER.md`**（含"本机为何不用"与"对外适用面"两列 + 建议推上游四条）。
+deploy/W750_MASTER_PLAN.md	218	- **[!] 判据集之外的同类码位（仍留着，需裁定）**：`U+00A7`(§) **152** · `U+00B7`(·) **131** · `U+2514`(└) 11 · `U+2212`(−) 9 · `U+2013`(–) 7 · `U+2248`(≈) 5 · 箭头族 `U+2190`/`U+2191`/`U+2193` 6 · `U+222A`/`U+2264`/`U+2265`/`U+221E`/`U+25B2`/`U+00B0` 6。=> 现定判据集**只含明文列出的 10 码位 + 带圈/emoji/dingbats 区间**；`§`/`·` 属基本信息标点、`└`/箭
+deploy/W750_MASTER_PLAN.md	226	> 机主令：「你的想法要及时落入待办，不然会丢」。本小节 = 本会话（W12D / B2 / R4 step-2 / D4 / `ROUTE_TAIL_SKIP` 发现之后）
+deploy/W750_MASTER_PLAN.md	232	 | **W17** | **`P57` 封口族按机理逐条复核** | **新审计项** | **原判据不成立**：`generate.cpp:8076` 守卫是 `#if !defined(STRATA_USE_HIP)`，主引擎**未链接** `strata_hip_runtime` => 该分支**是活的**（`ROUTE_TAIL_SKIP` = 活证）=> 「文档说 AMD 不适用」不能替代「机理是否成立」 | 逐条核 `P57` 其余成员（自适应 PCIe share / `GFX12_*` / `PF_FUSED` / `PF_XMX` / `--pipeline-windows
+deploy/W750_MASTER_PLAN.md	235	 | **W6-补** | **§4 族筛选结果（R4 step-2）** | **既有项更新** | 15 开关 -> **候选 13**；**先测 3 个**，**已测 2 个均 exact but no gain**：`STRATA_Q8_PACKED`（`W775delta_W4X_Q8PACKED_RESULT.md`）+ **`STRATA_GDN_PP=2`（本会话第 2 车，`W775delta_W4X_GDNPP_RESULT.md`：prefill -0.13% 在 0.4-0.8% spread 内 / decode -1.7~-2.5% 小于 16.7-31.6% sp
+deploy/W750_MASTER_PLAN.md	237	 | **D3-补** | **`--kv int8` 车测 `P55`/`P56`** | **条件性待办（暂不立）** | 仅当 `--kv int8` 本身成为候选时顺带测 | §0.5.5 D3 | 
+deploy/W750_MASTER_PLAN.md	238	 | **W20** | **EXT 清单维护 + 上游跟进** | **新机制项（防丢）** | 13 行 `[EXT]` 已回填；4 条建议**已发 = issue `#1926`**（待回音）；**触发复核条件** = 换 `--kv` / 上多卡 / **改驻留模式（`--resident-*`，含 2026-10-11 由 budget 改为 `--resident-experts`）** / 换 pack / 启用 PLE 表 ---- **[!] 该条件已于 2026-10-11 17:37 兑现**；**[W20 复核完成 2026-10-11 19:5x]**：13 行逐项复
+deploy/W750_MASTER_PLAN.md	242	 | **W28E-B7** | **驻留模式 A/B：budget 76 vs `--resident-experts`+headroom0.5（车序第 2 车）** | **新实验（本会话）** | **已完成 2026-10-11 17:31 收车**（ABBA A B B A x5，单概念变量，parity **5/5** 逐位同）：**验收硬证通过** `1554 of the prompt path's 1554 lendable slots keep their experts in RAM too`（**N==M**）；补集 **36.93 GiB**（A 33.44 +借区 
+deploy/W750_MASTER_PLAN.md	248	#### 0.6.1 W17 衍生的可执行子项（**待办**，防丢）
+deploy/W750_MASTER_PLAN.md	250	> 触发：机主「务必及时纳入待办」。W17 的 **132 只是"名字筛上界"**，必须拆成可执行项才不丢。
+deploy/W750_MASTER_PLAN.md	256	 | **W17b** | **优先族试车序列**（按族串行） | **判「不发车」（2026-10-11 16:0x，机主令"六你定"）** | **短名单 36 条逐条做证据筛 => 无可行动杠杆**：(1) **证据面为空**（唯一带数的是 `STRATA_GR_V3` = **−4~−6%**，且 `fused_gr.cu:847` 逐字说默认路径**从不走**它）；(2) `P48` 三候选里两项**撞上限/平台不适用**（`EMB_REUSE_ACCOUNT` 的 "+chunk" 撞 `--prefill auto` 的 **up to 8192** 上限而产线**就是 8192
+deploy/W750_MASTER_PLAN.md	259	### 0.7 待办完整性核查（2026-10-11 13:4x，机主问「是否完整，我觉得有漏」）
+deploy/W750_MASTER_PLAN.md	261	> 做法：把**三处独立源**与主表逐条对账 ---- (1) register 的 `CANDIDATE 9` / `REFERENCE 6`（**该时点 13:4x**；现况 CANDIDATE 19，见 §0.0）；
+deploy/W750_MASTER_PLAN.md	262	> (2) `W713_PLAN.md §6.4` 待办 #1-#15；(3) `W749_OPT_PLAN` 的 A/B/C 12 项 + §4 十行计划。
+deploy/W750_MASTER_PLAN.md	269	 | **`P48`** | register `CANDIDATE`（`STRATA_EXPERT_V2K` / `STRATA_EMB_REUSE_ACCOUNT` 族）---- **全表只出现在两处「计数列举」**（§0.0 第 23 行、§0 第 249 行），**无任何承载** | 归 **`W23`** | 
+deploy/W750_MASTER_PLAN.md	270	 | **`P47`** | register `CANDIDATE` ---- 仅出现于 §0.0 的「P1' 后续阶段」行与「空白」行，**未进 §1 行动项表** | 归 **`W23`** | 
+deploy/W750_MASTER_PLAN.md	271	 | **`P46`** | register `CANDIDATE` ---- 有 §0.0 P1' 行 + D1 决策（提 `FILL_AHEAD` 中优先），**但 §1 无行** | 归 **`W23`** | 
+deploy/W750_MASTER_PLAN.md	272	 | **`P33`** | register `CANDIDATE`，按 D1 判「请求级用法、不发车」= **有意留档**；但 §1 无行 => 读者无法确认它已被处置 | 归 **`W23`** 附注（留档，非行动项） | 
+deploy/W750_MASTER_PLAN.md	284	2. **本会话我口述的上一版待办总表漏了 `W4` 与 `W20`** ---- 这两条在 §1 **本来有行**，
+deploy/W750_MASTER_PLAN.md	302	## 0 待办全景（四个来源，各自的真实状态）
+deploy/W750_MASTER_PLAN.md	306	 | **register `CANDIDATE`** | **21**（P33·P97·P41·P42·P46·P47·P48·P55·P56·P54·P61·P62·P63·P64·P65·P66·P67·P68·P69·P70·P71）---- **2026-10-11 16:3x 现算（AUDIT4 更正；13:3x 原值 = 9）**（原写 11 并含 P59/P60，系 **W774 时点**；审计 #4 指出该行未标快照 => 已改正） | **W774 已测 P55/P56/P59/P60 的 prefill（全中性）、decode 弃权**；余七条**未测**；P33 的裁定
+deploy/W750_MASTER_PLAN.md	307	 | register 其它非终态 | 0 | `ADOPTED 27 / REJECTED 34 / CANDIDATE 19 / REFERENCE 6` = **86 数据行**（**2026-10-11 17:3x 现算（W4x-B7 采纳 P66/P65）**；16:3x 原值 = 26/33/21/6；`W774 快照` = `26/32/11/6`） | 
+deploy/W750_MASTER_PLAN.md	310	 | `W749_OPT_PLAN` 候选 | **12 项**（A1-A4 / B1-B5 / C1-C3 分层）与 **10 行计划**（§4） | 与 register 的 P40-P43 **大部分重叠**；新增的是 B1/B2/B3 三条 routeK 源码级思路 | 
+deploy/W750_MASTER_PLAN.md	327	 | **W6** | `STRIX_HALO §4` 族其余开关（`P41`） | P41 | CANDIDATE（**族级**；内地 3 个先测项**已判完**） | A3 | ~~每个 1 组交错臂~~ | **[W6 续 2026-10-11 19:3x] 判「不发车」**：R4 先测 3 个 ---- `Q8_PACKED`（exact but no gain）/ `GDN_PP=2`（**-0.13%**）已实测；**余 `ATTN_LANECELL` 本轮源码级判定** = **可达**（运行期 getenv、无 `#if`，`qsa_decode_attn.cu:638`）+ 
+deploy/W750_MASTER_PLAN.md	328	 | **W7** | `--lookup-chain` / `--suffix-draft` | P42 | CANDIDATE（**已判：不发车**） | A4 | ~~1 组交错臂~~ | **[W7 2026-10-11 19:4x 源码级判定 + 运行期硬证] 判「不发车」**：`--suffix-draft` **默认 3 且生产已生效**（`GET /metrics` -> `"lookup": 3`）=> 不是待采纳项；`--lookup-chain K` 在本机 **K <= 2 空操作**、`K=3 -> spec 7`；**并查出一条连带事实**：未设 `--mtp-ma
+deploy/W750_MASTER_PLAN.md	333	 | **W12** | **0.1.42 gfx906 四开关复测（P55·P56·P59·P60）** | **v0.1.42 changelog** | CANDIDATE x4（W774 已测 prefill 中性） | - | **1 组 4 臂**（A 基线 / B=P55 / C=P55+P56 / D=P59+P60），需 **5+ runs** | 零（上游声明 exact；P55/P56 只改共享内存布局）-- **W775delta 已把靶定死（`W775delta_W12_PRECHECK.md` + `W775delta_W12_BANNER.md`）**：(1) *
+deploy/W750_MASTER_PLAN.md	343	 | **W27** | **社区验证过的本卡配置面**（`ARENA_MMAP` / `--vram-reserve-mib` / `--kv-resident`） | **W25 #11 派生** | `P61`/`P62`/`P63` = CANDIDATE（**verdict 追加本判定**，status 不动） | - | **0（不发车）** | **[!] 源码级判定：三项本机「机制不匹配」**（`ARENA_MMAP` = 为小 RAM + 专家多在 VRAM 的机器设计，**与我们四条判据全不符、两条方向相反**；`--vram-reserve-mib` = 为需驱动桌面的卡
+deploy/W750_MASTER_PLAN.md	345	 | **W22** | **核验输出必须落档**（+ 待办完整性对账） | **审计发现** | 未登记 | - | **0** | 零 ---- 见 §0.5.7 与 §0.7；**对账器 = `deploy/tools/todo_reconcile.py`（每波收车跑 `--strict`，GAP>0 即 exit 1）** | 
+deploy/W750_MASTER_PLAN.md	346	 | **W23** | **`P46`/`P47`/`P48` 三条 CANDIDATE 的承载**（+ `P33` 留档声明） | **完整性核查（本会话）** | `P46`/`P47`/`P48` = CANDIDATE；`P33` = CANDIDATE（D1 判留档、不发车） | - | 视子项（`P46` 优先） | **[已筛选（0 发车，2026-10-11 15:4x）]** 源码级判定：**`P46` 本机无 decode 杠杆**（`FILL_AHEAD` 只在启动 profile 填充内 / `FS_AHEAD` 需 `STRATA_FS_SLOTS>0` 而我们没设
+deploy/W750_MASTER_PLAN.md	349	 | **W27** | **社区验证过的本卡配置面**（`STRATA_ARENA_MMAP` / `--vram-reserve-mib` / `--kv-resident`） | **W25 #11 派生（本会话）** | 新增 `P61`/`P62`/`P63` = CANDIDATE（未测） | - | **0**（不发车） | **[!] 源码级判定 = 机制不匹配（据实否掉）** ---- 见 `W775delta_W27_SRC_VERDICT.md` | 
+deploy/W750_MASTER_PLAN.md	350	 | **W26** | **`W749 C1` 专家驻留 / 命中率面** | **完整性核查（本会话）** | - | C1 | 中 | **[!] 触发条件已改写（本会话）**：不是等上游采纳 `#1923`，而是**先量化『我方生产负载在 fill-only vs 淘汰策略下的命中率差』** ---- 生产实测已达 **95-97%**，而 `#1923` 的 70.86% 是 **trace 口径**。**[已完成第一半 = 有界分析（0 发车）]**：剩余空间 **<= 2.0~4.6pp**（上界 100% 减生产实测），且我方 miss 走 **RAM 交换（无文件读）** =
+deploy/W750_MASTER_PLAN.md	351	 | **W28** | **冷路径重新定线（三层存储 x 两态请求）** | **机主实测反证（2026-10-11 16:2x）** | 未登记 | - | **0（先定线，后发车）** | **[!] 定向错误 + 重新定线**：此前把 `resident RAM mode ... (no file reads)`（**adaptive swap 的范围语句**）**外推成全局** => 误得「file tier 非瓶颈 / 专家大多已驻留 / 命中率 95-98%」。**实测反证**：冷请求（`reused=0`，**76/196**）`read_ms` 中位 **12.6 s** /
+deploy/W750_MASTER_PLAN.md	383	14. **W13 `replay_cache_policy.py` 评估** ---- [OK] **已完整收车（W775delta）**。源码面：三件在位、原假设证伪（非会话缓存层）、引擎策略=从不淘汰。**实测面（已跑）**：`--dump-routing` trace（3,838 positions / 1,842,240 lookups）+ `bench_eviction.py` 9 档 slots x 4 策略 => **fill-only 0.7086~0.7517 vs oracle 0.9890~0.9903，头部空间 +23.9~28.0pp（* 口径=命中率空间，非 wa
+deploy/W750_MASTER_PLAN.md	393	23. **W20 EXT 清单维护 + 上游跟进**（0 发车）---- (a) **`#1926` 回音跟进**（上游若赞同 => 建议改表注释/help；若反驳 => 回原始证据复核）；(b) **本机配置变化时复核 EXT 面**（触发条件：换 `--kv` / 上多卡 / 改驻留模式 `--resident-*`（**已于 2026-10-11 兑现**）/ 改 `--resident-budget-gib` / 换 pack / 启用 PLE 表 ---- 因为每条 EXT 的"本机为何不用"都挂在这些配置上）；(c) 新裁定一律带 `[EXT]` 标签（由 W752 的全库 gr
+deploy/W750_MASTER_PLAN.md	395	26. **W23 `P46`/`P47`/`P48` 承载** ---- **[已完成筛选（0 发车，2026-10-11 15:4x）]**：`P46` **不发车**（4 键均无 decode 杠杆，源码行号见件）；`P47` **收窄为单条 `--mtp-draft-vocab`**（待裁定）；`P48` **拆出 3 真候选**（`--pcie-mode dma` / `STRATA_EMB_REUSE_ACCOUNT=1` / `STRATA_KV_GROW_HOLD=1`）；`P33` 仍留档不发车（D1）。附：`adapt()` 层参数扫描（零停机）=> **引擎默认即最优**
+deploy/W750_MASTER_PLAN.md	458	## 4 结合待办才发现的两处缺口（重要）
+deploy/W750_MASTER_PLAN.md	460	**缺口 1：P33 的 CANDIDATE 裁定理由已被推翻。**
+deploy/W750_MASTER_PLAN.md	461	register P33（`pin=N`）的 verdict 逐字写 *"本机 4096 MiB 预算下 4 轮长文档全程 `evictions=0` => 当前无增量，保持候选"*。
+deploy/W750_MASTER_PLAN.md	470	=> 若要做 W9，**第一步不是发车，而是把 P97 的状态从 REJECTED 改成 CANDIDATE** 并写清"理由 = 使用面判断"。
+deploy/W750_MASTER_PLAN.md	484	 | `--batch/--slots` | P97 已改 **CANDIDATE**（原 REJECTED 系**使用面判断**，见 §4 缺口 2） | P97 | 
+deploy/W750_MASTER_PLAN.md	507	- **PR #1855**（本机 MI50 单卡社区 bench，`+854/-0`、6 文件、`clean`、**0 评论**）---- **不在 0.1.42 里**（镜像内 `ls /src/bench/results/ | grep -iE "32gb"` 只命中别人的 4090 报告）=> **保持待办**，观察。
+deploy/W750_MASTER_PLAN.md	518	(4) `--dump-logits` 在 native pack 下永不执行（建议写进 help）。
+deploy/W750_MASTER_PLAN.md	526	若被要求改 PR，按 `W736_PR_CANDIDATES.md §8` 的通道走。
+deploy/W750_MASTER_PLAN.md	551	| `deploy/params/PARAM_REGISTER.tsv` | **75 数据行**（ADOPTED 26 / REJECTED 32 / CANDIDATE 11 / REFERENCE 6）-- **W774 快照**；**[现值 2026-10-11 17:3x：86 数据行 / ADOPTED 27 · REJECTED 34 · CANDIDATE 19 · REFERENCE 6（AUDIT4 更正；14:5x 原记 78/12）]** |
+deploy/W750_MASTER_PLAN.md	555	| **`deploy/W775delta_W4X_RES_RESULT.md`** | **驻留模式 A/B（车序 B7）**：`--resident-experts`+headroom0.5 => 借区 N==M、文件层 blobs 归 0、冷 read_ms **−2.50%**（区间不重叠）、parity 5/5；含局限与签字建议。harness `deploy/tmp/_w4y_rc.sh` |
+deploy/W750_MASTER_PLAN.md	566	| `deploy/W713_PLAN.md` | 全量账（§6.1 已做 49 条、§6.2 没做、§6.3 重做、§6.4 待办 #1-#15） |
+deploy/W750_MASTER_PLAN.md	575	| **`deploy/W775delta_R4_P41_SCREEN.md`** | **R4 step-2：`P41` §4 族 15 开关本卡可及性筛选。`arch_default_env()` 在 gfx906 **返回空表**（只有 gfx12 / gfx1151 有表）=> §4 族本卡一个都不自动开；表内收益注释**全为 gfx1151**；`HCD_EXACT` **先排**（需 gfx1151 hipBLASLt tuning table）、`PF_PAD` 需 `PF_GEMM`；**候选 13**；建议先测 `Q8_PACKED` / `ATTN_LANECELL` / 
+deploy/W750_MASTER_PLAN.md	576	| **`deploy/W775delta_RTS_TAILSKIP_FINDING.md`** | **重大发现：`STRATA_ROUTE_TAIL_SKIP=7` 在我方 gfx906 生产上 `ON (default)` 且**在实际动作**（生产日志 12/12 次 ON；`route tail skip: N missed experts skipped`，N 达 672,855）。机制 = 主引擎走 CUDA 分支（`generate.cpp:8076` 的 `#if !defined(STRATA_USE_HIP)`；`STRATA_USE_HIP` 只挂 INTERFACE 
+deploy/W750_MASTER_PLAN.md	580	| **`deploy/W775delta_EXT_VALUE_REGISTER.md`** | **「本机不采用，但对外有价值」清单（EXT）**（答机主「我们不用不见得别人不用」）：四车道规则 + **13 行 `[EXT]` 标签回填**（P29/P36/P37/P40/P41/P45/P52/P53/P54/P55/P56/P57/P58）+ 架构面 34 条再分类（CUDA/Windows/gfx11/非 gfx906）+ **建议推上游 4 条 => 已发 = issue `#1926`**（原写"草稿未发"，2026-10-11 13:1x 更正）。判据 = 源码/文档级推断（对
+deploy/W750_MASTER_PLAN.md	582	| **`deploy/W775delta_W17_SWITCH_LANDSCAPE.md`** | **gfx906 开关面全景清点**（答机主「还有多少参数可以扩展」）：env 存在面 **352**（`strings` ∪ 源码 `getenv`）/ CLI 长选项 226 / **编进本机镜像 262** / 编译期排除 34 / **实质候选池 132**（X 桶）。含 34 条排除清单（逐条带文件）、132 条候选清单、已知运行期门、优先族。判据 = 「二进制字符串命中 = 编进镜像」硬证 + `__HIPCC__` 定义校验（7/7 排除族不在二进制、8/9 `#if defin
+deploy/W750_MASTER_PLAN.md	593	| **`deploy/W775delta_W25_GFX906_REPORTS.md`** | **W25 #11：上游 gfx906 社区报告吸收（只读）**。清点 `bench/results/` 131 目录中 5 个 gfx906 相关（新读 3 份：2x-mi50 / mi50-32GB / Radeon-Pro-VII-16GB）。**产出 = 3 个我们从未登记的开关**：`STRATA_ARENA_MMAP`（#640，**守卫含 `STRATA_HIP_GFX906` = 本卡专属**，把 23.4 GiB VRAM 专家交还 OS，须配 `--pcie-frac 0`）·
+deploy/W750_MASTER_PLAN.md	596	| **`deploy/W775delta_W17B_SCREEN.md`** | **`W17b` 判「不发车」的证据链**：短名单 36 条证据筛（唯一带数者 `STRATA_GR_V3` **−4~−6%**）+ `P48` 三候选逐条关闭（`EMB_REUSE_ACCOUNT` 撞 `generate.cpp:522` 的 **up to 8192** 上限而产线 chunk = 8192；`--pcie-mode dma` 上游 `BATCHED_DMA.md:3-13` 自述 **CUDA-only、HIP 保留逐条拷贝**、且未证明提升 tok/s；`KV_GROW_HOLD` 
+deploy/W750_MASTER_PLAN.md	602	| **`deploy/W775delta_W23_P4647_48_SCREEN.md`** | **`W23` 源码级筛选（0 发车）**：`P46` 本机**无 decode 杠杆**（`FILL_AHEAD` 在启动 profile 填充内 `:5047-5055` / `FS_AHEAD` 需 `FS_SLOTS>0` `:5386` / `FETCH_THREADS` 只服务文件层 `:4522`）；`P47` 只 `--mtp-draft-vocab` 真候选；`P48` 3 真候选 + 3 inert/N-A（`GFX1151_DEFAULTS` 在 gfx906 空表 => 
+deploy/W752_AUDIT.md	23	 | A1 | **P1** | 「register CANDIDATE **5** 条（P33/P40/P41/P42/P43）」（W750 轮） | register 实测 **CANDIDATE = 6**（`P33 / P97 / P40 / P41 / P42 / P43`） | **不一致**。且**同一轮**我把 P97 改成了 CANDIDATE -> 说话时的数就已经是 6 | 
+deploy/W752_AUDIT.md	24	 | A2 | **P1** | `W750_MASTER_PLAN.md` §0 表写「register `CANDIDATE` **5**」、第 14 行写「`ADOPTED 25 / REJECTED 28 / CANDIDATE 5`」、§8 又写「`CANDIDATE 5`」 | 实测 `ADOPTED 25 / REJECTED 27 / CANDIDATE 6`（合计 58 两边相同，**分布错**） | **同文件内三处与实测矛盾**；且**同文件 §4/§5 明写 P97 已改 CANDIDATE** -> **自己跟自己矛盾** | 
+deploy/W752_AUDIT.md	25	 | A3 | **P1** | `W750_MASTER_PLAN.md` §1 行动项表 W9 行的「register 现状」列 = `**P97 = REJECTED（"不采用"）**` | register 实测 P97 = **CANDIDATE**；同文件 §5 也写「P97 已改 CANDIDATE」 | **漏改**（W751 补全时改了 §5、**没改 §1 表那一行**） | 
+deploy/W752_AUDIT.md	45	 | B1 | `W750_MASTER_PLAN.md:13,14,177` | 三处写 `CANDIDATE 5`，register 实测 **6**（含 P97）；且 `25+28+5=58` 与"共 59 行"不自洽 | 与 **A1/A2 重叠** | 
+deploy/W752_AUDIT.md	46	 | B2 | `W750_MASTER_PLAN.md:33` ↔ `:136` ↔ `:122` | §1 表写 `P97 = REJECTED`；§5 写 `已改 CANDIDATE`；register 实测 `CANDIDATE` | 与 **A3 重叠** | 
+deploy/W752_AUDIT.md	58	 | B9 | `W750_MASTER_PLAN.md:17` | **成立**：写"W749 候选 10 条"，而 §2 的 A/B/C 分层实为 **12 项**（§4 计划才是 10 行） | 
+deploy/W752_AUDIT.md	85	 | 1 | `W750` §0 三处 | `CANDIDATE 5` -> **6**；`ADOPTED 25 / REJECTED 28 / CANDIDATE 5` -> `25 / 27 / 6` | 14538 -> **15474 B** | 
+deploy/W752_AUDIT.md	86	 | 2 | `W750` §1 W9 行 | `P97 = REJECTED` -> **`P97 = CANDIDATE`**（与 §4/§5 对齐） | 同上 | 
+deploy/W752_AUDIT.md	92	 | 8 | `W750` §0 | "W749 候选 10 条" -> **12 项（A/B/C）/ 10 行计划**（说明两套编号） | 含在 #1 | 
+deploy/W752_AUDIT.md	109	A1~A3 是**同一个根因的三次表现**：**改了一个对象的裁定（P97: REJECTED -> CANDIDATE）之后，
+deploy/W754_W2_NONEXPERT_QUANT.md	71	=> 下一步应是 **ISA/roofline 级的前置探查**（W749 的 B3 逐桶账 + 反汇编），**不是直接发车**。
+deploy/W754_W2_NONEXPERT_QUANT.md	79	- 本报告**不含任何收益承诺**；1320 MiB 只是**候选规模**，不是收益。
+deploy/W756_UPSTREAM_BENCH_PLAN.md	98	- 本机是**单卡、单用户、单并发**；**并发吞吐未测**。
+deploy/W760_W1_W3_AB.md	76	 | **`--mtp-window`** | **P43** | **CANDIDATE -> ADOPTED，值 = 8192** | 64K 上下文 **+3.39%**（中位），机制（草稿接受率）自洽，与上游 +3.5% 一致；答案在 COLD 一致 | 
+deploy/W760_W1_W3_AB.md	77	 | **`STRATA_SH_STREAM`** | **P40** | **CANDIDATE -> REJECTED** | 本卡 **-0.13%**（无差）；上游的 +1.8% **未迁移**（与 P36/P37 同族：上游数据取自 gfx1151） | 
+deploy/W760_W1_W3_AB.md	84	- 只测 **64K 一个长度**；上游说该开关在 **32K 是 -0.4%** -> **长上下文才赚**，短上下文是否略亏**未测**。
+deploy/W763_INVENTORY_AUDIT.md	34	三行 status 全 **CANDIDATE**（未测）=> 不影响核验器（只判 ADOPTED）。
+deploy/W763_INVENTORY_AUDIT.md	42	 | W719 | P33 保持待定 | `P33 CANDIDATE` | 
+deploy/W763_INVENTORY_AUDIT.md	44	 | W721~W724 | 无（方法 / 对外候选） | - | 
+deploy/W763_INVENTORY_AUDIT.md	67	`PARAM_REGISTER.tsv` **63 行**：**ADOPTED 26 / REJECTED 29 / CANDIDATE 7 / REFERENCE 1**；
+deploy/W763_INVENTORY_AUDIT.md	68	CANDIDATE = `P33`（pin）· `P97`（并发）· `P41`（§4 族）· `P42`（lookup-chain / kv 档）· `P46/P47/P48`（本次补）。
+deploy/W763_INVENTORY_AUDIT.md	76	（那是"未知的未知"，只能靠再次通读源码或上游文档扩面）。若要更严，下一步可做
+deploy/W763_INVENTORY_AUDIT.md	78	- `P46/P47/P48` 是**未测**（CANDIDATE），**不构成任何收益承诺**。
+deploy/W765_PARAM_AUDIT_VERDICT.md	32	 | **4** | 备份链最后一版 = `bak_w738_20261010_003916`（00:39）；`P43/P40` 在**所有备份里 0 命中** => "P43 由 CANDIDATE->ADOPTED"无法从备份复原 | **成立，且我把严重度从 P2 升为 P1**：这不是措辞问题，而是**明确的铁律违反** ---- `MEMORY.md §1` 写着「**改既有长件前先备份该件**」，而我从 **W739 起改 register 一次都没备份**（W739/W740/W745/W746/W760/W762/W763 全部裸改） | **P1，已补**：本轮改 regis
+deploy/W767_KV_QUALITY_GATE.md	137	HellaSwag+Winogrande 配对 McNemar），那是下一步。
+deploy/W767_KV_QUALITY_GATE.md	148	**便宜的排除实验**（下一步，约 2 臂）：两臂都显式给同一个 `--expert-cache N`，
+deploy/W767_KV_QUALITY_GATE.md	175	## 6 下一步（按判断排序）
+deploy/W767_KV_QUALITY_GATE.md	255	**下一步（已定方案）**：把 fp16 臂的 `--max-context` 降到 `262144 x 816/2112 = 101376`，
+deploy/W773_AUDIT.md	79	## 5 待办（本报告未做）
+deploy/W773_P46_IO_PREFETCH.md	14	 | `STRATA_FILL_AHEAD` | `docs/DETAILS.md:280-284`：面向上线**填充**时间（Gen3 NVMe 上 ready 70 s vs 920 s） | 不对口 decode，未测 | 
+deploy/W773_P46_IO_PREFETCH.md	78	- 该族其余：`STRATA_FS_AHEAD` 不单独测（依赖上游已证负的 `FS_SLOTS`）；`STRATA_FETCH_THREADS`（同路径）与 `STRATA_FILL_AHEAD`（面向上线）**仍未测** ---- `P46` 保留为 CANDIDATE。
+deploy/W773_P46_IO_PREFETCH.md	82	这与既有的「用户传参 != 运行期生效值」是同一族判据的**下一步**：**运行期生效 != 实际动作**。
+deploy/W773_P46_IO_PREFETCH.md	87	- 未测 `STRATA_FETCH_THREADS` / `STRATA_FILL_AHEAD`（前者同路径、后者不对口 decode）。
+deploy/W773_P46_IO_PREFETCH.md	88	- 未测 `STRATA_IO_PF_THREADS` / `STRATA_IO_PREFETCH_DEPTH`（`IO_PREFETCH` 生效的前提下它们才有意义）。
+deploy/W774_UPSTREAM_0142.md	57	 | P55 | `STRATA_GFX906_ATTN_QUERY_SWIZZLE` | CANDIDATE | PR #1661（0FL01），已进 0.1.42，上游无 MI50 验证 | 
+deploy/W774_UPSTREAM_0142.md	58	 | P56 | `STRATA_GFX906_ATTN_REDUCE12` | CANDIDATE（依赖 P55） | PR #1718（0FL01） | 
+deploy/W774_UPSTREAM_0142.md	60	 | P58 | v0.1.42 通用新项 | REFERENCE | release notes；两条列待办 | 
+deploy/W774_UPSTREAM_0142.md	61	 | P59 | `STRATA_HEAD_MIX_MULTI` | CANDIDATE | **#1479 维护者采纳**（署名我们） | 
+deploy/W774_UPSTREAM_0142.md	62	 | P60 | `STRATA_ONE_TOKEN_COMMIT` | CANDIDATE（与 P59 同 patch） | **同上** | 
+deploy/W774_UPSTREAM_0142.md	64	register => **75 行数据**（ADOPTED 26 / REJECTED 32 / CANDIDATE 11 / REFERENCE 6）。
+deploy/W775_AUDIT.md	53	 | 6 | **P1** | MEMORY 中 P33 **同时出现在两个互斥集合**（本轮 W775b 引入的回退） | W772 已把 P33 移入 CANDIDATE | 审计前第 49 行"已关：...；**P33 例外**"+ 第 50 行 CANDIDATE | **实读并已当场修正**（见 §3）。根因：W775b 压缩时未按 ID 回扫 | 
+deploy/W775_AUDIT.md	61	 | 11 | **P2** | MEMORY 第 50 行 **"CANDIDATE 9" 实列 11 个编号**（auditor2 独立发现） | "CANDIDATE 9" | 实列 `P33·P41·P42·P46·P47·P48·P97·P55/P56/P59/P60` = **11 个** | **auditor2**（我的缺陷表**漏记**） | 
+deploy/W775_AUDIT.md	128	### C. 「全部 PR 已复核、无悬空件」（W775b 待办 #14）
+deploy/W775_AUDIT.md	136	（W775b 待办 #14 只提 PR，未提 issue 的悬空态）。
+deploy/W775_AUDIT.md	255	- **一处不符**：MEMORY 里 P33 同时在"已关"行与 CANDIDATE 行（缺陷 #6，已修）。
+deploy/W775_AUDIT.md	334	**声称**：(1) register P50 开头"三车"->"四车"；(2) MEMORY 里 `P33` 错列"已关"-> 移入 CANDIDATE；
+deploy/W775_AUDIT.md	340	- (2) **曾回退**：审计前 MEMORY 第 49 行含"**P33 例外**"+ 第 50 行 CANDIDATE => **W775b 压缩时把 W772 的成果压回去了**。
+deploy/W775_AUDIT.md	345	**新增判据**：W772 自己总结的"**长字段须首尾各读一遍**"与"**入口件待办清单须与 register 的 CANDIDATE 逐编号对齐**"--
+deploy/W775_AUDIT.md	355	P33 CANDIDATE [OK]（W719 处置、W750 改回）
+deploy/W775_AUDIT.md	358	P46 CANDIDATE（W763 补登记）[OK]
+deploy/W775_AUDIT.md	362	P55/P56/P59/P60  value=1(已测-prefill中性)，status=CANDIDATE [OK]
+deploy/W775_AUDIT.md	367	**附注**：P55/P56/P59/P60 的 `status=CANDIDATE` 而 `value` 已标"已测"，属**有意设计**
+deploy/W775_AUDIT.md	377	| **缺陷 #6（P33 双集合）** | **已当场修正**：走技能 `mem_slim.py auto`，删去"已关"行末尾的"；**P33 例外**"。落盘 `MEMORY.md` = **2,886 chars / 4,211 B / md5 `6f170e515c56a0a6786d6a022ed2e555` / CR=0 / VERIFY=OK（7/7 PASS）**，归档 `Z-49`。已复核：**P33 现仅出现在 CANDIDATE 行**。 |
+deploy/W775_AUDIT.md	448	 | 6 | P2 | M MEMORY 第 50 行"CANDIDATE 9"实列 11 个编号 | **采纳**（我的缺陷表**漏记**，审计员独立发现） | 
+deploy/W775_AUDIT.md	476	3. **缺陷 #6（P1）MEMORY P33 双集合回退** -- 审计员在 M 项称"P33 确在 CANDIDATE [OK]"，
+deploy/W775_AUDIT.md	492	#### (a) MEMORY 第 50 行 "CANDIDATE 9" vs 实列 11 -- **成立**
+deploy/W775_AUDIT.md	496	L50  nP=11  - **CANDIDATE 9**：P33·P41·P42·P46·P47·P48·P97·P55/P56/P59/P60
+deploy/W775_AUDIT.md	532	 | 16 | P2 | **MEMORY 第 50 行 "CANDIDATE 9" 实列 11 个编号** | **auditor2**（我漏记） | 
+deploy/W775_AUDIT.md	554	 | 15 | P2 | MEMORY 第 50 行 "CANDIDATE 9" 实列 11 个编号 | **auditor2**（我漏记） | 
+deploy/W775_AUDIT.md	574	 | **#15（P2）** | **已执行**：MEMORY 第 50 行 `CANDIDATE 9` -> `CANDIDATE 11` | `MEMORY.md`（**2,887 chars / 4,212 B / md5 `e924cd3f3f3db10c21011bd56159b3b6`**，`Z-50`，VERIFY 7/7） | 
+deploy/W775_AUDIT.md	583	> 一律先出待办（§7）经机主过目，避免审计自身引入新错。
+deploy/W775_AUDIT.md	585	## 7 审计后待办（须机主过目后落）
+deploy/W775_AUDIT.md	587	> 本清单已按**第三轮取证**更新（A 项判级由 P1 -> P2；新增 `draft 25/27` 与 `CANDIDATE 9` 两条）。
+deploy/W775_AUDIT.md	601	7. **MEMORY 第 50 行 "CANDIDATE 9" -> "CANDIDATE 11"** -- [OK] **已落**（`Z-50`）。
+deploy/W775_AUDIT.md	609	> **已由审计员补齐、可从待办划去**：W770 needle 6/6 复算、W769 logpos 8 值复算、W750 §0.0 字节数。
+deploy/W775_AUDIT.md	613	## 7b 待办落实记录（2026-10-11 03:43，按机主最终令逐条判定处置）
+deploy/W775_AUDIT.md	615	> 机主令：*"事实可以发，引入的断言你如果觉得有问题就改，没问题就发，列入审计待办的就赶紧做，明确是不是有问题。"*
+deploy/W775_AUDIT.md	618	 | # | 待办 | 是否真有问题 | 处置 | 证据 | 
+deploy/W775_AUDIT.md	630	 | 7 | MEMORY `CANDIDATE 9` -> `11` | **有问题**（漏登两号） | [OK] 已落（Z-50） | mem_slim | 
+deploy/W775_AUDIT_G.md	59	3. **02:29:40 的 `_t407_verify.txt` 落在第 1、2 次启动之间** => 此刻 `restart` **尚未执行**，
+deploy/W775_AUDIT_G.md	60	telemetry 补丁（写在容器可写层 `/src/serve/telemetry.py`，由 `_apply_patch.txt` 于 02:29:47 落盘）**尚未生效**；
+deploy/W775_AUDIT_auditor2.md	39	 | 6 | **P2** | M MEMORY.md CANDIDATE 计数 | MEMORY.md 第 50 行称 "CANDIDATE 9" | 同处实际列出 **11 个编号**（P33·P41·P42·P46·P47·P48·P97·P55/P56/P59/P60） | 计数与枚举不符 | 
+deploy/W775_AUDIT_auditor2.md	74	2. **4.1s/40tok 与 `draft_n_accepted 25/27` 在盘上零证据**；验收快照 `last_timings:null`、`requests:0`，说明取快照时**尚未推理**，故"升级即测得 4.1s/40tok/25/27"**无原始证据**。
+deploy/W775_AUDIT_auditor2.md	238	- MEMORY.md P33 确在 CANDIDATE [OK]。
+deploy/W775_AUDIT_auditor2.md	240	**判定：PASS（更正正确）**；**新增问题**：MEMORY.md 第 50 行"CANDIDATE 9"**实列 11 个编号** -> P1（§1 #6）。
+deploy/W775_AUDIT_auditor2.md	245	- P46 = CANDIDATE + P54 指针 [OK]；
+deploy/W775_AUDIT_auditor2.md	246	- P55/P56/P59/P60 = `1(已测-prefill中性)`、CANDIDATE [OK]；
+deploy/W775_AUDIT_auditor2.md	262	3. **M(新)**：MEMORY.md"CANDIDATE 9"改为与枚举一致的 **11**。
+deploy/W775_AUDIT_auditor2.md	265	- **F**：解码侧 small 档 >100% 离散应并列呈现；**I**：P04/W713-39 补作废指针；**L**：写通道判据摇摆，建议固化为"token 可 `git credential fill` 且 PR 可落库"的稳定判据；**K**：起停日志（23:04/pull 8/8）补齐；**§0**：审受文件在审计中被并发写入，须冻结快照后复算。
+deploy/W775_AUDIT_auditor2.md	270	- `MEMORY.md` 第 50 行（M）--"CANDIDATE 9"->11；
+deploy/W775_AUDIT_delta.md	79	(2) 把「**双证**」改为「**源码恒假为主证 + `--kv int8` 正对照为实测旁证**」；(3) 重跑一次 k8v4 车补产物（见 §4 建议）。
+deploy/W775_AUDIT_delta.md	132	- **证据**：P55/P56 `value = 1(已测-prefill中性)`，status 仍 `CANDIDATE`；「k8v4 下不可达」只挂在超长 `verdict` 尾部。
+deploy/W775_AUDIT_delta.md	136	### P2-1 -- P33/P41/P46「不能判死」与「status 不动」并存，建议加一句显式声明
+deploy/W775_AUDIT_delta.md	138	- **证据**：RESULT `:104` 建议「不建议直接改裁定」；REGISTER 三条实测仍 `CANDIDATE`。**文档其实已自洽**（明说 status 不动）。
+deploy/W775_AUDIT_delta.md	139	- **修法（低危，仅提升可读性）**：§4 加「**P33/P41/P46 的 register status 本轮未动，仍为 CANDIDATE**」。
+deploy/W775_AUDIT_delta.md	164	- **建议（交机主定）**：
+deploy/W775_AUDIT_delta.md	218	10. **PARAM_REGISTER 完整性**：75 数据行 / 11 列 / `ADOPTED 26 · REJECTED 32 · CANDIDATE 11 · REFERENCE 6`（sum 75）-- **一致**，无重复 ID。
+deploy/W775_AUDIT_delta.md	219	11. **P33/P41/P46 status** -- 实测均 `CANDIDATE`（未被动过），与「不建议改裁定」自洽。
+deploy/W775_AUDIT_delta.md	224	## 5 修正动作（本次已执行 / 建议）
+deploy/W775_AUDIT_delta.md	238	**建议（待机主批，未做）**：
+deploy/W775_HANDOVER.md	19	3. deploy/W750_MASTER_PLAN.md（唯一合并待办表；§0.0 = 现时点执行版）
+deploy/W775_HANDOVER.md	99	75 数据行 / 11 列 · `ADOPTED 26 · REJECTED 32 · CANDIDATE 11 · REFERENCE 6`（sum 75 · 无重复 ID）。 **补录（2026-10-11 11:5x）：W12D 后 `P59`/`P60` -> REJECTED => 现况 `26 / 34 / 9 / 6`，sum 75 不变。**
+deploy/W775_HANDOVER.md	100	CANDIDATE = `P33`·`P97`·`P41`·`P42`·`P46`·`P47`·`P48`·`P55`·`P56`（9 条；**补录 2026-10-11**：`P59`·`P60` 已判 REJECTED）。
+deploy/W775_HANDOVER.md	124	3. **W13 下一步**：核上游 `expert_cache.hpp:11` 提到的 R4.1 **LFU-decay vs LRU sweep**是否已有实现 / 是否可提 feature
+deploy/W775_HANDOVER.md	138	 | # | 事项 | 现状 | 我的建议 | 为什么不自己决定 | 
+deploy/W775_HANDOVER.md	140	 | 1 | `P33`/`P41`/`P46` 族是否重议（W13 证明天花板是 24-28pp 不是 2pp） | 三条仍 CANDIDATE，**未动** | 重议后按新判据定 | 改裁定属机主签字项 | 
+deploy/W775_HANDOVER.md	245	| `deploy/W750_MASTER_PLAN.md` | **唯一合并待办表**（§0.0 现时点执行版） |
+deploy/W775_HANDOVER.md	312	**下一步（按序）**：
+deploy/W775_OUTBOUND_DRAFTS_审.md	172	**写操作（POST）尚未验证** -- 我会**先发 #1734**（纯收口、风险最低），成功后再发 #1729 / #1735；任一步失败即停并回报。
+deploy/W775_VERSION_SYNC_0142.md	3	> 触发：机主令「Strata 必须更新到最新版，同时待办跟着最新版同步走，必须把最新几版我们没有的版本更新内容都合进去」。
+deploy/W775_VERSION_SYNC_0142.md	141	- **注意**：该报告作者**自己声明 PR 未成功**（*"Creating the new PR returned HTTP 403, so no new PR exists"*），且与上游 **PR #1402 有模板参数冲突** => 这份工作**尚未进上游**，只以 bench 目录形式存在。
+deploy/W775_VERSION_SYNC_0142.md	148	=> **我们的 `2026-10-10-community-mi50-32gb`（PR #1855）不在 0.1.42 里**（PR 仍 open）。**保持待办**。
+deploy/W775_VERSION_SYNC_0142.md	242	## 5 待办同步（跟着最新版走）
+deploy/W775delta_ADVICE_20261014.md	1	# W775delta · 全面建议（2026-10-14）
+deploy/W775delta_ADVICE_20261014.md	16	 | 序 | 项 | 类 | 成本 | 预期收益 | 风险 | 建议 | 
+deploy/W775delta_ADVICE_20261014.md	18	 | **1** | **W29 `--ple-io direct` 对照车** | 生产实测 | 停机 6-10 min | **未测**（上游同类盘量到 prompt 约 7x） | 低（回滚路径已跑熟） | **做** | 
+deploy/W775delta_ADVICE_20261014.md	19	 | **2** | **W30 `--ple-inflight` / `--ple-row-cache` 同车加臂** | 生产实测 | 同一窗口 | 未测（源码注释称 inflight 64 会让盘半闲） | 低 | **同车做**（3 臂声明清楚） | 
+deploy/W775delta_ADVICE_20261014.md	54	- **建议**：加一个只读巡检（扫 `layer 1 of the prompt chunk` / `restarting the engine` / engine 启动计数），与现有巡检合并；**这是"早知道"而不是"现在有事"**。
+deploy/W775delta_ADVICE_20261014.md	65	### 不建议直接升 0.1.43
+deploy/W775delta_ADVICE_20261014.md	69	### 升版候选 = 0.1.43.1 或 0.1.44.1
+deploy/W775delta_ADVICE_20261014.md	84	 | 项 | 建议 | 理由 | 
+deploy/W775delta_ADVICE_20261014.md	94	## 5 我们自己的账本 / 待办（本轮新增）
+deploy/W775delta_ADVICE_20261014.md	102	 | 追加注记 | **`register P91`** 需加注「只测了 `=ram` 臂；`direct` vs 自动 `mmap` 未测」 | 账本 | 
+deploy/W775delta_ADVICE_20261014.md	108	## 6 方法论：把本轮的坑变成规则（**建议入铁律**）
+deploy/W775delta_ADVICE_20261014.md	116	## 7 不建议做（含理由）
+deploy/W775delta_AUDIT3.md	17	 | #2 X 候选池 **131 vs 129**，且被引脚本复不出 | P1 | **确认** | `_w17_final.py`（§9 被引）DIAG 含 `_GATE$` => X=129；生成件的 `_w17_gen.py` 不含 => X=131。**已定 canonical**：D 只收纯诊断；`EXP_MODE`（改行为的模式选择器）归 X；`_GATE` 仅 `DBG` 才算 D => **X=132**（M73/D39/C18/X132=262）。已把 W17 件、`W750`（9 处）、`MEMORY.md` 全部改齐 | 
+deploy/W775delta_AUDIT3.md	19	 | #4 `W750 §0` 的 register 计数过期（写 11 且含 P59/P60） | P1 | **确认** | §0 两行改为**现算**（26/34/9/6，CANDIDATE 去 P59/P60）并注明原值是 W774 时点 | 
+deploy/W775delta_AUDIT4.md	16	 | C1 | **P1** | 权威件计数过期且自相矛盾 | `W750_MASTER_PLAN.md:16/23/303/304/548` | 现算 register = **86 数据行 / ADOPTED 26 · REJECTED 33 · CANDIDATE 21 · REFERENCE 6**；而 W750 出现 **9 / 11 / 12 / 75 / 78** 五个互斥且全错的计数。`todo_reconcile.py --strict` 报 GAP=0（它只查「承载位」，**不查计数串**）=> 机器判据的盲区 | **确认**（已修） | 
+deploy/W775delta_AUDIT4.md	21	 | C6 | **P1** | 过期前提未加限定 | `W775delta_W13_HEADROOM_RECHECK.md` §6 | §6 第 4 条仍以「`P54` 已证 file/RAM tier 非瓶颈」为活前提，文件内无 W28 撤回注；而 `P54` 现态 = CANDIDATE、W28 已判该前提对冷路径**错误** | **确认**（已加 W28/AUDIT4 限定） | 
+deploy/W775delta_AUDIT4.md	50	2. **W26 五参数对源码**：`generate.cpp:577/578/581/607/8165` => every 4 / decay 0.7 / min-gain 1.5 / swaps 96 / 候选门 2.0。**逐行到位**。
+deploy/W775delta_AUDIT4.md	58	10. **`P54`/`P46` REJECTED -> CANDIDATE** 经备份差分成立（`bak_w28_20261011_161215` 对现态）。
+deploy/W775delta_AUDIT4.md	83	**补充（2026-10-11 16:5x 机主复问「审计输出是否都已整改」时二次核对）**：`W750` 另有两处**历史计数**（L194 `75 数据行`、L258 `CANDIDATE 9`）分别位于 §0.5.6 与 §0.7 的**带日期/带 md5 的**历史块中 => 已各加「**该时点**」标注并指向 §0.0 现况；未改写历史数字。
+deploy/W775delta_AUDIT5.md	19	 | **A3** | **P1** | 入口件同文件自相矛盾（且是待办项） | `SESSION_KICKOFF.md:12` vs `:42` | L12 逐字「`.workbuddy/memory/MEMORY.md`（长期记忆，**3,000 字符注入窗**，现 **2,898 chars 在窗内**）」；L42 逐字「**`MEMORY.md` 超窗**（现 **4,2xx B** > 3,000 字符）=> 开工第一件事应走 `routek-memory-slim` 技能压回窗内」。实测 `MEMORY.md` = **2,900 chars**（在窗内）。W752 的同步脚本 `
+deploy/W775delta_AUDIT5.md	51	10. **账本**：register 86 数据行 / **27 ADOPTED · 34 REJECTED · 19 CANDIDATE · 6 REFERENCE** [OK]；`P09 REJECTED` / `P66 ADOPTED` / `P65 ADOPTED` / `P67 CANDIDATE` [OK]；交叉引用已改 `--resident-experts(**P09 已废**)` [OK]；`generated/…json` = **1,393 B / `ff8cb97379f0bdbe76ee555da6d8729c`** [OK]；`_verify_20261011_1
+deploy/W775delta_AUDIT5.md	61	 | `SESSION_KICKOFF.md` | **A3**（TODOLIST 第 5 条 `MEMORY.md` 超窗的**过期状态**划删 + 更正注；与同件第 2 条 2,898 chars 对齐） | `tmp/_audit5_apply2.py` | 
+deploy/W775delta_BASELINE_0146.md	1	# 0.1.46.2 基线实测（三臂）+ 上游建议融合评估（2026-10-21）
+deploy/W775delta_BASELINE_0146.md	3	> **触发**：机主令「生产 config 是否可以跟上游建议做一下融合。然后跑新基线」。
+deploy/W775delta_BASELINE_0146.md	74	## 五、"生产 config 能不能跟上游建议融合"——结论
+deploy/W775delta_BASELINE_0146.md	76	**能融，但只有 2 条，且都不是性能项；另有 1 条新候选值得单独测。**
+deploy/W775delta_BASELINE_0146.md	78	 | 项 | 上游建议（逐字要点） | 我们现状（实测） | 判定 | 
+deploy/W775delta_BASELINE_0146.md	80	 | `STRATA_ROUTE_TAIL_SKIP=0` | 0.1.44 为 Unsloth 文件写入：*where every expert is in RAM，skip 在那里让 KL 0.056 -> 0.086 换 +4-10% 速度* | **ON(default)**，实测改答案 | **本车已测：prompt 无收益，答案改变**。->  若要质量优先可采纳；要速度优先则不采纳。**建议保持现状（ON），除非你更看重答案保真** | 
+deploy/W775delta_BASELINE_0146.md	81	 | `--ple-io direct` 显式 | 0.1.45 起不再自动切 mmap | 不传，实测 direct | **建议显式写入**（0 成本、去掉对探针的隐式依赖） | 
+deploy/W775delta_BASELINE_0146.md	82	 | **`STRATA_ADAPT_OVERLAP_RESIDENT=1`** | 本波新发现（0.1.46.2 启动行） | 未测 | **建议列为下一个单变量候选**（唯一有速度潜力） | 
+deploy/W775delta_BASELINE_0146.md	86	 | `--prompt-cache-spread` / `--conversation-cache-park-gain` | 新 opt-in，多轮/重写历史 | 多轮（open-webui） | **候选，需单独测**，本车未带（避免多变量） | 
+deploy/W775delta_BASELINE_0146.md	88	**一句话**：**上游建议里没有一条能在我们这套 gfx906 配置上直接变现为吞吐**；能动的只有"答案保真"和"纪律"两类。真正值得再花一个窗口的，是本波新发现的 `STRATA_ADAPT_OVERLAP_RESIDENT`。
+deploy/W775delta_BUILD_SWITCH_AUDIT.md	5	> 结论：**编译开关层无可补项；三个"像解药"的开关全部源码级否决；两个运行时候选已被实测/上游量化否决。**
+deploy/W775delta_BUILD_SWITCH_AUDIT.md	61	## 3 两个运行时"看着能救预填"的候选，都已被实测/上游量化否决
+deploy/W775delta_BUILD_SWITCH_AUDIT.md	77	**=>  auto:16384 是负收益，不是候选。**
+deploy/W775delta_BUILD_SWITCH_AUDIT.md	105	## 6 尚未测过的两个（标注不确定性，不建议优先）
+deploy/W775delta_D4_EVICT_PROPOSAL.md	5	> 状态：draft。落款候选见 §4。
+deploy/W775delta_D4_EVICT_PROPOSAL.md	15	> **注意：本提案不是「答案中性」的。** 淘汰会改「哪些专家在 GPU 上算」；引擎自己的文档（`bench/results/2026-09-27-cache-parity`）就说 GPU 与 CPU 舍入不同、答复**可能略异** => 采纳必须配**质量门**（同 `ROUTE_TAIL_SKIP` 那一类）。**且我们没测真机速度。**
+deploy/W775delta_D4_EVICT_PROPOSAL.md	23	| **上游自认未定** | 注释把淘汰策略定性为 *"a measured question"* => 上游**尚未决定**，也**未实现** |
+deploy/W775delta_D4_EVICT_PROPOSAL.md	38	**局限（必须随结论一起引）**：**命中率口径，非 wall-clock**；收益还取决于 miss 成本（PCIe / CPU pool 占比，本波未测）；
+deploy/W775delta_EXT_VALUE_REGISTER.md	9	**本件的待办状态（防丢，2026-10-11 13:1x 补）**
+deploy/W775delta_EXT_VALUE_REGISTER.md	12	- **已执行**：§4 的四条建议 **已发上游 = issue [`#1926`](https://github.com/Niko1221/Strata/issues/1926)**（POST 201 + 回读逐字节一致）。
+deploy/W775delta_EXT_VALUE_REGISTER.md	75	## 4 建议推上游的内容（**草稿，未发**）
+deploy/W775delta_EXT_VALUE_REGISTER.md	77	1. **gfx906 实测修正表**：`arch_defaults.cpp` 该表的 **decode 半边**（`Q8_PACKED` +2.3% / `EF` 等）在 MI50 上**不兑现**；而 gfx12 侧上游自己已写 *"the decode half measured slower on that card, so it stays out"* => **建议把"decode 半边=非 gfx1151 专属"写成表注释/文档**，免得 MI50/其它卡用户照抄。
+deploy/W775delta_EXT_VALUE_REGISTER.md	78	2. **`P54` 的可用面**：`IO_PREFETCH` 的收益前提是"专家不完全驻留"；我们实测预取 **0 次**（RAM 128 GiB + page cache 78 GB）；建议在 release note 里写清"**大 RAM 主机上本条是空操作**"。
+deploy/W775delta_EXT_VALUE_REGISTER.md	79	3. **`ROUTE_TAIL_SKIP` 的 AMD 描述**：relnotes 逐字 *"off ... on AMD and Intel"*，但**我方 gfx906 实测 ON(default) 且在动作**（12/12 次启动、`route tail skip: N missed experts skipped`，N 达 672,855）=> 建议上游复核该句与"CUDA-分支编译"的关系。
+deploy/W775delta_EXT_VALUE_REGISTER.md	80	4. **`P52` 的 native pack 限制**：`--dump-logits` 在 native pack 下永不执行，建议写进 `--dump-logits` 的 help。
+deploy/W775delta_R4_P41_SCREEN.md	15	6. **候选 13 个**（可及、未测、不在已否决名单）：见 §3。
+deploy/W775delta_R4_P41_SCREEN.md	76	 | **候选（13）** | prompt：`GDN_HEAD` · `GDN_PP` · `GDN_CONVL2` · `GDN_NOY` · `CVEC_FUSE`<br>decode：`Q8_PACKED` · `Q6_PACKED` · `MMVF_ROWS` · `ATTN_LANECELL` · `LFUSE` · `GDN_SPLIT` · `QFUSE` · `PLE_BATCH` | 可及、未测、不在已否决名单 | 
+deploy/W775delta_R4_P41_SCREEN.md	78	## 4 建议次序（先 3 个，各自独立发车）
+deploy/W775delta_REL0142_LEDGER.md	54	 | O-8 | Sessions：--session-save-reclaim（#1573）/ --conversation-cache-min-tokens N（#1597） | ○ 可用未测（* 与 P31/P33 同族） | --session-save-reclaim：SAVE 失败时释放保留 K/V、旧 parked 会话、非 pinned checkpoint 后重试（420 MiB 空闲下测过）；min-tokens：只 park >= N 的会话。**本机 /metrics 实读 min_tokens=0（吃默认，不筛）** | 观察项；与 W14/RAM 守卫同族 => 若
+deploy/W775delta_REL0142_LEDGER.md	55	 | O-9 | 其它 opt-in：STRATA_STAGE_PIN=1（now exact）/ STRATA_MMQ_RESIDENT_SORT_NE（#1660）/ helper-cache prefill（#1649）/ pipelined commit guard（#1674） | ○ 部分可用未测 | 上游逐字 output identical at 4K and 20K, speed claims are the authors'。**MMQ_RESIDENT_SORT_NE 与我们 gfx906 的 MMQ 路径相关**（本机是 HIP MMQ） | 观察项（低优先） | 
+deploy/W775delta_REL0142_LEDGER.md	56	 | O-10 | * gfx906：STRATA_GFX906_ATTN_QUERY_SWIZZLE=1（#1661）/ STRATA_GFX906_ATTN_REDUCE12=1（#1718，依赖前者）；构建拒绝 wave32 卡（#1728） | * 命中 = 我们的 P55 / P56 | 上游逐字「gfx906 (no MI50 here, so speed is the author's claim)」。W775_VERSION_SYNC §3.1 镜像内穷举证实两宏在 0.1.42 各命中 8/5 文件（0.1.41 = 0） | **W12**（CANDIDATE）：W774 
+deploy/W775delta_REL0142_LEDGER.md	57	 | O-11 | * STRATA_HEAD_MIX_MULTI=1 + STRATA_ONE_TOKEN_COMMIT=1（#1479） | * 命中 = 我们的 P59 / P60 | = 我们 #1479 的发现被上游采纳为代码（署名 co-author，维护者逐字 Added as HIP opt-ins (your patch, you are credited as co-author)）。上游实测 answers identical / decode 不可区分 | **W12**（CANDIDATE）：与 P55/P56 同车；P59/P60 是同一 patch 两半 => 必
+deploy/W775delta_REL0142_LEDGER.md	58	 | O-12 | 配置键与 API：prevent_sleep / reasoning_effort / /metrics/prometheus / logit_bias（HIP 采样也支持，-100 硬禁） | ○ 可用未测 | prevent_sleep 是 Windows；reasoning_effort 是默认思考档；/metrics/prometheus 需 API key；**logit_bias 在 HIP 采样生效且只对发送该字段的请求生效** => 与 P29（无采样用法）不冲突 | 观察项；logit_bias 若将来需要可即用 | 
+deploy/W775delta_REL0142_LEDGER.md	79	 | S-16 | Engine start：PLE 探针（<0.6s）在 <15,000 rows/s 时把 --ple-io direct 切成 mmap；STRATA_PLE_PROBE 关掉它（#1425/#1549/#1629） | * 命中（升级引入的行为变化）--**[更正 2026-10-14] 原判「已核不可达」作废：实为已动作** | 生产日志实读：`PLE on, table 320001536 rows` 38 次、`--ple-io direct measures slow here (14560 / 13268 rows/s): using --ple-io mma
+deploy/W775delta_RTS_TAILSKIP_FINDING.md	48	## 3 新的高价值实验（建议**插到 §4 族其余项之前**）
+deploy/W775delta_SOLIDIFY_RECHECK.md	11	3. **status 收口落差（8 项，建议批量收口但属签字项）**：CANDIDATE 19 个里有 **8 个的 verdict 已含"判死"信号**却仍挂 CANDIDATE（见 §2）。其中 **3 项是"本机形态/配置不匹配"而非永久判死**（`P55`/`P56`/`P47`），需区别对待。
+deploy/W775delta_SOLIDIFY_RECHECK.md	12	4. **反向查**：REJECTED 34 个里**无一项**带"建议采纳"信号 [OK]（`P59`/`P60` 的 verdict 出现 "CANDIDATE" 字样是被引用的历史表述，非重开主张）。
+deploy/W775delta_SOLIDIFY_RECHECK.md	53	> **已执行（2026-10-11 19:5x，机主「你定就好」授权）**：**7 项收口为 REJECTED**（`P41` `P42` `P46` `P61` `P62` `P63` `P67`）+ **3 项保留 CANDIDATE 并加条件注**（`P47` `P55` `P56`）。现计数 `27 ADOPTED / 41 REJECTED / 12 CANDIDATE / 7 REFERENCE`（87 数据行）。
+deploy/W775delta_SOLIDIFY_RECHECK.md	55	 | ID | 名称 | verdict 里的信号 | 我的处置建议 | 
+deploy/W775delta_SOLIDIFY_RECHECK.md	63	 | `P55` | `STRATA_GFX906_ATTN_QUERY_SWIZZLE` | 判死 / 不可达 | **保留 CANDIDATE（加条件）** ---- "不可达"是**因 `--kv k8v4`（`kv_mode=3`）**，换 `--kv int8` 即 `active=1`。属**配置条件性**，不是永久死 | 
+deploy/W775delta_SOLIDIFY_RECHECK.md	64	 | `P56` | `STRATA_GFX906_ATTN_REDUCE12` | 判死 / 不可达 | **同上**（保留 CANDIDATE + 条件） | 
+deploy/W775delta_SOLIDIFY_RECHECK.md	67	- `P46`（io-预取族）：`W23` 已判「本机无 decode 杠杆」（`FILL_AHEAD` 启动期 / `FS_AHEAD` 未激活 / `FETCH_THREADS` 只服务文件层 / `IO_PREFETCH` 已 `P54`）=> 建议 **-> REJECTED**。
+deploy/W775delta_SOLIDIFY_RECHECK.md	68	- `P47`（drafter 族）：`W17B` 判「暂不发车」但**前置缺失**（需代表语料 + decode 轴观测）=> **保留 CANDIDATE + 标注前置**（不宜判死）。
+deploy/W775delta_SOLIDIFY_RECHECK.md	70	> **[纪律]** 改 status 属**签字项**（`W17B §6` 立的规矩）。且 `CANDIDATE -> REJECTED` **不触碰生产**（`gen_config.py` 只吃 ADOPTED）=> 风险为零，但仍待机主点头。
+deploy/W775delta_SOLIDIFY_RECHECK.md	75	- **REJECTED 34 项**：无一项带"建议采纳"信号 [OK]
+deploy/W775delta_SOLIDIFY_RECHECK.md	91	- §2 的"收口建议"基于 **verdict 文本的关键词** + 逐条人工判断；`P55`/`P56`/`P47` 的"条件性保留"是我的判断，可被推翻。
+deploy/W775delta_UPSTREAM_0145_020.md	120	 | 序 | 建议 | 理由 | 成本 | 
+deploy/W775delta_UPSTREAM_0145_020.md	123	 | **2** | **0.1.45 列为下一候选，但不急** | 唯一实质项是 #1896（我们已用 B7 绕过）+ 待核的 AMD 长上下文内核；仍需自建 gfx906 镜像 | 中 | 
+deploy/W775delta_UPSTREAM_0145_020.md	124	 | **3** | **救 PR #1877**（建议做） | 改动只 **+16/-1、纯 Python**；上游确实没有这个修复；走 4 步 reopen 即可。标题改 `[GUI]`，补模板，`/reopen` | 低 | 
+deploy/W775delta_UPSTREAM_0145_020.md	129	**若你只说"按建议做"**，我会先做 **3**（rebase #1877 到 `main`、改标题、填模板、`/reopen` —— 这是唯一"花两分钟就可能拿回一条已修好的上游贡献"的动作），其余保持不动。
+deploy/W775delta_UPSTREAM_022_PLAN.md	83	 | R9700 队列顺序（L58） | 起始固定开两条队列，避免一半新引擎慢 8-14% | **gfx12 面**；gfx906 是否走同一路径**未验证**（不进方案） | 
+deploy/W775delta_UPSTREAM_022_PLAN.md	120	 | # | 项 | 性质 | 期望 | 成本 | 建议 | 
+deploy/W775delta_UPSTREAM_022_PLAN.md	124	 | **3** | `STRATA_ADAPT_OVERLAP_RESIDENT=1` | 待测速度 | 唯一「正对 `--resident-experts`、且有速度潜力」的新开关；上游实测 +7.0%（A4000） / **-2.6%（3060 46 GB 箱）** ⇒ 必须自测 | 一次车 | **单独单变量车**（5+ runs 判 decode） | 
+deploy/W775delta_UPSTREAM_022_PLAN.md	208	- `STRATA_ADAPT_OVERLAP_RESIDENT=1` 属**改变行为**的候选，另开单变量车，不混进这次升版。
+deploy/W775delta_UPSTREAM_022_PLAN.md	276	**建议**：等 Strata 自己 bump pin 时跟；若想主动，就给上游提一个 issue/PR（带上面三段错误原文）。
+deploy/W775delta_UPSTREAM_022_PLAN.md	316	- 待办：若将来要启用，判据改为 decode 中位数提升 >=3% 且同臂重复对照表明差异不显著。
+deploy/W775delta_UPSTREAM_1670_BACKGROUND_zh.md	33	 | `~15.75 GB/s link`（Gen3 x16 有效带宽） | `W728_PCIE_TELEMETRY.md:282/334` + `W736_PR_CANDIDATES.md:145` | **有出处** [OK] | 
+deploy/W775delta_UPSTREAM_BEST_PRACTICE.md	140	## 6 建议的下一步（若要真正对齐）
+deploy/W775delta_UPSTREAM_LATEST_PLAN.md	132	- **必记**：每臂的启动段 `PLE direct read probe` 行（臂身份核验）、`route tail skip` 行（2.4 的待测项）、`resident RAM mode` 行。
+deploy/W775delta_UPSTREAM_LATEST_PLAN.md	162	## 五、我建议的执行次序
+deploy/W775delta_UPSTREAM_LATEST_PLAN.md	187	- **新发现 `STRATA_ADAPT_OVERLAP_RESIDENT=1`**：0.1.46.2 启动行逐字 `adaptive overlap: off: not in the resident RAM mode unless STRATA_ADAPT_OVERLAP_RESIDENT=1`。这是**唯一有速度潜力、且正好针对 `--resident-experts`** 的新开关，应作为下一个单变量候选。
+deploy/W775delta_UPSTREAM_MAILCHECK_20261014.md	55	**读法（重要）**：`not_planned` 在这批里**不等于"被否决"** —— 它是「**超过 3 天没动 + 0.1.44 已发**」的清理口径。#1595 就是反例：修复明明已进 0.1.42，仍被关成 `not_planned`。所以 **#1734 / #1735 的关单不能读成"上游否了我们的建议"**，只能读成"跟踪器到期清理"。
+deploy/W775delta_UPSTREAM_MAILCHECK_20261014.md	128	**量级待测，不作结论**。反方向的可能也存在：mmap 走 OS page cache，而本机 RAM 128.7 GiB、表仅 28.8 GB，**若表能长期驻留 page cache，mmap 未必慢**（上游那次是 32K/77.8K 冷起点）。本机日志 L2727 又显示文件层与 55.4 GiB 的 RAM 补集在抢 file cache，所以"能否常驻"本身就是要测的量。
+deploy/W775delta_UPSTREAM_MAILCHECK_20261014.md	139	| `W750_MASTER_PLAN.md` §0.5.3 | 同上；**撤回「该待办关闭」**，改开 `--ple-io direct` 对照车 |
+deploy/W775delta_UPSTREAM_MAILCHECK_20261014.md	143	| `W775delta_REL0142_LEDGER.md` S-16 | 「已核不可达」作废；待办撤回重开 |
+deploy/W775delta_UPSTREAM_MAILCHECK_20261014.md	150	## §G 待机主定 / 建议
+deploy/W775delta_UPSTREAM_MAILCHECK_20261014.md	152	 | 序 | 事项 | 我的建议 | 
+deploy/W775delta_UPSTREAM_MAILCHECK_20261014.md	155	 | G2 | **PR #1855 / #1877 是否催** | **不建议催**。上游 open PR 队列 20+，两条均 `clean` 无冲突；#1877 的对应 issue 已被清理，但这不影响 PR 本身进入评审 | 
+deploy/W775delta_UPSTREAM_MAILCHECK_20261014.md	156	 | G3 | **`--ple-io direct` 对照车（E2）** | **建议做**。0.1.42 已内置该开关，**不必升版**；一个临时实例、单变量、长短两档即可判定。这是本次比对里唯一"可能直接改善生产"的项 | 
+deploy/W775delta_UPSTREAM_MAILCHECK_20261014.md	157	 | G4 | **0.1.43 - 0.1.44.1 逐条台账** | 建议做（我们已有 `W775delta_REL0142_LEDGER.md` 的体例）。但**升版动机要单独论证**：D6 已排除 AMD 提速，剩下的是 D2/D3/D4 这类通用修复与 `#1984` 稳定性修复 | 
+deploy/W775delta_W12D_RESULT.md	49	3. **parity 是有效的正确性门**且成本低（一条短请求）=> 建议作为本类车的标配。
+deploy/W775delta_W12D_RESULT.md	53	 | ID | 现值（status） | 建议 | 
+deploy/W775delta_W12D_RESULT.md	55	 | `P59` | `1(已测-prefill中性)` / CANDIDATE | `value` 改 **`1(exact but no gain;W12D)`**；verdict 记 W12D；**status -> REJECTED**（判过、不采纳；体例同 `P40`） | 
+deploy/W775delta_W12D_RESULT.md	56	 | `P60` | `1(已测-prefill中性)` / CANDIDATE | 同上（与 P59 同一 patch 两半：**合并结论、编号分开**） | 
+deploy/W775delta_W12_BANNER.md	144	**建议动作（待机主批）**：
+deploy/W775delta_W12_BANNER.md	147	3. **▲ 补产物（审计新增，强烈建议）**：重跑一次 `bash /home/albus/strata166/_w775_w12.sh B k8v4`，
+deploy/W775delta_W12_PRECHECK.md	74	用来**在发车前就证明"这条路径确实被选中"** -- 避免又一次"测了个空"。**这条建议先做**。
+deploy/W775delta_W12_PRECHECK.md	103	**但 `STRATA_HIP_GFX906` 全局定义 26 处** => 守卫通。**建议发车前用 banner 做一次运行期确认**（§4.1），不要只凭编译面。
+deploy/W775delta_W13_HEADROOM_RECHECK.md	38	- 就**我们的负载**而言，**淘汰策略的头部空间远小于 24pp**（生产已 95-97%）---- **除非**生产那 95% 里含有"被 `--adapt-every` 交换救回来"的部分（那部分在『从不淘汰』下确实会丢）。**这一点尚未测**。
+deploy/W775delta_W13_HEADROOM_RECHECK.md	43	**建议：是**（主动发一条 qualification，而不是等上游质疑）。理由：与该 issue 已发的三处硬化同源纪律（无提速字样 / 显式写"答案可能变" / 附复现三件套），本次属**第四条**：**"命中率数字的负载代表性"**。
+deploy/W775delta_W13_HEADROOM_RECHECK.md	72	> **[!] W28/AUDIT4 限定（2026-10-11 16:5x）**：本节第 4 条的依据「`P54` 已证 file/RAM tier 非瓶颈」**已被 W28 判为对冷路径错误**（`P54` 现为 CANDIDATE，见 `W775delta_W28_COLD_PATH_REDESIGN.md` E3）；且本节引用的「95.4-98.0%」是**长跑带**，全日志 `decode expert cache hit rate` 实测 **58/196（29.6%）低于 88%、最低 66.7%**（AUDIT4 现算）。=> 本节结论**仅对 decode 稳态**成立，**
+deploy/W775delta_W13_REPLAY.md	99	**建议动作**（待机主批准才跑）：
+deploy/W775delta_W13_RESULT.md	28	> **未动 register 状态（防误读）**：本结果**不改变** `P33`/`P41`/`P46` 的 register status -- 三条**仍为 `CANDIDATE`**。
+deploy/W775delta_W13_RESULT.md	120	**建议的落地方向（待机主批准）**：
+deploy/W775delta_W13_RESULT.md	123	3. **不建议**直接改 P33/P41/P46 族的裁定 -- 本结果说明那族的天花板**不是 2pp，是 24-28pp**，须重议。
+deploy/W775delta_W14_W15.md	5	**触发**：机主令「跑。列完整待办方案。」
+deploy/W775delta_W17B_SCREEN.md	1	# W775delta W17b / W23 续 ---- 短名单 36 条 + 候选逐条「证据筛」（结论：**不发车**）
+deploy/W775delta_W17B_SCREEN.md	3	> 触发：`W23` 收窄后剩下的候选（`P47` 的 `--mtp-draft-vocab`、`P48` 的三项）与 `W17b` 的"优先族试车序列"。
+deploy/W775delta_W17B_SCREEN.md	32	**唯一带正向数字的候选不在短名单里**：`STRATA_GR_V3`（`docs/INTEL.md:544` 逐字 *"`STRATA_GR_V3=1` 73.2 / 72.4 (**−4 to −6%**)"*）=> **负的**，且默认不走。
+deploy/W775delta_W17B_SCREEN.md	34	## 2 `P48` 三候选的逐条关闭
+deploy/W775delta_W17B_SCREEN.md	36	| 候选 | 关闭依据（逐字） |
+deploy/W775delta_W17B_SCREEN.md	40	| `STRATA_KV_GROW_HOLD=1` | `generate.cpp:10167-10168` *"keep the K/V as long as the longest parked conversation"* => 改 KV 驻留 => 改专家槽 => **可能改答案**（须配 `STRATA_LOGPOS` 门），且收益路径未量化。**保留为条件性候选**（唯一未关闭的一条） |
+deploy/W775delta_W17B_SCREEN.md	42	## 3 `P47` 唯一候选的现状
+deploy/W775delta_W17B_SCREEN.md	50	=> **暂不发车**（前置不足 + 观测面差 + 是 trade）。列为**条件性候选**。
+deploy/W775delta_W17B_SCREEN.md	73	## 6 处置建议（改 status 属签字项）
+deploy/W775delta_W17B_SCREEN.md	75	 | ID | 现值 | 建议 | 
+deploy/W775delta_W17B_SCREEN.md	77	 | `P48` | CANDIDATE（已收窄为 3 项） | **再收窄为单条 `STRATA_KV_GROW_HOLD`**（另两项已由 §2 关闭）；或整条 REJECTED | 
+deploy/W775delta_W17B_SCREEN.md	78	 | `P47` | CANDIDATE（已收窄为 `--mtp-draft-vocab`） | 保持 CANDIDATE 但**标注前置缺失**（需语料 + 需 decode 轴观测），**暂不发车** | 
+deploy/W775delta_W17B_SCREEN.md	79	 | `W17b` | 待办（8 族试车） | **判"不发车"**（本件证据链）；`W17a` 的短名单保留为档案 | 
+deploy/W775delta_W17_SWITCH_LANDSCAPE.md	42	 | &nbsp;&nbsp;&nbsp;└ **X 单卡 GPU/引擎逻辑（实质候选池）** | **132** | 剩余 | 
+deploy/W775delta_W17_SWITCH_LANDSCAPE.md	44	**一句话答案：存在面 352 个 env + 226 个 CLI；其中 262 个 env 真编进了本机镜像，再刨掉多卡(73)/诊断(40)/CPU(18) => 剩 132 个是"单卡 GPU/引擎逻辑"候选池。**
+deploy/W775delta_W17_SWITCH_LANDSCAPE.md	83	## 4 X 实质候选池（132 条，按首命中文件）
+deploy/W775delta_W20_EXT_RECHECK.md	59	- `PARAM_REGISTER.tsv`：`P54` verdict 追加（**status 不动**，仍 CANDIDATE）、`P09` verdict 追加 `[EXT: 小 RAM 预算]`。
+deploy/W775delta_W23_P4647_48_SCREEN.md	3	> 触发：`W750 §0.7` 完整性核查补登记的 `W23`（三条 CANDIDATE 有计数无承载）。
+deploy/W775delta_W23_P4647_48_SCREEN.md	10	2. **`P47`（drafter 族 7 项）：只有 `--mtp-draft-vocab` 是真候选**；`--coupled-draft` 在 `temperature=0` 下恒空操作；`--no-spec-split` 就是引擎默认、`--spec-split` 上游实测**更慢**；`--spec-follow` / `--window-hashes` 是 bench/diag 口。
+deploy/W775delta_W23_P4647_48_SCREEN.md	11	3. **`P48`（misc 族 6 项）：3 项 inert/N-A、3 项真候选** —— 真候选 = `--pcie-mode dma` · `STRATA_EMB_REUSE_ACCOUNT=1` · `STRATA_KV_GROW_HOLD=1`（最后一条**改答案风险**，须配质量门）。
+deploy/W775delta_W23_P4647_48_SCREEN.md	32	 | `--mtp-draft-vocab FILE` | `:2011` + `mtp.hpp:65`（默认 `<mtp>/draft_vocab.bin`） | **真候选**：草稿头的 token 子集。上游带 `tools/draft_vocab.py` 可造 => 本卡**接受长度只 1.797（W740）**，是 decode 轴上少见的直接杠杆 | 
+deploy/W775delta_W23_P4647_48_SCREEN.md	44	 | `--pcie-mode` | `generate.cpp:1961` + `docs/BATCHED_DMA.md`（`--pcie-mode dma` + `STRATA_DMA_BATCH=1` 提交一个 verifier group 的独立 DMA） | **真候选**：我们 PCIe 路径活跃（`--pcie-frac 0.20`）=> 单键先测 `--pcie-mode dma`（`DMA_BATCH` 是其子旗，**不同车**） | 
+deploy/W775delta_W23_P4647_48_SCREEN.md	45	 | `STRATA_EMB_REUSE_ACCOUNT=1` | `prefill.cpp:260-263` 逐字 *"lets it use the saved bytes: **a larger chunk or more borrowed slots where VRAM is the limit**"* | **真候选**：我们**正是 VRAM 受限**（`vram_free_mib: 574`）=> prompt 侧杠杆（prefill 口径） | 
+deploy/W775delta_W23_P4647_48_SCREEN.md	46	 | `STRATA_KV_GROW_HOLD=1` | `generate.cpp:10167-10168` *"keep the K/V as long as the longest parked conversation; default: trim to this request alone"* | **真候选但风险**：改 KV 驻留 => 改专家槽 => **可能改答案**（须配 `STRATA_LOGPOS` 质量门）；且与 elastic KV 交互（`P63` 族） | 
+deploy/W775delta_W23_P4647_48_SCREEN.md	76	 | ID | 现值 | 建议 | 
+deploy/W775delta_W23_P4647_48_SCREEN.md	78	 | `P46` | CANDIDATE | 建议 **REJECTED**（族内 4 键本机均无 decode 杠杆；理由见 §1） | 
+deploy/W775delta_W23_P4647_48_SCREEN.md	79	 | `P47` | CANDIDATE | 建议**收窄**为单条 `--mtp-draft-vocab`（其余 6 项 inert/默认/负） | 
+deploy/W775delta_W23_P4647_48_SCREEN.md	80	 | `P48` | CANDIDATE | 建议**拆条**：保留 3 真候选（`--pcie-mode dma` / `EMB_REUSE_ACCOUNT` / `KV_GROW_HOLD`），其余 3 项标 N-A/inert | 
+deploy/W775delta_W25_GFX906_REPORTS.md	63	- 新增 register 行 `P61` / `P62` / `P63`（`CANDIDATE`，未测；`gen_config` 只吃 `ADOPTED` => 配置面不变）
+deploy/W775delta_W26_TIER_REPLAY.md	29	 | `adapt_min_gain = 1.5f` | `generate.cpp:581` | 候选须比被换者高 1.5 才换 | 
+deploy/W775delta_W26_TIER_REPLAY.md	31	 | 候选门 `u[e] >= 2.0f` | `generate.cpp:8165` | 未驻留且 decayed usage >= 2.0 才可作候选 | 
+deploy/W775delta_W26_TIER_REPLAY.md	32	 | 迁移规则 | `generate.cpp:8159-8180` | 每层：候选降序 vs 被换者升序，逐对比较；`cand < vict + min_gain` 即 **break**；全层按 gain 排序取前 `swaps` | 
+deploy/W775delta_W26_TIER_REPLAY.md	68	 | `--mincand` | 2.0 | 候选门 `u[e] >= 2.0f` | `:8165` | 
+deploy/W775delta_W27_SRC_VERDICT.md	42	- **`W27` 三项均判「本机不发车」**，理由为**机制级不匹配**（不是"没测所以不知道"）。
+deploy/W775delta_W27_SRC_VERDICT.md	43	- register `P61`/`P62`/`P63` 的 `verdict` 追加本判定；**status 保持 CANDIDATE**（它们对**其他形态的机器**确实有价值 ---- 这正是 `[EXT]` 车道要表达的）。
+deploy/W775delta_W28B_RAM_COMPLEMENT.md	47	### 1.4 被划掉的假设 + 真杠杆候选（待测）
+deploy/W775delta_W28B_RAM_COMPLEMENT.md	54	| 真杠杆候选（按机制，待测） | 依据 |
+deploy/W775delta_W28C_THREETIER_MECHANISM.md	92	 | **`STRATA_RESIDENT_HEADROOM_GIB`（默认 4）** | 调小 => 补集上限变大 => **借区可进 RAM** | `expert_source.cpp:3118` 上游直接建议：*"Free RAM or **lower STRATA_RESIDENT_HEADROOM_GIB**"* | RAM 余量变小 | 
+deploy/W775delta_W28C_THREETIER_MECHANISM.md	97	 | `STRATA_IO_PREFETCH`（`P54`）/`FETCH_THREADS`（`P46`） | 打"文件层读"这条路 | `#577` | 已重开待测 | 
+deploy/W775delta_W28D_OPT_PLAN.md	72	**两臂（A = 现行 / B = 候选），一次停-起：**
+deploy/W775delta_W28D_OPT_PLAN.md	77	 | **B（候选）** | **`--resident-experts`**（去掉 budget） | **`STRATA_RESIDENT_HEADROOM_GIB=0.5`** | 
+deploy/W775delta_W28D_OPT_PLAN.md	91	- **同路径不可组合**（W723）：OPT-A 里"去 budget"与"降 headroom"是**一个协同配置**（去 budget 才让借区机制存在），故作为**一个候选配置** A/B；OPT-B/C 各自单独成车。
+deploy/W775delta_W28E_COLD_OPT_FULL.md	131	> => **`B10`（`RESIDENT_PIN=0`）仍为候选**（它的靶是 CPU-worker 的内存压力 / pageable 形态，与 file 层读无关）。
+deploy/W775delta_W28_COLD_PATH_REDESIGN.md	4	> 结论：**此前的测量线有方向性错误**。不是"参数没测全"，是**测错了阶段**（测 decode 稳态，而机主感知的是 prompt 冷读）。
+deploy/W775delta_W4X_GDNPP_RESULT.md	59	 | `STRATA_ATTN_LANECELL` | **未测**（且与 `P55` swizzle 互斥；`P55` 在 `k8v4` 不可达 => 互斥实际不成立） | `W775delta_R4_P41_SCREEN.md` | 
+deploy/W775delta_W4X_Q8PACKED_RESULT.md	75	**=> `P41` 族内 `STRATA_Q8_PACKED` 一项判「exact but no gain」，不采纳**（`P41` 族状态不动，余成员未测）。
+deploy/W775delta_W4X_RES_RESULT.md	49	1. 只覆盖 **11.4K-token 冷请求**；本 harness 页缓存温（OS 读仍小）；单卡；**未测长 prompt / 多轮**。
+deploy/W775delta_W4X_RES_RESULT.md	50	2. **两 token 同变**：本车证明"mode+headroom 组合"有效；**headroom 0.5 是否必要未单独测** —— 启动时 `MemAvailable` 约 80 GB，默认 headroom 4 也很可能容得下 36.93 GiB。若要**最简生产配置**，建议再跑一车只验 `--resident-experts`（headroom 默认 4）。
+deploy/W775delta_W4X_RES_RESULT.md	54	## 5 处置建议（**待机主签字** —— 改生产 `args` 属签字项）
+deploy/W775delta_W4X_RES_RESULT.md	62	落 register 时为：`P66 --resident-experts` → `ADOPTED`（若采纳）；`P65 STRATA_RESIDENT_HEADROOM_GIB` → 按选定值 `ADOPTED` 或留 `CANDIDATE`。
+deploy/W775delta_W4X_RES_RESULT.md	155	`B10`（`STRATA_RESIDENT_PIN=0`）的动机（G4「pinned 副本挤 CPU workers」）**已弱化**：**[AUDIT5-A2 更正]** 原论据「生产冷探针 `cpu.user` 峰 43.9% ⇒ CPU 不再满载」**撤回**：该 43.9% 系**降采样均值序列的 max**，同窗真峰 **52.5%**，且改前 48h `cpu.user` max = **51.46%** => 改前改后**无变化**。方向保留（CPU 从未真正「满载」，`B10` 仍为条件性候选）。
+deploy/W775delta_W4X_STG_RESULT.md	54	- **不采纳**（温页缓存下无增益）；**`P67` status 不动（仍 CANDIDATE）**，verdict 追加本条 + 条件说明。
+deploy/W775delta_W4_HOOKS.md	39	## 3 建议方案（搭下一次车的窗口，零额外停机）
+deploy/W775delta_W6_ATTN_LANECELL_VERDICT.md	1	# W775delta W6 续 ---- `STRATA_ATTN_LANECELL` 源码级判定（`P41` §4 族**最后一个未测候选**）
+deploy/W775delta_W6_ATTN_LANECELL_VERDICT.md	3	> 触发：`W750 §4` 的 **W6 = `STRIX_HALO §4` 族其余开关**（15 -> 候选 13 -> R4 先排 3 个：已测 `Q8_PACKED` / `GDN_PP=2` 均 **exact but no gain**；余 **`ATTN_LANECELL`**）。
+deploy/W775delta_W6_ATTN_LANECELL_VERDICT.md	8	**`ATTN_LANECELL` 在本机生产配方（`--kv k8v4`，单卡 gfx906）下「可达 + 有动作 + 声明不改答案」，但「证据面为空」=> 按 `W17b` 判据（有可测杠杆才发车）判「不发车」，保留为可发车候选。**
+deploy/W775delta_W6_ATTN_LANECELL_VERDICT.md	65	 | **建议（默认）** | **不发车**；`P41` **status 不动**（仍 CANDIDATE），verdict 追加本条判定。理由 = §3 四条（证据面为空 + 同族 0/2 + 不迁移 0/4 + 观测面弱） | 0 | 
+deploy/W775delta_W6_ATTN_LANECELL_VERDICT.md	68	**注**：`P41` 是**族级**条目（15 开关的集合），本轮把族内**最后一个未测项**判完 => **§4 族全部 3 个先测项均有结论**（2 实测 + 1 源码判定）。
+deploy/W775delta_W7W8_DRAFT_SCREEN.md	12	2. **`--suffix-draft` 不是"未采用的开关"**：它**默认开着并在生产生效**（`lookup=3`）=> `P42` 把它与 opt-in 的 `--lookup-chain` 并列成"CANDIDATE（未测）"**不准确**。
+deploy/W775delta_W7W8_DRAFT_SCREEN.md	14	4. **`DraftPolicy.kShape` 不是参数面旋钮**：`draft_policy.cpp:12` 是**编译期 `constexpr` 表**，作用只是"尚未实测过的窗口尺寸"的**先验形状**，运行期被实测 EMA（`cost_[]`）覆盖 => 「标定 `kShape`」在参数面**无靶**。
+deploy/W775delta_W7W8_DRAFT_SCREEN.md	75	 | 项 | 现值 | 建议 | 
+deploy/W775delta_W7W8_DRAFT_SCREEN.md	77	 | `P42` `--suffix-draft` | 与 `--lookup-chain` 并列 CANDIDATE | **verdict 追加**：默认已开、生产 `lookup=3` 在生效；**不是待采纳项** | 
+deploy/W775delta_W7W8_DRAFT_SCREEN.md	78	 | `P42` `--lookup-chain` | CANDIDATE | **不发车**（`K<=2` 空操作；`K>=3` 仅抬 verify 上限，无独立收益出处；decode 轴 spread 16-41% 分辨力弱）。verdict 追加本条 | 
+deploy/W775delta_W9_CONCURRENCY_VERDICT.md	3	> 触发：`W750 §4` 的 **W9 = 并发吞吐面**（`P97`）。原状态：`P97 = CANDIDATE`（原 REJECTED 系**使用面**判断 ---- 我们一直单流）。
+deploy/W775delta_W9_CONCURRENCY_VERDICT.md	43	 | `P97` | CANDIDATE（原 REJECTED 系**使用面**） | **-> REJECTED（机制面）**：VRAM 放不下（证据 3 条） | 
+deploy/W775delta_W9_CONCURRENCY_VERDICT.md	60	- "牺牲专家缓存换 slot"的**量化代价未测**（本件不作数）---- 那是另一条路，需另立靶。
+deploy/W776_TUNING_MASTER_PLAN.md	25	4. **[纠错] PLE 不是大头。** v1 我按 `34102 rows/s` + 每 token 16 行推算出"PLE 占预填 22.5%"，并建议 `--ple-io ram`。**register `P91` 已实测该开关 -45%，上游社区实测"the same as default"** => 推算方向对但结论错，已列为否决项（§3-1）。
+deploy/W776_TUNING_MASTER_PLAN.md	28	7. **真正没测过的空白只有 6 个旋钮**：`--ple-inflight`、`--pool-tasks`、`--host-core`、`--aux-cpus`、governor、`--spec-min-p --calibrate`。全部在 register 里查无记录。
+deploy/W776_TUNING_MASTER_PLAN.md	129	 | # | v1 我的建议 | register | 历史实测 | 本轮处置 | 
+deploy/W776_TUNING_MASTER_PLAN.md	203	### T10 `--adapt-async`（P71 CANDIDATE，未关单）
+deploy/W776_TUNING_MASTER_PLAN.md	618	下一步只能写内核，三个选项按性价比：
+deploy/W776_TUNING_MASTER_PLAN.md	641	2. **规则 P 重扫**：`STRATA_ATTN_DAILY` / `STRATA_ATTN_MERGE_V` / `STRATA_PREFILL_STREAM_MIN`（都从未测，且都落在某个相位上）。
+deploy/W776_TUNING_MASTER_PLAN.md	646	**这一轮改的是"候选池"本身。** `src/core/arch_defaults.cpp` 只对 gfx12 / gfx1151 返回默认表，gfx906 拿到**空表**
+deploy/W776_TUNING_MASTER_PLAN.md	692	 | **P125** | `QFUSE=1` | **未判（PENDING）**：端到端出现 488/2012 ms 不可能值，相位全面 -10~-25% 而 `waitB` +20.7% | 
+deploy/W776_TUNING_MASTER_PLAN.md	712	2. **`QFUSE` 复测**（PENDING）：须固定 window 数而非固定 output tokens。
+deploy/W776_TUNING_MASTER_PLAN.md	737	read=1954 **+3.3%** ⇒ **PENDING（P126），单样本不采纳**。
+deploy/W776_TUNING_MASTER_PLAN.md	775	⇒ **钉页只值 10%，pin / resident 一族（P09 作废 / P66 REJECTED / P71 CANDIDATE）救不了 `wait copy`**，
+deploy/W776_TUNING_MASTER_PLAN.md	810	 | **参数面** | P103-P128 共 21 项：采纳 8、否决 13（P126 本轮关闭） | **已耗尽**。只剩 3 个从没测过的：`STRATA_PREFILL_CPU_SHARE`（P23 只在 T=4 测，那是 launch-bound 区）、`Q6_PACKED`、`MMVF_ROWS`、`PLE_BATCH` | 
+deploy/W776_TUNING_MASTER_PLAN.md	811	 | **显存面** | `vram_free` **606 MiB**、请求期最低 **506 MiB**（低于引擎安全线 512，引擎建议 `--vram-reserve-mib 832`）；驻留专家 9,901 / 24,576 = **40%** | **是风险不是机会**：32 GB 里腾不出 GB 级空间，+512 MiB 只换来 +0.9pp 驻留 | 
+deploy/W776_TUNING_MASTER_PLAN.md	843	- **下一步（唯一阻塞）**：`STRATA_LOGPOS` teacher-forced KL（判据中位 <= 0.01，参照 P110/P115/P116/P103 的 0.003-0.01 带）；
+deploy/W776_TUNING_MASTER_PLAN.md	905	缺省 3072 会把 1,024–3,072 的 chunk 也改成 staged，而**这一段本卡从未测过**（W802/W803 的 chunk 都 < 1024）。
+deploy/W776_TUNING_MASTER_PLAN.md	929	#### 14.5 下一步（顺序变了）
+deploy/W776_TUNING_MASTER_PLAN.md	965	#### 15.3 质量门（1-3K 段，此前从未测过）
+deploy/W776_TUNING_MASTER_PLAN.md	997	#### 15.6 下一步
+deploy/W776_TUNING_MASTER_PLAN.md	1058	#### 16.5 下一步（按价值）
+deploy/W776_TUNING_MASTER_PLAN.md	1132	#### 17.6 下一步（参数面基本关完，只剩三处）
+deploy/W776_TUNING_MASTER_PLAN.md	1193	 | `P115/P116`（GDN） | 6/6 **逐字相同**（≈3,100 token 全等） | **债清**：成对 bitwise 等价的 kernel 替换，质量代价 = 0（单独拆开未测） | 
+deploy/W776_TUNING_MASTER_PLAN.md	1206	#### 18.7 下一步
+deploy/W776_TUNING_MASTER_PLAN.md	1268	#### 20.1 本轮把三件「有上游先验、本卡从未测过」的事做完了
+deploy/W776_TUNING_MASTER_PLAN.md	1296	 | 轮 | 每臂样本 | 同配置两遍差 | 待测效应 | 结果 | 
+deploy/W776_TUNING_MASTER_PLAN.md	1405	`P138` 是 CANDIDATE，`gen_config` 不写它（已核 `args` 里没有 `--ple-io`）。
+deploy/W777_UPSTREAM_023_SYNC.md	121	=> 走 CUDA 分支 => 编不过。**上游只测了 CUDA 与"正式 HIP"两条路，gfx906 兼容层这条没测。**
+deploy/W777_UPSTREAM_023_SYNC.md	188	### 仍未验证（register 里查无记录，且本轮没做）
+deploy/W777_UPSTREAM_023_SYNC.md	192	 | `--conversation-cache-mib` 让它按空闲内存自算（#3493） | 多轮体感 | 0.2.3 新增默认；我们手设 4096 且实测 `requests_reused 0`。可试"去掉该参数"让引擎自算 | 
+deploy/W778_AMD_OPT_APPLICABILITY.md	133	这条不是"调个参数"能解决的——它需要引擎在 chunk 边界之外也能设 checkpoint（`--prompt-cache-tail` 只覆盖"接近 prompt 末尾的已有边界"，对我们这种"只有一个未满 chunk"的情况同样无效，且 P21 已判无效）。**属上游机制问题，建议报 issue，不要在本机硬改。**
+deploy/W779_ROUTEK_PORT_SURVEY.md	98	## 6 一条值得对照的调优规则（未验证）
+deploy/W780_UPSTREAM_024_SYNC.md	133	**这次升版编了、测了、落了，但收益是零——因为 0.2.4 的引擎改动全在 DeepSeek 那条路上，Qwen 的路径一行没动；真正的收获是发现我们的测量脚本会因为 nonce 重复而虚报 74,000 tok/s。下一步该做的不是再升版，是把 `--kv-grow` 那 15% 的槽位拿回来。**
+deploy/W781_LEGACY_PORT_ANALYSIS.md	33	 | 参数 | 候选 | 我们的现值 | 备注 | 
+deploy/W781_LEGACY_PORT_ANALYSIS.md	122	### 3.4 唯一可行的本机改法（建议先报上游，再决定要不要打）
+deploy/W781_LEGACY_PORT_ANALYSIS.md	136	- **建议顺序**：先把 §3.1 的证据发到 #3950 / 新开一个 issue（附 7,342 与 19,467 的对照）-> 等维护者说法 -> 再决定自打补丁。
+deploy/W781_LEGACY_PORT_ANALYSIS.md	162	| 预计 | 30-90 分钟（`SWEEP_ROUNDS=3` × 多组候选 × 128/512 token 输出 + 每值重启式测量） |
+deploy/W781_LEGACY_PORT_ANALYSIS.md	168	## 6 下一步（按顺序）
+deploy/W783_GFX906_FA_DEEPDIVE.md	212	 | 项 | 候选 | 中位数 | 结论 | 
+deploy/W784_GFX906_FULL_SWEEP.md	80	 | Q8 KV + **Q 也量化** + `sdot4` | `fattn-q8.cuh:342-395` Q_values/Q_scales per-32；`:429` sdot4 | 注意力 194 到 **72 µs/layer（2.7x）** | K 已 int8；**Q 是 fp32**，K/V 反量化成 float | 上限 3.8%，**降级为候选**（原 A1） | 
+deploy/W784_GFX906_FULL_SWEEP.md	110	裁决：这是一整套**否定证据**，直接覆盖我方两个待办（P77 pool-tasks 已否决、K 切分想法）——**不必再试**。
+deploy/W784_GFX906_FULL_SWEEP.md	127	 | M=5..16 用 exact-M 模板（RPT=1） | `:727-750` | speculative 形状 | 我们 spec=6，正好落在 M=5..8 | **候选**（需先看我们是否已按 M 分档） | 
+deploy/W784_GFX906_FULL_SWEEP.md	138	 | 路由 fp64 治理 | 我方 `router_top10.cu:220-226` 用 `exp(double)` + 512 次串行 double 加 | 我方 `router+plan+bell` = 3.87 ms（7.0%） | 有 `router_top10_fast_kernel` 但被 wave kernel 先返回挡掉 | **候选（F4）**，需 parity 覆盖 | 
+deploy/W786_TARGET_CORRECTION.md	218	 | **P1-6** | `W781` §3 把对话复用判为「外部问题，建议报上游，不适合本机硬改」——**低估了两个数量级**（实测 15-30 倍端到端） | 判"外部"之前必须先算**收益量级**，否则会把最大杠杆丢掉 | 
+deploy/W787_R1_FAILURE_REVIEW.md	88	 | R5 HC 归因 | 待测 | **回升到 16.1%**（多轮场景下是最大单项） | 
+deploy/W788_HC_ATTRIBUTION.md	130	本轮所有结论都是从**源码 + ELF 资源 + 阶段计时**推的，还没上 profiler。下一步若要定论（尤其路径 B 的 reduce 开销、up 的 latency 归因），用 `rocprofv3 --kernel-trace --stats` 跑一个 S 档请求即可（需停生产约 3 分钟）。
+deploy/W788_HC_ATTRIBUTION.md	147	- 没有上 profiler（记录为下一步）
+deploy/W791_STAGE_RANK_AND_GATED_PATHS.md	4	> **去上游查那些"默认关、注释写着待测量"的路径**、**逐条实测或源码判定**。
+deploy/W791_STAGE_RANK_AND_GATED_PATHS.md	57	也就是上游**明确留着这张卡没测**。所以我先做 bit 一致性验证（不动生产构建树，单独编译 `tests/hip/router_fast.cpp` + `router_top10.cu`）：
+deploy/W791_STAGE_RANK_AND_GATED_PATHS.md	134	 | `STRATA_HIP_ROUTER_FAST` | 候选 | 关闭（旁路） | 
+deploy/W791_STAGE_RANK_AND_GATED_PATHS.md	135	 | `STRATA_GR_SPLIT` | 候选 | 关闭（净账负）；其机制转为 R5 的输入 | 
+deploy/W792_PREFILL_PHASE_ACCOUNT.md	3	> 机主令「继续，该上网查一定要上网查」。本轮做的第一件事是**把从来没测过的那一段测出来**：
+deploy/W792_PREFILL_PHASE_ACCOUNT.md	271	| register 增行 | `P103 STRATA_HIP_PROMPT_F16=1 ADOPTED`；`P104` 分相位账（REFERENCE）、`P105` rocBLAS 表（CANDIDATE）、`P106` SIMT=2（CANDIDATE）；`P102` 追加 W792 撤回 |
+deploy/W792_PREFILL_PHASE_ACCOUNT.md	298	3. **未测交叉**：`--kv k8v4` × FP16（两者都改数值）；`STRATA_HC_Q8=1` × FP16（本轮两者始终同开，没有拆开测过 bf16 包 × FP16 的组合）。
+deploy/W793_ROCBLAS_TABLE_AND_ATTN_GAP.md	128	= 316 µs/token。把这个数与"KV 读字节数 / 805 GB/s"比，才知道它是算力受限还是带宽受限 —— **这是下一步的第一件事**。
+deploy/W794_ATTN_NO_SWITCH_TO_FLIP.md	57	 | **#2220**（closed）「sm_75: QSA decode attention for INT8 KV off the shared-memory pipe (bitwise)」 | 重写 INT8 KV 的 decode attention，少 shared/shuffle 开销，**内核 1.5-4.1x，逐位一致**；其 `reduce12_gfx906` 思路**来自 gfx906** | Turing 专用实现（`#if !defined(__HIPCC__)`），gfx906 拿不到；**但它证明这条核有 3 倍以上余量** => 下一步是"移植/重写"，量级可估
+deploy/W794_ATTN_NO_SWITCH_TO_FLIP.md	58	 | **#3857**（open）gfx928 wave64 构建 | 候选 1 就是"让 `STRATA_PREFILL_MMQ` 接受 wave64 后端" | 与我们的专家 MMQ（20.6%）同题；说明上游的 MMQ 矩阵路径对 wave64 也是缺口 | 
+deploy/W795_EXPERT_MMQ_DISPATCH_EXHAUSTED.md	129	两者合计 55% 的墙钟，下一步只能写内核。
+deploy/W795_EXPERT_MMQ_DISPATCH_EXHAUSTED.md	131	### 4.1 下一步的三个选项（按性价比）
+deploy/W796_SELECT_SIMT_REVERSAL.md	28	 | `STRATA_ATTN_LANECELL=1` | `qsa attn` 19.5% / 15.3% | 从未测过 | 源码注释写"scores 逐位一致、无 shuffle 归约"，wave64 上可能有便宜可捡 | 
+deploy/W796_SELECT_SIMT_REVERSAL.md	115	2. **规则 P 的推广**：凡"小相位上的大效果"，都必须在该相位的**最重档**（L）上测。按此重扫剩下的候选：
+deploy/W796_SELECT_SIMT_REVERSAL.md	117	`STRATA_ATTN_DAILY` / `STRATA_ATTN_MERGE_V`（从未测）、`STRATA_PREFILL_STREAM_MIN`（影响 chunk 内流水）。
+deploy/W797_GFX906_NEVER_INHERITED_DEFAULTS.md	277	4. **decode 侧 10 个开关仍未测**：`Q8_PACKED` / `Q6_PACKED` / `MMVF_ROWS` / `EXPERT_V2` / `TSUM` / `LFUSE` /
+deploy/W798_DECODE_SIDE_EXHAUSTED.md	170	2. **`Q6_PACKED` / `MMVF_ROWS` / `PLE_BATCH` 未测**（三个）。按 §6 的分类，前两个属"拿显存换速度"（`Q6_PACKED` 是另一份拷贝），
+deploy/W799_MULTITURN_FIXED_FLOOR.md	5	- 结论：**没有采纳参数**；`--conversation-cache-park-gain=256` 记为 PENDING（单样本、收益 10%、但地板未动）。
+deploy/W799_MULTITURN_FIXED_FLOOR.md	179	1. **`park-gain` 复测**（PENDING→判）：修好 set_gain，`gain=0 / 256 / 512`，每档 3 次，判据 >5%。
+deploy/W800_SMALL_CHUNK_FLOOR.md	4	- 起点：`W799` 把多轮的固定成本记为「每轮约 900 ms，其中约 450 ms 是 park/unpark」，处置为 PENDING。
+deploy/W800_SMALL_CHUNK_FLOOR.md	156	（P09 作废、P66 REJECTED、P71 CANDIDATE）**在机制上救不了 wait copy**，因为它们的卖点是"钉住的 RAM 拷贝更快"，
+deploy/W800_SMALL_CHUNK_FLOOR.md	197	**处置建议（待做）**：把 `STRATA_ROUTE_TAIL_SKIP=7` **显式写进 config env**（钉住行为，与 P23 把
+deploy/W800_SMALL_CHUNK_FLOOR.md	223	正确性门（`STRATA_LOGPOS` teacher-forced KL，self 对照）**尚未做**，列为 W801 首项。
+deploy/W801_AUDIT9_REMEDIATION.md	7	- 结果：**P1×5 + P2×7 全部关闭**；`P126` 由 PENDING 改 **REJECTED**（三样本证伪）；
+deploy/W801_AUDIT9_REMEDIATION.md	29	另：`MEMORY.md` 三行就地更正（attn 口径 / 19+5 项 / P126 待测 → 现已可结算），走 `mem_slim`（Z-97 之后）。
+deploy/W801_AUDIT9_REMEDIATION.md	92	在这个样本量上不能把这个差值单独记给 `RT_SKIP`；要归因得按单参数拆（P0 的下一步）。
+deploy/W801_AUDIT9_REMEDIATION.md	121	它本来就是 PENDING 未落盘）。
+deploy/W802_CPU_SHARE_WIN.md	8	重开为 CANDIDATE，只差一个 teacher-forced KL 门（§1.8 给了做法）。
+deploy/W802_CPU_SHARE_WIN.md	77	- `P23`：**REJECTED → CANDIDATE（重开）**。理由：否决它的区间（T=4）不适用；新区间收益 -23~-29%；
+deploy/W802_CPU_SHARE_WIN.md	81	- 待办（P3b）：`auto` 在极小 chunk 上会跑到 0.9（P23 在 T=4 观到 0.90）；`share` 也可给固定值，
+deploy/W802_CPU_SHARE_WIN.md	99	### 1.8 质量门（下一步，未做）
+deploy/W802_CPU_SHARE_WIN.md	147	从未测过，且需要重建镜像。假设：小 M 下每专家一个 launch 的固定开销占比高，把 group 加到 32/64 可以减少
+deploy/W802_CPU_SHARE_WIN.md	148	launch 与 gather 次数（代价是 group 缓冲变大、寄存器压力）。**这是 P2 的下一步**，成本 = 一次镜像重建 + 4 臂 A/B。
+deploy/W802_CPU_SHARE_WIN.md	180	改 register 时把 `P23` 从 ADOPTED 改成 CANDIDATE，`gen_config --write` 就不再写 `STRATA_PREFILL_CPU_SHARE`
+deploy/W802_CPU_SHARE_WIN.md	187	(3)`CANDIDATE` 只用于"从未进过生产"的参数，不能用来表达"已采纳但想重估"。
+deploy/W803_CPU_SHARE_KL_GATE.md	134	 | `prefill.cpp:220` | `STRATA_PREFILL_CPU_SHARE_MAX` 缺省 **3072**（至少 1024）；且它被用作 `g_stream_min_share` ⇒ 抬高 `stream_all_min()` | 显式 `auto` 会把 1–3K 的 chunk 也改成 staged；**该区间本卡没测过 ⇒ 必须钉 1024**（P129） | 
+deploy/W803_CPU_SHARE_KL_GATE.md	190	## 8 下一步（按收益/风险排）
+deploy/W804_READ_SWEEP.md	104	## 4 质量门（1-3K 段）：本段此前从未测过
+deploy/W805_PHASE_AT_8192.md	86	 | **#4157 + #4158**（10-25） | gfx906 小 chunk 的 **dense 投影**改用 native MMVQ（`STRATA_PF_MMVQ=1`，阈值 256）；170-token chunk 里 **930/1730 ms** 花在 hc read / gdn / qsa proj / gdn out proj；164-166 token 轮次 **1.88/1.78 -> 1.59/1.54 s（-15%）**；阈值 512/2048 会拖慢更大的 chunk | **最高价值的未落地项**，已登记 `P130`（CANDIDATE，需重建） | 
+deploy/W807_DECODE_SIDE_GATE.md	139	2. **只测贪心**。`temperature 0.8` 的采样路径没测；上游两者都测（0.0058 vs 0.0056，几乎相同），所以这条大概率不改变结论。
+deploy/W807_DECODE_SIDE_GATE.md	144	别的 batch 形状里理论上是同一个 kernel，但没测。
+deploy/W808_HIP_DEFAULTS_SWEEP.md	148	| 配置 | env **12 项**（无 `STRATA_DECODE_TIMING`、无三个候选键），`--prefill auto`、`RT_SKIP=7`、`CPU_SHARE=auto` |
+deploy/W808_HIP_DEFAULTS_SWEEP.md	152	| `albus/w808/scan_hip_defaults.py` | 扫描器（8 个候选的来源） |
+deploy/W809_DRAFT_AND_FUSION.md	44	第一轮（`w809_spec`）每臂只跑 3 个 prompt，`A` 与 `A2`（同配置两遍）差 **5.2%**，而待测效应只有 2-3% ⇒ 判不了。
+deploy/W809_DRAFT_AND_FUSION.md	182	1. **仪器分辨率必须小于效应量，否则换仪器**。待测 +1%，A/B 噪声 ±5% ⇒ 任何结果都是噪声的形状。
+deploy/W809_DRAFT_AND_FUSION.md	201	| env | **12 项**（无本轮任何候选键） |
+deploy/W810_PLE_IO.md	12	register 当时把它登记为 **P138 `--ple-io`（CANDIDATE，等测）**。
+deploy/W810_PLE_IO.md	189	上游 INTEL.md:723 对同一现象的建议是「**不要**给容器 `memlock=-1`，锁住的表和竞技场会一起挤爆 RAM」。
+deploy/W810_PLE_IO.md	267	这是本轮在 PLE 之外挖到的、影响面更大的东西（登记为待办）。
+deploy/W810_PLE_IO.md	306	 | **P141** | `--ple-io ram` + 启动前 `drop_caches` | **CANDIDATE（待解码门槛）**。-14% 提示；代价 +216 s 启动、26.8 GiB 常驻、mlock 拿不到 | 
+deploy/W820_UPSTREAM_027_ASSESS.md	3	> 结论先行：**上游最新对我们没有"必须升"的理由，建议不迁移生产，改为并排构建 0.1.52 做一次 3 臂 A/B。**
+deploy/W820_UPSTREAM_027_ASSESS.md	175	候选两个（ComfyUI 回来抢 52 GB 后竞技场分配失败 / memlock 放开后某处锁定失败退出），**无证据，不结论**。
+deploy/W820_UPSTREAM_027_ASSESS.md	198	**替代动作（建议按序，状态截至 2026-10-29 01:20）：**
+deploy/W820_UPSTREAM_027_ASSESS.md	235	- 落地：`deploy/params/PARAM_REGISTER.tsv` 新增 **P146**（升级判定 DEFERRED）、**P147**（memlock 偏差 CANDIDATE）
+deploy/W822_WEIGHT_SWAP_Q4KXL.md	73	## 6 下一步候选（按预期收益）
+deploy/W823_UPSTREAM_RECHECK_KQUANT.md	87	上游给的代价是 **KL 0.003-0.006**——我们从未量过。→ 建议做 teacher-forced KL（7 vs 0），两次重启。
+deploy/W823_UPSTREAM_RECHECK_KQUANT.md	94	**未验证**，属候选，不动生产。
+deploy/W824_UPGRADE_0153_TUNING.md	58	## 3 调优：三个候选全部否决（含一个被配对实验推翻的假信号）
+deploy/W824_UPGRADE_0153_TUNING.md	71	**不采纳**（保留为"等 ABBA 实验再判"的候选，因为它没有质量风险）。
+deploy/W824_UPGRADE_0153_TUNING.md	138	### 9.1 先排掉两个候选（零成本）
+deploy/W824_UPGRADE_0153_TUNING.md	174	⇒ 已采纳（收益 3.8% 且机制定位精确），但**下一步必须量 teacher-forced KL**；回滚就是删掉这个 env。
+deploy/W825_ROADMAP.md	1	# W825 · 三轮复盘与下一步计划
+deploy/W825_ROADMAP.md	14	我们一次都没跑过**。下一步的第一优先级不是再试一个 env，而是**用 `tools/calibrate.py` 把硬件相关参数一次性标定**。
+deploy/W825_ROADMAP.md	69	 | `STRATA_SH_STREAM` | **未设**（HIP 默认 off） | calibrate 专测；**12-45% 幅度、输出相同** | 从没测过 | 
+deploy/W825_ROADMAP.md	121	156 行里有 10 条 CANDIDATE，但其中至少 4 条**实际已在生产运行**：
+deploy/W825_ROADMAP.md	125	 | P55 | `ATTN_QUERY_SWIZZLE` | CANDIDATE | **生产开着** | 
+deploy/W825_ROADMAP.md	126	 | P56 | `ATTN_REDUCE12` | CANDIDATE | **生产开着**（且 P156 已 ADOPTED —— 重复登记） | 
+deploy/W825_ROADMAP.md	127	 | P105 | `ROCBLAS_TUNING` | CANDIDATE | **生产在用**（env 指向 gfx906 表） | 
+deploy/W825_ROADMAP.md	128	 | P106 | `SELECT_SIMT=2` | CANDIDATE | 生产是 `=1`（P106 说的是 =2，未测） | 
+deploy/W825_ROADMAP.md	130	⇒ 账本失真：一眼看"10 条待办"，实际只有 6 条是真空缺。**治理不清，后面的优先级排序都建在错账上。**
+deploy/W825_ROADMAP.md	153	**风险**：它**会写回配置**（`apply_args` / `apply_env`）⇒ 只用副本，产出候选值后人工审。
+deploy/W825_ROADMAP.md	205	1. 合并登记表重复项：`P55/P56` → 并入 `P156`（状态 ADOPTED）；`P105` 改 ADOPTED；`P106` 保留 CANDIDATE 但写清"生产是 `=1`，`=2` 未测"。
+deploy/W825_ROADMAP.md	241	**建议今晚就做 P4（零停机）+ 把 P0 排进下一个窗口**；P0 与 P1 可以合并进同一个窗口（都只需停一次），总时长 45-60 min。
+deploy/W825_ROADMAP.md	248	> 下一步该做的不是再试一个 env，而是**先把自己跟上游默认值的前提差异标定掉**（calibrate），
+deploy/W826_NEXT_SESSION.md	103	所以 §1 的"先在 0.1.53 上跑 P0"已作废；而 calibrate 两次给出的建议**互相矛盾**（W828 §6.7），
+deploy/W826_NEXT_SESSION.md	104	其中"每值重启"那类臂不可信 —— 结论是：**calibrate 只可作为候选生成器，不可直接采纳**。
+deploy/W828_UPSTREAM_028_PORT.md	199	 | `STRATA_SH_STREAM=1` | 0: 40.4 → **1: 43.5（+7.7%）** | 未复测 | **待办**（上游也说明该值逐机不定，必须 ABBA） | 
+deploy/W828_UPSTREAM_028_PORT.md	230	（上游那 +31~39% 是短上下文/小模型）。**`--batch` 从"待测"降级为"已知代价过高"**。
+deploy/W828_UPSTREAM_028_PORT.md	259	- 这印证：我们的专家缓存命中率已经 **95.1-97.4%**，每轮能换的"缺失但仍常被路由"的候选只有约 14 个，
+deploy/W828_UPSTREAM_028_PORT.md	260	`--adapt-swaps 80` 远大于候选池 ⇒ 参数是空转；`--adapt-every 1` 只是把同样多的交换摊到更多轮。
+deploy/W828_UPSTREAM_028_PORT.md	320	同一台机器、同一个引擎（`strata-0.1.54n`）、同一份配置，跑了两次（3425 s / 3273 s）。**两次给出的建议完全不同**：
+deploy/W828_UPSTREAM_028_PORT.md	336	 | `adapt` | 每值重启，**单次** | default 44.82 · **1/80: 49.43 (＋10.3%)** · 1/160: 43.74 | default 46.70 · 1/80: 45.46 · **1/160: 50.96 (＋9.1%)** | **否，且结论相反**。同一候选两次差 5-7 tok/s；**哪一臂恰好落进"快"的容器状态就赢** | 
+deploy/W828_UPSTREAM_028_PORT.md	343	**"每个值重启引擎"的项完全不能信**——噪声 ±10%，足以让任意候选看起来赢 7-10%，两次跑会给出相反答案。
+deploy/W828_UPSTREAM_028_PORT.md	461	argmax 只有 **2.2%** 的位置换了，top-10 平均少 1.5 个候选。
+deploy/W828_UPSTREAM_028_PORT.md	558	### 6.14 降位宽（UD-Q3_K_XL）的账：+6% 换 2.3 倍 KL，**建议不动**
+deploy/W828_UPSTREAM_028_PORT.md	628	顺带否掉一个候选：**`--prefill-pipe` 是层切分专用**（`generate.cpp:712` 注释、calibrate 也这么写），
+deploy/W829_OPT_PLAN.md	218	### 5.3 下一步（按性价比）
+deploy/W832_OPT_PLAN_V2.md	20	`SESSION_STATE` §6 把 P227（`pcie_frac_auto`）列为"下一步 #1"，而本件 §4.1 已把 `--pcie-frac` 轴判
+deploy/W832_OPT_PLAN_V2.md	21	**UNRESOLVED 并关账**。两份文件各自都像权威，谁先被读到就听谁的。收口后此类冲突只有一处可发生。
+deploy/W832_OPT_PLAN_V2.md	45	2. **再做"从未测过"的项**：那些不是"测了没用"，是"根本没测"。
+deploy/W832_OPT_PLAN_V2.md	87	**为什么**：AUDIT12 P1-2 —— 表里 19 项，我们开了 2 项（GDN_HEAD/GDN_PP）、测过 5 项（全部 ±1.5%），**还剩 12 项从未测过**。
+deploy/W832_OPT_PLAN_V2.md	90	建议纳入 mega-arm 的 10 项（其余两项 `Q8_PACKED`/`Q6_PACKED` 面向 IQ3_S/IQ6 权重，我们专家是 Q4_K/Q5_1/Q8_0，预计惰性；`PF_PAD` 无 `PF_GEMM` 时惰性；`SH_STREAM` 已单独测否）：
+deploy/W832_OPT_PLAN_V2.md	99	**为什么重登**：`SESSION_STATE` 旧 §6 把它写成"下一步 #1"，本件 §4.1 却已把 `--pcie-frac` 轴判 UNRESOLVED 并关账。
+deploy/W832_OPT_PLAN_V2.md	147	 | 并发层 | "batch 2 值得一试" | **关闭**（KV 账错 14 倍，batch 2 即 −27%） | 
+deploy/W832_OPT_PLAN_V2.md	182	2. 但**效应全部 ≤4.4%，小于 6.0% 的噪声底盘** ⇒ 结论只能是 **不可判（UNRESOLVED）**，
+deploy/W832_OPT_PLAN_V2.md	207	 | decode（5 × 128 tok，T=0，中位） | **50.20 tok/s** | **49.90 tok/s** | **−0.6%**（噪声内；AUDIT13：此臂是单轮 A→B、read 为 n=2 均值且含冷启动样本，按本项目自己的规矩应记 **UNRESOLVED**，不是 CONFIRMED） | 
+deploy/W832_OPT_PLAN_V2.md	228	**为什么这么测**：19 项里我们开了 2 项（`GDN_HEAD`/`GDN_PP`）、测过 5 项（全部 ±1.5%），**还剩 12 项从未测**。
+deploy/W832_OPT_PLAN_V2.md	257	**下一步（若要救单项）**：用**单条长 prompt 探针**做二分 —— 起一组、发一条 1958-token 请求，看是否 non-finite，一次启动 ≈ 5 min。
+deploy/W832_OPT_PLAN_V2.md	292	 | `GDN_HEAD=1` / `GDN_PP=2`（保持） | **保持开** | 位等价 ⇒ 零数值代价；顺序不变，无理由关（AUDIT13：仅 `GDN_HEAD` 有实测，`GDN_PP` 未测） | 
+deploy/W832_OPT_PLAN_V2.md	314	−3.2% 只出现在最短档，另两档反向。（AUDIT13 复核 `w834_pool.out`：read1300 三对逐一比较 pw13 **三次都更快**（4414>4380、4051>3960、4092>3949），是同向而非抖动。⇒ 该项应记 **UNRESOLVED**（n=3、无 ABBA、无噪声底盘），不记「无差异」。）
+deploy/W832_OPT_PLAN_V2.md	321	 | `--spec-min-p` | 0.70 | **UNRESOLVED**（效应 < 噪声） | §4.1，同实例配对，噪声 6.0% | 
+deploy/W832_OPT_PLAN_V2.md	322	 | `--pcie-frac` | 0.20 | **UNRESOLVED**（同上） | §4.1 | 
+deploy/W832_OPT_PLAN_V2.md	380	 | 3 | **Q3_K 的专家路径分派** | `kQ3_K` 只在 dense 的 `native_mmvq` 表与 DeepSeek 引擎里，专家/MMQ 路径没有显式分支 | 换 UD-Q3_K_XL 前必须先补；再叠加 KL 翻倍（0.047→0.107），**不建议** | 
+deploy/W835_GFX906_PORT_FEASIBILITY.md	219	但**不能因此否掉我们的全部候选**：我们的 GDN/QSA-score 是 **dense GEMV**（读连续权重行，不是 gather），
+deploy/W835_GFX906_PORT_FEASIBILITY.md	273	⇒ 我们用 `--kv k8v4`，**需要核对是否付了同样的 prefill 代价**（这是本轮新提出、尚未测的项）。
+deploy/W835_GFX906_PORT_FEASIBILITY.md	294	 | **#3073** `STRATA_SELECT_SIMT=2 takes the simt2 scorer on HIP too` | open | 我们只用了 `=1`，**`=2` 是新取值，未测** | 
+deploy/W835_GFX906_PORT_FEASIBILITY.md	387	| **`STRATA_DEQUANT_WIDE`** | **看似最像"纯赚"但实际不适用**：`dequant_bf16.cu:293` 按 CUDA compute capability（6.1 / 8.6 / 8.0）判，gfx906 走 HIP 恒 OFF；**但**我们的 prefill 是 `MMQ_KQ=1` ⇒ `prefill.cpp:1836 if (mmq_plan().any)` 走 MMQ，**不解包成 bf16**，那条 dequant 路径用不上。⇒ 收益接近 0，**不列为候选** |
+deploy/W835_GFX906_PORT_FEASIBILITY.md	439	3. **§10.2 把 LANECELL 列为"最高价值候选"是错的**，理由是我只看了源码注释里"bit-identical"和
+deploy/W836_BRANCH.md	77	分支的**端到端构建**未验证，原因是上游 `_deps` 拉取慢，与我们的补丁无关。
+deploy/W839_ARCH_ENTRY.md	125	**纪律**：这些**不能一次性打开**（W717/P23 已测出全局开有副作用）。下一步若要动，按"一次只放一块、
+HANDOVER.md	3	> 运行期交接请看 **`deploy/W709_HANDOVER.md`**（§2 机制 / §3 五项待测配方 / §4 避坑）。
+HANDOVER.md	37	2. 按 `deploy/W709_HANDOVER.md` §3 推进**五项未测** + 补 P34 的 `>16k` / `<8k` 两档。
+MAP_OLD_TO_NEW.md	42	不建议（会破坏证据）。确需时，**先备份再改，并逐文件自证**（改后行数不变、仅路径片段变化）。
+PROJECT.md	94	1. 按 `deploy/W709_HANDOVER.md` §3/§4 续接：**五项未测参数**（含各自测量配方）+ 补 P34 的 `>16k` / `<8k` 两档。
+SESSION_KICKOFF.md	12	2. `.workbuddy/memory/MEMORY.md`（长期记忆，**3,000 字符注入窗**，现 2,898 chars 在窗内；见下方 TODOLIST 第 5 条）
+SESSION_KICKOFF.md	13	3. `deploy/W750_MASTER_PLAN.md`（**唯一合并待办表**；§0.0 = 现时点执行版）
+SESSION_KICKOFF.md	26	- 参数唯一真值：`deploy/params/PARAM_REGISTER.tsv`（**87 数据行 / ADOPTED 27 / REJECTED 46 / CANDIDATE 6 / REFERENCE 8**；**2026-10-11 20:1x 现算（第二轮收口）**（W4x-B7 的 `P09`->REJECTED、`P66`/`P65`->ADOPTED；W7W8 新增 `P72`；**status 收口把 7 项 CANDIDATE -> REJECTED**）；**引用前现算，别照抄**）。
+SESSION_KICKOFF.md	37	**待办（截至 2026-10-11，详见 `deploy/W775_HANDOVER.md §4`）**

@@ -1,0 +1,6 @@
+RC=0
+=== STDOUT ===
+BAK /home/albus/netdata/ops/verify_netdata.sh.bak_v37_20261105_005603
+OK 15776 9bd8e36389de1331d1179bda4c229ec8
+
+=== STDERR ===

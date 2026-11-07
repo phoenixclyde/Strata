@@ -1,0 +1,11 @@
+=== prod M x2 (no instrumentation) 15:41:16 ===
+  [M] run1 ptok=21827 reused=0 prompt_ms=35209 prompt_tps=619.9 decode_tps=67.6 out=320 wall=40.0s
+  [M] run2 ptok=21827 reused=0 prompt_ms=35313 prompt_tps=618.1 decode_tps=68.4 out=320 wall=40.0s
+  [M] n=2 reused0=2 | prompt_tps median=619.0  decode_tps median=68.0
+=== prod L x1 ===
+  [L] run1 ptok=99387 reused=0 prompt_ms=167091 prompt_tps=594.8 decode_tps=43.7 out=32 wall=167.9s
+  [L] n=1 reused0=1 | prompt_tps median=594.8  decode_tps median=43.7
+=== needle 32k d50 ===
+  32k depth  50%: FOUND  (31,640 prompt tokens, 54 s)
+1 of 1 found
+=== DONE 15:48:29 ===

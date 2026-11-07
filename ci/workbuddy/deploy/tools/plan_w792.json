@@ -1,0 +1,91 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W792：P103 STRATA_HIP_PROMPT_F16=1 采纳(M/L 墙钟 -21%/-22.3%)、prefill 改为主战场、R5a 撤回",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "env：**HC_Q8=1**(gfx默认关;+0.6%,槽9732->9901)",
+   "new": "env：**HC_Q8=1**(+0.6%,槽9901)·**HIP_PROMPT_F16=1**(prefill-20.7%,P103)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **prefill热态=GPU+CPU双满(地板,file tier 0)**;单轮decode占S43/M10/L0.5%,**多轮后decode占大头**;**gov schedutil快2.3%**(P97)",
+   "new": "- **prefill非地板**(P1 后仍-20.7%);单轮decode占M10/L0.5%;**gov schedutil快2.3%**(P97)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **占用率**=块/CUx线程/64/40(wave64);HC 41块6.8%=>只加块数(P96)",
+   "new": "- **占用率**=块/CUx线程/64/40(wave64);HC 41块6.8%(P96)\n- **prefill=主战场**:占墙钟M90%/L99.5%;M:hc read18.2/GU15.9/attn15.5/gdn13.8/gemmd8.6(P104)\n- **prefill可判0.2%**(decode 6-7%);46%走rocBLAS=>杠杆=GEMM速率;**gfx906无bf16点积**(bf16=F32 13.2T,FP16 dot2 26.5T)=>P1 改f16:M-20.7%/L-22.3%"
+  },
+  {
+   "kind": "substr",
+   "old": "- **已交上游**：#1396/#1731-1733 ported；#1595 我方赢；#1479 co-author；#1855/#1877 open；#1734/35于10-13关单；**#1923/#1926 待回**",
+   "new": "- **上游**:#1396/#1731-33 ported;#1595赢;#1479 co-author;#1855/#1877 open;#1923/#1926待回"
+  },
+  {
+   "kind": "substr",
+   "old": "- **CANDIDATE 6**：P33·P47·P48·P71·P55/P56（两轮收口12项->REJECTED:P41/P42/P46/P61/P62/P63/P67/P54/P64/P68/P70/P97;P69->REFERENCE）",
+   "new": "- **CAND 6**:P33·P47·P48·P71·P55/P56(REJ:P41·P42·P46·P54·P61·P62·P63·P64·P67·P68·P70·P97;P69=REF)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **已裁**：**B7:P09废; P66 废(W785), P65 惰性**/P43(8192)/P40 否决；P50 needle 6/6；P54已收口(B7后靶消失)；P36/P37·P39 关；**P59/P60 REJECTED**；**P57 更正**：`ROUTE_TAIL_SKIP` ON(default)+在动作 => 「AMD 不适用」判错",
+   "new": "- **裁**:B7:P09废·P66 废(W785)·P65 惰性·P43(8192)·P40 否·P50 6/6·P36·P37·P39 关·P59·P60 REJ·P57 更正(TAIL_SKIP在动作)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **已关**：P23·P28·P29·P30·P31·P32·C3/C4/C5·vision·#1454",
+   "new": "- **已关**:P23·P28·P29·P30·P31·P32·C3/C4/C5·vision·#1454·**R1/R4/R5a(切分前提错,GR_SPLIT=变粗)/TILEV/ROUTE_FAST**"
+  },
+  {
+   "kind": "substr",
+   "old": "- **真实多轮复用正常**(P94):第2轮reused=7344/prompt_ms685(22x);<8k零复用=错误测法(分支/加标签/ctx重复);补final(P93)已废",
+   "new": "- **多轮复用正常**(P94):第2轮reused=7344/685ms(22x);<8k零复用=错误测法;补final(P93)废"
+  },
+  {
+   "kind": "substr",
+   "old": "- **W775delta**:P55/P56不可达;PLE ram-45%(否);P54=IO_PF_STAGE;B8/B7废;drop_caches不重置mmap",
+   "new": "- **W775delta**:P56不可达;PLE-45%(否);P54=IO_PF_STAGE;B8/B7废;drop_caches不重置mmap"
+  },
+  {
+   "kind": "substr",
+   "old": "- 审计 W713_AUDIT{,2}·W735·W752·W765·W767-W773·AUDIT3·AUDIT4(P0/P1=0/4·0/6)·AUDIT5(P0/P1=0/3)",
+   "new": "- 审计 W713_AUDIT{,2}·W735/752/765·W767-W773·AUDIT3/4(P0/P1=0/4·0/6)·AUDIT5(0/3)·W792"
+  },
+  {
+   "kind": "substr",
+   "old": "- **上游**:#1396/#1731-33 ported;#1595赢;#1479 co-author;#1855/#1877 open;#1923/#1926待回",
+   "new": "- **上游**:#1396/#1731-33移植;#1595赢;#1479共同;#1855/#1877 open;#1923/26待回"
+  },
+  {
+   "kind": "substr",
+   "old": "·**R1/R4/R5a(切分前提错,GR_SPLIT=变粗)/TILEV/ROUTE_FAST**",
+   "new": "·R1/R4/R5a(GR_SPLIT=变粗)/TILEV/ROUTE_FAST"
+  },
+  {
+   "kind": "substr",
+   "old": "- 改既有长件前先备份(register/config/verify_config/日志,W765/773)",
+   "new": "- 改既有长件前先备份(register/config/日志,W765/773)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **KV门**(P51):STRATA_LOGPOS须两请求,fresh<=--short-read,self=0；W770 6/6=>k8v4无损",
+   "new": "- **KV门**(P51):LOGPOS须两请求,fresh<=--short-read,self=0;W770 6/6=>k8v4无损"
+  },
+  {
+   "kind": "substr",
+   "old": "- **自比同形状**;比`ms/step`;不可复现先排冷热;**计时行含adapt+join**(曾10.69ms漏)",
+   "new": "- **自比同形状**;比ms/step;不可复现先排冷热;**计时行含adapt+join**"
+  },
+  {
+   "kind": "substr",
+   "old": "- 「默认关」!=「不可达」!=「生产在用」!=「有收益」：核宏判可达；同路径开关不可组合测；不采用须标 `[EXT: 面]`",
+   "new": "- 「默认关」!=「不可达」!=「生产在用」!=「有收益」;核宏判可达;不采用须标[EXT:面]"
+  },
+  {
+   "kind": "substr",
+   "old": "- **CAND 6**:P33",
+   "new": "- **C**:P33"
+  }
+ ]
+}

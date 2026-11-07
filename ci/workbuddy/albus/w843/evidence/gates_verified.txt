@@ -1,0 +1,61 @@
+### [1] 四道门的实际行号（sed 现场）
+     1	    return on;
+     2	}
+     3	
+     4	// 0.1.43: the HIP defaults of the decode speed push (route tail skip, measured PCIe share) were measured on gfx1201 (Radeon AI PRO
+     5	// R9700) and apply on gfx1200 / gfx1201 only; every other AMD part (gfx11, gfx906, ...) keeps its earlier behaviour.  CUDA: always true.
+     6	[[maybe_unused]] static bool decode_defaults_arch_ok() {
+     7	#if defined(STRATA_USE_HIP)
+     8	    int dev = 0;
+     9	    cudaDeviceProp p{};
+    10	    return cudaGetDevice(&dev) == cudaSuccess && cudaGetDeviceProperties(&p, dev) == cudaSuccess &&
+    11	           strata::kernels::gfx_arch_is_gfx12_wmma(p.gcnArchName);
+    12	// 65.4; under serve the share refines 0.55 -> 0.25 from the pool's 42-45 us/missed expert and the probed 28.4-28.5 GB/s link);
+    13	// a second report (2x RX 7900 GRE) found it never engages there (95-98% of the experts cached).  The gain is measured only on
+    14	// gfx1201 (where it is the default, decode_defaults_arch_ok), so the other parts keep the fixed share unless asked.
+    15	[[maybe_unused]] static bool pcie_auto_fork_arch_ok() {
+    16	#if defined(STRATA_USE_HIP)
+    17	    const char* pfd = std::getenv("STRATA_PCIE_FRAC_DEFAULT");
+    18	    return pfd != nullptr && std::strcmp(pfd, "auto") == 0;
+    19	#else
+    20	    return false;
+    21	#endif
+    22	}
+    23	    // NVFP4 packs: 0.25. Their 2.76 MB experts cross the link twice as long as the i-quants' the 0.55 was
+    24	    // measured on, and that copy sits on the GPU's critical path while the CPU pool runs beside it: decode
+    25	    // 103 -> 117 tok/s short, 105 -> 124 at 32K (RTX 5090, PCIe 5 x16, 9950X3D; 0.10 and 0.40 both slower).
+    26	    if (o.pcie_frac < 0.0) {
+    27	        const auto& lay0 = strata::kernels::cpu::expert_layout();
+    28	        const bool nvfp4_pack = native_pack && !lay0.fmt.empty() && lay0.fmt[0].gu_type == 40;
+    29	        const char* pfd = std::getenv("STRATA_PCIE_FRAC_DEFAULT");
+    30	            // 0.1.43: split opt-in + gfx12 default-on (decode_defaults_arch_ok).  Other HIP parts: STRATA_PCIE_FRAC_DEFAULT=auto
+    31	            // turns the refinement on (pcie_auto_fork_arch_ok); the pool timings and miss counts it reads are engine-generic.
+    32	            // STRATA_PCIE_FRAC_DEFAULT=old keeps the start-up rule everywhere.
+    33	            o.pcie_frac_auto = (o.layer_split.empty() || pcie_auto_split_ok()) && !pf_old &&
+    34	                               (decode_defaults_arch_ok() || pcie_auto_fork_arch_ok());
+    35	            o.pcie_probe_gbps = bw;
+    36	        } else {
+
+### [2] decode_defaults_arch_ok 的调用点 + 每处所在块
+2155:[[maybe_unused]] static bool decode_defaults_arch_ok() {
+2170:    return decode_defaults_arch_ok();
+2186:    return decode_defaults_arch_ok();
+4292:                               (decode_defaults_arch_ok() || pcie_auto_fork_arch_ok());
+5021:        on = on && decode_defaults_arch_ok();
+11191:                                           decode_defaults_arch_ok() &&
+11197:            if (tse == nullptr && nearly_all_cached && o.batch == 0 && o.peer_device < 0 && decode_defaults_arch_ok())
+
+### [3] 2111/2124/2140/4948 这几行到底是什么
+2111:         if (!have[(size_t) src]) continue;
+2124:         ++steered;
+2140:               (single >= 0 ? ":single" + std::to_string(single) : "");
+2153: // 0.1.43: the HIP defaults of the decode speed push (route tail skip, measured PCIe share) were measured on gfx1201 (Ra
+4948: 
+4208:         } else {
+
+### [4] pcie_auto_fork_arch_ok 调用点
+2197:[[maybe_unused]] static bool pcie_auto_fork_arch_ok() {
+4289:            // turns the refinement on (pcie_auto_fork_arch_ok); the pool timings and miss counts it reads are engine-generic.
+4292:                               (decode_defaults_arch_ok() || pcie_auto_fork_arch_ok());
+
+[rc=0]

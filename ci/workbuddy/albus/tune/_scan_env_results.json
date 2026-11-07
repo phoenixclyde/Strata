@@ -1,0 +1,65 @@
+[
+ {
+  "name": "STRATA_Q8_PACKED",
+  "value": "1",
+  "status": "OK",
+  "prompt": 486.7,
+  "decode": 61.6,
+  "dpct": 0.020550760378126982,
+  "dpct_d": 0.4893964110929923
+ },
+ {
+  "name": "STRATA_Q6_PACKED",
+  "value": "1",
+  "status": "OK",
+  "prompt": 486.2,
+  "decode": 61.5,
+  "dpct": -0.08220304151254297,
+  "dpct_d": 0.3262642740619949
+ },
+ {
+  "name": "STRATA_MMVF_ROWS",
+  "value": "1",
+  "status": "OK",
+  "prompt": 486.2,
+  "decode": 61.4,
+  "dpct": -0.08220304151254297,
+  "dpct_d": 0.16313213703099744
+ },
+ {
+  "name": "STRATA_LFUSE",
+  "value": "1",
+  "status": "OK",
+  "prompt": 487.7,
+  "decode": 61.2,
+  "dpct": 0.2260583641594669,
+  "dpct_d": -0.16313213703098584
+ },
+ {
+  "name": "STRATA_QFUSE",
+  "value": "1",
+  "status": "OK",
+  "prompt": 486.2,
+  "decode": 61.5,
+  "dpct": -0.08220304151254297,
+  "dpct_d": 0.3262642740619949
+ },
+ {
+  "name": "STRATA_PLE_BATCH",
+  "value": "1",
+  "status": "OK",
+  "prompt": 486.7,
+  "decode": 61.5,
+  "dpct": 0.020550760378126982,
+  "dpct_d": 0.3262642740619949
+ },
+ {
+  "name": "STRATA_TOPK_REG_MIN_BLOCKS",
+  "value": "4096",
+  "status": "OK",
+  "prompt": 487.8,
+  "decode": 61.4,
+  "dpct": 0.24660912453760556,
+  "dpct_d": 0.16313213703099744
+ }
+]

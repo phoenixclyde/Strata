@@ -1,0 +1,71 @@
+rc = 0
+===== [1] 构建进度 =====
+BUILD_RUNNING
+#13 28.64    71 | #define cudaGetDevice hipGetDevice
+#13 28.64       |                       ^
+#13 28.64 1 warning generated when compiling for host.
+#13 29.14 [101/139] Building CXX object CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/iq_avx2.cpp.o
+已完成的步骤标记: 10
+当前编译进度: [101/139]
+
+===== [2] strata166-401 容器配置 =====
+--- Cmd / Entrypoint / WorkingDir / Env ---
+Cm=["sleep","infinity"]
+Ep=null
+Wd="/src"
+Vol=null
+ENV HSA_OVERRIDE_GFX_VERSION=9.0.6
+ENV STRATA_SRC=/src
+ENV PATH=/opt/rocm/llvm/bin:/opt/rocm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV ROCM_BUILD=7.14.0-gfx906+20260802001858
+ENV ROCM_PATH=/opt/rocm
+ENV DEBIAN_FRONTEND=noninteractive
+
+--- HostConfig 关键项 ---
+Binds=["/home/albus/strata166/data:/data","/home/albus/strata166/weights:/weights:ro"]
+Devices=[{"PathOnHost":"/dev/kfd","PathInContainer":"/dev/kfd","CgroupPermissions":"rwm"},{"PathOnHost":"/dev/dri","PathInContainer":"/dev/dri","CgroupPermissions":"rwm"}]
+Priv=false
+GroupAdd=["video"]
+IpcMode=host
+Ulimits=[{"Name":"memlock","Hard":-1,"Soft":-1}]
+PortBindings={"8090/tcp":[{"HostIp":"","HostPort":"8090"}]}
+RestartPolicy={"Name":"no","MaximumRetryCount":0}
+ShmSize=67108864
+--- Mounts ---
+/home/albus/strata166/data -> /data ()
+/home/albus/strata166/weights -> /weights (ro)
+
+--- Image ---
+strata-gfx906:0.1.40.1  created=2026-10-06T16:42:02.606492348Z
+
+===== [3] 容器内的 serve 进程与配置 =====
+    PID    PPID     ELAPSED %CPU   RSS COMMAND
+    885     883    21:14:24  156 96817288 /src/build-906/strata --serve --pack /data/packs/ud-iq4_xs --native /weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf --resident-budget-gib 76 --expert-profile /src/data/expert-profile.bin --expert-cache auto --spec 4 --spec-min-p 0.5 --mtp /data/mtp/rt --max-context 262144 --kv k8v4 --prefill auto
+    883     875    21:14:25  0.3 217616 python3 serve/server.py --engine strata --config /data/strata-ud-iq4_xs.json --port 8090
+  19860   19852       00:00  0.0  3788 ps -eo pid,ppid,etime,pcpu,rss,args --sort=-rss
+  19852       0       00:00 40.0  3488 bash -lc ps -eo pid,ppid,etime,pcpu,rss,args --sort=-rss 2>/dev/null | head -8
+    875       0    21:14:25  0.0  3376 bash -lc cd /src && setsid nohup python3 serve/server.py --engine strata --config /data/strata-ud-iq4_xs.json --port 8090 > /data/serve-run.log 2>&1 < /dev/null
+      1       0    21:31:10  0.0  1520 sleep infinity
+  19861   19852       00:00  0.0  1484 head -8
+--- /data 下的配置与脚本 ---
+total 964
+drwxrwxr-x 4 ubuntu ubuntu   4096 Oct  6 18:35 .
+drwxr-xr-x 1 root   root       67 Oct  6 16:42 ..
+-rw-rw-r-- 1 ubuntu ubuntu   1513 Oct  5 18:00 ab.py
+-rw-rw-r-- 1 ubuntu ubuntu   3713 Oct  5 16:39 bench.py
+-rw-rw-r-- 1 ubuntu ubuntu   2682 Oct  5 16:40 bench2.py
+-rw-rw-r-- 1 ubuntu ubuntu   2924 Oct  5 16:56 bench3.py
+-rw-rw-r-- 1 ubuntu ubuntu   3591 Oct  6 16:49 bench_ver.py
+-rw-rw-r-- 1 ubuntu ubuntu   5046 Oct  5 18:23 final_bench.py
+drwxrwxr-x 4 ubuntu ubuntu    165 Oct  5 16:34 mtp
+drwxr-xr-x 4 root   root       41 Oct  6 17:35 packs
+-rw-r--r-- 1 root   root   105934 Oct  6 17:53 probe_tok.txt
+-rw-rw-r-- 1 ubuntu ubuntu   1065 Oct  5 18:25 qd.py
+-rw-rw-r-- 1 ubuntu ubuntu   1410 Oct  5 18:28 qd2.py
+-rw-r--r-- 1 root   root   437282 Oct  7 15:42 serve-run.log
+-rw-rw-r-- 1 ubuntu ubuntu    581 Oct  5 17:25 setarg.py
+-rw-rw-r-- 1 ubuntu ubuntu    698 Oct  5 17:49 setarg2.py
+-rw-rw-r-- 1 ubuntu ubuntu   1060 Oct  5 18:00 setarg3.py
+-rw-r--r-- 1 root   root      622 Oct  6 18:35 strata-ud-iq4_xs.json
+-rw-r--r-- 1 root   root      622 Oct  6 18:35 strata-ud-iq4_xs.json.bak-131k-int8
+

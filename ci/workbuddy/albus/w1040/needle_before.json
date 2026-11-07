@@ -1,0 +1,18 @@
+{
+ "2.5K": {
+  "answer": "XK-4471-QN || We need answer user's question. User says: \"The access code for the vault is XK-4471-QN . Remember it.\n\nkelp quartz ... [long list] ...\n\nQuestion: what is the access code for the vault? Answer with the code only. [1794031729]\"\n\nNeed output code only. Need likely XK-4471-QN. Ensure no extra. Final only code.\n",
+  "prompt_tokens": 3585,
+  "cached": 0,
+  "secs": 8.1,
+  "hit": true,
+  "finish": "stop"
+ },
+ "21K": {
+  "answer": "XK-4471-QN || We need answer user's question. User provided long text and asks: \"The access code for the vault is XK-4471-QN . Remember it. ... Question: what is the access code for the vault? Answer with the code only. [1794031737]\" Need output code only. Need final only code. Ensure no extra. Code XK-4471-QN.\n",
+  "prompt_tokens": 28695,
+  "cached": 0,
+  "secs": 38.6,
+  "hit": true,
+  "finish": "stop"
+ }
+}

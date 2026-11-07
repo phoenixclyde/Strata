@@ -1,0 +1,48 @@
+hip/gfx906: the tree does not build (q6_k MMQ instance and cudaEventBlockingSync)
+
+Two gfx906 build failures on v0.1.40.2. Both are one-line gates that know
+about the wave32 HIP backend but not about STRATA_HIP_GFX906 -- the same
+class as #808 and #1083. Neither is fixed on main (e8ca9afd03d8).
+
+1) src/prefill/prefill.cpp:399 builds an event with
+   cudaEventDisableTiming | cudaEventBlockingSync, but the gfx906 compat
+   header include/strata/platform/hip_compat/strata_hip.h maps only
+   cudaEventDisableTiming and cudaEventDefault. The wave32 header
+   include/strata/hip_compat/cuda_runtime.h:39 has the mapping.
+   -> add #define cudaEventBlockingSync hipEventBlockingSync there.
+
+   A diff of the whole set of cuda* defines between the two headers lists
+   one other name the gfx906 header lacks, cudaDevAttrIntegrated, and that
+   one is already gated upstream (#if defined(__linux__) &&
+   !defined(STRATA_HIP_GFX906) in src/core/expert_cache.cpp:31), so it is
+   deliberately not touched here.
+
+2) Link error: undefined symbol
+   void mul_mat_q_case<(ggml_type)14>(ggml_backend_cuda_context&, mmq_args const&, ihipStream_t*)
+   (14 = GGML_TYPE_Q6_K).
+   src/prefill/moe_mmq.cu:219 calls it under
+   #if defined(__HIPCC__) || defined(STRATA_Q6K_EXPERTS), so any HIP
+   compilation references it; mmq.cuh declares the case as an extern
+   template, so the definition must come from
+   template-instances/mmq-instance-q6_k.cu. The CUDA branch of
+   CMakeLists.txt adds that file only under STRATA_Q6K_EXPERTS.
+   STRATA_HIP_GFX906=ON forces STRATA_ENABLE_CUDA=ON, so gfx906 takes the
+   CUDA branch while its .cu files are compiled as HIP.
+   -> widen the gate: STRATA_Q6K_EXPERTS OR STRATA_HIP_GFX906.
+   This adds one MMQ instance to the static library. It does not enable
+   STRATA_Q6K_EXPERTS (the grouped Q6_K expert kernels that allocate extra
+   VRAM), and STRATA_HIP_GFX906 is only ever ON in the gfx906 build, so
+   CUDA and wave32 builds are untouched.
+
+Verified on a single Instinct MI50 32 GB (gfx906, wave64), ROCm/HIP 7.14,
+-DSTRATA_HIP_GFX906=ON -DCMAKE_HIP_ARCHITECTURES=gfx906
+-DSTRATA_MMQ_KQUANTS=ON:
+
+- the engine builds and serves UD-IQ4_XS (Qwen3.8-Flash-Next) end to end:
+  /v1/models, chat completions, tool calls, MTP drafts accepted;
+- nm -C shows mul_mat_q_case<(ggml_type)14> in the binary (13 instances:
+  7 8 12 13 14 16 17 18 20 21 22 23 42);
+- change 2 is load-bearing: removing mmq-instance-q6_k.cu.o from
+  libstrata_mmq.a and relinking with the same link command line fails with
+  exactly the undefined symbol above (the archive holds one U reference
+  and that one W definition), while the untouched archive relinks cleanly.

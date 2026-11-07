@@ -1,0 +1,91 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W727：必备键/CFG面+MTP实测；上游件 1->3；补 BAN 合规",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "· `W726_MONITOR_BACKEND.md`",
+   "new": "· `W726_MONITOR_BACKEND.md` · `W727_SETUPKEYS_MTP.md`"
+  },
+  {
+   "kind": "substr",
+   "old": "**「默认关」≠「不可达」**",
+   "new": "**「默认关」不等于「不可达」**"
+  },
+  {
+   "kind": "substr",
+   "old": "- 改既有长件前**先备份该件**（曾误删 `W713_PLAN` §6）。",
+   "new": "- 改既有长件前**先备份该件**（曾误删 `W713_PLAN` §6）。\n- **多文件走同一 stdout 通道**：每件先补结尾换行再打 marker。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **未做**：**仅剩上游 PR**（机主令\"先等等、之后一并弄\"；通道 = 166 `pr/strata-fork` + `_mkpr.sh`）。",
+   "new": "- **未做**：**上游 3 件**（\"先等等\"）：1) PR `prefill.cpp:1839` 宏判据 2) PR `telemetry.py` 补 PCIe 3) feature request「子 chunk 边界 checkpoint」；通道 = 166 `pr/strata-fork`+`_mkpr.sh`。`mtp.cpp:428` 实测无差 => 不提。"
+  },
+  {
+   "kind": "substr",
+   "old": "`--conversation-cache-mib 4096`（多轮 -88~-90%）。",
+   "new": "`--conversation-cache-mib 4096`。"
+  },
+  {
+   "kind": "substr",
+   "old": "（顶层须含 `\"backend\":\"hip\"` ---- W726：GPU 读数与 hip_env_guard 的前提，缺则 Monitor 的 5 个 GPU 指标全空）",
+   "new": "（顶层须含 `\"backend\":\"hip\"`：GPU 读数与 hip_env_guard 的前提）"
+  },
+  {
+   "kind": "substr",
+   "old": "（`routek-memory-slim` 适配版；机主令第 5 次）：`auto 2900 [plan.json]`。禁裸 Edit / 自写脚本 / 先改后核（绕过断言则缺陷隐形）。",
+   "new": "（`routek-memory-slim` 适配版）：`auto 2900 [plan.json]`。禁裸 Edit/自写脚本/先改后核。"
+  },
+  {
+   "kind": "substr",
+   "old": "（已四次暴露，最近本件 §2）",
+   "new": "（已四次暴露）"
+  },
+  {
+   "kind": "substr",
+   "old": "只读探针也落盘 + `python -u` + 断言 rc。",
+   "new": "探针落盘 + `python -u` + 断言 rc。"
+  },
+  {
+   "kind": "substr",
+   "old": "解码 9.5~15.0%（低于此不可判）",
+   "new": "解码 9.5~15%（低于此不可判）"
+  },
+  {
+   "kind": "substr",
+   "old": "**ported 进 0.1.41（保留署名）**，PR **closed-not-merged**（`a732a19b6f`）=> 补丁面归零。",
+   "new": "**ported 进 0.1.41（保留署名，`a732a19b6f`）**，PR closed-not-merged => 补丁面归零。"
+  },
+  {
+   "kind": "substr",
+   "old": "占比 ---- 省「重复预填」",
+   "new": "占比：省「重复预填」"
+  },
+  {
+   "kind": "substr",
+   "old": "为实测规律非源码确证**（得 reused=0，待追）。",
+   "new": "为实测规律非源码确证**（待追）。"
+  },
+  {
+   "kind": "substr",
+   "old": "`--prompt-cache-every 8192`（8-16k）·",
+   "new": "`--prompt-cache-every 8192` ·"
+  },
+  {
+   "kind": "substr",
+   "old": "- **已关**：P30 · P31（采纳 4096）· P23（`CPU_SHARE=0`）· P33 · P28（破位）· P32（<1%）· C4/C5 · P29 · C3（释放 3G）· vision 核验 · #1454/tokenizer（W725）。",
+   "new": "- **已关**：P30 · P31（4096）· P23 · P33 · P28（破位）· P32（<1%）· C4/C5 · P29 · C3（3G）· vision 核验 · #1454/tokenizer。"
+  },
+  {
+   "kind": "substr",
+   "old": "· `W722_MEM_SKILL.md`。 · `W723_COMBO.md`",
+   "new": "· `W722_MEM_SKILL.md` · `W723_COMBO.md`"
+  },
+  {
+   "kind": "substr",
+   "old": "=> 驱动只传短记号；",
+   "new": "=> 只传短记号；"
+  }
+ ]
+}

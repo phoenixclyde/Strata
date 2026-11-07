@@ -1,0 +1,44 @@
+目标容器（自动探测运行中的 strata 容器）= strata166-407
+id    name                               value                                结果     依据
+----------------------------------------------------------------------------------------------------------------------------
+--    (数据面2) 容器 Cmd -> LIVE              strata-huihui-ud-iq4_xs.json         PASS   Cmd 的 /data/strata-huihui-ud-iq4_xs.json 经 bind /home/albus/strata166/data:/data 映射到 LIVE
+P00   --pack                             /data/packs/huihui-ud-iq4_xs         PASS   config JSON + 引擎启动行
+P01   --native                           /models/huihui-ai/Huihui-Qwen3.8-Flash-Next-abliterated-GGUF/unsloth-UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf PASS   config JSON + 引擎启动行
+P09   --resident-budget-gib              76                                   PASS   config JSON + 引擎启动行
+P08   --expert-profile                   /src/data/expert-profile.bin         PASS   config JSON + 引擎启动行
+P07   --expert-cache                     auto                                 PASS   config JSON + 引擎启动行
+P25   --pcie-frac                        0.20                                 PASS   config JSON + 引擎启动行
+P05   --spec                             4                                    PASS   config JSON + 引擎启动行
+P06   --spec-min-p                       0.70                                 PASS   config JSON + 引擎启动行
+P02   --mtp                              /data/mtp/rt                         PASS   config JSON + 引擎启动行
+P03   --max-context                      262144                               PASS   config JSON + 引擎启动行
+P04   --kv                               k8v4                                 PASS   config JSON + 引擎启动行
+P10   --prefill                          auto                                 PASS   config JSON + 引擎启动行
+P11   HSA_OVERRIDE_GFX_VERSION           9.0.6                                PASS   docker Config.Env
+P24   tools/calibrate.py                 (measure)                            SKIP   scope=TOOL 非 config 项
+P34   --prompt-cache-every               8192                                 PASS   config JSON + 引擎启动行
+P20   --expert-profile-save              /data/profiles/huihui-ud-iq4_xs-learned.bin PASS   config JSON + 引擎启动行
+P23   STRATA_PREFILL_CPU_SHARE           0                                    PASS   config JSON env 段（serve 注入引擎子进程）
+P31   --conversation-cache-mib           4096                                 PASS   config JSON + 引擎启动行
+P99   --vision                           (flag)                               PASS   config JSON + 引擎启动行
+V00   vision.exe                         /data/vision/strata-vision           PASS   config JSON 逐字一致
+V01   vision.mmproj                      /models/huihui-ai/Huihui-Qwen3.8-F   PASS   config JSON 逐字一致
+V02   vision.model                       /models/huihui-ai/Huihui-Qwen3.8-F   PASS   config JSON 逐字一致
+B00   backend                            hip                                  PASS   config JSON 逐字一致
+X00   serve/telemetry.py + web/app.js    (本地覆写)                               SKIP   scope=PATCH 非 config 项（见数据面 6）
+P38   isa_probe.py (R1 ISA 探针 + IQ4 dot 判定) (自建)                                 SKIP   scope=TOOL 非 config 项
+P43   --mtp-window                       8192                                 PASS   config JSON + 引擎启动行
+--    (数据面5) SETUP_KEYS 覆盖               17 键                                 PASS   上游 SETUP_KEYS 17 个全部有着落（config 实设 11 + register 声明 7）
+X00   (数据面6) serve 覆写 serve/telemetry.py + web/app.js (本地覆写)                               PASS   serve-telemetry.py ON 3d464198 + serve-web-app.js ON 026ceb18；/metrics 效果键 "gpu_pcie_gen":3 "gpu_pcie_width":16 "hardware_static":{"gpu_name":"RadeonInstinctMI5032GB"
+----------------------------------------------------------------------------------------------------------------------------
+PASS=26  FAIL=0
+
+锚定的启动行（最后一次 engine started）：
+  [strata] 2026-10-11 05:35:23 engine started: /src/build-906/strata --serve --pack /data/packs/huihui-ud-iq4_xs --native /models/huihui-ai/Huihui-Qwen3.8-Flash-Next-abliterated-GGUF/unsloth-UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00
+
+容器 Cmd（实测，来自容器 strata166-407）：
+  ["/bin/bash","-lc","cd /src && exec python3 serve/server.py --engine strata --config /data/strata-huihui-ud-iq4_xs.json --port 8090"]
+  binds: ['/home/albus/strata166/data:/data', '/models:/models:ro']
+  qwen3.8-flash-next-ud-iq4_xs-abliterated  <- config: /home/albus/strata166/data/strata-huihui-ud-iq4_xs.json
+
+---- STDERR ----

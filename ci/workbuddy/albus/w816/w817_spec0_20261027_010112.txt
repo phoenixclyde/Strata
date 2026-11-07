@@ -1,0 +1,3 @@
+# W817 spec-0 determinism 2026-10-27 01:01:12 boots='S1 S2'
+  CFGCHECK env_n=13 spec=0
+  trap-restored

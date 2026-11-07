@@ -1,0 +1,79 @@
+START 2026-10-25_16:19:14 ts=20261025_161914
+bak=/home/albus/strata166/data/strata-huihui-ud-iq4_xs.json.bak_w793b_20261025_161914
+image=strata-gfx906:0.2.4p3
+governor=     44 schedutil 
+=== ARM A 16:19:14 ===
+arm A env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5')]
+health 52s
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=35419 prompt_tps=616.3 decode_tps=57.0 out=320 wall=41.1s
+  [M] n=1 reused0=1 | prompt_tps median=616.3  decode_tps median=57.0
+strata prefill timing: 893 tokens, GPU timeline 3620 ms, wall 3632 ms, host staging 55 ms: embed+steps 34 (0.9%) hc read 576 (15.9%) gdn 325 (9.0%) qsa proj 91 (2.5%) qsa indexer 0 (0.0%) qsa select 1 (0.0%) qsa attn 84 (2.3%) router+shared 97 (2.7%) host grouping 15 (0.4%) gather 8 (0.2%) wait copy 532 (14.7%) dequant 378 (10.4%) gemm gate/up 824 (22.8%) gemm down 408 (11.3%) combine 7 (0.2%) ple 9 (0.3%) gdn conv+gates 7 (0.2%) gdn recurrence 98 (2.7%) gdn out proj 100 (2.8%) hc write 24 (0.7%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 34 ms, waiting for each chunk 58 ms, after each chunk (the draft layer, progress) 9 ms, PLE 14 ms
+strata prefill timing: 21822 tokens, GPU timeline 34713 ms, wall 34748 ms, host staging 356 ms: embed+steps 177 (0.5%) hc read 3307 (9.5%) gdn 3719 (10.7%) qsa proj 1759 (5.1%) qsa indexer 1 (0.0%) qsa select 702 (2.0%) qsa attn 6745 (19.4%) router+shared 1060 (3.1%) host grouping 133 (0.4%) gather 88 (0.3%) wait copy 102 (0.3%) dequant 1416 (4.1%) gemm gate/up 7190 (20.7%) gemm down 3426 (9.9%) combine 178 (0.5%) ple 129 (0.4%) gdn conv+gates 152 (0.4%) gdn recurrence 2417 (7.0%) gdn out proj 1624 (4.7%) hc write 387 (1.1%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 5 ms, waiting for each chunk 238 ms, after each chunk (the draft layer, progress) 200 ms, PLE 21 ms
+=== ARM B 16:21:02 ===
+arm B env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt')]
+health 47s
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=34356 prompt_tps=635.3 decode_tps=57.2 out=320 wall=40.0s
+  [M] n=1 reused0=1 | prompt_tps median=635.3  decode_tps median=57.2
+strata prefill timing: 893 tokens, GPU timeline 3291 ms, wall 3302 ms, host staging 53 ms: embed+steps 63 (1.9%) hc read 223 (6.8%) gdn 176 (5.4%) qsa proj 79 (2.4%) qsa indexer 0 (0.0%) qsa select 1 (0.0%) qsa attn 84 (2.5%) router+shared 264 (8.0%) host grouping 16 (0.5%) gather 6 (0.2%) wait copy 554 (16.8%) dequant 377 (11.4%) gemm gate/up 825 (25.1%) gemm down 406 (12.3%) combine 7 (0.2%) ple 5 (0.2%) gdn conv+gates 7 (0.2%) gdn recurrence 99 (3.0%) gdn out proj 74 (2.3%) hc write 24 (0.7%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 63 ms, waiting for each chunk 56 ms, after each chunk (the draft layer, progress) 8 ms, PLE 10 ms
+strata prefill timing: 21822 tokens, GPU timeline 33570 ms, wall 33603 ms, host staging 335 ms: embed+steps 166 (0.5%) hc read 2625 (7.8%) gdn 3913 (11.7%) qsa proj 1654 (4.9%) qsa indexer 1 (0.0%) qsa select 703 (2.1%) qsa attn 6743 (20.1%) router+shared 880 (2.6%) host grouping 122 (0.4%) gather 86 (0.3%) wait copy 99 (0.3%) dequant 1398 (4.2%) gemm gate/up 7138 (21.3%) gemm down 3427 (10.2%) combine 178 (0.5%) ple 127 (0.4%) gdn conv+gates 152 (0.5%) gdn recurrence 2426 (7.2%) gdn out proj 1345 (4.0%) hc write 387 (1.2%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 5 ms, waiting for each chunk 239 ms, after each chunk (the draft layer, progress) 189 ms, PLE 13 ms
+prefill gemm: rocBLAS tuning enabled (56 rows, 47 with a solution, gfx906, rocBLAS 5.5.0.cd957402309)
+=== ARM C 16:22:43 ===
+arm C env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_SELECT_SIMT', '1')]
+health 52s
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=35210 prompt_tps=619.9 decode_tps=54.6 out=320 wall=41.1s
+  [M] n=1 reused0=1 | prompt_tps median=619.9  decode_tps median=54.6
+strata prefill timing: 893 tokens, GPU timeline 3678 ms, wall 3689 ms, host staging 55 ms: embed+steps 49 (1.3%) hc read 595 (16.2%) gdn 342 (9.3%) qsa proj 91 (2.5%) qsa indexer 0 (0.0%) qsa select 2 (0.1%) qsa attn 83 (2.3%) router+shared 97 (2.6%) host grouping 15 (0.4%) gather 7 (0.2%) wait copy 542 (14.7%) dequant 379 (10.3%) gemm gate/up 824 (22.4%) gemm down 405 (11.0%) combine 7 (0.2%) ple 8 (0.2%) gdn conv+gates 7 (0.2%) gdn recurrence 99 (2.7%) gdn out proj 100 (2.7%) hc write 24 (0.7%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 48 ms, waiting for each chunk 55 ms, after each chunk (the draft layer, progress) 9 ms, PLE 14 ms
+strata prefill timing: 21822 tokens, GPU timeline 34480 ms, wall 34515 ms, host staging 345 ms: embed+steps 196 (0.6%) hc read 3308 (9.6%) gdn 3822 (11.1%) qsa proj 1758 (5.1%) qsa indexer 1 (0.0%) qsa select 437 (1.3%) qsa attn 6743 (19.6%) router+shared 1059 (3.1%) host grouping 125 (0.4%) gather 87 (0.3%) wait copy 100 (0.3%) dequant 1400 (4.1%) gemm gate/up 7132 (20.7%) gemm down 3419 (9.9%) combine 178 (0.5%) ple 128 (0.4%) gdn conv+gates 152 (0.4%) gdn recurrence 2424 (7.0%) gdn out proj 1623 (4.7%) hc write 388 (1.1%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 5 ms, waiting for each chunk 238 ms, after each chunk (the draft layer, progress) 221 ms, PLE 15 ms
+prefill gemm: rocBLAS tuning enabled (56 rows, 47 with a solution, gfx906, rocBLAS 5.5.0.cd957402309)
+qsa select: FP32 tiled scorer (STRATA_SELECT_SIMT=1), tiles 32/64/32/4
+=== ARM A 16:24:30 ===
+arm A env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5')]
+health 51s
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=35537 prompt_tps=614.2 decode_tps=56.2 out=320 wall=41.3s
+  [M] n=1 reused0=1 | prompt_tps median=614.2  decode_tps median=56.2
+strata prefill timing: 893 tokens, GPU timeline 3713 ms, wall 3726 ms, host staging 54 ms: embed+steps 48 (1.3%) hc read 632 (17.0%) gdn 339 (9.1%) qsa proj 91 (2.5%) qsa indexer 0 (0.0%) qsa select 1 (0.0%) qsa attn 84 (2.3%) router+shared 99 (2.7%) host grouping 15 (0.4%) gather 9 (0.2%) wait copy 533 (14.4%) dequant 378 (10.2%) gemm gate/up 829 (22.3%) gemm down 407 (11.0%) combine 7 (0.2%) ple 10 (0.3%) gdn conv+gates 7 (0.2%) gdn recurrence 99 (2.7%) gdn out proj 99 (2.7%) hc write 24 (0.7%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 48 ms, waiting for each chunk 55 ms, after each chunk (the draft layer, progress) 9 ms, PLE 12 ms
+strata prefill timing: 21822 tokens, GPU timeline 34815 ms, wall 34850 ms, host staging 375 ms: embed+steps 174 (0.5%) hc read 3305 (9.5%) gdn 3717 (10.7%) qsa proj 1758 (5.1%) qsa indexer 1 (0.0%) qsa select 703 (2.0%) qsa attn 6743 (19.4%) router+shared 1059 (3.0%) host grouping 130 (0.4%) gather 88 (0.3%) wait copy 102 (0.3%) dequant 1414 (4.1%) gemm gate/up 7214 (20.7%) gemm down 3516 (10.1%) combine 178 (0.5%) ple 129 (0.4%) gdn conv+gates 152 (0.4%) gdn recurrence 2420 (7.0%) gdn out proj 1624 (4.7%) hc write 387 (1.1%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 5 ms, waiting for each chunk 240 ms, after each chunk (the draft layer, progress) 199 ms, PLE 13 ms
+prefill gemm: rocBLAS tuning enabled (56 rows, 47 with a solution, gfx906, rocBLAS 5.5.0.cd957402309)
+qsa select: FP32 tiled scorer (STRATA_SELECT_SIMT=1), tiles 32/64/32/4
+=== ARM B 16:26:16 ===
+arm B env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt')]
+health 61s
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=34486 prompt_tps=632.9 decode_tps=57.7 out=320 wall=40.1s
+  [M] n=1 reused0=1 | prompt_tps median=632.9  decode_tps median=57.7
+strata prefill timing: 893 tokens, GPU timeline 3389 ms, wall 3400 ms, host staging 56 ms: embed+steps 49 (1.4%) hc read 235 (6.9%) gdn 174 (5.1%) qsa proj 79 (2.3%) qsa indexer 0 (0.0%) qsa select 1 (0.0%) qsa attn 84 (2.5%) router+shared 257 (7.6%) host grouping 16 (0.5%) gather 9 (0.3%) wait copy 559 (16.5%) dequant 464 (13.7%) gemm gate/up 832 (24.5%) gemm down 413 (12.2%) combine 7 (0.2%) ple 5 (0.2%) gdn conv+gates 7 (0.2%) gdn recurrence 99 (2.9%) gdn out proj 75 (2.2%) hc write 24 (0.7%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 49 ms, waiting for each chunk 57 ms, after each chunk (the draft layer, progress) 8 ms, PLE 12 ms
+strata prefill timing: 21822 tokens, GPU timeline 33773 ms, wall 33806 ms, host staging 350 ms: embed+steps 182 (0.5%) hc read 2625 (7.8%) gdn 3937 (11.7%) qsa proj 1654 (4.9%) qsa indexer 1 (0.0%) qsa select 702 (2.1%) qsa attn 6744 (20.0%) router+shared 880 (2.6%) host grouping 128 (0.4%) gather 86 (0.3%) wait copy 100 (0.3%) dequant 1411 (4.2%) gemm gate/up 7284 (21.6%) gemm down 3427 (10.1%) combine 178 (0.5%) ple 127 (0.4%) gdn conv+gates 152 (0.4%) gdn recurrence 2422 (7.2%) gdn out proj 1346 (4.0%) hc write 387 (1.1%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 5 ms, waiting for each chunk 240 ms, after each chunk (the draft layer, progress) 205 ms, PLE 14 ms
+qsa select: FP32 tiled scorer (STRATA_SELECT_SIMT=1), tiles 32/64/32/4
+prefill gemm: rocBLAS tuning enabled (56 rows, 47 with a solution, gfx906, rocBLAS 5.5.0.cd957402309)
+=== ARM C 16:28:10 ===
+arm C env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_SELECT_SIMT', '1')]
+health 46s
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=35489 prompt_tps=615.0 decode_tps=57.2 out=320 wall=41.1s
+  [M] n=1 reused0=1 | prompt_tps median=615.0  decode_tps median=57.2
+strata prefill timing: 893 tokens, GPU timeline 3663 ms, wall 3675 ms, host staging 53 ms: embed+steps 62 (1.7%) hc read 589 (16.1%) gdn 325 (8.9%) qsa proj 91 (2.5%) qsa indexer 0 (0.0%) qsa select 2 (0.1%) qsa attn 84 (2.3%) router+shared 97 (2.6%) host grouping 15 (0.4%) gather 6 (0.2%) wait copy 534 (14.6%) dequant 378 (10.3%) gemm gate/up 828 (22.6%) gemm down 407 (11.1%) combine 7 (0.2%) ple 8 (0.2%) gdn conv+gates 7 (0.2%) gdn recurrence 99 (2.7%) gdn out proj 100 (2.7%) hc write 24 (0.7%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 61 ms, waiting for each chunk 56 ms, after each chunk (the draft layer, progress) 9 ms, PLE 11 ms
+strata prefill timing: 21822 tokens, GPU timeline 34772 ms, wall 34807 ms, host staging 357 ms: embed+steps 180 (0.5%) hc read 3308 (9.5%) gdn 3717 (10.7%) qsa proj 1756 (5.1%) qsa indexer 1 (0.0%) qsa select 664 (1.9%) qsa attn 6845 (19.7%) router+shared 1059 (3.0%) host grouping 130 (0.4%) gather 87 (0.3%) wait copy 102 (0.3%) dequant 1419 (4.1%) gemm gate/up 7146 (20.6%) gemm down 3426 (9.9%) combine 179 (0.5%) ple 128 (0.4%) gdn conv+gates 152 (0.4%) gdn recurrence 2433 (7.0%) gdn out proj 1652 (4.8%) hc write 388 (1.1%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 5 ms, waiting for each chunk 238 ms, after each chunk (the draft layer, progress) 204 ms, PLE 16 ms
+prefill gemm: rocBLAS tuning enabled (56 rows, 47 with a solution, gfx906, rocBLAS 5.5.0.cd957402309)
+qsa select: FP32 tiled scorer (STRATA_SELECT_SIMT=1), tiles 32/64/32/4
+--- final B needle 32k d50 ---
+arm B env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt')]
+health 47s
+  32k depth  50%: FOUND  (31,640 prompt tokens, 52 s)
+1 of 1 found
+DONE 16:31:40

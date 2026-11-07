@@ -1,0 +1,176 @@
+===== [1] date / uptime =====
+2026-10-08T00:03:16+08:00
+ 00:03:16 up 1 day, 11:38,  1 user,  load average: 0.26, 1.61, 3.60
+
+===== [2] docker ps -a (strata) =====
+strata166-402|strata-gfx906:0.1.40.2|Up 3 minutes
+strata166-401|strata-gfx906:0.1.40.1|Exited (137) 4 minutes ago
+strata166|strata-gfx906:0.1.39|Exited (137) 23 hours ago
+
+===== [3] container 402 启动配置 =====
+Cmd=[bash -lc cd /src && exec python3 serve/server.py --engine strata --config /data/strata-ud-iq4_xs.json --port 8090]
+Image=strata-gfx906:0.1.40.2
+Restart=unless-stopped
+Ports=map[8090/tcp:[{ 8090}]]
+Mounts=/home/albus/strata166/data=>/data() /home/albus/strata166/weights=>/weights(ro) 
+Env=HSA_OVERRIDE_GFX_VERSION=9.0.6 STRATA_SRC=/src PATH=/opt/rocm/llvm/bin:/opt/rocm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin ROCM_BUILD=7.14.0-gfx906+20260802001858 ROCM_PATH=/opt/rocm DEBIAN_FRONTEND=noninteractive 
+
+===== [4] /home/albus/strata166/data 内容 =====
+total 988
+drwxrwxr-x  4 albus albus   4096 Oct  7 02:35 .
+drwxrwxr-x 12 albus albus    158 Oct  7 23:48 ..
+-rw-rw-r--  1 albus albus   1513 Oct  6 02:00 ab.py
+-rw-rw-r--  1 albus albus   2682 Oct  6 00:40 bench2.py
+-rw-rw-r--  1 albus albus   2924 Oct  6 00:56 bench3.py
+-rw-rw-r--  1 albus albus   3713 Oct  6 00:39 bench.py
+-rw-rw-r--  1 albus albus   3591 Oct  7 00:49 bench_ver.py
+-rw-rw-r--  1 albus albus   5046 Oct  6 02:23 final_bench.py
+drwxrwxr-x  4 albus albus    165 Oct  6 00:34 mtp
+drwxr-xr-x  4 root  root      41 Oct  7 01:35 packs
+-rw-r--r--  1 root  root  105934 Oct  7 01:53 probe_tok.txt
+-rw-rw-r--  1 albus albus   1410 Oct  6 02:28 qd2.py
+-rw-rw-r--  1 albus albus   1065 Oct  6 02:25 qd.py
+-rw-r--r--  1 root  root  437282 Oct  7 23:42 serve-run.log
+-rw-rw-r--  1 albus albus    698 Oct  6 01:49 setarg2.py
+-rw-rw-r--  1 albus albus   1060 Oct  6 02:00 setarg3.py
+-rw-rw-r--  1 albus albus    581 Oct  6 01:25 setarg.py
+-rw-r--r--  1 root  root     622 Oct  7 02:35 strata-ud-iq4_xs.json
+-rw-r--r--  1 root  root     622 Oct  7 02:35 strata-ud-iq4_xs.json.bak-131k-int8
+-rw-r--r--  1 root  root  250339 Oct  8 00:00 strata-ud-iq4_xs.log
+-rw-r--r--  1 root  root     678 Oct  6 00:41 strata-ud-q4_k_xl-8k.json.bak
+-rw-r--r--  1 root  root     627 Oct  6 02:19 strata-ud-q4_k_xl.json
+-rw-r--r--  1 root  root  129813 Oct  7 01:10 strata-ud-q4_k_xl.log
+
+===== [5] 哪个 config 在用 =====
+--- /home/albus/strata166/data/strata-ud-iq4_xs.json ---
+{
+ "exe": "/src/build-906/strata",
+ "args": [
+  "--pack",
+  "/data/packs/ud-iq4_xs",
+  "--native",
+  "/weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+  "--resident-budget-gib",
+  "76",
+  "--expert-profile",
+  "/src/data/expert-profile.bin",
+  "--expert-cache",
+  "auto",
+  "--spec",
+  "4",
+  "--spec-min-p",
+  "0.5",
+  "--mtp",
+  "/data/mtp/rt",
+  "--max-context",
+  "262144",
+  "--kv",
+  "k8v4",
+  "--prefill",
+  "auto"
+ ],
+ "cwd": "/src",
+ "tokenizer": "/data/packs/ud-iq4_xs/tokenizer",
+ "model_name": "qwen3.8-flash-next-ud-iq4_xs",
+ "log": "/data/strata-ud-iq4_xs.log",
+ "host": "0.0.0.0",
+ "port": 8090
+}--- /home/albus/strata166/data/strata-ud-q4_k_xl.json ---
+{
+ "exe": "/src/build-906/strata",
+ "args": [
+  "--pack",
+  "/data/packs/ud-q4_k_xl",
+  "--native",
+  "/weights/Qwen3.8-Flash-Next-UD-Q4_K_XL-00001-of-00004.gguf",
+  "--resident-budget-gib",
+  "76",
+  "--expert-profile",
+  "/src/data/expert-profile.bin",
+  "--expert-cache",
+  "auto",
+  "--spec",
+  "4",
+  "--spec-min-p",
+  "0.5",
+  "--mtp",
+  "/data/mtp/rt",
+  "--max-context",
+  "131072",
+  "--kv",
+  "int8",
+  "--prefill",
+  "auto"
+ ],
+ "cwd": "/src",
+ "tokenizer": "/data/packs/ud-q4_k_xl/tokenizer",
+ "model_name": "qwen3.8-flash-next-ud-q4_k_xl",
+ "log": "/data/strata-ud-q4_k_xl.log",
+ "host": "0.0.0.0",
+ "port": 8090
+}
+===== [6] 容器内进程 =====
+    PID    PPID     ELAPSED %CPU   RSS COMMAND
+    131       0       00:00 60.0  3268 bash -lc ps -eo pid,ppid,etime,pcpu,rss,args --sort=-pcpu | head -12
+     10       1       03:17 48.4 96709944 /src/build-906/strata --serve --pack /data/packs/ud-iq4_xs --native /weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf --resident-budget-gib 76 --expert-profile /src/data/expert-profile.bin --expert-cache auto --spec 4 --spec-min-p 0.5 --mtp /data/mtp/rt --max-context 262144 --kv k8v4 --prefill auto
+      1       0       03:18  0.5 195164 python3 serve/server.py --engine strata --config /data/strata-ud-iq4_xs.json --port 8090
+    139     131       00:00  0.0  3704 ps -eo pid,ppid,etime,pcpu,rss,args --sort=-pcpu
+    140     131       00:00  0.0  1632 head -12
+
+===== [7] /src 下 build 目录 =====
+/src/build-906
+-rwxr-xr-x 1 root root 24862088 Oct  7 15:53 /src/build-906/strata
+
+===== [8] 引擎版本 =====
+unknown argument: --version
+strata generate --pack DIR --tokens "1,2,3" [options]
+
+
+===== [9] /v1/models =====
+{"object": "list", "data": [{"id": "qwen3.8-flash-next-ud-iq4_xs", "object": "model", "status": {"value": "loaded"}, "meta": {"n_ctx": 262144}, "architecture": {"input_modalities": ["text"], "output_modalities": ["text"]}}]}
+===== [10] 引擎日志文件 =====
+-rw-r--r-- 1 root root 437282 Oct  7 23:42 /home/albus/strata166/data/serve-run.log
+-rw-r--r-- 1 root root 250339 Oct  8 00:00 /home/albus/strata166/data/strata-ud-iq4_xs.log
+-rw-r--r-- 1 root root 129813 Oct  7 01:10 /home/albus/strata166/data/strata-ud-q4_k_xl.log
+
+===== [11] 最近 5 条 prompt 计时 =====
+strata serve: prompt 123297 tokens = 121007 reused + 2290 read in 7585 ms (301.9 tok/s), 1150 generated in 32153 ms (35.8 tok/s), drafts accepted 759 of 1001, 6 checkpoints
+strata serve: prompt 124395 tokens = 123292 reused + 1103 read in 5221 ms (211.3 tok/s), 1161 generated in 34155 ms (34.0 tok/s), drafts accepted 714 of 1136, 6 checkpoints
+strata serve: prompt 81657 tokens = 16384 reused + 8192 of 65273 read in 18463 ms (443.7 tok/s), 0 generated in 0 ms (0.0 tok/s), drafts accepted 0 of 0, 1 checkpoints (cancelled)
+strata serve: prompt 17 tokens = 0 reused + 17 read in 512 ms (33.2 tok/s), 2 generated in 195 ms (10.3 tok/s), drafts accepted 3 of 3, 1 checkpoints
+strata serve: prompt 300 tokens = 0 reused + 300 read in 4225 ms (71.0 tok/s), 66 generated in 2105 ms (31.4 tok/s), drafts accepted 42 of 57, 1 checkpoints
+---
+strata serve: prompt 18089 tokens = 0 reused + 18089 read in 40687 ms (444.6 tok/s), 48 generated in 1606 ms (29.9 tok/s), drafts accepted 28 of 40, 2 checkpoints
+strata serve: prompt 18089 tokens = 0 reused + 18089 read in 40484 ms (446.8 tok/s), 48 generated in 1392 ms (34.5 tok/s), drafts accepted 28 of 46, 2 checkpoints
+strata serve: prompt 76 tokens = 0 reused + 76 read in 1922 ms (39.5 tok/s), 512 generated in 16359 ms (31.3 tok/s), drafts accepted 279 of 425, 1 checkpoints
+strata serve: prompt 76 tokens = 71 reused + 5 read in 136 ms (36.7 tok/s), 512 generated in 15882 ms (32.2 tok/s), drafts accepted 264 of 430, 1 checkpoints
+strata serve: prompt 76 tokens = 71 reused + 5 read in 129 ms (38.9 tok/s), 512 generated in 15344 ms (33.4 tok/s), drafts accepted 286 of 436, 1 checkpoints
+
+===== [12] GPU / VRAM / 内存 / 磁盘 =====
+
+
+============================ ROCm System Management Interface ============================
+================================== Memory Usage (Bytes) ==================================
+GPU[0]		: VRAM Total Memory (B): 34342961152
+GPU[0]		: VRAM Total Used Memory (B): 33930874880
+==========================================================================================
+================================== End of ROCm SMI Log ===================================
+---
+               total        used        free      shared  buff/cache   available
+Mem:             125          42           4          35         114          82
+---
+/dev/mapper/ubuntu--vg-lv--0  935G  682G  253G  73% /
+
+===== [13] weights 目录 =====
+total 91486904
+drwxrwxr-x  2 albus albus         174 Oct  7 01:14 .
+drwxrwxr-x 12 albus albus         158 Oct  7 23:48 ..
+-rw-rw-r--  1 albus albus    10946624 Oct  7 01:14 Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
+-rw-rw-r--  1 albus albus 49835229856 Oct  7 01:30 Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+-rw-rw-r--  1 albus albus 43836407744 Oct  7 01:29 Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf
+
+===== [14] 全部镜像 =====
+strata-gfx906:0.1.40.2|125cb5b1bbfd|6.57GB
+strata-gfx906:0.1.40.1|d742bb37fdee|6.55GB
+strata-gfx906:0.1.39|7714526ed0c2|6.52GB
+

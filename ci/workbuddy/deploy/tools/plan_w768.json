@@ -1,0 +1,11 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W768：KV 门那条改为\"归因不成立/分布差异非质量判据\"（同 --kv 只改 --expert-cache 即给 KL .366）；未做清单改为\"驻留严格相等对照\"；权威件与审计链补 W768；并修复上一波 L3/L4 对 §3「非专家」与「前端件」两行的静默语义削减",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- **非专家**：Q8_0 303· BF16 483/1407 MiB=> routeK T1 不成立",
+   "new": "- **非专家**：Q8_0 303（lm_head/qkv/shexp）· BF16 483/1407 MiB（`hc_*` 85%）=> routeK T1 不成立；上游 bench `COMMUNITY_BENCHMARKS.md`、`AMD_HIP:504` 单卡未做"
+  }
+ ]
+}

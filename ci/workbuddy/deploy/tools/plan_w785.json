@@ -1,0 +1,10 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "·**--resident-experts**(B7;实跑spec=6非4)",
+   "new": "·无--resident-experts(W785去掉;三档decode+10~12%,prompt不减;spec仍6)"
+  }
+ ]
+}

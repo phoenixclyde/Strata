@@ -1,0 +1,31 @@
+rc = 0
+===== [1] 归档与实例清单 =====
+-rw-r--r-- 1 root root 11904178 Oct  7 15:52 /src/build-906/libstrata_mmq.a
+--- 归档内 q6_k 相关成员 ---
+mmq-instance-q6_k.cu.o
+--- 归档内成员总数 ---
+18
+
+===== [2] 正证：引擎二进制里 Q6_K 实例在 =====
+mul_mat_q_case<(ggml_type)12> mul_mat_q_case<(ggml_type)13> mul_mat_q_case<(ggml_type)14> mul_mat_q_case<(ggml_type)16> mul_mat_q_case<(ggml_type)17> mul_mat_q_case<(ggml_type)18> mul_mat_q_case<(ggml_type)20> mul_mat_q_case<(ggml_type)21> mul_mat_q_case<(ggml_type)22> mul_mat_q_case<(ggml_type)23> mul_mat_q_case<(ggml_type)42> mul_mat_q_case<(ggml_type)7> mul_mat_q_case<(ggml_type)8> 
+mul_mat_q_case 符号总数 = 13
+
+===== [3] 取链接命令行 =====
+574 /tmp/link_cmd.txt
+: && /opt/rocm/lib/llvm/bin/clang++ -O3 -DNDEBUG --offload-arch=gfx906  CMakeFiles/strata.dir/src/program/generate.cpp.o -o strata  libstrata_engine.a  libstrata_prefill.a  libstrata_spec.a  libstrata_engine.a  libstrata_kernels.a  libstrata_core.a  libstrata_kernels_cpu.a  ggml/src/libggml-cpu.a  /
+
+===== [4] 反证：移除 q6_k 实例后重链 =====
+移除后归档内 q6_k 成员数 = 0
+移除后成员总数 = 17
+--- 已改写的链接命令（前 200 字符）---
+: && /opt/rocm/lib/llvm/bin/clang++ -O3 -DNDEBUG --offload-arch=gfx906  CMakeFiles/strata.dir/src/program/generate.cpp.o -o /tmp/strata_noh5  libstrata_engine.a  libstrata_prefill.a  libstrata_spec.a 
+--- 执行 ---
+link_rc=0
+
+===== [5] 对照：原归档重链应成功 =====
+ctrl_link_rc=0
+-rwxr-xr-x 1 root root 24862088 Oct  7 16:19 /tmp/strata_ok
+
+===== [6] 清掉临时产物 =====
+cleaned
+

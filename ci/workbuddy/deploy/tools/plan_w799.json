@@ -1,0 +1,81 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W799：多轮每轮地板 ~900ms（park 330MB 占一半）；P126 park-gain PENDING",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- **多轮复用**(P94):第2轮reused=7344/685ms;P93 废",
+   "new": "- **多轮复用**(P94):第2轮reused=7344/685ms,**每轮地板~900ms**(read=46 917=13.8x冷读;park330MB占半;W799);P93 废"
+  },
+  {
+   "kind": "substr",
+   "old": "- **decode端到端不可判**(draft随内容/问题各异/两次反向)=>必用decode GPU stages(W798规则R)",
+   "new": "- **decode端到端不可判**(draft随内容/两次反向)=>用decode GPU stages(W798规则R)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **规则Q**:没设默认=只验过别的架构(单测5秒)/需硬件/真更差;先单测再引擎",
+   "new": "- **规则Q**:没设默认=只验过别的架构(单测5秒)/需硬件/真更差"
+  },
+  {
+   "kind": "substr",
+   "old": "- **arch_default只给gfx12/1151**=>gfx906空表,20项全关(W797)",
+   "new": "- **arch_default只给gfx12/1151**=>gfx906空表,20项全关"
+  },
+  {
+   "kind": "substr",
+   "old": "- **专家MMQ**=36.4%/18%dp4a;J=64=48KB=>1WG/CU;封顶全负;FP16+61%(P112/113)",
+   "new": "- **专家MMQ**=36.4%/18%dp4a;J=64=48KB=>1WG/CU;FP16+61%(P112/113)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **attn 14.7%dp4a**(PV没乘2);与MMQ同档=>先MMQ",
+   "new": "- **attn 14.7%dp4a**(PV没乘2);与MMQ同档"
+  },
+  {
+   "kind": "substr",
+   "old": "- **引擎跨请求不确定**=>禁哈希当位等价(W794)",
+   "new": "- **引擎跨请求不确定**=>禁哈希(W794)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **已关**:P23·P28·P29·P30·P31·P32·C3/C4/C5·vision·#1454·R1/R4/R5a/TILEV/ROUTE_FAST",
+   "new": "- **已关**:P23·P28·P29·P30·P31·P32·vision·#1454·R1/R4/R5a/TILEV/ROUTE_FAST"
+  },
+  {
+   "kind": "substr",
+   "old": "- **KV门**(P51):LOGPOS两请求(W770)",
+   "new": "- **KV门**(P51):LOGPOS两请求"
+  },
+  {
+   "kind": "substr",
+   "old": "- **requests表倒序**",
+   "new": "- **requests倒序**"
+  },
+  {
+   "kind": "substr",
+   "old": "- **筛**:上限=占比(P31/P34)",
+   "new": "- **筛**:占比上限(P31/P34)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **HC**:down不敏感;up余量14%(P100)",
+   "new": "- **HC**:down不敏感,up余量14%(P100)"
+  },
+  {
+   "kind": "substr",
+   "old": "- 容器/版本/指纹写指针;Z0=off;CR=0(W21)",
+   "new": "- 容器/版本/指纹写指针;Z0=off;CR=0"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改参唯一道**:register->gen_config --write->推166->restart->verify",
+   "new": "- **改参唯一道**:register->gen_config --write->推166->restart"
+  },
+  {
+   "kind": "substr",
+   "old": "- shim把/data/x.py转Win路径=>传短记号,禁ASCII引号",
+   "new": "- shim把/data/x.py转Win路径=>短记号,禁ASCII引号"
+  }
+ ]
+}

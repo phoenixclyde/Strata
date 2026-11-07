@@ -1,0 +1,11 @@
+id	file	marker	where	purpose	commit
+W793	CMakeLists.txt	W793	tree+configure+link	"gfx906 分支接 rocBLAS：define STRATA_ROCBLAS_AVAILABLE 并把 guard 放宽到 STRATA_HIP_GFX906（没有它 STRATA_ROCBLAS_TUNING 是死开关）"	c5fd0796
+W776	CMakeLists.txt	W776 local	tree+ninja	"只给 src/core/dflash2.cpp 加 -DSTRATA_USE_HIP=1：否则 gfx906 编 CUDA 分支，dflash2 默认开双流+高优先级流"	01e01636
+W794	src/kernels/cuda/qsa_decode_attn.cu	W794	tree	"gfx906 query swizzle / reduce12 接受 KV_MODE 3（k8v4）"	b42e4bc0
+TEL-PCIE	serve/telemetry.py	BW_REFRESH_S	image+metrics	"AMD PCIe 带宽采样（pcie_bw，5 s 一次，独立线程）+ FRU 名称与显存容量一致性校验"	46aaaba5
+WEB-UI	serve/web/app.js	pciePk	image+served	"只剩 PCIe 卡的 peak 峰值后缀（pciePk）。原补丁 78 行增量中 74 行已被上游 v0.2.8 原生吸收（images 页/saveApiKey/prefill 速率/采样默认值/火花线顶值），不得再用 saveApiKey 当标记（上游自带=假绿）"	7c38cb4e
+W830-COMPAT	include/strata/platform/hip_compat/strata_hip.h	cudaStreamCreateWithPriority	tree+build	"gfx906 手写宏表补 stream priority 两个宏（0.2.8 的 dflash2 直接调 CUDA 名）"	923c2118
+W831	serve/web/app.css	ALBUS-W831	image+served	"monitor 页去封顶（上游 v0.2.7.1 起 .monitor max-width: min(100%,1920px)，2560 宽窗口两侧各空 ~320px）；作用域仅 .monitor，about/chat 保留上游 1100"	f3d35b86
+W837	src/core/arch_defaults.cpp	MI50-class	branch+src028	"gfx906 精确表 2 项 + opt-in 配方 7 项 + gfx_arch_is_gfx906 谓词"	642de24f
+W839	src/program/generate.cpp	W839 local	branch+patcher	"在 STRATA_HIP_GFX906 下调用 apply_arch_defaults；不复制整文件（main 与 v0.2.8 差数百行），由 patches/apply_w839_generate.py 锚点落"	1309b1d
+W842	src/kernels/cuda/qsa_select.cu	W842 local	branch+src028	"HIP 分支把 STRATA_SELECT_SIMT 解析成 0/1/2：此前只认 '1'，=2 静默回退 warp 内核（上游 #3073 未合并）；=2 走 block_scores_simt2_kernel<32,128>，与 =1 同 bits"	cc8a071

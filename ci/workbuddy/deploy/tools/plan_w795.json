@@ -1,0 +1,76 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W795：P5b 专家 MMQ dispatch 面耗尽（P112 FP16 +61% / P113 J 封顶全负 / P114 GROUP_SORT 死开关）+ 臂漂移规则",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- **队列**:P1·P2·P3 采纳(P103/P107/P108);P4 否(P109);P111 否;P110 采纳;P5=MMQ,P5c=attn 重写;P6 最低;P105->P107,P106->P109",
+   "new": "- **队列**:P1·P2·P3 采纳(P103/P107/P108);P4 否(P109);P110 采纳;P111 否;P5=MMQ**已耗尽(P112/P113/P114)**,P5c=attn;P6 最低;此后=内核;P105->P107,P106->P109"
+  },
+  {
+   "kind": "substr",
+   "old": "- **占用率**=块/CUx/64/40;HC 41块6.8%(P96)",
+   "new": "- **占用率**=块/CUx/64/40;HC 41块6.8%(P96)\n- **专家MMQ**=36.4%/18%dp4a;J=64=48KB=>1WG/CU;J封顶全负;FP16专家+61%(P112/113)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **重启丢前2请求**;A/B同会话交错(P98)",
+   "new": "- **重启丢前2请求**;A/B同会话交错(P98);臂漂1.7%=>判>3%"
+  },
+  {
+   "kind": "substr",
+   "old": "现役：--pcie-frac 0.20·--spec-min-p 0.70·--prompt-cache-every 8192·--conversation-cache-mib 4096·--vram-reserve-mib 768·无--resident-experts",
+   "new": "现役：--pcie-frac 0.20·--spec-min-p 0.70·--prompt-cache-every 8192·--vram-reserve-mib 768·无--resident-experts"
+  },
+  {
+   "kind": "substr",
+   "old": "- **引擎跨请求不确定**:同env同prompt三次两结果(驻留路径)=>禁拿哈希当位等价(W794)",
+   "new": "- **引擎跨请求不确定**:同env同prompt三次两结果=>禁哈希当位等价(W794)"
+  },
+  {
+   "kind": "substr",
+   "old": "- 审计 W713_AUDIT{,2}·W735/752/765·W767-W773·AUDIT3/4(P0/P1=0/4·0/6)·AUDIT5(0/3)·W792/793/794",
+   "new": "- 审计 W713_AUDIT{,2}·W735/752/765·W767-W773·AUDIT3/4/5(P0/P1)·W792-795"
+  },
+  {
+   "kind": "substr",
+   "old": "- **`--prefill` 改答案** => 不动 P10",
+   "new": "- **--prefill 改答案**=>不动 P10"
+  },
+  {
+   "kind": "substr",
+   "old": "- **草稿深度**,kShape编译期(W8);L2=8MB/HBM~805",
+   "new": "- **草稿深度**,kShape(W8);L2=8MB/HBM~805"
+  },
+  {
+   "kind": "substr",
+   "old": "- **prefill=主战场**:占墙钟M90%/L99.5%;M:hc read18.2/GU15.9/attn15.5/gdn13.8/gemmd8.6(P104)",
+   "new": "- **prefill=主战场**:M90%/L99.5%;M:hc18.2/GU15.9/attn15.5/gdn13.8/gemmd8.6(P104)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **路由**:k10走native_router(无fp64);GR_SPLIT净负(P101/102)",
+   "new": "- **路由**:k10 native_router(无fp64);GR_SPLIT净负(P101/P102)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **dot**:dot4 62,596/dot8 0=>dp4a;dot8须双方i4(P38)",
+   "new": "- **dot**:dot4 62,596/dot8 0=>dp4a;dot8须i4(P38)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **多轮复用正常**(P94):第2轮reused=7344/685ms;补final(P93)废",
+   "new": "- **多轮复用正常**(P94):第2轮reused=7344/685ms;final(P93)废"
+  },
+  {
+   "kind": "substr",
+   "old": "- **W775delta**:P56不可达;PLE-45%(否);P54=IO_PF_STAGE;drop_caches不重置mmap",
+   "new": "- **W775**:P56不可达;PLE-45%(否);P54=IO_PF;drop_caches不重置mmap"
+  },
+  {
+   "kind": "substr",
+   "old": "- **KV门**(P51):LOGPOS须两请求,self=0;W770 6/6",
+   "new": "- **KV门**(P51):LOGPOS须两请求;W770 6/6"
+  }
+ ]
+}

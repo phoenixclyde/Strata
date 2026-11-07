@@ -1,0 +1,86 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W728：PCIe serve 覆写 + 核验器数据面(6)",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "；补丁面**归零**。",
+   "new": "；**引擎补丁面 0 / serve 覆写 1**（telemetry PCIe，W728；重建后重跑 `patches/apply_telemetry_pcie.sh`）。"
+  },
+  {
+   "kind": "substr",
+   "old": "· `W727_SETUPKEYS_MTP.md`",
+   "new": "· `W727_SETUPKEYS_MTP.md` · `W728_PCIE_TELEMETRY.md`"
+  },
+  {
+   "kind": "substr",
+   "old": "ported 进 0.1.41（保留署名，`a732a19b6f`）**，PR closed-not-merged => 补丁面归零。",
+   "new": "ported 进 0.1.41（保留署名，`a732a19b6f`）**，PR closed-not-merged => **引擎**补丁面归零。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 两轮独立审计：`W713_AUDIT.md`（6 条 P1）、`W713_AUDIT2.md`（P0）。",
+   "new": "- 两轮独立审计：`W713_AUDIT{,2}.md`（P0/P1）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **重做**：0.1.40.x 读数须在 0.1.41 重取（机主令\"别弄了\"）。",
+   "new": "- **重做**：0.1.40.x 读数须在 0.1.41 重取（\"别弄了\"）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **不得引用**：`waves/_w727.out.txt`（测试域无效）。",
+   "new": "- **不得引用**：`waves/_w727.out.txt`（无效）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 交付件禁用码位（U+21D2/2192/2014/2013/2026/2265/2264/2260/2212/00D7），须 CR=0。",
+   "new": "- 交付件禁用码位 10 个（定义见 `deploy/tools/mem_slim.py` 的 `BAN`），须 CR=0。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 外部未迁：`D:/Strata/`（11.2GB）。",
+   "new": "- 外部未迁：`D:/Strata/`。"
+  },
+  {
+   "kind": "substr",
+   "old": "；register/config 的**指纹一律现算**。",
+   "new": "；**指纹一律现算**。"
+  },
+  {
+   "kind": "substr",
+   "old": "判可达性须核宏（P30 HIP 恒 false；P28 在 gfx906 宏内）。",
+   "new": "判可达性须核宏（P30 恒 false；P28 在 gfx906 宏内）。"
+  },
+  {
+   "kind": "substr",
+   "old": "4096 在 6,831-token 段生成长度变了 => **不改 P10**。",
+   "new": "4096 在 6,831-token 段长度变了 => **不改 P10**。"
+  },
+  {
+   "kind": "substr",
+   "old": "· C4/C5 · P29 · C3（3G）· vision 核验 · #1454/tokenizer。",
+   "new": "· C4/C5 · P29 · C3 · vision 核验 · #1454/tokenizer。"
+  },
+  {
+   "kind": "substr",
+   "old": "  **漏推则「本机==166」不成立** => 改完必对两侧 `md5sum`。",
+   "new": "  漏推则「本机==166」不成立 => 改完必对两侧 `md5sum`。"
+  },
+  {
+   "kind": "substr",
+   "old": "别用 ASCII 双引号包中文串。",
+   "new": "别用 ASCII 引号包中文串。"
+  },
+  {
+   "kind": "substr",
+   "old": "· `W713_PLAN.md`（全量账）· `W713_UPGRADE.md` · `W713_AUDIT{,2}.md` · ",
+   "new": "· `W713_PLAN.md`（全量账）· "
+  },
+  {
+   "kind": "substr",
+   "old": "一票否决：**改答案/破位一致**。",
+   "new": "一票否决：**改答案/破位**。"
+  }
+ ]
+}

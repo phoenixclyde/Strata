@@ -1,0 +1,16 @@
+{
+  "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+  "reason": "W863 R30：写入「读模式只值1.5x」；审计清单改指 AUDIT_INDEX.md（保留 P0/P1 编号）",
+  "ops": [
+    {
+      "kind": "substr",
+      "old": "- 审计 W713_AUDIT{,2}·W735/752/765·W767-773·AUDIT3/4/5(P0/P1)·W792-800",
+      "new": "- 审计:AUDIT_INDEX.md(P0/P1 索引)"
+    },
+    {
+      "kind": "substr",
+      "old": "**HC**:down不敏感,up余量14%(P100)",
+      "new": "**HC**:down不敏感,up+14%(P100);**读模式只值1.5x**(生产98/朴素553/宽读826)"
+    }
+  ]
+}

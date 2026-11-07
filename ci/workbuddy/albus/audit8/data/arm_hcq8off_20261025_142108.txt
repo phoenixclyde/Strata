@@ -1,0 +1,47 @@
+ARM=hcq8off START 2026-10-25_14:21:08
+36f6f8fb3638eeabee73c55b176c9f6c  /home/albus/strata166/data/strata-huihui-ud-iq4_xs.json
+governor=schedutil
+overrides=STRATA_HC_Q8 0
+env_now {'HSA_OVERRIDE_GFX_VERSION': '9.0.6', 'STRATA_PREFILL_CPU_SHARE': '0', 'STRATA_RESIDENT_HEADROOM_GIB': '0.5', 'STRATA_HC_Q8': '0', 'STRATA_DECODE_TIMING': '1', 'STRATA_VERIFY_PROFILE': '1'}
+health 55s
+warmup ok (try 1)
+slots 9732 vram 640 ver 0.1.49.2
+--- DISCARD d1 14:22:33 ---
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=44770 prompt_tps=487.5 decode_tps=52.2 out=320 wall=50.9s
+  [M] n=1 reused0=1 | prompt_tps median=487.5  decode_tps median=52.2
+--- DISCARD d2 14:23:28 ---
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=44608 prompt_tps=489.3 decode_tps=61.4 out=320 wall=49.8s
+  [M] n=1 reused0=1 | prompt_tps median=489.3  decode_tps median=61.4
+--- RUN 1 14:24:19 ---
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=45267 prompt_tps=482.2 decode_tps=63.2 out=320 wall=50.4s
+  [M] n=1 reused0=1 | prompt_tps median=482.2  decode_tps median=63.2
+strata decode GPU stages (ms/window): GDN layers: q8+qkv/q-idx gemv 3.22 conv 0.24 ab 0.86 z 2.18 rec 0.81 out-proj 2.09 router+plan+bell 2.46 shared+quant 1.80 waitA 0.38 VRAM hits 5.14 waitB 0.86 PCIe grp 0.58 waitCPU 0.97 copy+combine 0.58 (gap) 0.06 head 1.65   hc0 norm 0.92   hc0 down 1.16   hc0 up 1.03   hc1 norm 0.42   hc1 down 1.09   hc1 up 0.99 | QSA layers: q8+kv-idx 0.14 k/v+norm-rope 0.40 kv+idx append 0.29 q+q-idx 1.90 scores+topk 0.15 kv-resolve 0.02 attention 1.16 gate 0.11 out-proj 0.70 router+plan+bell 0.97 shared+quant 0.60 waitA 0.13 VRAM hits 1.63 waitB 0.66 PCIe grp 0.22 waitCPU 0.52 copy+combine 0.20 (gap) 0.02   hc0 norm 0.14   hc0 down 0.37   hc0 up 0.34   hc1 norm 0.14   hc1 down 0.37   hc1 up 0.33 | total 40.99 ms/window over 2 windows
+strata decode GPU stages (ms/window): GDN layers: q8+qkv/q-idx gemv 3.95 conv 0.24 ab 1.02 z 2.72 rec 0.73 out-proj 2.48 router+plan+bell 2.75 shared+quant 2.03 waitA 0.36 VRAM hits 6.89 waitB 0.42 PCIe grp 0.59 waitCPU 0.38 copy+combine 0.60 (gap) 0.06 head 2.01   hc0 norm 0.86   hc0 down 1.32   hc0 up 1.14   hc1 norm 0.41   hc1 down 1.27   hc1 up 1.08 | QSA layers: q8+kv-idx 0.15 k/v+norm-rope 0.44 kv+idx append 0.32 q+q-idx 2.18 scores+topk 1.26 kv-resolve 0.02 attention 2.11 gate 0.11 out-proj 0.84 router+plan+bell 0.95 shared+quant 0.67 waitA 0.12 VRAM hits 2.27 waitB 0.19 PCIe grp 0.20 waitCPU 0.18 copy+combine 0.21 (gap) 0.02   hc0 norm 0.14   hc0 down 0.44   hc0 up 0.38   hc1 norm 0.14   hc1 down 0.44   hc1 up 0.36 | total 47.45 ms/window over 96 windows
+strata decode timing: 1 windows, avg T 1.00, 1.00 tokens/window, 29.04 ms/window = verify 29.03 (GPU-reach wait 26.10 + per-layer host 1.66 [plan 0.11 actq 0.02 jobs 0.01 CPU 1.48] + stage 0.01) + commit/emit 0.01 + draft 0.00; per layer-window: CPU experts 0.19 (0.19 entries), VRAM hits 9.65, PCIe 0.00; adapt wait 0.00 join 0.00, 0.0 swaps/window
+strata decode timing: 95 windows, avg T 3.48, 3.37 tokens/window, 53.30 ms/window = verify 47.50 (GPU-reach wait 40.54 + per-layer host 4.59 [plan 0.33 actq 0.26 jobs 0.05 CPU 3.90] + stage 0.03) + commit/emit 0.06 + draft 5.70; per layer-window: CPU experts 0.80 (0.88 entries), VRAM hits 33.12, PCIe 0.01; adapt wait 0.03 join 0.00, 12.1 swaps/window
+--- RUN 2 14:25:10 ---
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=44732 prompt_tps=487.9 decode_tps=63.1 out=320 wall=49.8s
+  [M] n=1 reused0=1 | prompt_tps median=487.9  decode_tps median=63.1
+strata decode GPU stages (ms/window): GDN layers: q8+qkv/q-idx gemv 3.30 conv 0.24 ab 0.86 z 2.18 rec 0.81 out-proj 2.11 router+plan+bell 2.44 shared+quant 1.80 waitA 0.36 VRAM hits 5.19 waitB 0.68 PCIe grp 0.57 waitCPU 0.87 copy+combine 0.59 (gap) 0.06 head 1.64   hc0 norm 0.85   hc0 down 1.15   hc0 up 1.04   hc1 norm 0.42   hc1 down 1.08   hc1 up 0.99 | QSA layers: q8+kv-idx 0.14 k/v+norm-rope 0.40 kv+idx append 0.30 q+q-idx 1.92 scores+topk 0.16 kv-resolve 0.02 attention 1.17 gate 0.11 out-proj 0.72 router+plan+bell 0.95 shared+quant 0.60 waitA 0.12 VRAM hits 1.63 waitB 0.46 PCIe grp 0.20 waitCPU 0.63 copy+combine 0.21 (gap) 0.02   hc0 norm 0.14   hc0 down 0.37   hc0 up 0.34   hc1 norm 0.14   hc1 down 0.37   hc1 up 0.33 | total 40.67 ms/window over 2 windows
+strata decode GPU stages (ms/window): GDN layers: q8+qkv/q-idx gemv 3.97 conv 0.24 ab 1.03 z 2.74 rec 0.73 out-proj 2.49 router+plan+bell 2.75 shared+quant 2.03 waitA 0.40 VRAM hits 6.93 waitB 0.42 PCIe grp 0.59 waitCPU 0.42 copy+combine 0.60 (gap) 0.06 head 2.01   hc0 norm 0.85   hc0 down 1.33   hc0 up 1.14   hc1 norm 0.41   hc1 down 1.27   hc1 up 1.08 | QSA layers: q8+kv-idx 0.15 k/v+norm-rope 0.44 kv+idx append 0.32 q+q-idx 2.20 scores+topk 1.26 kv-resolve 0.02 attention 2.11 gate 0.11 out-proj 0.84 router+plan+bell 0.95 shared+quant 0.68 waitA 0.12 VRAM hits 2.28 waitB 0.22 PCIe grp 0.20 waitCPU 0.20 copy+combine 0.21 (gap) 0.02   hc0 norm 0.14   hc0 down 0.44   hc0 up 0.38   hc1 norm 0.14   hc1 down 0.44   hc1 up 0.37 | total 47.68 ms/window over 96 windows
+strata decode timing: 1 windows, avg T 1.00, 1.00 tokens/window, 29.06 ms/window = verify 29.03 (GPU-reach wait 26.25 + per-layer host 1.53 [plan 0.10 actq 0.03 jobs 0.02 CPU 1.36] + stage 0.01) + commit/emit 0.02 + draft 0.00; per layer-window: CPU experts 0.21 (0.21 entries), VRAM hits 9.58, PCIe 0.00; adapt wait 0.00 join 0.00, 0.0 swaps/window
+strata decode timing: 95 windows, avg T 3.49, 3.37 tokens/window, 53.37 ms/window = verify 47.74 (GPU-reach wait 40.86 + per-layer host 4.52 [plan 0.33 actq 0.25 jobs 0.05 CPU 3.84] + stage 0.02) + commit/emit 0.05 + draft 5.42; per layer-window: CPU experts 0.79 (0.89 entries), VRAM hits 33.27, PCIe 0.02; adapt wait 0.16 join 0.00, 11.4 swaps/window
+--- RUN 3 14:26:01 ---
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=45553 prompt_tps=479.2 decode_tps=62.9 out=320 wall=50.7s
+  [M] n=1 reused0=1 | prompt_tps median=479.2  decode_tps median=62.9
+strata decode GPU stages (ms/window): GDN layers: q8+qkv/q-idx gemv 3.19 conv 0.23 ab 0.86 z 2.15 rec 0.81 out-proj 2.10 router+plan+bell 2.46 shared+quant 1.81 waitA 0.37 VRAM hits 5.21 waitB 0.74 PCIe grp 0.56 waitCPU 0.81 copy+combine 0.58 (gap) 0.06 head 1.64   hc0 norm 0.87   hc0 down 1.17   hc0 up 1.06   hc1 norm 0.42   hc1 down 1.09   hc1 up 1.00 | QSA layers: q8+kv-idx 0.14 k/v+norm-rope 0.40 kv+idx append 0.29 q+q-idx 1.90 scores+topk 0.16 kv-resolve 0.02 attention 1.15 gate 0.11 out-proj 0.72 router+plan+bell 0.95 shared+quant 0.61 waitA 0.13 VRAM hits 1.63 waitB 0.48 PCIe grp 0.20 waitCPU 0.77 copy+combine 0.22 (gap) 0.02   hc0 norm 0.14   hc0 down 0.37   hc0 up 0.34   hc1 norm 0.14   hc1 down 0.37   hc1 up 0.33 | total 40.80 ms/window over 2 windows
+strata decode GPU stages (ms/window): GDN layers: q8+qkv/q-idx gemv 3.91 conv 0.24 ab 1.02 z 2.70 rec 0.72 out-proj 2.45 router+plan+bell 2.73 shared+quant 2.02 waitA 0.37 VRAM hits 6.87 waitB 0.44 PCIe grp 0.59 waitCPU 0.49 copy+combine 0.60 (gap) 0.06 head 2.00   hc0 norm 0.85   hc0 down 1.32   hc0 up 1.14   hc1 norm 0.41   hc1 down 1.26   hc1 up 1.08 | QSA layers: q8+kv-idx 0.15 k/v+norm-rope 0.44 kv+idx append 0.33 q+q-idx 2.17 scores+topk 1.25 kv-resolve 0.02 attention 2.07 gate 0.11 out-proj 0.84 router+plan+bell 0.94 shared+quant 0.67 waitA 0.16 VRAM hits 2.26 waitB 0.19 PCIe grp 0.20 waitCPU 0.20 copy+combine 0.21 (gap) 0.02   hc0 norm 0.14   hc0 down 0.43   hc0 up 0.38   hc1 norm 0.14   hc1 down 0.44   hc1 up 0.36 | total 47.38 ms/window over 97 windows
+strata decode timing: 1 windows, avg T 1.00, 1.00 tokens/window, 29.07 ms/window = verify 29.05 (GPU-reach wait 25.98 + per-layer host 1.84 [plan 0.10 actq 0.05 jobs 0.02 CPU 1.64] + stage 0.01) + commit/emit 0.01 + draft 0.00; per layer-window: CPU experts 0.23 (0.23 entries), VRAM hits 9.52, PCIe 0.00; adapt wait 0.00 join 0.00, 0.0 swaps/window
+strata decode timing: 96 windows, avg T 3.46, 3.33 tokens/window, 53.00 ms/window = verify 47.43 (GPU-reach wait 40.51 + per-layer host 4.58 [plan 0.22 actq 0.18 jobs 0.04 CPU 4.10] + stage 0.02) + commit/emit 0.04 + draft 5.37; per layer-window: CPU experts 0.84 (0.93 entries), VRAM hits 32.84, PCIe 0.01; adapt wait 0.15 join 0.00, 11.5 swaps/window
+ARM_DONE 14:26:52
+=== RESTORE 14:26:52 ===
+config restored
+36f6f8fb3638eeabee73c55b176c9f6c  /home/albus/strata166/data/strata-huihui-ud-iq4_xs.json
+container restarted
+prod ready 48s
+=== END 14:27:42 ===

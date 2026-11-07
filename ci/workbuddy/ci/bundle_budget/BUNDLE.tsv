@@ -1,0 +1,11 @@
+# The prefill@2K bundle budget (W1013).  Tab separated; see bundle.py for the column contract.
+# phase_ms_2k is the 2K cluster median (2084 tokens, n=3) of ci/prefill_phases/PREFILL_PHASES.tsv --
+# bundle.py re-derives the share from that file, so nothing in the "-> e2e" column is typed here.
+# basis=bench means the delta was measured (kernel/bench); estimate means it is arithmetic on a
+# mechanism nobody has measured, and it never counts toward the gate.
+bundle	item	mechanism	phase	phase_ms_2k	phase_delta_pct	cv_pct	basis	bit_safe	status	evidence
+B1	R86-dn	down-only weight repack, w32	gemm down	510	-20.0	1.5	bench	N	CANDIDATE	ci/repack_ab/WIDTH_SWEEP.tsv
+B1	R95-plan	host grouping: per-request 90-110ms, mechanism UNLOCALIZED (needs P309)	host grouping	91	-100.0	4.0	estimate	Y	CANDIDATE	ci/prefill_phases/W1016_chunk1024_raw.txt
+B1	R21-v3hc	v3 read with HC_Q8=0: measured, 0.4% and a regression at 8K	hc read: down+silu	117	-40.0	6.0	estimate	N	REJECTED	ci/bundle_budget/evidence/w1014-v3on.json
+B1	GDN-chunk	chunked GDN recurrence needs <=64KB LDS	gdn recurrence	121	-50.0	8.0	estimate	N	BLOCKED	ci/prefill_phases/PREFILL_PHASES.tsv
+B1	R98-wc	ring 384 -> 768: measured, 0.5-0.6% SLOWER at all three lengths	wait copy	37	-50.0	8.0	estimate	Y	REJECTED	ci/bundle_budget/evidence/w1014-ring768.json

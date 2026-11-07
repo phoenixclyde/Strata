@@ -1,0 +1,127 @@
+=== [1] 找 moe_mmq / mmq-instance 相关文件 ===
+  include/strata/prefill/moe_mmq.hpp                              5269
+  src/prefill/mmq_resident_sort.hpp                               2606
+  src/prefill/moe_mmq.cu                                         13958
+  sycl/src/prefill/moe_mmq.dp.cpp                                13543
+  tests/cuda/prefill_mmq_kquant_test.cpp                          9352
+  tests/hip/prefill_mmq_parity.cpp                               17429
+
+=== [2] 全树找 GGML_TYPE_Q6_K 的调用点 ===
+  ### src/prefill/moe_mmq.cu : 133
+       125|         case GGML_TYPE_Q5_0:   // #296 (Q4_K and Q5_1: STRATA_MMQ_KQUANTS)
+       126| #endif
+       127|         case GGML_TYPE_IQ2_XXS: case GGML_TYPE_IQ2_XS: case GGML_TYPE_IQ2_S:
+       128|         case GGML_TYPE_IQ3_XXS: case GGML_TYPE_IQ3_S: case GGML_TYPE_IQ4_NL: case GGML_TYPE_IQ4_XS:
+       129|         case GGML_TYPE_Q8_0:   // the draft layer's dense matrices (E-9)
+       130| #ifdef STRATA_MMQ_KQUANTS
+       131|         case GGML_TYPE_Q4_K: case GGML_TYPE_Q5_K: case GGML_TYPE_Q5_1:   // Unsloth's UD-Q4_K_XL experts (CUDA)
+       132| #if defined(__HIPCC__) || defined(STRATA_Q6K_EXPERTS)
+       133|         case GGML_TYPE_Q6_K:   // HIP: the dense GGUF projections (STRATA_DENSE_MMQ); CUDA: only the opt-in -DSTRATA_Q6K_EXPER
+       134| #endif
+       135| #endif
+     ----
+  ### src/prefill/moe_mmq.cu : 220
+       212|         case GGML_TYPE_IQ3_S: mul_mat_q_case<GGML_TYPE_IQ3_S>(ctx, a, s); break;
+       213|         case GGML_TYPE_IQ4_NL: mul_mat_q_case<GGML_TYPE_IQ4_NL>(ctx, a, s); break;
+       214|         case GGML_TYPE_IQ4_XS: mul_mat_q_case<GGML_TYPE_IQ4_XS>(ctx, a, s); break;
+       215|         case GGML_TYPE_Q8_0: mul_mat_q_case<GGML_TYPE_Q8_0>(ctx, a, s); break;
+       216| #ifdef STRATA_MMQ_KQUANTS
+       217|         case GGML_TYPE_Q4_K: mul_mat_q_case<GGML_TYPE_Q4_K>(ctx, a, s); break;
+       218|         case GGML_TYPE_Q5_K: mul_mat_q_case<GGML_TYPE_Q5_K>(ctx, a, s); break;
+       219| #if defined(__HIPCC__) || defined(STRATA_Q6K_EXPERTS)
+       220|         case GGML_TYPE_Q6_K: mul_mat_q_case<GGML_TYPE_Q6_K>(ctx, a, s); break;
+       221| #endif
+       222|         case GGML_TYPE_Q5_1: mul_mat_q_case<GGML_TYPE_Q5_1>(ctx, a, s); break;
+     ----
+  ### tests/cuda/prefill_mmq_kquant_test.cpp : 159
+       151|         {
+       152|             mmq::Context ctx;
+       153|             const std::vector<std::vector<int>> batches{{1, 3, 3}, {4, 1, 2}, {2, 3}, {17}};
+       154|             int trial = 0;
+       155|             for (const auto& counts : batches) {
+       156|                 const std::string tag = "-" + std::to_string(trial);
+       157|                 product(ctx, s, ("Q4_K gate/up" + tag).c_str(), GGML_TYPE_Q4_K, 1280, 2560, counts, trial);
+       158|                 product(ctx, s, ("Q5_K gate/up" + tag).c_str(), GGML_TYPE_Q5_K, 1280, 2560, counts, trial + 5);
+       159|                 product(ctx, s, ("Q6_K gate/up" + tag).c_str(), GGML_TYPE_Q6_K, 1280, 2560, counts, trial + 17);
+       160|                 product(ctx, s, ("Q5_1 down" + tag).c_str(), GGML_TYPE_Q5_1, 2560, 640, counts, trial + 9);
+       161|                 product(ctx, s, ("Q8_0 down" + tag).c_str(), GGML_TYPE_Q8_0, 2560, 640, counts, trial + 13);
+     ----
+  ### tests/hip/prefill_mmq_parity.cpp : 301
+       293|                 run_product(ctx, stream, "synthetic-Q2_0-down-pass" + std::to_string(trial), GGML_TYPE_Q2_0,
+       294|                             2560, 640, synthetic_q2(n, 2560, 640, trial + 9), counts,
+       295|                             make_activations(rows, 640, trial + 3), src, dst);
+       296|                 ++trial;
+       297|             }
+       298|             // The K-quant instances a STRATA_MMQ_KQUANTS build adds (the dense GGUF projections of the
+       299|             // mixed-quant packs through Gemm::native).  Skipped when the build does not have them.
+       300|             for (const auto & [name, type] : std::initializer_list<std::pair<const char *, ggml_type>>{
+       301|                      {"Q4_K", GGML_TYPE_Q4_K}, {"Q5_K", GGML_TYPE_Q5_K}, {"Q6_K", GGML_TYPE_Q6_K},
+       302|                      {"Q5_1", GGML_TYPE_Q5_1}}) {
+       303|                 if (!supported((int) type)) {
+     ----
+
+=== [3] 全树找 __HIPCC__ 与 STRATA_Q6K_EXPERTS 的联合门 ===
+  src/kernels/native_grouped_parity.cpp                :345    #ifdef STRATA_Q6K_EXPERTS
+  src/kernels/cuda/iq_kernels.cu                       :610    #ifdef STRATA_Q6K_EXPERTS   // opt-in build (-DSTRATA_Q6K_EXPERTS=ON): one more instance per kernel, loaded at
+  src/kernels/cuda/iq_kernels.cu                       :1887   #ifdef STRATA_Q6K_EXPERTS
+  src/kernels/cuda/iq_kernels.cu                       :1918   #ifdef STRATA_Q6K_EXPERTS
+  src/prefill/moe_mmq.cu                               :132    #if defined(__HIPCC__) || defined(STRATA_Q6K_EXPERTS)
+  src/prefill/moe_mmq.cu                               :219    #if defined(__HIPCC__) || defined(STRATA_Q6K_EXPERTS)
+  sycl/src/kernels/native_grouped_parity.cpp           :452    #ifdef STRATA_Q6K_EXPERTS
+  sycl/src/kernels/cuda/iq_kernels.dp.cpp              :770    #ifdef STRATA_Q6K_EXPERTS   // opt-in build (-DSTRATA_Q6K_EXPERTS=ON): one more instance per kernel, loaded at
+  sycl/src/kernels/cuda/iq_kernels.dp.cpp              :2742   #ifdef STRATA_Q6K_EXPERTS
+  sycl/src/kernels/cuda/iq_kernels.dp.cpp              :2779   #ifdef STRATA_Q6K_EXPERTS
+
+=== [4] CMakeLists.txt 里 strata_mmq 的 q6_k 门（前后 12 行）===
+    1264|     # q8_0: the drafter's matrices (E-9); STRATA_ORCA_Q4KS_MMQ adds q5_0 (#296, in _strata_mmq_types), and
+    1265|     # STRATA_MMQ_KQUANTS q4_k q5_k q5_1, the experts of Unsloth's UD-Q4_K_XL (docs/UNSLOTH_Q4.md; the dispatch
+    1266|     # follows eddoursul/Strata 7706c1b); q6_k is HIP only
+    1267|     set(_strata_mmq_cuda_types ${_strata_mmq_types})
+    1268|     if(STRATA_MMQ_KQUANTS)
+    1269|       list(APPEND _strata_mmq_cuda_types q4_k q5_k q5_1)
+    1270|       if(STRATA_Q6K_EXPERTS)   # UD-Q6_K_XL gate/up (docs/UNSLOTH_Q6.md)
+    1271|         list(APPEND _strata_mmq_cuda_types q6_k)
+    1272|       endif()
+    1273|     endif()
+    1274|     foreach(_t IN LISTS _strata_mmq_cuda_types)
+  ----
+    1266|     # follows eddoursul/Strata 7706c1b); q6_k is HIP only
+    1267|     set(_strata_mmq_cuda_types ${_strata_mmq_types})
+    1268|     if(STRATA_MMQ_KQUANTS)
+    1269|       list(APPEND _strata_mmq_cuda_types q4_k q5_k q5_1)
+    1270|       if(STRATA_Q6K_EXPERTS)   # UD-Q6_K_XL gate/up (docs/UNSLOTH_Q6.md)
+    1271|         list(APPEND _strata_mmq_cuda_types q6_k)
+    1272|       endif()
+    1273|     endif()
+    1274|     foreach(_t IN LISTS _strata_mmq_cuda_types)
+    1275|       target_sources(strata_mmq PRIVATE ${_strata_mmq}/template-instances/mmq-instance-${_t}.cu)
+    1276|     endforeach()
+  ----
+    1268|     if(STRATA_MMQ_KQUANTS)
+    1269|       list(APPEND _strata_mmq_cuda_types q4_k q5_k q5_1)
+    1270|       if(STRATA_Q6K_EXPERTS)   # UD-Q6_K_XL gate/up (docs/UNSLOTH_Q6.md)
+    1271|         list(APPEND _strata_mmq_cuda_types q6_k)
+    1272|       endif()
+    1273|     endif()
+    1274|     foreach(_t IN LISTS _strata_mmq_cuda_types)
+    1275|       target_sources(strata_mmq PRIVATE ${_strata_mmq}/template-instances/mmq-instance-${_t}.cu)
+    1276|     endforeach()
+    1277|     target_include_directories(strata_mmq PRIVATE ${_strata_gg}/include ${_strata_gg}/src ${_strata_mmq}
+    1278|                                PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+  ----
+    1271|         list(APPEND _strata_mmq_cuda_types q6_k)
+    1272|       endif()
+    1273|     endif()
+    1274|     foreach(_t IN LISTS _strata_mmq_cuda_types)
+    1275|       target_sources(strata_mmq PRIVATE ${_strata_mmq}/template-instances/mmq-instance-${_t}.cu)
+    1276|     endforeach()
+    1277|     target_include_directories(strata_mmq PRIVATE ${_strata_gg}/include ${_strata_gg}/src ${_strata_mmq}
+    1278|                                PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    1279|     target_compile_options(strata_mmq PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--extended-lambda -use_fast_math>)
+    1280|     if(MSVC)
+    1281|       target_compile_options(strata_mmq PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=/bigobj>)
+  ----
+
+=== [5] 判据汇总 ===
+  含 mul_mat_q_case + Q6_K 的文件 = ['src/prefill/moe_mmq.cu']
+  CMakeLists 含 'STRATA_Q6K_EXPERTS OR STRATA_HIP_GFX906' = False

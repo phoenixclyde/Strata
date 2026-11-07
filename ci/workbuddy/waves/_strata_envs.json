@@ -1,0 +1,932 @@
+{
+ "STRATA_SPEC_COUPLED": [
+  "include\\strata\\core\\coupled_draft.hpp:59"
+ ],
+ "STRATA_SPEC_PROB": [
+  "include\\strata\\core\\coupled_draft.hpp:69"
+ ],
+ "STRATA_DMA_BATCH": [
+  "include\\strata\\core\\dma_batch.hpp:32"
+ ],
+ "STRATA_EMULATE_CC": [
+  "include\\strata\\core\\emulate.hpp:17"
+ ],
+ "STRATA_SPEC_PROB_GATE": [
+  "include\\strata\\core\\spec_prob.hpp:47"
+ ],
+ "STRATA_SPEC_PROB_DT": [
+  "include\\strata\\core\\spec_prob.hpp:57"
+ ],
+ "STRATA_SPEC_MIN_TEMP": [
+  "include\\strata\\core\\spec_prob.hpp:69"
+ ],
+ "STRATA_GFX1151_DEFAULTS": [
+  "src\\core\\arch_defaults.cpp:15"
+ ],
+ "STRATA_TSUM": [
+  "src\\core\\arch_defaults_test.cpp:51",
+  "src\\core\\arch_defaults_test.cpp:51",
+  "src\\kernels\\cuda\\fused_gr.cu:1585",
+  "src\\kernels\\cuda\\iq_kernels.cu:3390",
+  "src\\kernels\\cuda\\iq_kernels.cu:3404",
+  "src\\kernels\\cuda\\native_bf16.cu:234",
+  "src\\kernels\\cuda\\native_mmvq.cu:1157"
+ ],
+ "STRATA_QFUSE": [
+  "src\\core\\arch_defaults_test.cpp:52",
+  "src\\core\\arch_defaults_test.cpp:52",
+  "src\\core\\verify.cpp:74"
+ ],
+ "STRATA_SESSION_BUFFERED": [
+  "src\\core\\conversation_file.cpp:340",
+  "src\\core\\conversation_file_test.cpp:208"
+ ],
+ "STRATA_SESSION_GOLDEN_PRINT": [
+  "src\\core\\conversation_file_test.cpp:179"
+ ],
+ "STRATA_WDDM_BUDGET": [
+  "src\\core\\device.cu:186"
+ ],
+ "STRATA_UMA_HEADROOM_GIB": [
+  "src\\core\\expert_cache.cpp:55"
+ ],
+ "STRATA_UNBUFFERED_LOAD": [
+  "src\\core\\expert_source.cpp:428",
+  "src\\core\\expert_source.cpp:1481",
+  "src\\core\\pinned.cu:597",
+  "src\\program\\generate.cpp:4037"
+ ],
+ "STRATA_IO_PF_AHEAD": [
+  "src\\core\\expert_source.cpp:580"
+ ],
+ "STRATA_IO_PF_STAGE": [
+  "src\\core\\expert_source.cpp:582",
+  "src\\program\\generate.cpp:4055"
+ ],
+ "STRATA_FETCH_PVM": [
+  "src\\core\\expert_source.cpp:1379"
+ ],
+ "STRATA_FILE_RELEASE": [
+  "src\\core\\expert_source.cpp:1989"
+ ],
+ "STRATA_PIN_RESERVE_GIB": [
+  "src\\core\\expert_source.cpp:2233"
+ ],
+ "STRATA_PIN_GUARD": [
+  "src\\core\\expert_source.cpp:2240"
+ ],
+ "STRATA_PARTIAL_PIN": [
+  "src\\core\\expert_source.cpp:2321"
+ ],
+ "STRATA_PARTIAL_PIN_GIB": [
+  "src\\core\\expert_source.cpp:2327"
+ ],
+ "STRATA_EXCHANGE_ROTATE": [
+  "src\\core\\expert_source.cpp:2610"
+ ],
+ "STRATA_POOL_TRACE": [
+  "src\\core\\expert_source.cpp:2973"
+ ],
+ "STRATA_DEC_BATCH": [
+  "src\\core\\expert_source.cpp:3109",
+  "src\\core\\verify.cpp:679",
+  "src\\kernels\\cuda\\shared_expert.cu:246"
+ ],
+ "STRATA_VERIFY_DEVICE_PLAN": [
+  "src\\core\\expert_source.cpp:3112",
+  "src\\core\\verify.cpp:619"
+ ],
+ "STRATA_ARENA_MMAP": [
+  "src\\core\\expert_source.cpp:3737",
+  "src\\program\\generate.cpp:154",
+  "src\\program\\generate.cpp:154",
+  "src\\program\\generate.cpp:1527",
+  "src\\program\\generate.cpp:1527"
+ ],
+ "STRATA_DEFERRED_REGISTER": [
+  "src\\core\\expert_source.cpp:3819"
+ ],
+ "STRATA_VERIFY_ARENA": [
+  "src\\core\\expert_source.cpp:3883"
+ ],
+ "STRATA_ROUTE_PER_TOKEN": [
+  "src\\core\\layer.cpp:399"
+ ],
+ "STRATA_ROUTE_PROJ_PER_TOKEN": [
+  "src\\core\\layer.cpp:411"
+ ],
+ "STRATA_KV_RING_OFF": [
+  "src\\core\\layer.cpp:641"
+ ],
+ "STRATA_KV_MAIN_OFF": [
+  "src\\core\\layer.cpp:642"
+ ],
+ "STRATA_MTP_CATCHUP_ALL": [
+  "src\\core\\mtp.cpp:61"
+ ],
+ "STRATA_MTP_PRIORITY": [
+  "src\\core\\mtp.cpp:421"
+ ],
+ "STRATA_MTP_FULL_HEAD": [
+  "src\\core\\mtp.cpp:455"
+ ],
+ "STRATA_MTP_TOP2": [
+  "src\\core\\mtp.cpp:461"
+ ],
+ "STRATA_NO_BATCH_KV_STEP": [
+  "src\\core\\mtp.cpp:732"
+ ],
+ "STRATA_FUSE_HEAD_GR": [
+  "src\\core\\mtp.cpp:850",
+  "src\\core\\verify.cpp:1362"
+ ],
+ "STRATA_HEAD_MIX_MULTI": [
+  "src\\core\\mtp.cpp:857",
+  "src\\core\\verify.cpp:132"
+ ],
+ "STRATA_MTP_SHARED_BRANCH": [
+  "src\\core\\mtp.cpp:867"
+ ],
+ "STRATA_NO_MULTI_GR": [
+  "src\\core\\mtp.cpp:914",
+  "src\\kernels\\cuda\\fused_gr.cu:869",
+  "src\\kernels\\cuda\\gr.cu:416"
+ ],
+ "STRATA_MTP_PREFILL_SYNC": [
+  "src\\core\\mtp.cpp:1155"
+ ],
+ "STRATA_HC_Q8": [
+  "src\\core\\native_dense.cpp:42"
+ ],
+ "STRATA_HC_Q8_INJECT": [
+  "src\\core\\native_dense.cpp:327"
+ ],
+ "STRATA_PEER_DIRECT": [
+  "src\\core\\peer_experts.cpp:188"
+ ],
+ "STRATA_NO_LARGEPAGES": [
+  "src\\core\\pinned.cu:89",
+  "src\\core\\pinned.cu:106",
+  "src\\core\\pinned.cu:205",
+  "src\\core\\pinned.cu:257",
+  "src\\core\\pinned.cu:264"
+ ],
+ "STRATA_NO_ARENA_THP": [
+  "src\\core\\pinned.cu:256",
+  "src\\core\\pinned.cu:261"
+ ],
+ "STRATA_ARENA_PIN_GIB": [
+  "src\\core\\pinned.cu:300"
+ ],
+ "STRATA_ARENA_LOCK": [
+  "src\\core\\pinned.cu:414",
+  "src\\core\\pinned.cu:442",
+  "src\\core\\pinned.cu:485"
+ ],
+ "STRATA_REMOTE_SPIN": [
+  "src\\core\\remote_experts.cpp:78"
+ ],
+ "STRATA_REMOTE_ZEROCOPY": [
+  "src\\core\\remote_experts.cpp:209"
+ ],
+ "STRATA_TG_FLUSH_US": [
+  "src\\core\\session.cpp:922"
+ ],
+ "STRATA_VERIFY_DEBUG": [
+  "src\\core\\verify.cpp:65"
+ ],
+ "STRATA_LFUSE": [
+  "src\\core\\verify.cpp:66"
+ ],
+ "STRATA_LFUSE_GATE": [
+  "src\\core\\verify.cpp:67"
+ ],
+ "STRATA_LFUSE_PAIR": [
+  "src\\core\\verify.cpp:68"
+ ],
+ "STRATA_VERIFY_QDEDUP": [
+  "src\\core\\verify.cpp:69"
+ ],
+ "STRATA_MMVQ_IL": [
+  "src\\core\\verify.cpp:73"
+ ],
+ "STRATA_SH_STREAM": [
+  "src\\core\\verify.cpp:112"
+ ],
+ "STRATA_ONE_TOKEN_COMMIT": [
+  "src\\core\\verify.cpp:144"
+ ],
+ "STRATA_TEST_VERIFY_STALL": [
+  "src\\core\\verify.cpp:234"
+ ],
+ "STRATA_VERIFY_PROFILE": [
+  "src\\core\\verify.cpp:546"
+ ],
+ "STRATA_DF_BRANCH": [
+  "src\\core\\verify.cpp:584"
+ ],
+ "STRATA_VERIFY_ALL_RESIDENT": [
+  "src\\core\\verify.cpp:602"
+ ],
+ "STRATA_PLE_BATCH": [
+  "src\\core\\verify.cpp:796",
+  "src\\core\\verify.cpp:805",
+  "src\\prefill\\prefill.cpp:1826"
+ ],
+ "STRATA_DF_PLE": [
+  "src\\core\\verify.cpp:840"
+ ],
+ "STRATA_DF_QB_Q4": [
+  "src\\core\\verify.cpp:1042"
+ ],
+ "STRATA_SH_FORK_LATE": [
+  "src\\core\\verify.cpp:1242"
+ ],
+ "STRATA_VERIFY_NODES": [
+  "src\\core\\verify.cpp:1661"
+ ],
+ "STRATA_DBG_NAN": [
+  "src\\core\\verify.cpp:2065",
+  "src\\prefill\\gemm.cu:757",
+  "src\\prefill\\prefill.cpp:3377",
+  "src\\prefill\\prefill.cpp:3550"
+ ],
+ "STRATA_LOGPOS_TOPK": [
+  "src\\core\\verify.cpp:2198"
+ ],
+ "STRATA_COMMIT_SYNC": [
+  "src\\core\\verify.cpp:2216"
+ ],
+ "STRATA_GR_V3": [
+  "src\\kernels\\gr_parity.cpp:342",
+  "src\\kernels\\cuda\\fused_gr.cu:1657"
+ ],
+ "STRATA_MMVQ_WAVE": [
+  "src\\kernels\\mmvq_multi_parity.cpp:245",
+  "src\\kernels\\mmvq_multi_parity.cpp:245",
+  "src\\kernels\\cuda\\native_mmvq.cu:1532",
+  "src\\kernels\\cuda\\native_mmvq.cu:1532"
+ ],
+ "STRATA_IQ_MT_MIN": [
+  "src\\kernels\\native_expert_parity.cpp:538",
+  "src\\kernels\\cpu\\native_expert.cpp:97",
+  "src\\kernels\\cpu\\native_expert.cpp:169"
+ ],
+ "STRATA_DF_PDL": [
+  "src\\kernels\\pdl_parity.cpp:252",
+  "src\\kernels\\cuda\\verify_kernels.cu:1288",
+  "src\\kernels\\cuda\\verify_kernels.cu:1330"
+ ],
+ "STRATA_PLE_GGUF": [
+  "src\\kernels\\ple_parity.cpp:257",
+  "src\\kernels\\ple_parity.cpp:257"
+ ],
+ "STRATA_CPU_YMM": [
+  "src\\kernels\\cpu\\expert.cpp:153"
+ ],
+ "STRATA_FORCE_ISA": [
+  "src\\kernels\\cpu\\expert_layout.cpp:28"
+ ],
+ "STRATA_FORCE_AVX2": [
+  "src\\kernels\\cpu\\expert_layout.cpp:42",
+  "src\\kernels\\cpu\\expert_layout.cpp:75"
+ ],
+ "STRATA_IQ256_GATHER": [
+  "src\\kernels\\cpu\\expert_layout.cpp:203"
+ ],
+ "STRATA_NO_AVXVNNI": [
+  "src\\kernels\\cpu\\expert_layout.cpp:253"
+ ],
+ "STRATA_IQ_PREFETCH": [
+  "src\\kernels\\cpu\\iq_avx2.cpp:185",
+  "src\\kernels\\cpu\\iq_avx512.cpp:37"
+ ],
+ "STRATA_IQ_GATHER": [
+  "src\\kernels\\cpu\\iq_avx512.cpp:33"
+ ],
+ "STRATA_NO_Q8K_AVX2": [
+  "src\\kernels\\cpu\\native_expert.cpp:77"
+ ],
+ "STRATA_IQ3S_MT1": [
+  "src\\kernels\\cpu\\native_expert.cpp:106"
+ ],
+ "STRATA_NO_IQ256": [
+  "src\\kernels\\cpu\\native_expert.cpp:106",
+  "src\\kernels\\cpu\\native_expert.cpp:126",
+  "src\\program\\generate.cpp:2417"
+ ],
+ "STRATA_NO_IQ512": [
+  "src\\kernels\\cpu\\native_expert.cpp:118"
+ ],
+ "STRATA_KQ256": [
+  "src\\kernels\\cpu\\native_expert.cpp:131",
+  "src\\kernels\\cpu\\native_expert.cpp:170"
+ ],
+ "STRATA_NO_IQ4NL": [
+  "src\\kernels\\cpu\\native_expert.cpp:168"
+ ],
+ "STRATA_POOL_SPIN_US": [
+  "src\\kernels\\cpu\\pool.cpp:439"
+ ],
+ "STRATA_Q2_BITPLANE": [
+  "src\\kernels\\cpu\\q2_avx2.cpp:147"
+ ],
+ "STRATA_GR_DOWN_MAX4": [
+  "src\\kernels\\cuda\\fused_gr.cu:844"
+ ],
+ "STRATA_HC_SPLIT": [
+  "src\\kernels\\cuda\\fused_gr.cu:925",
+  "src\\kernels\\cuda\\fused_gr.cu:1924"
+ ],
+ "STRATA_GR_FAST": [
+  "src\\kernels\\cuda\\fused_gr.cu:1613"
+ ],
+ "STRATA_GR_SPLIT": [
+  "src\\kernels\\cuda\\fused_gr.cu:1726",
+  "src\\kernels\\cuda\\fused_gr.cu:1726"
+ ],
+ "STRATA_IQ_STAGE_GRID": [
+  "src\\kernels\\cuda\\iq_kernels.cu:1959"
+ ],
+ "STRATA_IQ_STAGE_GRID_MMVQ": [
+  "src\\kernels\\cuda\\iq_kernels.cu:1966"
+ ],
+ "STRATA_EXP_MODE": [
+  "src\\kernels\\cuda\\iq_kernels.cu:3353"
+ ],
+ "STRATA_EXPERT_V2": [
+  "src\\kernels\\cuda\\iq_kernels.cu:3387"
+ ],
+ "STRATA_EXPERT_V2K": [
+  "src\\kernels\\cuda\\iq_kernels.cu:3401"
+ ],
+ "STRATA_MMVF_ROWS": [
+  "src\\kernels\\cuda\\native_bf16.cu:270",
+  "src\\kernels\\cuda\\native_bf16.cu:300"
+ ],
+ "STRATA_NO_MMVQ_ROWS2": [
+  "src\\kernels\\cuda\\native_mmvq.cu:1277"
+ ],
+ "STRATA_Q6P_GRID": [
+  "src\\kernels\\cuda\\native_mmvq.cu:1776"
+ ],
+ "STRATA_Q8_PACKED": [
+  "src\\kernels\\cuda\\native_mmvq.cu:1901"
+ ],
+ "STRATA_Q6_PACKED": [
+  "src\\kernels\\cuda\\native_mmvq.cu:1936"
+ ],
+ "STRATA_Q6P_SELFTEST": [
+  "src\\kernels\\cuda\\native_mmvq.cu:1974"
+ ],
+ "STRATA_ROPE_TABLE": [
+  "src\\kernels\\cuda\\native_rope.cu:154"
+ ],
+ "STRATA_NO_NORM_ROPE": [
+  "src\\kernels\\cuda\\native_rope.cu:177"
+ ],
+ "STRATA_NORM_ROPE": [
+  "src\\kernels\\cuda\\native_rope.cu:180"
+ ],
+ "STRATA_ATTN_PRE75": [
+  "src\\kernels\\cuda\\qsa_decode_attn.cu:490"
+ ],
+ "STRATA_ATTN_LANECELL": [
+  "src\\kernels\\cuda\\qsa_decode_attn.cu:548"
+ ],
+ "STRATA_HIP_WMMA": [
+  "src\\kernels\\cuda\\qsa_prompt_attn.cu:1404",
+  "src\\prefill\\prefill.cpp:237",
+  "src\\program\\generate.cpp:3956"
+ ],
+ "STRATA_PA_FAST": [
+  "src\\kernels\\cuda\\qsa_prompt_attn.cu:1431"
+ ],
+ "STRATA_PF_SWITCH_MIN_T": [
+  "src\\kernels\\cuda\\qsa_prompt_attn.cu:1432",
+  "src\\prefill\\gemm.cu:659",
+  "src\\prefill\\gemm.cu:781",
+  "src\\prefill\\prefill.cpp:274"
+ ],
+ "STRATA_QSA_WARP": [
+  "src\\kernels\\cuda\\qsa_prompt_attn.cu:1475",
+  "src\\kernels\\cuda\\qsa_select.cu:1152"
+ ],
+ "STRATA_PROMPT_ATTN_Q4": [
+  "src\\kernels\\cuda\\qsa_prompt_attn.cu:1498"
+ ],
+ "STRATA_PROMPT_ATTN_V1": [
+  "src\\kernels\\cuda\\qsa_prompt_attn.cu:1515"
+ ],
+ "STRATA_SCORES_MULTI": [
+  "src\\kernels\\cuda\\qsa_select.cu:1100"
+ ],
+ "STRATA_QSA_EARLY_EXIT": [
+  "src\\kernels\\cuda\\qsa_select.cu:1103"
+ ],
+ "STRATA_SELECT_WMMA": [
+  "src\\kernels\\cuda\\qsa_select.cu:1126"
+ ],
+ "STRATA_SELECT_SIMT": [
+  "src\\kernels\\cuda\\qsa_select.cu:1159"
+ ],
+ "STRATA_TOPK_OLD": [
+  "src\\kernels\\cuda\\qsa_select.cu:1299"
+ ],
+ "STRATA_QSA_CLUSTER": [
+  "src\\kernels\\cuda\\qsa_select.cu:1305"
+ ],
+ "STRATA_TOPK_CAPACITY_GUARD": [
+  "src\\kernels\\cuda\\qsa_select.cu:1320"
+ ],
+ "STRATA_TOPK_ACTIVE_ANY": [
+  "src\\kernels\\cuda\\qsa_select.cu:1323"
+ ],
+ "STRATA_TOPK_STREAM": [
+  "src\\kernels\\cuda\\qsa_select.cu:1350"
+ ],
+ "STRATA_HIP_ROUTER_FAST": [
+  "src\\kernels\\cuda\\router_top10.cu:429"
+ ],
+ "STRATA_HIP_ROUTER_OLD": [
+  "src\\kernels\\cuda\\router_top10.cu:431"
+ ],
+ "STRATA_ROUTER_BLOCK": [
+  "src\\kernels\\cuda\\router_top10.cu:462"
+ ],
+ "STRATA_OLD_GROUPED": [
+  "src\\kernels\\cuda\\s2_expert_grouped.cu:527"
+ ],
+ "STRATA_GROUPED_PAIR_MIN_HITS": [
+  "src\\kernels\\cuda\\s2_expert_grouped.cu:540"
+ ],
+ "STRATA_S2_SWIGLU_Q8": [
+  "src\\kernels\\cuda\\s2_expert_grouped.cu:1155"
+ ],
+ "STRATA_ARGMAX_MULTI": [
+  "src\\kernels\\cuda\\sampler.cu:1256"
+ ],
+ "STRATA_FUSED_SWIGLU_Q81": [
+  "src\\kernels\\cuda\\shared_expert.cu:207"
+ ],
+ "STRATA_MULTI_BLOCK_ARGMAX": [
+  "src\\kernels\\cuda\\verify_kernels.cu:827"
+ ],
+ "STRATA_GDN_SPLIT": [
+  "src\\kernels\\cuda\\verify_kernels.cu:920"
+ ],
+ "STRATA_GDN_COMMIT_SPLIT": [
+  "src\\kernels\\cuda\\verify_kernels.cu:939"
+ ],
+ "STRATA_DBG_GDN": [
+  "src\\kernels\\cuda\\verify_kernels.cu:943"
+ ],
+ "STRATA_IO_THREADS": [
+  "src\\platform\\direct_file.cpp:63"
+ ],
+ "STRATA_READ_AHEAD": [
+  "src\\platform\\memory.cpp:152",
+  "tools\\vision\\strata_vision.cpp:105"
+ ],
+ "STRATA_HIPBLASLT_VERBOSE": [
+  "src\\prefill\\gemm.cu:142",
+  "src\\prefill\\gemm.cu:233",
+  "src\\prefill\\gemm.cu:313"
+ ],
+ "STRATA_HIPBLASLT_TUNING": [
+  "src\\prefill\\gemm.cu:187"
+ ],
+ "STRATA_HIP_PROMPT_F16": [
+  "src\\prefill\\gemm.cu:359"
+ ],
+ "STRATA_BF16_TC": [
+  "src\\prefill\\gemm.cu:522"
+ ],
+ "STRATA_WMMA_GEMM": [
+  "src\\prefill\\gemm.cu:579",
+  "src\\prefill\\gemm.cu:657"
+ ],
+ "STRATA_WMMA_BF16": [
+  "src\\prefill\\gemm.cu:580"
+ ],
+ "STRATA_PF_GEMM": [
+  "src\\prefill\\gemm.cu:658",
+  "src\\prefill\\gemm.cu:780",
+  "src\\prefill\\prefill.cpp:309"
+ ],
+ "STRATA_DENSE_MMQ": [
+  "src\\prefill\\gemm.cu:690"
+ ],
+ "STRATA_PF_PAD": [
+  "src\\prefill\\gemm.cu:779",
+  "src\\prefill\\prefill.cpp:309"
+ ],
+ "STRATA_GDN_KEYHEAD": [
+  "src\\prefill\\kernels.cu:696"
+ ],
+ "STRATA_GDN_CONV_SERIAL": [
+  "src\\prefill\\kernels.cu:1557"
+ ],
+ "STRATA_GDN_CONVL2": [
+  "src\\prefill\\kernels.cu:1561"
+ ],
+ "STRATA_GDN_PP": [
+  "src\\prefill\\kernels.cu:1602"
+ ],
+ "STRATA_GDN_NOY": [
+  "src\\prefill\\kernels.cu:1609"
+ ],
+ "STRATA_GDN_REC_HEADS": [
+  "src\\prefill\\kernels.cu:1623",
+  "src\\prefill\\kernels.cu:1647"
+ ],
+ "STRATA_GDN_PIPELINE": [
+  "src\\prefill\\kernels.cu:1627"
+ ],
+ "STRATA_GDN_HEAD": [
+  "src\\prefill\\kernels.cu:1646"
+ ],
+ "STRATA_MMQ_RESIDENT_SORT_NE": [
+  "src\\prefill\\mmq_resident_sort.hpp:17"
+ ],
+ "STRATA_PF_OCC": [
+  "src\\prefill\\moe_fused.cu:588",
+  "src\\prefill\\moe_fused_iq.cu:937"
+ ],
+ "STRATA_PF_FUSED": [
+  "src\\prefill\\moe_fused.cu:657",
+  "src\\prefill\\moe_fused.cu:668"
+ ],
+ "STRATA_PF_FUSED_KQ": [
+  "src\\prefill\\moe_fused_iq.cu:991"
+ ],
+ "STRATA_PF_FUSED_TILE": [
+  "src\\prefill\\moe_fused_iq.cu:1027"
+ ],
+ "STRATA_PF_FUSED_NATIVE": [
+  "src\\prefill\\moe_fused_iq.cu:1040"
+ ],
+ "STRATA_PREFILL_STREAM_AHEAD": [
+  "src\\prefill\\prefill.cpp:104"
+ ],
+ "STRATA_TEST_PAGEABLE": [
+  "src\\prefill\\prefill.cpp:115"
+ ],
+ "STRATA_STAGER_SLEEP": [
+  "src\\prefill\\prefill.cpp:124"
+ ],
+ "STRATA_PREFILL_STREAM_MIN": [
+  "src\\prefill\\prefill.cpp:140"
+ ],
+ "STRATA_PREFILL_CPU_SHARE": [
+  "src\\prefill\\prefill.cpp:153"
+ ],
+ "STRATA_RING_BYTES": [
+  "src\\prefill\\prefill.cpp:222"
+ ],
+ "STRATA_PREFILL_RING": [
+  "src\\prefill\\prefill.cpp:232"
+ ],
+ "STRATA_PREFILL_BF16X2": [
+  "src\\prefill\\prefill.cpp:264"
+ ],
+ "STRATA_HC_UPMIX": [
+  "src\\prefill\\prefill.cpp:278"
+ ],
+ "STRATA_PF_HCDOWN": [
+  "src\\prefill\\prefill.cpp:288"
+ ],
+ "STRATA_HCD_EXACT": [
+  "src\\prefill\\prefill.cpp:296"
+ ],
+ "STRATA_CVEC_FUSE": [
+  "src\\prefill\\prefill.cpp:301"
+ ],
+ "STRATA_GR_UNFUSED": [
+  "src\\prefill\\prefill.cpp:318"
+ ],
+ "STRATA_STAGER_RING": [
+  "src\\prefill\\prefill.cpp:387",
+  "src\\prefill\\prefill.cpp:937"
+ ],
+ "STRATA_KV_STAGE_OWN": [
+  "src\\prefill\\prefill.cpp:707"
+ ],
+ "STRATA_PREFILL_MMQ": [
+  "src\\prefill\\prefill.cpp:824"
+ ],
+ "STRATA_STAGER_THREADS": [
+  "src\\prefill\\prefill.cpp:929"
+ ],
+ "STRATA_GROUP_COPY": [
+  "src\\prefill\\prefill.cpp:944"
+ ],
+ "STRATA_MTP_BATCH": [
+  "src\\prefill\\prefill.cpp:1151"
+ ],
+ "STRATA_MTP_BATCH_RING": [
+  "src\\prefill\\prefill.cpp:1156"
+ ],
+ "STRATA_MTP_BATCH_F16": [
+  "src\\prefill\\prefill.cpp:1188"
+ ],
+ "STRATA_DRAFT_TIMING": [
+  "src\\prefill\\prefill.cpp:1219"
+ ],
+ "STRATA_PREFILL_HELP": [
+  "src\\prefill\\prefill.cpp:1318"
+ ],
+ "STRATA_PREFILL_HELP_FRAC": [
+  "src\\prefill\\prefill.cpp:1330"
+ ],
+ "STRATA_PF_PEER_OUT_PIPE": [
+  "src\\prefill\\prefill.cpp:1463"
+ ],
+ "STRATA_PF_PEER_COMPACT": [
+  "src\\prefill\\prefill.cpp:1479"
+ ],
+ "STRATA_PF_PEER_STREAM": [
+  "src\\prefill\\prefill.cpp:1493"
+ ],
+ "STRATA_PF_PEER_RING": [
+  "src\\prefill\\prefill.cpp:1497"
+ ],
+ "STRATA_PREFILL_TIMING": [
+  "src\\prefill\\prefill.cpp:1682",
+  "src\\prefill\\prefill.cpp:1718"
+ ],
+ "STRATA_KV_PREFETCH": [
+  "src\\prefill\\prefill.cpp:1773"
+ ],
+ "STRATA_TRACE": [
+  "src\\prefill\\prefill.cpp:1852",
+  "src\\program\\generate.cpp:1202",
+  "src\\program\\generate.cpp:7766"
+ ],
+ "STRATA_PREFILL_ISSUER": [
+  "src\\prefill\\prefill.cpp:2099"
+ ],
+ "STRATA_PF_STEP_SYNC": [
+  "src\\prefill\\prefill.cpp:2165"
+ ],
+ "STRATA_HC_UPMIX_CHECK": [
+  "src\\prefill\\prefill.cpp:2272"
+ ],
+ "STRATA_KV_HOST_DMA": [
+  "src\\prefill\\prefill.cpp:2373"
+ ],
+ "STRATA_INDEXER_PER_TOKEN": [
+  "src\\prefill\\prefill.cpp:2423"
+ ],
+ "STRATA_SELECT_OLD": [
+  "src\\prefill\\prefill.cpp:2445"
+ ],
+ "STRATA_SEL_OVERLAP": [
+  "src\\prefill\\prefill.cpp:2456"
+ ],
+ "STRATA_IDX_FP16_CHECK": [
+  "src\\prefill\\prefill.cpp:2478"
+ ],
+ "STRATA_QSA_DUMP": [
+  "src\\prefill\\prefill.cpp:2524"
+ ],
+ "STRATA_QSA_DUMP_LAST": [
+  "src\\prefill\\prefill.cpp:2525",
+  "src\\prefill\\prefill.cpp:2526"
+ ],
+ "STRATA_PROMPT_ATTN_OLD": [
+  "src\\prefill\\prefill.cpp:2546"
+ ],
+ "STRATA_DBG_FORCE_SLOW_LAYER": [
+  "src\\prefill\\prefill.cpp:2612"
+ ],
+ "STRATA_PREFILL_GROUP_GATHER": [
+  "src\\prefill\\prefill.cpp:3188"
+ ],
+ "STRATA_CVEC_FUSE_CHECK": [
+  "src\\prefill\\prefill.cpp:3422"
+ ],
+ "STRATA_PREFILL_DUMP_R": [
+  "src\\prefill\\prefill.cpp:3498"
+ ],
+ "STRATA_PREFILL_DUMP_R_ALL": [
+  "src\\prefill\\prefill.cpp:3511"
+ ],
+ "STRATA_STATE_HASH_GDN": [
+  "src\\prefill\\prefill.cpp:3618",
+  "src\\program\\generate.cpp:10586"
+ ],
+ "STRATA_PF_BK64": [
+  "src\\prefill\\wmma_gemm.cu:693"
+ ],
+ "STRATA_HIP_ADAPT_KERNEL_COPY": [
+  "src\\program\\generate.cpp:168"
+ ],
+ "STRATA_RSS_TRACE": [
+  "src\\program\\generate.cpp:218"
+ ],
+ "STRATA_REFILL_BLOCKING": [
+  "src\\program\\generate.cpp:232"
+ ],
+ "STRATA_PIPELINE_DEBUG": [
+  "src\\program\\generate.cpp:241"
+ ],
+ "STRATA_ADAPT_NOWAIT": [
+  "src\\program\\generate.cpp:1211"
+ ],
+ "STRATA_ADAPT_LAG": [
+  "src\\program\\generate.cpp:1221"
+ ],
+ "STRATA_ADAPT_JOB_CPU": [
+  "src\\program\\generate.cpp:1277"
+ ],
+ "STRATA_PREFILL_AUTO_MAX": [
+  "src\\program\\generate.cpp:1716"
+ ],
+ "STRATA_RESIDENT_PIN": [
+  "src\\program\\generate.cpp:1856",
+  "src\\program\\generate.cpp:1867"
+ ],
+ "STRATA_RESIDENT_HEADROOM_GIB": [
+  "src\\program\\generate.cpp:1858",
+  "src\\program\\generate.cpp:1869"
+ ],
+ "STRATA_HOST_CORE": [
+  "src\\program\\generate.cpp:1902"
+ ],
+ "STRATA_SPLIT_OWN": [
+  "src\\program\\generate.cpp:2017"
+ ],
+ "STRATA_KV_ROT": [
+  "src\\program\\generate.cpp:2117",
+  "src\\program\\generate.cpp:6846"
+ ],
+ "STRATA_EARLY_REMOTE_CONTEXTS": [
+  "src\\program\\generate.cpp:2378"
+ ],
+ "STRATA_STAGE_TRIM": [
+  "src\\program\\generate.cpp:2569"
+ ],
+ "STRATA_SSD_KEEPALIVE": [
+  "src\\program\\generate.cpp:2778"
+ ],
+ "STRATA_SSD_KEEPALIVE_WINDOW": [
+  "src\\program\\generate.cpp:2779"
+ ],
+ "STRATA_PEER_HOT": [
+  "src\\program\\generate.cpp:3070"
+ ],
+ "STRATA_PEER_HOT_AT": [
+  "src\\program\\generate.cpp:3072"
+ ],
+ "STRATA_SPLIT_OWN_PLACE": [
+  "src\\program\\generate.cpp:3189"
+ ],
+ "STRATA_SPLIT_MISS_MS": [
+  "src\\program\\generate.cpp:3228",
+  "src\\program\\generate.cpp:3228"
+ ],
+ "STRATA_SPLIT_COVER_B": [
+  "src\\program\\generate.cpp:3254",
+  "src\\program\\generate.cpp:3254",
+  "src\\program\\generate.cpp:3260"
+ ],
+ "STRATA_PREFILL_LEND_PCT": [
+  "src\\program\\generate.cpp:3276",
+  "src\\program\\generate.cpp:4632",
+  "src\\program\\generate.cpp:5590"
+ ],
+ "STRATA_LAYER_SPLIT_GATE": [
+  "src\\program\\generate.cpp:3412"
+ ],
+ "STRATA_KV_GROW": [
+  "src\\program\\generate.cpp:3686"
+ ],
+ "STRATA_KV_GROW_INIT": [
+  "src\\program\\generate.cpp:3698"
+ ],
+ "STRATA_BATCH_MTP": [
+  "src\\program\\generate.cpp:3764"
+ ],
+ "STRATA_FETCH_THREADS": [
+  "src\\program\\generate.cpp:4018"
+ ],
+ "STRATA_IO_PREFETCH": [
+  "src\\program\\generate.cpp:4044"
+ ],
+ "STRATA_IO_PF_THREADS": [
+  "src\\program\\generate.cpp:4045"
+ ],
+ "STRATA_IO_STATS": [
+  "src\\program\\generate.cpp:4071"
+ ],
+ "STRATA_OWNED_PRICE": [
+  "src\\program\\generate.cpp:4163"
+ ],
+ "STRATA_TEST_CACHE_FAIL": [
+  "src\\program\\generate.cpp:4398",
+  "src\\program\\generate.cpp:4398"
+ ],
+ "STRATA_FILL_AHEAD": [
+  "src\\program\\generate.cpp:4503"
+ ],
+ "STRATA_LAYER_SPLIT_PROBE": [
+  "src\\program\\generate.cpp:4626"
+ ],
+ "STRATA_DISJOINT_ADAPT": [
+  "src\\program\\generate.cpp:4784"
+ ],
+ "STRATA_LOOKAHEAD": [
+  "src\\program\\generate.cpp:4804"
+ ],
+ "STRATA_LOOKAHEAD_K": [
+  "src\\program\\generate.cpp:4815"
+ ],
+ "STRATA_IO_PREFETCH_DEPTH": [
+  "src\\program\\generate.cpp:4818"
+ ],
+ "STRATA_ARENA_RELEASE": [
+  "src\\program\\generate.cpp:5430",
+  "src\\program\\generate.cpp:5430"
+ ],
+ "STRATA_PREFILL_EQUAL": [
+  "src\\program\\generate.cpp:5569"
+ ],
+ "STRATA_KV_GROW_STEP": [
+  "src\\program\\generate.cpp:5712"
+ ],
+ "STRATA_KV_GROW_FLOOR": [
+  "src\\program\\generate.cpp:5714"
+ ],
+ "STRATA_PIPELINE_ADAPT_ASYNC": [
+  "src\\program\\generate.cpp:5916"
+ ],
+ "STRATA_SPLIT_RING": [
+  "src\\program\\generate.cpp:6092"
+ ],
+ "STRATA_SPLIT_OWN_BUFFERS": [
+  "src\\program\\generate.cpp:6254"
+ ],
+ "STRATA_SPLIT_SMALL_OWN": [
+  "src\\program\\generate.cpp:6444"
+ ],
+ "STRATA_SPLIT_SMALL_MAX": [
+  "src\\program\\generate.cpp:6446"
+ ],
+ "STRATA_SNAPSHOT_VERIFY": [
+  "src\\program\\generate.cpp:7103",
+  "src\\program\\generate.cpp:9016"
+ ],
+ "STRATA_WATCHDOG_S": [
+  "src\\program\\generate.cpp:7853"
+ ],
+ "STRATA_SNAPSHOT_FULL_CAPTURE": [
+  "src\\program\\generate.cpp:9043"
+ ],
+ "STRATA_KV_GROW_HOLD": [
+  "src\\program\\generate.cpp:9071"
+ ],
+ "STRATA_CKPT_REREAD": [
+  "src\\program\\generate.cpp:9092",
+  "src\\program\\generate.cpp:9149"
+ ],
+ "STRATA_LOGPOS": [
+  "src\\program\\generate.cpp:9275",
+  "src\\program\\generate.cpp:9303"
+ ],
+ "STRATA_LOGPOS_EXTRA": [
+  "src\\program\\generate.cpp:9307"
+ ],
+ "STRATA_REFILL_SERIAL": [
+  "src\\program\\generate.cpp:9364"
+ ],
+ "STRATA_BATCH_DECODE_SHARE": [
+  "src\\program\\generate.cpp:9447"
+ ],
+ "STRATA_CACHE_MESSAGE_BOUNDARY": [
+  "src\\program\\generate.cpp:9599"
+ ],
+ "STRATA_LOOKUP_CHAIN_FIXED": [
+  "src\\program\\generate.cpp:9717",
+  "src\\program\\generate.cpp:11486"
+ ],
+ "STRATA_DECODE_TIMING": [
+  "src\\program\\generate.cpp:9726"
+ ],
+ "STRATA_STATE_HASH": [
+  "src\\program\\generate.cpp:10544"
+ ],
+ "STRATA_SPLIT_TIMING": [
+  "src\\program\\generate.cpp:10810"
+ ],
+ "STRATA_SPEC_DEPTH": [
+  "src\\program\\generate.cpp:10839"
+ ],
+ "STRATA_TRACE_ADAPT": [
+  "src\\program\\generate.cpp:11299",
+  "src\\program\\generate.cpp:11329"
+ ],
+ "STRATA_DUMP_FIRST_LOGITS": [
+  "src\\program\\generate.cpp:11554"
+ ]
+}

@@ -1,0 +1,121 @@
+rc = 0
+=== 1) 生产 config 全文 ===
+{
+ "exe": "/src/build-906/strata",
+ "args": [
+  "--pack",
+  "/data/packs/ud-iq4_xs",
+  "--native",
+  "/weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+  "--resident-budget-gib",
+  "76",
+  "--expert-profile",
+  "/src/data/expert-profile.bin",
+  "--expert-cache",
+  "auto",
+  "--spec",
+  "4",
+  "--spec-min-p",
+  "0.5",
+  "--mtp",
+  "/data/mtp/rt",
+  "--max-context",
+  "262144",
+  "--kv",
+  "k8v4",
+  "--prefill",
+  "auto",
+  "--expert-profile-save",
+  "/data/profiles/ud-iq4_xs-learned.bin"
+ ],
+ "cwd": "/src",
+ "tokenizer": "/data/packs/ud-iq4_xs/tokenizer",
+ "model_name": "qwen3.8-flash-next-ud-iq4_xs",
+ "log": "/data/strata-ud-iq4_xs.log",
+ "host": "0.0.0.0",
+ "port": 8090,
+ "env": {
+  "HSA_OVERRIDE_GFX_VERSION": "9.0.6"
+ }
+}
+
+=== 2) 容器 402 的 Mounts / Devices / Env / Cmd / Restart ===
+{"Name":"unless-stopped","MaximumRetryCount":0}
+false "host"
+[{"PathOnHost":"/dev/kfd","PathInContainer":"/dev/kfd","CgroupPermissions":"rwm"},{"PathOnHost":"/dev/dri","PathInContainer":"/dev/dri","CgroupPermissions":"rwm"}]
+/home/albus/strata166/data -> /data (rw=true)
+/home/albus/strata166/weights -> /weights (rw=false)
+
+HSA_OVERRIDE_GFX_VERSION=9.0.6
+STRATA_SRC=/src
+PATH=/opt/rocm/llvm/bin:/opt/rocm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ROCM_BUILD=7.14.0-gfx906+20260802001858
+ROCM_PATH=/opt/rocm
+DEBIAN_FRONTEND=noninteractive
+
+["bash","-lc","cd /src && exec python3 serve/server.py --engine strata --config /data/strata-ud-iq4_xs.json --port 8090"]
+[{"Name":"memlock","Hard":-1,"Soft":-1}]
+
+=== 3) calibrate 需要的三件：exe / tokenizer / 目录 ===
+-rwxr-xr-x 1 root root 24862088 Oct  7 15:53 /src/build-906/strata
+---
+python3 serve/server.py --engine strata --config /data/strata-ud-iq4_xs.json --port 8090 
+---
+server import OK
+--- tokenizer 目录（从 config 推） ---
+ls: cannot access '/data/tok': No such file or directory
+---
+
+=== 4) 还有谁在用 GPU ===
+strata166-402|strata-gfx906:0.1.40.2
+open-webui|ghcr.io/open-webui/open-webui:v0.11.4
+netdata|545dec0a646c
+comfyui-cu130|yanwk/comfyui-boot:cu130-slim-v2
+portainer|eea0d46628f9
+searxng|998ec85a29ec
+--- rocm-smi 进程占用 ---
+
+
+============================ ROCm System Management Interface ============================
+===================================== KFD Processes ======================================
+KFD process information:
+PID    	PROCESS NAME	GPU(s)	VRAM USED  	SDMA USED	CU OCCUPANCY	
+2940120	strata      	1     	33828376576	0        	0           	
+==========================================================================================
+================================== End of ROCm SMI Log ===================================
+--- VRAM ---
+GPU[0]		: VRAM Total Used Memory (B): 33910767616
+
+=== 5) calibrate 里 engine_args 的取法（serve/server.py） ===
+2045:def engine_args(cfg: dict) -> list[str]:
+2046-    """The engine's arguments: the config's, and with several GPUs the layer split across them ("layer_split" in the
+2047-    config: "auto" by default, or the first layer of each later GPU's share, e.g. "18" or "16,32"; see
+2048-    layer_split_value)."""
+2049-    args = list(cfg["args"])
+2050-    if layer_split_of(cfg) and "--layer-split" not in args:
+2051-        args += ["--layer-split", layer_split_value(cfg)]
+2052-    # opt-in: an auto split runs on the first card alone when it holds every profiled expert and the KV
+2053-    if layer_split_of(cfg) and cfg.get("split_skip_if_fits") and "--split-skip-if-fits" not in args:
+2054-        args.append("--split-skip-if-fits")
+2055-    # #533 (opt-in): "vram_elastic": true - the expert cache in segments, so POST /v1/vram can give VRAM back to other
+2056-    # programs and take it back; "vram_segment_mib" sets the segment size (the engine's default: 512)
+2057-    if cfg.get("vram_elastic") is True and "--vram-elastic" not in args:
+2058-        args.append("--vram-elastic")
+2059-        seg = cfg.get("vram_segment_mib")
+2060-        if isinstance(seg, int) and not isinstance(seg, bool) and seg > 0 and "--vram-segment-mib" not in args:
+2061-            args += ["--vram-segment-mib", str(seg)]
+2062-    args += parallel_args(cfg, args)
+2063-    return learned_profile_args(cfg, args)
+2064-
+2065-
+2066-PARALLEL_MAX = 8      # the engine's batch window holds at most 8 rows (kVerifyMaxT); --batch-mtp waves more through it
+2067-
+2068-
+2069-def parallel_args(cfg: dict, args: list[str]) -> list[str]:
+2070-    """#465 (opt-in): "parallel": N in the config - up to N requests decode together in the engine's batch slots
+2071-    (--batch N); more wait their turn.  1 or absent: one request at a time, as before.  A value the engine cannot use
+2072-    is said and passed on: the engine warns and adjusts (recommend, never force)."""
+2073-    if "--batch" in args or "--slots" in args:
+2074-        return []
+2075-    n = cfg.get("parallel")
+

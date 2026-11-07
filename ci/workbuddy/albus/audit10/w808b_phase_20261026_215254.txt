@@ -1,0 +1,9 @@
+# W808b decode phase (production config + STRATA_TRACE=1) 20261026_215254 add='none'
+  CFGCHECK keys=11 env_n=13
+  ready=52s
+  mark=63037
+=== PHASE start add='none'
+  p0  ptok=76   out=200  decode=4673.3  ms  42.8 tok/s  wall=5.9s
+  MEDIAN decode_tps = 42.80  (n=1)
+WROTE /home/albus/strata166/data/w808b_gen.json
+restored 85s

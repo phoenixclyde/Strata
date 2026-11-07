@@ -1,0 +1,30 @@
+push watchdog2 ok=True size=1038 md5=ec413c09bf4b3067351b4d7eb9ac497c
+rc = 1
+watchdog2 syntax OK
+=== pgrep ===
+2967777 bash /home/albus/strata166/w709/run_calib.sh
+2973997 bash /home/albus/strata166/w709/watchdog2.sh
+
+=== 容器 ===
+strata-calib|Up About a minute
+=== KFD ===
+KFD process information:
+PID    	PROCESS NAME	GPU(s)	VRAM USED  	SDMA USED	CU OCCUPANCY	
+2968745	strata      	1     	33828376576	0        	0           	
+==========================================================================================
+================================== End of ROCm SMI Log ===================================
+
+=== 校准 out 尾部 ===
+  Loading the model for the measurements ...
+[strata] starting the engine: reading the model's weights ...
+[strata] loading the most-used experts into RAM (up to 76 GiB; the rest are read from the model files as needed) and locking part of them for the GPU.
+         YOUR PC CAN BE SLOW OR STOP RESPONDING FOR 1-3 MINUTES NOW - this is normal.
+         Please wait and don't close this window; the browser opens when it is ready.
+[strata] filling the GPU's expert cache (9758 experts, 21.98 GiB of VRAM) ...
+[strata] almost ready ...
+[strata] still starting (34 s) - please wait ...
+out_bytes=583
+calib_log_bytes=0
+
+=== 校准专用日志尾 ===
+

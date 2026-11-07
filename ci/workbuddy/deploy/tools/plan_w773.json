@@ -1,0 +1,66 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W773：加两条铁律（写文件禁同表达式 read+open(w)、日志改前备份）+ 动作判据（生效 != 实际动作）+ P54 已裁；压缩面腾空间。",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "`W713_PLAN.md`·`W737`-`W770`；余按号",
+   "new": "`W713_PLAN.md`·`W737`-`W773`；余按号"
+  },
+  {
+   "kind": "substr",
+   "old": "- 改既有长件前先备份（register/config/verify_config，W765）",
+   "new": "- 改既有长件前先备份（register/config/verify_config/**日志**，W765/W773）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改裁定后按 ID 全文 grep 逐处同步**（W752）",
+   "new": "- **改裁定后按 ID 全文 grep 逐处同步**（W752）\n- **写文件禁同表达式内 `read()` + `open('w')`**（`'w'` 先截断 => 读到空串、**静默清空**；W773 日志 100KB->2.4KB）；写回用\"先读变量再开写\""
+  },
+  {
+   "kind": "substr",
+   "old": "- **KV 门已建**（W767）：门=上游 `STRATA_LOGPOS`（须**两请求**，fresh <= `--short-read` 才评分）；**self=0**。**W768/769：分布门被驻留布局主导、无法判 `--kv`**（同 dtype 同 MC 差 **96 槽**=KL .284 阶跃，机理=命中/未命中路径不同）。**W770：needle 两臂 6/6 => `k8v4` 无质量损失**（decode +7.7~16.6%）。**槽位可复现**",
+   "new": "- **KV 门**（P51）：`STRATA_LOGPOS` 须**两请求**、fresh <= `--short-read`；**self=0**。W768/769 分布门被驻留布局主导 => 不可判 `--kv`；W770 needle 6/6 => `k8v4` 无损失。W773：`生效 != 实际动作`（`IO_PREFETCH` ON 但 `0 read ahead` => P54 REJECTED）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **自比须同形状**；比 `ms/step`（`tok/s` 受草稿净出污染）；**现役最快**；不可复现先排冷热",
+   "new": "- **自比须同形状**；比 `ms/step`（`tok/s` 受净出污染，臂内 spread 可达 27%）；不可复现先排冷热"
+  },
+  {
+   "kind": "substr",
+   "old": "=> routeK T1 不成立；上游 bench `COMMUNITY_BENCHMARKS.md`（`AMD_HIP:504` 单卡未做）",
+   "new": "=> routeK T1 不成立；上游 `COMMUNITY_BENCHMARKS.md`（单卡未做）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **筛候选**：上限=环节占比；省「重复预填」~90% 才两位数（P31/P34）；否决改答",
+   "new": "- **筛候选**：上限=环节占比；省「重复预填」~90% 才两位数（P31/P34）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **dot**：W740：dot4 62,596/dot8 0 => dp4a+解包；换 dot8 须双方 i4（P38）",
+   "new": "- **dot**：dot4 62,596/dot8 0 => dp4a+解包；换 dot8 须双方 i4（P38）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **CANDIDATE 7（全未测）**：P33(pin 长文档)·P41(§4 族)·P42(lookup-chain)·P46(io-预取)·P47(drafter)·P48(misc)·P97(并发)",
+   "new": "- **CANDIDATE 7**：P33(pin)·P41(§4 族)·P42(chain)·P46(io-预取,见P54)·P47(drafter)·P48·P97(并发)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **已裁**：W760 P43 采纳(8192)/P40 否决；**W770 P50（needle `k8v4` 6/6）**；P36/P37·P39 关",
+   "new": "- **已裁**：P43 采纳(8192)/P40 否决；P50（needle 6/6）；**P54（IO_PREFETCH 无收益）**；P36/P37·P39 关"
+  },
+  {
+   "kind": "substr",
+   "old": "- **GitHub API**：真 Git for Windows 的 GCM（`C:/Program Files/Git/cmd/git.exe` + 钉 helper、**不设** `GCM_INTERACTIVE/PROVIDER`）可取凭据 => **建 PR/评论可全自动**（W736/W770；便携版 Git 的 helper 无效）",
+   "new": "- **GitHub API**：真 Git for Windows 的 GCM（`cmd/git.exe` + 钉 helper、不设 `GCM_INTERACTIVE/PROVIDER`）=> **建 PR 全自动**（W736/770/773；便携版 Git 无效）"
+  },
+  {
+   "kind": "substr",
+   "old": "审计 `W713_AUDIT{,2}`·`W735`·`W752`·`W765`·`W767`-`W770`（P0=0/P1=4）",
+   "new": "审计 `W713_AUDIT{,2}`·`W735`·`W752`·`W765`·`W767`-`W773`（P0=0/P1=4）"
+  }
+ ]
+}

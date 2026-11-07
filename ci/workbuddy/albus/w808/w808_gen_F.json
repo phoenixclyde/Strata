@@ -1,0 +1,36 @@
+{
+ "tag": "F",
+ "max_tokens": 200,
+ "results": [
+  {
+   "i": 0,
+   "ok": true,
+   "wall_s": 5.39,
+   "prompt_ms": 1080.3,
+   "decode_ms": 4257.7,
+   "output_tokens": 200,
+   "decode_tps": 46.97,
+   "finish": "length"
+  },
+  {
+   "i": 1,
+   "ok": true,
+   "wall_s": 4.73,
+   "prompt_ms": 900.5,
+   "decode_ms": 3819.1,
+   "output_tokens": 200,
+   "decode_tps": 52.37,
+   "finish": "length"
+  },
+  {
+   "i": 2,
+   "ok": true,
+   "wall_s": 4.86,
+   "prompt_ms": 882.7,
+   "decode_ms": 3965.9,
+   "output_tokens": 200,
+   "decode_tps": 50.43,
+   "finish": "length"
+  }
+ ]
+}

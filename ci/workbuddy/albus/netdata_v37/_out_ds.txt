@@ -1,0 +1,43 @@
+RC=0
+=== STDOUT ===
+### DEVSTAT
+smartctl 7.4 2023-08-01 r5530 [x86_64-linux-7.0.0-34-generic] (local build)
+Copyright (C) 2002-23, Bruce Allen, Christian Franke, www.smartmontools.org
+
+Device Statistics (GP Log 0x04)
+Page  Offset Size        Value Flags Description
+0x01  =====  =               =  ===  == General Statistics (rev 1) ==
+0x01  0x008  4             220  ---  Lifetime Power-On Resets
+0x01  0x010  4           11286  ---  Power-on Hours
+0x01  0x018  6     27000010226  ---  Logical Sectors Written
+0x01  0x020  6       130656526  ---  Number of Write Commands
+0x01  0x028  6    200909655891  ---  Logical Sectors Read
+0x01  0x030  6       548643685  ---  Number of Read Commands
+0x07  =====  =               =  ===  == Solid State Device Statistics (rev 1) ==
+0x07  0x008  1              12  N--  Percentage Used Endurance Indicator
+                                |||_ C monitored condition met
+                                ||__ D supports DSN
+                                |___ N normalized value
+
+
+### DEVSTAT -p sct
+smartctl 7.4 2023-08-01 r5530 [x86_64-linux-7.0.0-34-generic] (local build)
+Copyright (C) 2002-23, Bruce Allen, Christian Franke, www.smartmontools.org
+
+=======> INVALID ARGUMENT TO -l: devstat,pages=0x04
+=======> VALID ARGUMENTS ARE: error, selftest, selective, directory[,g|s], xerror[,N][,error], xselftest[,N][,selftest], background, sasphy[,reset], sataphy[,reset], scttemp[sts,hist], scttempint,N[,p], scterc[,N,M][,p|reset], devstat[,N], defects[,N], ssd, gplog,N[,RANGE], smartlog,N[,RANGE], nvmelog,N,SIZE, tapedevstat, zdevstat, envrep, farm <=======
+
+Use smartctl -h to get a usage summary
+
+
+### HEALTH
+
+=== START OF READ SMART DATA SECTION ===
+SMART overall-health self-assessment test result: PASSED
+
+
+### 241/242 再看一次（确认是否只是更新慢）
+241 Total_LBAs_Written      0x0032   100   100   000    Old_age   Always       -       12874
+242 Total_LBAs_Read         0x0032   100   100   000    Old_age   Always       -       95801
+
+=== STDERR ===

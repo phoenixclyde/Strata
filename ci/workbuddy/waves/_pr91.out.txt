@@ -1,0 +1,23 @@
+=== [1] setup.py 的 LLAMA_CPP_COMMIT 与关键常量 ===
+  setup.py = 328519 B / 5427 lines
+  LLAMA_CPP_COMMIT             -> 3cf03257f219afbe7334045ff7c6a06ac68c627d
+
+=== [2] CMakeLists.txt 的 project 版本 ===
+  project(strata VERSION ...) = 0.1.40.2
+
+=== [3] 四个开关仍在？ ===
+  STRATA_HIP_GFX906        in CMakeLists = True
+  STRATA_ENABLE_CUDA       in CMakeLists = True
+  STRATA_MMQ_KQUANTS       in CMakeLists = True
+  STRATA_PREFILL_MMQ       in CMakeLists = True
+
+=== [4] 现有 llama.cpp 依赖包 ===
+  llama.cpp-3cf0325.tar.gz                     34593028
+  strata-src-0.1.39.zip                        15393161
+  strata-src-0.1.40.1.zip                      15883041
+  strata-src-0.1.40.2.zip                      18570716
+
+=== [5] 0.1.40.1 vs 0.1.40.2 的源码 zip 大小 ===
+  strata-src-0.1.39.zip              15393161 B
+  strata-src-0.1.40.1.zip            15883041 B
+  strata-src-0.1.40.2.zip            18570716 B

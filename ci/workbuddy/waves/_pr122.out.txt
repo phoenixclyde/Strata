@@ -1,0 +1,49 @@
+rc = 0
+=== T0 2026-10-08T00:58:25+08:00 ===
+--- 容器 ---
+strata166-402|Up 7 minutes|strata-gfx906:0.1.40.2
+strata166-401|Exited (137) 46 minutes ago|strata-gfx906:0.1.40.1
+strata166|Exited (137) 24 hours ago|strata-gfx906:0.1.39
+--- 服务健康 ---
+http=200
+--- 现行 config md5 / 权限 ---
+-rw-rw-r-- 1 albus albus 744 Oct  8 00:49 /home/albus/strata166/data/strata-ud-iq4_xs.json
+547d280c4c7c5d69f2440c9b8a16b975  /home/albus/strata166/data/strata-ud-iq4_xs.json
+--- profiles ---
+total 200
+drwxrwxr-x 2 albus albus     35 Oct  8 00:51 .
+drwxrwxr-x 5 albus albus   4096 Oct  8 00:49 ..
+-rw-r--r-- 1 root  root  196632 Oct  8 00:51 ud-iq4_xs-learned.bin
+--- VRAM ---
+GPU[0]		: VRAM Total Memory (B): 34342961152
+GPU[0]		: VRAM Total Used Memory (B): 33910767616
+--- 当前启动块(最后一次 engine started 之后) ---
+engine_started_line=2292  total_lines=2353
+[strata] 2026-10-07 16:51:10 engine started: /src/build-906/strata --serve --pack /data/packs/ud-iq4_xs --native /weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf --resident-budget-gib 76 --expert-profile /src/data/expert-profile.bin --expert-cache auto --spec 4 --spec-min-p 0.5 --mtp /data/mtp/rt --max-context 262144 --kv k8v4 --prefill auto --expert-profile-save /data/profiles/ud-iq4_xs-learned.bin
+
+--- 校准工具是否在镜像里 ---
+total 1132
+drwxr-xr-x 1 root root    25 Oct  7 15:59 .
+drwxr-xr-x 1 root root    63 Oct  7 16:51 ..
+drwxr-xr-x 2 root root    46 Oct  7 15:59 __pycache__
+-rw-r--r-- 1 root root  1007 Oct  7 11:22 _paths.py
+-rw-r--r-- 1 root root 11784 Oct  7 11:22 batch_interleave_test.py
+-rw-r--r-- 1 root root  8222 Oct  7 11:22 batch_test.py
+-rw-r--r-- 1 root root 17670 Oct  7 11:22 bench_eviction.py
+-rw-r--r-- 1 root root 14560 Oct  7 11:22 calibrate.py
+-rw-r--r-- 1 root root 40698 Oct  7 11:22 canonical_xcheck.py
+-rw-r--r-- 1 root root 10910 Oct  7 11:22 conversation_cache_disabled.py
+-rw-r--r-- 1 root root  9874 Oct  7 11:22 conversation_cache_growth.py
+-rw-r--r-- 1 root root  5854 Oct  7 11:22 conversation_cache_http_smoke.py
+-rw-r--r-- 1 root root  7657 Oct  7 11:22 conversation_cache_isolation.py
+-rw-r--r-- 1 root root 14015 Oct  7 11:22 conversation_cache_parity.py
+-rw-r--r-- 1 root root  9874 Oct  7 11:22 conversation_cache_soak.py
+-rw-r--r-- 1 root root  9372 Oct  7 11:22 conversation_restore_speed.py
+-rw-r--r-- 1 root root  6751 Oct  7 11:22 draft_vocab.py
+-rw-r--r-- 1 root root  2021 Oct  7 11:22 early_close_test.py
+-rw-r--r-- 1 root root  3430 Oct  7 11:22 embd_bf16_pack.py
+1
+--- 有没有曾在跑的 calibrate 进程 ---
+--- 临时容器名占用 ---
+none
+

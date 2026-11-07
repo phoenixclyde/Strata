@@ -1,0 +1,112 @@
+rc = 0
+===== [1] 构建进度 =====
+BUILD_DONE_OR_DEAD
+[118/139]
+  77 |     
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c set -eux;     cmake -S /src -B /src/build-906 -G Ninja       -DSTRATA_HIP_GFX906=ON       -DCMAKE_HIP_ARCHITECTURES=gfx906       -DSTRATA_GGML_DIR=/src/third_party/llama.cpp       -DCMAKE_C_COMPILER=/opt/rocm/llvm/bin/clang       -DCMAKE_CXX_COMPILER=/opt/rocm/llvm/bin/clang++       -DSTRATA_MMQ_KQUANTS=${SMMQ_KQUANTS};     ninja -C /src/build-906 strata;     ls -l /src/build-906/strata;     /src/build-906/strata --help 2>&1 | head -3 || true" did not complete successfully: exit code: 1
+
+===== [2] expert-profile 在哪（容器可写层 or 挂载卷）=====
+total 1292
+drwxr-xr-x 3 root root   4096 Oct  6 09:25 .
+drwxr-xr-x 1 root root     51 Oct  6 16:39 ..
+-rw-r--r-- 1 root root 425196 Oct  6 09:25 draft_vocab.bin
+-rw-r--r-- 1 root root 235852 Oct  6 09:25 draft_vocab_cyrillic.bin
+-rw-r--r-- 1 root root 162100 Oct  6 09:25 draft_vocab_en.bin
+-rw-r--r-- 1 root root 184844 Oct  6 09:25 draft_vocab_fr.bin
+drwxr-xr-x 2 root root    145 Oct  6 09:25 experimental-speed-projection
+-rw-r--r-- 1 root root  98328 Oct  6 09:25 expert-profile-coder.bin
+-rw-r--r-- 1 root root 196632 Oct  6 09:25 expert-profile.bin
+---
+-rw-r--r-- 1 root root 196632 Oct  6 09:25 /src/data/expert-profile.bin
+
+===== [3] /data 里的配置与目录 =====
+{
+ "exe": "/src/build-906/strata",
+ "args": [
+  "--pack",
+  "/data/packs/ud-iq4_xs",
+  "--native",
+  "/weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+  "--resident-budget-gib",
+  "76",
+  "--expert-profile",
+  "/src/data/expert-profile.bin",
+  "--expert-cache",
+  "auto",
+  "--spec",
+  "4",
+  "--spec-min-p",
+  "0.5",
+  "--mtp",
+  "/data/mtp/rt",
+  "--max-context",
+  "262144",
+  "--kv",
+  "k8v4",
+  "--prefill",
+  "auto"
+ ],
+ "cwd": "/src",
+ "tokenizer": "/data/packs/ud-iq4_xs/tokenizer",
+ "model_name": "qwen3.8-flash-next-ud-iq4_xs",
+ "log": "/data/strata-ud-iq4_xs.log",
+ "host": "0.0.0.0",
+ "port": 8090
+}--- /data/packs, /data/mtp ---
+total 4
+drwxr-xr-x 4 root   root     41 Oct  6 17:35 .
+drwxrwxr-x 4 ubuntu ubuntu 4096 Oct  6 18:35 ..
+drwxr-xr-x 3 root   root    131 Oct  6 17:35 ud-iq4_xs
+drwxr-xr-x 3 root   root    131 Oct  5 16:19 ud-q4_k_xl
+---
+total 868228
+drwxrwxr-x 4 ubuntu ubuntu       165 Oct  5 16:34 .
+drwxrwxr-x 4 ubuntu ubuntu      4096 Oct  6 18:35 ..
+-rw-rw-r-- 1 ubuntu ubuntu      7860 Oct  5 16:27 mtp-inventory.json
+-rw-rw-r-- 1 ubuntu ubuntu     11643 Oct  5 16:31 mtp-manifest.json
+-rw-rw-r-- 1 root   root       12102 Oct  5 16:27 mtp-manifest.json.bak
+-rw-r--r-- 1 root   root   889017216 Oct  5 16:34 mtp-q2_0.gguf
+-rw-rw-r-- 1 ubuntu ubuntu      3590 Oct  5 16:34 mtp-q2_0.gguf.report.json
+
+===== [4] 宿主侧 weights / data =====
+total 91486904
+drwxrwxr-x  2 albus albus         174 Oct  7 01:14 .
+drwxrwxr-x 12 albus albus         158 Oct  7 23:48 ..
+-rw-rw-r--  1 albus albus    10946624 Oct  7 01:14 Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
+-rw-rw-r--  1 albus albus 49835229856 Oct  7 01:30 Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+-rw-rw-r--  1 albus albus 43836407744 Oct  7 01:29 Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf
+--- data 目录大小 ---
+9.3G	/home/albus/strata166/data
+88G	/home/albus/strata166/weights
+--- 镜像里有没有 /src/data/expert-profile.bin（新镜像会没有）---
+total 1292
+drwxr-xr-x 3 root root   4096 Oct  6 09:25 .
+drwxr-xr-x 1 root root     23 Oct  6 16:39 ..
+-rw-r--r-- 1 root root 425196 Oct  6 09:25 draft_vocab.bin
+-rw-r--r-- 1 root root 235852 Oct  6 09:25 draft_vocab_cyrillic.bin
+-rw-r--r-- 1 root root 162100 Oct  6 09:25 draft_vocab_en.bin
+
+===== [5] 现有 0.1.40.1 镜像的 /src 里是否有运行期生成物 =====
+276M	/src
+AGENTS.md
+CMakeLists.txt
+Dockerfile
+LICENSE
+README.de.md
+README.es.md
+README.fr.md
+README.ja.md
+README.md
+README.pt-BR.md
+README.zh-CN.md
+SECURITY.md
+SETUP.bat
+START-HERE.bat
+UPDATE.bat
+bench
+build-906
+chat.py
+cmake
+data
+

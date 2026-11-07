@@ -1,0 +1,27 @@
+RC=0
+=== STDOUT ===
+### DF
+Filesystem                    Size  Used Avail Use% Mounted on
+/dev/mapper/ubuntu--vg-lv--0  935G  160G  775G  18% /
+/dev/mapper/ubuntu--vg-lv--0  935G  160G  775G  18% /
+### BEFORE
+180 Unused_Rsvd_Blk_Cnt_Tot 0x0033   100   100   000    Pre-fail  Always       -       495
+187 Reported_Uncorrect      0x0032   100   000   000    Old_age   Always       -       0
+199 UDMA_CRC_Error_Count    0x0012   100   100   000    Old_age   Always       -       0
+231 Unknown_SSD_Attribute   0x0023   098   098   005    Pre-fail  Always       -       2
+241 Total_LBAs_Written      0x0032   100   100   000    Old_age   Always       -       12874
+242 Total_LBAs_Read         0x0032   100   100   000    Old_age   Always       -       95801
+### WRITE 256MiB
+256+0 records out
+268435456 bytes (268 MB, 256 MiB) copied, 0.62661 s, 428 MB/s
+### AFTER
+180 Unused_Rsvd_Blk_Cnt_Tot 0x0033   100   100   000    Pre-fail  Always       -       495
+187 Reported_Uncorrect      0x0032   100   000   000    Old_age   Always       -       0
+199 UDMA_CRC_Error_Count    0x0012   100   100   000    Old_age   Always       -       0
+231 Unknown_SSD_Attribute   0x0023   098   098   005    Pre-fail  Always       -       2
+241 Total_LBAs_Written      0x0032   100   100   000    Old_age   Always       -       12874
+242 Total_LBAs_Read         0x0032   100   100   000    Old_age   Always       -       95801
+### CLEANUP
+/dev/mapper/ubuntu--vg-lv--0  935G  160G  775G  18% /
+
+=== STDERR ===

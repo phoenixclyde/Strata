@@ -1,0 +1,19 @@
+=== [1] 拉 v0.1.40.2 的 4 个关键文件 ===
+  [ok] src/kernels/cuda/fused_gr.cu                            96522 B  (4.0s)
+  [ok] src/core/mtp.cpp                                        80470 B  (2.5s)
+  [ok] src/core/vmm.cpp                                         5746 B  (0.5s)
+  [ok] include/strata/platform/hip_compat/strata_hip.h         16583 B  (0.8s)
+
+=== [2] PR / issue 状态（gfx906 编译相关）===
+  PR #1083  closed   merged=False  hip/gfx906: the tree does not build (three STRATA_USE_HIP gates 
+           updated=2026-10-07T12:33:35  head=xxDoman:gfx906-140.1-buildfix
+  PR #1187  open     merged=False  gfx906: opt-in Q2_0 gate/up weight reuse without singleton regre
+           updated=2026-10-06T19:59:55  head=0FL01:perf/gfx906-q2-gu-global
+  PR #1084  open     merged=False  hip/gfx906: `__dp4a` falls back to a 4-iteration loop although g
+           updated=2026-10-06T10:12:12  head=xxDoman:gfx906-140.1-dp4a
+
+=== [3] 列出落盘文件 ===
+  include__strata__platform__hip_compat__strata_hip.h          16583 B
+  src__core__mtp.cpp                                           80470 B
+  src__core__vmm.cpp                                            5746 B
+  src__kernels__cuda__fused_gr.cu                              96522 B

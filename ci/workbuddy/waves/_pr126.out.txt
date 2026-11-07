@@ -1,0 +1,38 @@
+push run_calib.sh                                   ok=True size=1719 md5=b49a5334b59bd56c981d5ba5c96a6679
+push watchdog.sh                                    ok=True size=820 md5=71859e6cdb939d90f1444a45e8455230
+=== bash -n 语法检查 ===
+run_calib.sh OK
+watchdog.sh OK
+=== 文件指纹 ===
+b49a5334b59bd56c981d5ba5c96a6679  /home/albus/strata166/w709/run_calib.sh
+71859e6cdb939d90f1444a45e8455230  /home/albus/strata166/w709/watchdog.sh
+=== 当前容器/GPU ===
+strata166-402|Up 9 minutes
+GPU[0]		: VRAM Total Used Memory (B): 33910767616
+
+launch rc = 0
+=== pgrep ===
+308 [watchdogd]
+1384 /bin/bash /home/albus/fanctl/fanctl-watchdog.sh 15
+2967746 bash /home/albus/strata166/w709/watchdog.sh
+2967777 bash /home/albus/strata166/w709/run_calib.sh
+=== run log ===
+[2026-10-08T01:00:13+08:00] WINDOW_START
+[2026-10-08T01:00:13+08:00] stopping strata166-402
+strata166-402
+[2026-10-08T01:00:19+08:00] stop_rc=0
+open-webui|Up 37 hours (healthy)
+netdata|Up 37 hours (healthy)
+comfyui-cu130|Up 37 hours
+portainer|Up 37 hours
+searxng|Up 37 hours
+[2026-10-08T01:00:25+08:00] starting strata-calib
+c027bddefec8f15893d132e80d0282ed787a9e77ac625baa67be8e9f7011cd20
+[2026-10-08T01:00:25+08:00] run_rc=0
+[2026-10-08T01:00:29+08:00] TMP_UP=1
+[2026-10-08T01:00:29+08:00] calibrate start
+=== 容器 ===
+strata-calib|Up 13 seconds
+=== VRAM ===
+GPU[0]		: VRAM Total Used Memory (B): 33462472704
+

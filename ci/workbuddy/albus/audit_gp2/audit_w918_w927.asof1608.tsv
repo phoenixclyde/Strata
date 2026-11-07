@@ -1,0 +1,25 @@
+﻿W918_UPSTREAM_708_READ.md	上游708条无一改gfx906默认值⇒生产参数不需改	源码(git log逐条)+cherry-pick试算	有(worktree试算)；无服务A/B	P1-证据不足	W918:10-14,90-94
+W918_UPSTREAM_708_READ.md	「3cc47f02需手解1处冲突」被W921推翻(上前置后5hunk全过)	实测cherry-pick	有	P2(结论被修正无回写)	W918:69 / W921:17
+W919_RELEASE_NOTES_READ.md	状态行称PLE未锁为"已实证现成损失"，实测为0	实测(W920双臂rep6-9)	有	P1-撤回未回写	W919:4,110 / W920:254
+W919_RELEASE_NOTES_READ.md	0.2.10 release 38,007B等外证未落盘(仓库无v0.2.10.md)	外证(curl一次到/tmp)	无	需复核	W919:12-27,62-66
+W920_PARAM_AUDIT.md	trace marker常开，性能代价<1%，已mv关	实测A-B-A同进程零重启	有	OK	W920:91-111
+W920_PARAM_AUDIT.md	PLE锁定零收益=R67 DONE_NEG；配置保留另立P256	实测两臂预热后rep6-9	有	OK	W920:181-263
+W921_R66_OPTIN_AB.md	R66三开关全生效，prefill−0.23% ⇒ DONE_NEG	实测A/B+显存布局断言	有(1578→1226槽)	OK	W921:27-62
+W921_R66_OPTIN_AB.md	decode−1.3%判噪声，但未给decode的CV	实测	有	P2	W921:54-56
+W922_R68_STOP_BOUND.md	R68判DONE_NEG：本场景复用99.72%，无6%空间	实测4段多轮复用率	有(补丁臂仅编译未上线)	OK	W922:50-74
+W922_R68_STOP_BOUND.md	「99.72%已高于上游补丁后99.74%」方向写反	数字	—	P1-数字不自洽	W922:71
+W923_R61_PMC_FAILED.md	R61判"rocprof不可用"，被W942推翻(启动器路径可用,VALUBusy67.1%)	实测(3次注入全空)+源码	有，但结论外推过宽	P1-撤回未回写	W923:1-4,41 / W942:3-4,47
+W923_R61_PMC_FAILED.md	R60按算术预判关闭(50–65%已过40%门)	推算(60×64×1.725GHz链)	无PMC	P1-证据不足	W923:47-63
+W923_R61_PMC_FAILED.md	「4次重启(2注入+2恢复)」与§2三次注入矛盾	—	—	P1-数字不自洽	W923:28-32,69
+W924_R58_MMQ_THREE_SEGMENTS.md	dp4a 5184/9713=53.37%作分母，实为54内核模块求和	ISA(模块求和)	有(objcopy+carve)	P1-撤回未回写	W924:29-40 / W943:46
+W924_R58_MMQ_THREE_SEGMENTS.md	VALU 2.44 MAC/instr⇒81%占用，同源于模块口径	推算	无PMC	P2	W924:62-72 / W942:47
+W925_CRITERION_AMDAHL.md	50%闸门无推导，改Amdahl五因子；R63降级DONE_NEG	推算(占比×0.81×0.346×0.731)	无新臂	OK	W925:9-14,45-64
+W925_CRITERION_AMDAHL.md	输入VALU=0.81已被W942实测67.1%取代；复算后地址1.44%仍<3.2%	推算复算	无	P2	W925:54
+W925_CRITERION_AMDAHL.md	Amdahl经验线引文无出处	外证	无	需复核	W925:27-29
+W926_R64_ATTN_INT8.md	attn指数1.20，8K/99K均≈15%，非O(L²)	实测7个长度日志拟合	有(历史日志)	OK	W926:24-38
+W926_R64_ATTN_INT8.md	机制"稀疏⇒O(L×k)"被W946修正：每token仍读2048cell	源码+实测	无横幅	P1-撤回未回写	W926:41-45 / W946:88
+W926_R64_ATTN_INT8.md	§4"最好4–6%"与§5"3.4–4.3%"冲突；13.6%落在15–19%外	—	—	P1-数字不自洽	W926:45,81,90
+W927_DOT8_Q4K_PORT.md	W4A4省半dot⇒端到端5.5%过门，"值得做"	ISA(W924模块)+微基准	有(三路−153互证)	P1-撤回未回写	W927:79-91 / W943:47
+W927_DOT8_Q4K_PORT.md	K100LC-RT4/gfx926数据无URL或sha；gfx926非标准架构名	外证	无	需复核	W927:24-36
+W924_R58_MMQ_THREE_SEGMENTS.md	54内核求和与W943单kernel非同产物，可比性未论证	ISA(两套构建)	有	需复核	W924:29-31 / W943:5,74 / W940:80-82
+PROGRESS.tsv	账本R61行仍引「与W924的dp4a占53.3%吻合」作佐证	账本转述(沿用被推翻分母)	—	P1-撤回未回写	PROGRESS.tsv:118

@@ -1,0 +1,81 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W732：166 PCIe 事实 + 独立通道方法论",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- **「默认关」不等于「不可达」**：判可达性须核宏",
+   "new": "- **166 的 PCIe**：MI50 有效链路 = **Gen3 x16**（根口上限；本卡跳 Gen4）；`pcie_bw` 读一次 ~1 s 须独立线程缓存；同机另有 RTX 2070 + ASPEED；`product_name` 写 16GB 而实物 32GB。\n- **改前端展示先照上游参考件**（仓库 `docs/media/*.png`）；**报「链路/容量」须走独立工具**（lspci/rocm-smi）并区分「设备自身跳」与「整条路径」。\n- **「默认关」不等于「不可达」**：判可达性须核宏"
+  },
+  {
+   "kind": "substr",
+   "old": "- **筛候选启发式（W721）**：收益上限 = 它省的环节在时延里的占比：省「重复预填」（多轮~90%）才两位数（P31/P34），省搬运/显存/kernel 仅 0~3% => **先读源码算作用面**，多半零发车关。一票否决：**改答案/破位**。",
+   "new": "- **筛候选启发式（W721）**：收益上限 = 该环节在时延里的占比 => 省「重复预填」（多轮~90%）才两位数（P31/P34）；**先读源码算作用面**，多半零发车关；一票否决：**改答案/破位**。"
+  },
+  {
+   "kind": "substr",
+   "old": "· `W722_MEM_SKILL.md` · `W723_COMBO.md` · ",
+   "new": ""
+  },
+  {
+   "kind": "substr",
+   "old": "LIVE config=`strata-huihui-ud-iq4_xs.json`（顶层须含 `\"backend\":\"hip\"`：GPU 读数与 hip_env_guard 的前提）；",
+   "new": "LIVE config=`strata-huihui-ud-iq4_xs.json`（顶层须含 `\"backend\":\"hip\"`）；"
+  },
+  {
+   "kind": "substr",
+   "old": "（huihui；`-406` = 回滚位）/ 8090 / `restart unless-stopped`；",
+   "new": "（huihui；`-406` = 回滚位）/ 8090；"
+  },
+  {
+   "kind": "substr",
+   "old": "- PR **#1396**（gfx906 构建修复）**ported 进 0.1.41（保留署名，`a732a19b6f`）**，PR closed-not-merged => **引擎**补丁面归零。",
+   "new": "- PR **#1396**（gfx906 修复）**ported 进 0.1.41（保留署名，`a732a19b6f`）**，closed-not-merged => **引擎**补丁面归零。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **未做**：**上游 3 件**（\"先等等\"）：1)",
+   "new": "- **未做**：**上游 3 件**：1)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **温 TTFT 两口径**：同 prompt 重发=上限（0.11~0.15 s）；追加=多轮（18k 5.75 s）。**不可混比**。",
+   "new": "- **温 TTFT 两口径**：同 prompt 重发=上限；追加=多轮（18k 5.75 s）。**不可混比**。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改本件走技能入口 `deploy/tools/mem_slim.py`**（`routek-memory-slim` 适配版）：`auto 2900 [plan.json]`。禁裸 Edit/自写脚本/先改后核。",
+   "new": "- **改本件走技能入口 `deploy/tools/mem_slim.py`**：`auto 2900 [plan.json]`。禁裸 Edit/自写脚本/先改后核。"
+  },
+  {
+   "kind": "substr",
+   "old": "· C4/C5 · P29 · C3 · vision 核验 · #1454/tokenizer。",
+   "new": "· C4/C5 · P29 · C3 · vision 核验 · #1454。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 交付件禁用码位 10 个（定义见 `deploy/tools/mem_slim.py` 的 `BAN`），须 CR=0。",
+   "new": "- 交付件禁用码位 10 个（见 `mem_slim.py` 的 `BAN`），须 CR=0。"
+  },
+  {
+   "kind": "substr",
+   "old": "  漏推则「本机==166」不成立 => 改完必对两侧 `md5sum`。",
+   "new": "  漏推则「本机==166」不成立 => 必对两侧 md5sum。"
+  },
+  {
+   "kind": "substr",
+   "old": "  切换/回滚：`switch_strata.sh <新容器>`。",
+   "new": "  切换/回滚：`switch_strata.sh`。"
+  },
+  {
+   "kind": "substr",
+   "old": "；通道 = 166 `pr/strata-fork`+`_mkpr.sh`。",
+   "new": "（通道见 `W724_UPSTREAM_PR.md` §9）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 模型 `qwen3.8-flash-next-ud-iq4_xs-abliterated`（huihui，10-09 切），262144 上下文",
+   "new": "- 模型 `qwen3.8-flash-next-ud-iq4_xs-abliterated`（huihui），262144 上下文"
+  }
+ ]
+}

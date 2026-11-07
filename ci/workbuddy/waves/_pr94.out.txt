@@ -1,0 +1,65 @@
+rc = 0
+--- pgrep build ---
+2738038 docker build -f Dockerfile-0.1.40.2 -t strata-gfx906:0.1.40.2 .
+--- docker 侧 ---
+strata166-401 | Up 22 hours
+open-webui | Up 35 hours (healthy)
+netdata | Up 35 hours (healthy)
+comfyui-cu130 | Up 35 hours
+portainer | Up 35 hours
+searxng | Up 35 hours
+--- 日志头 40 行 ---
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile-0.1.40.2
+#1 transferring dockerfile: 4.88kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.1ms.run/mixa3607/rocm-gfx906:7.14-complete
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [ 1/11] FROM docker.1ms.run/mixa3607/rocm-gfx906:7.14-complete
+#4 DONE 0.0s
+
+#5 [ 2/11] RUN set -eux;     rm -f /etc/apt/sources.list.d/gfx906.sources;     apt-get update;     apt-get install -y --no-install-recommends         build-essential cmake ninja-build ca-certificates unzip         python3-pip python3-venv python3-dev pkg-config;     rm -rf /var/lib/apt/lists/*;     cmake --version | head -1; ninja --version; python3 -m pip --version; clang++ --version | head -1
+#5 CACHED
+
+#6 [ 3/11] WORKDIR /src
+#6 CACHED
+
+#7 [internal] load build context
+#7 transferring context: 53.18MB 0.7s done
+#7 DONE 0.7s
+
+#8 [ 4/11] COPY transfer/strata-src-0.1.40.2.zip /tmp/
+#8 DONE 0.2s
+
+#9 [ 5/11] COPY transfer/llama.cpp-3cf0325.tar.gz /tmp/
+#9 DONE 0.1s
+
+#10 [ 6/11] RUN set -eux;     unzip -q /tmp/strata-src-0.1.40.2.zip -d /tmp/srcx;     inner=$(find /tmp/srcx -maxdepth 1 -mindepth 1 -type d | head -1);     cp -a "$inner"/. /src/;     mkdir -p /src/third_party;     tar -xzf /tmp/llama.cpp-3cf0325.tar.gz -C /src/third_party;     ls -d /src/third_party/llama.cpp/ggml/CMakeLists.txt /src/third_party/llama.cpp/gguf-py
+#10 0.228 + unzip -q /tmp/strata-src-0.1.40.2.zip -d /tmp/srcx
+#10 0.696 + find /tmp/srcx -maxdepth 1 -mindepth 1 -type d
+#10 0.696 + head -1
+#10 0.700 + inner=/tmp/srcx/Strata-0.1.40.2
+#10 0.700 + cp -a /tmp/srcx/Strata-0.1.40.2/. /src/
+#10 1.119 + mkdir -p /src/third_party
+#10 1.122 + tar -xzf /tmp/llama.cpp-3cf0325.tar.gz -C /src/third_party
+--- 日志尾 12 行 ---
+#13 20.51 /src/include/strata/platform/hip_compat/strata_hip.h:83:23: note: expanded from macro 'cudaGetDevice'
+#13 20.51    83 | #define cudaGetDevice hipGetDevice
+#13 20.51       |                       ^
+#13 20.51 1 warning generated when compiling for gfx906.
+#13 20.51 /src/src/prefill/moe_fused_iq.cu:945:5: warning: ignoring return value of type 'hipError_t' declared with 'nodiscard' attribute [-Wunused-value]
+#13 20.51   945 |     cudaGetDevice(&dev);
+#13 20.51       |     ^~~~~~~~~~~~~~~~~~~
+#13 20.51 /src/include/strata/platform/hip_compat/strata_hip.h:83:23: note: expanded from macro 'cudaGetDevice'
+#13 20.51    83 | #define cudaGetDevice hipGetDevice
+#13 20.51       |                       ^
+#13 20.51 1 warning generated when compiling for host.
+#13 20.76 [78/139] Building CXX object CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/pool.cpp.o
+

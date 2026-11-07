@@ -1,0 +1,71 @@
+# W804 KL gate 1-3K  20261026_001939 short_read=300
+  arms: A=auto/MAX1024  B=auto/MAX3072  C=auto/MAX3072(第二遍)
+  corpus sha16=9d1b2e679c0b15e8 bytes=28575
+  mark=51435
+=== ARM A ready=68s
+  ENVCHECK want=15 got=15 :: STRATA_PREFILL_CPU_SHARE=auto STRATA_PREFILL_CPU_SHARE_MAX=1024 
+  t0  shape0  U prompt_tokens=576    fresh~576   wall=2.1s e3b0c44298fc1c14
+  t1  probe   U prompt_tokens=759    fresh~183   wall=3.0s e3b0c44298fc1c14
+  t2  shape   U prompt_tokens=2358   fresh~1599  wall=4.5s e3b0c44298fc1c14
+  t3  probe   U prompt_tokens=2516   fresh~158   wall=2.9s e3b0c44298fc1c14
+  t4  shape   U prompt_tokens=3999   fresh~1483  wall=4.5s e3b0c44298fc1c14
+  t5  probe   U prompt_tokens=4159   fresh~160   wall=3.0s e3b0c44298fc1c14
+  t6  shape   U prompt_tokens=5689   fresh~1530  wall=4.7s e3b0c44298fc1c14
+  t7  probe   U prompt_tokens=5825   fresh~136   wall=2.8s e3b0c44298fc1c14
+CLIENT_DONE A
+  LOG strata serve: prompt 576 tokens = 0 reused + 576 read in 1987 ms (289.9 tok/s), 1 generated in 54 ms (18.7 tok/s), drafts accepted 0 of 0, 1 checkpoints
+  LOG strata serve: prompt 759 tokens = 571 reused + 188 read in 2944 ms (63.9 tok/s), 1 generated in 31 ms (32.2 tok/s), drafts accepted 0 of 0, 2 checkpoints
+  LOG strata serve: prompt 2358 tokens = 754 reused + 1604 read in 4424 ms (362.6 tok/s), 1 generated in 30 ms (33.0 tok/s), drafts accepted 0 of 0, 3 checkpoints
+  LOG strata serve: prompt 2516 tokens = 2353 reused + 163 read in 2833 ms (57.5 tok/s), 1 generated in 34 ms (29.5 tok/s), drafts accepted 0 of 0, 4 checkpoints
+  LOG strata serve: prompt 3999 tokens = 2511 reused + 1488 read in 4502 ms (330.5 tok/s), 1 generated in 30 ms (33.2 tok/s), drafts accepted 0 of 0, 5 checkpoints
+  LOG strata serve: prompt 4159 tokens = 3994 reused + 165 read in 2958 ms (55.8 tok/s), 1 generated in 30 ms (33.3 tok/s), drafts accepted 0 of 0, 6 checkpoints
+  LOG strata serve: prompt 5689 tokens = 4154 reused + 1535 read in 4607 ms (333.2 tok/s), 1 generated in 30 ms (33.1 tok/s), drafts accepted 0 of 0, 6 checkpoints
+  LOG strata serve: prompt 5825 tokens = 5684 reused + 141 read in 2753 ms (51.2 tok/s), 1 generated in 31 ms (32.1 tok/s), drafts accepted 0 of 0, 6 checkpoints
+  cpu_gate_share_lines=45
+  LOGPOS rows=669 bytes=693475
+  mark=51580
+=== ARM B ready=50s
+  ENVCHECK want=15 got=15 :: STRATA_PREFILL_CPU_SHARE=auto STRATA_PREFILL_CPU_SHARE_MAX=3072 
+  t0  shape0  U prompt_tokens=576    fresh~576   wall=2.0s e3b0c44298fc1c14
+  t1  probe   U prompt_tokens=759    fresh~183   wall=2.9s e3b0c44298fc1c14
+  t2  shape   U prompt_tokens=2358   fresh~1599  wall=3.7s e3b0c44298fc1c14
+  t3  probe   U prompt_tokens=2516   fresh~158   wall=2.9s e3b0c44298fc1c14
+  t4  shape   U prompt_tokens=3999   fresh~1483  wall=3.9s e3b0c44298fc1c14
+  t5  probe   U prompt_tokens=4159   fresh~160   wall=3.1s e3b0c44298fc1c14
+  t6  shape   U prompt_tokens=5689   fresh~1530  wall=4.0s e3b0c44298fc1c14
+  t7  probe   U prompt_tokens=5825   fresh~136   wall=2.8s e3b0c44298fc1c14
+CLIENT_DONE B
+  LOG strata serve: prompt 576 tokens = 0 reused + 576 read in 1942 ms (296.7 tok/s), 1 generated in 50 ms (20.2 tok/s), drafts accepted 0 of 0, 1 checkpoints
+  LOG strata serve: prompt 759 tokens = 571 reused + 188 read in 2841 ms (66.2 tok/s), 1 generated in 31 ms (32.7 tok/s), drafts accepted 0 of 0, 2 checkpoints
+  LOG strata serve: prompt 2358 tokens = 754 reused + 1604 read in 3678 ms (436.2 tok/s), 1 generated in 30 ms (33.2 tok/s), drafts accepted 0 of 0, 3 checkpoints
+  LOG strata serve: prompt 2516 tokens = 2353 reused + 163 read in 2800 ms (58.2 tok/s), 1 generated in 32 ms (31.0 tok/s), drafts accepted 0 of 0, 4 checkpoints
+  LOG strata serve: prompt 3999 tokens = 2511 reused + 1488 read in 3800 ms (391.6 tok/s), 1 generated in 30 ms (33.7 tok/s), drafts accepted 0 of 0, 5 checkpoints
+  LOG strata serve: prompt 4159 tokens = 3994 reused + 165 read in 3018 ms (54.7 tok/s), 1 generated in 30 ms (33.4 tok/s), drafts accepted 0 of 0, 6 checkpoints
+  LOG strata serve: prompt 5689 tokens = 4154 reused + 1535 read in 4003 ms (383.5 tok/s), 1 generated in 30 ms (33.1 tok/s), drafts accepted 0 of 0, 6 checkpoints
+  LOG strata serve: prompt 5825 tokens = 5684 reused + 141 read in 2741 ms (51.4 tok/s), 1 generated in 31 ms (32.1 tok/s), drafts accepted 0 of 0, 6 checkpoints
+  cpu_gate_share_lines=185
+  LOGPOS rows=669 bytes=693309
+  mark=51865
+=== ARM C ready=83s
+  ENVCHECK want=15 got=15 :: STRATA_PREFILL_CPU_SHARE=auto STRATA_PREFILL_CPU_SHARE_MAX=3072 
+  t0  shape0  U prompt_tokens=576    fresh~576   wall=2.1s e3b0c44298fc1c14
+  t1  probe   U prompt_tokens=759    fresh~183   wall=2.9s e3b0c44298fc1c14
+  t2  shape   U prompt_tokens=2358   fresh~1599  wall=3.7s e3b0c44298fc1c14
+  t3  probe   U prompt_tokens=2516   fresh~158   wall=2.9s e3b0c44298fc1c14
+  t4  shape   U prompt_tokens=3999   fresh~1483  wall=3.7s e3b0c44298fc1c14
+  t5  probe   U prompt_tokens=4159   fresh~160   wall=2.9s e3b0c44298fc1c14
+  t6  shape   U prompt_tokens=5689   fresh~1530  wall=4.0s e3b0c44298fc1c14
+  t7  probe   U prompt_tokens=5825   fresh~136   wall=2.7s e3b0c44298fc1c14
+CLIENT_DONE C
+  LOG strata serve: prompt 576 tokens = 0 reused + 576 read in 1965 ms (293.1 tok/s), 1 generated in 47 ms (21.1 tok/s), drafts accepted 0 of 0, 1 checkpoints
+  LOG strata serve: prompt 759 tokens = 571 reused + 188 read in 2866 ms (65.6 tok/s), 1 generated in 31 ms (32.5 tok/s), drafts accepted 0 of 0, 2 checkpoints
+  LOG strata serve: prompt 2358 tokens = 754 reused + 1604 read in 3636 ms (441.2 tok/s), 1 generated in 31 ms (32.7 tok/s), drafts accepted 0 of 0, 3 checkpoints
+  LOG strata serve: prompt 2516 tokens = 2353 reused + 163 read in 2831 ms (57.6 tok/s), 1 generated in 31 ms (32.0 tok/s), drafts accepted 0 of 0, 4 checkpoints
+  LOG strata serve: prompt 3999 tokens = 2511 reused + 1488 read in 3664 ms (406.2 tok/s), 1 generated in 30 ms (33.4 tok/s), drafts accepted 0 of 0, 5 checkpoints
+  LOG strata serve: prompt 4159 tokens = 3994 reused + 165 read in 2877 ms (57.4 tok/s), 1 generated in 30 ms (33.8 tok/s), drafts accepted 0 of 0, 6 checkpoints
+  LOG strata serve: prompt 5689 tokens = 4154 reused + 1535 read in 3918 ms (391.8 tok/s), 1 generated in 30 ms (33.0 tok/s), drafts accepted 0 of 0, 6 checkpoints
+  LOG strata serve: prompt 5825 tokens = 5684 reused + 141 read in 2681 ms (52.6 tok/s), 1 generated in 31 ms (32.1 tok/s), drafts accepted 0 of 0, 6 checkpoints
+  cpu_gate_share_lines=185
+  LOGPOS rows=669 bytes=693396
+restored 64s
+final env_n=12 share=auto max=1024 sr=False

@@ -1,0 +1,2 @@
+hook probe 2026-11-07 03:31 — 这个文件是用来验证 PreToolUse 钩子是否在重启后被加载的。
+如果 .workbuddy/.round_dirty 在这次 Write 之后出现，说明钩子生效；否则说明桌面版没有执行它。

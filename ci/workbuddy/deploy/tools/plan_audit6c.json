@@ -1,0 +1,15 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "B7:P09废, P66/P65 采纳",
+   "new": "B7:P09废; P66 废(W785), P65 惰性"
+  },
+  {
+   "kind": "substr",
+   "old": "冷读-2.5%;drop_caches",
+   "new": "冷读-2.5%(W785 推翻);drop_caches"
+  }
+ ]
+}

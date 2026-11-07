@@ -1,0 +1,23 @@
+START 2026-10-25_20:08:30 ts=20261025_200830
+bak=/home/albus/strata166/data/strata-huihui-ud-iq4_xs.json.bak_w798c_20261025_200830 image=strata-gfx906:0.2.4p4
+=== ARM A 20:08:30 ===
+arm A env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_DECODE_TIMING', '1'), ('STRATA_GDN_HEAD', '1'), ('STRATA_GDN_PP', '2'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt'), ('STRATA_SELECT_SIMT', '1')]
+health 70s
+slots 9901 vram 606
+build prompt_tok=7581
+  r1 decode_ms=4508.7 decode_tok_s=56.8 dur=5.16
+  r2 decode_ms=3930.9 decode_tok_s=65.1 dur=5.59
+  r3 decode_ms=3351.6 decode_tok_s=76.4 dur=5.02
+  r4 decode_ms=3476.7 decode_tok_s=73.6 dur=5.23
+=== ARM B 20:10:29 ===
+arm B env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_DECODE_TIMING', '1'), ('STRATA_GDN_HEAD', '1'), ('STRATA_GDN_PP', '2'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt'), ('STRATA_SELECT_SIMT', '1'), ('STRATA_SH_STREAM', '1')]
+health 55s
+slots 9901 vram 606
+build prompt_tok=7581
+  r1 decode_ms=4384.6 decode_tok_s=58.4 dur=5.05
+  r2 decode_ms=3680.4 decode_tok_s=69.6 dur=5.48
+  r3 decode_ms=3489.6 decode_tok_s=73.4 dur=5.24
+  r4 decode_ms=3527.6 decode_tok_s=72.6 dur=5.31
+=== ARM C 20:12:13 ===
+arm C env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_DECODE_TIMING', '1'), ('STRATA_GDN_HEAD', '1'), ('STRATA_GDN_PP', '2'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_Q8_PACKED', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt'), ('STRATA_SELECT_SIMT', '1')]
+health 51s

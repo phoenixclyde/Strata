@@ -1,0 +1,39 @@
+[1] 本地生成件 744 B md5=547d280c4c7c5d69f2440c9b8a16b975
+   push_b64 ok=True size=744 md5=547d280c4c7c5d69f2440c9b8a16b975
+   [backup] rc=0 out=BACKUP_OK
+   [cp] rc=0 out=CP_OK
+   [md5] rc=0 out=547d280c4c7c5d69f2440c9b8a16b975  /home/albus/strata166/data/strata-ud-iq4_xs.json
+   [clean] rc=0 out=
+   [grep-newflag] rc=0 out=1
+   [restart] rc=0 out=RESTART_RC=0
+   [ready  10s] http=000
+   [ready  20s] http=000
+   [ready  30s] http=000
+   [ready  40s] http=200
+
+[3] 固化复验：
+id    name                               value                                结果     依据
+----------------------------------------------------------------------------------------------------------------------------
+P00   --pack                             /data/packs/ud-iq4_xs                PASS   config JSON + 引擎启动行
+P01   --native                           /weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf PASS   config JSON + 引擎启动行
+P09   --resident-budget-gib              76                                   PASS   config JSON + 引擎启动行
+P08   --expert-profile                   /src/data/expert-profile.bin         PASS   config JSON + 引擎启动行
+P07   --expert-cache                     auto                                 PASS   config JSON + 引擎启动行
+P05   --spec                             4                                    PASS   config JSON + 引擎启动行
+P06   --spec-min-p                       0.5                                  PASS   config JSON + 引擎启动行
+P02   --mtp                              /data/mtp/rt                         PASS   config JSON + 引擎启动行
+P03   --max-context                      262144                               PASS   config JSON + 引擎启动行
+P04   --kv                               k8v4                                 PASS   config JSON + 引擎启动行
+P10   --prefill                          auto                                 PASS   config JSON + 引擎启动行
+P11   HSA_OVERRIDE_GFX_VERSION           9.0.6                                PASS   docker Config.Env
+P20   --expert-profile-save              /data/profiles/ud-iq4_xs-learned.bin PASS   config JSON + 引擎启动行
+----------------------------------------------------------------------------------------------------------------------------
+PASS=13  FAIL=0
+
+锚定的启动行（最后一次 engine started）：
+  [strata] 2026-10-07 16:49:58 engine started: /src/build-906/strata --serve --pack /data/packs/ud-iq4_xs --native /weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf --resident-budget-gib 76 --expert-profile /src/data/expert-
+
+容器 Cmd：
+  qwen3.8-flash-next-ud-iq4_xs  <- config: /home/albus/strata166/data/strata-ud-iq4_xs.json
+
+verify rc = 0   备份 ts = 20261008_004949

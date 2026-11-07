@@ -1,0 +1,38 @@
+=== [0] 传 unit 到 /tmp ===
+  ok=True size=1145 md5=509e0ad7417e1cb064108734bb9f9823
+  rc=0 remote_size=1145 remote_md5=509e0ad7417e1cb064108734bb9f9823 match=True | R_SIZE=1145 | R_MD5=509e0ad7417e1cb064108734bb9f9823 | R_BASHSYNTAX=NA_or_FAIL | R_CR=0 | R_LF=34
+
+=== [1] pillow 对照（0.1.40.1 vs 0.1.40.2）===
+  strata-gfx906:0.1.40.1 : ModuleNotFoundError: No module named 'pillow'
+  strata-gfx906:0.1.40.2 : ModuleNotFoundError: No module named 'pillow'
+
+--- 0.1.40.2 已装的顶层包（前 30）---
+certifi==2026.7.22
+charset-normalizer==3.5.2
+idna==3.20
+Jinja2==3.1.6
+MarkupSafe==3.0.4
+numpy==2.5.3
+pillow==12.3.0
+pip==24.0
+psutil==7.2.2
+PyYAML==6.0.3
+regex==2026.9.29
+requests==2.34.2
+setuptools==68.1.2
+tqdm==4.70.1
+urllib3==2.8.0
+wheel==0.42.0
+
+--- serve/server.py 是否 import PIL / pillow ---
+/src/serve/server.py:1853:            from PIL import Image
+/src/serve/server.py:1869:            from PIL import Image
+/src/serve/server.py:1876:            from PIL import ImageOps
+/src/serve/test_exif_orientation.py:8:    from PIL import Image
+(空即未 import)
+
+
+=== [2] 备份旧容器配置 ===
+-rw-rw-r-- 1 albus albus 13381 Oct  7 23:55 /home/albus/strata166/logs/inspect-401-backup.json
+backup ok
+

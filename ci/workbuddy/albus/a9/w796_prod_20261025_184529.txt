@@ -1,0 +1,15 @@
+=== needle 32k d10/50/90 18:45:29 ===
+  32k depth  10%: FOUND  (31,640 prompt tokens, 50 s)
+  32k depth  50%: FOUND  (31,640 prompt tokens, 49 s)
+  32k depth  90%: FOUND  (31,641 prompt tokens, 37 s)
+3 of 3 found
+=== prod M x2 18:47:45 ===
+  [M] run1 ptok=21827 reused=0 prompt_ms=32384 prompt_tps=674.0 decode_tps=57.8 out=320 wall=37.9s
+  [M] run2 ptok=21827 reused=0 prompt_ms=33067 prompt_tps=660.1 decode_tps=68.7 out=320 wall=37.7s
+  [M] n=2 reused0=2 | prompt_tps median=667.1  decode_tps median=63.2
+=== prod L x1 ===
+  [L] run1 ptok=99387 reused=0 prompt_ms=150245 prompt_tps=661.5 decode_tps=46.9 out=32 wall=151.0s
+  [L] n=1 reused0=1 | prompt_tps median=661.5  decode_tps median=46.9
+=== env ===
+[('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt'), ('STRATA_SELECT_SIMT', '1')]
+=== DONE 18:51:37 ===

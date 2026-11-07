@@ -1,0 +1,5 @@
+START 2026-10-25_17:03:21 ts=20261025_170321
+bak=/home/albus/strata166/data/strata-huihui-ud-iq4_xs.json.bak_w794_20261025_170321
+image=strata-gfx906:0.2.4p4
+=== ARM A 17:03:21 ===
+arm A env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt')]

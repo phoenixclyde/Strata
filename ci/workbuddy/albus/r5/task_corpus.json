@@ -1,0 +1,260 @@
+{
+ "meta": {
+  "why": "短提示可判分任务（chunk < 1024 => 落在 CPU share 作用域），36 题 => 分辨率 2.8pp",
+  "answer_form": "ANSWER: <value>"
+ },
+ "tasks": [
+  {
+   "id": "t00",
+   "kind": 0,
+   "n_rec": 10,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4401: 8 units of SKU-204 at 11.25 each, shipped 2026-05-03.\nOrder 4407: 6 units of SKU-407 at 14.00 each, shipped 2026-03-07.\nOrder 4419: 5 units of SKU-512 at 11.25 each, shipped 2026-03-23.\nOrder 4426: 1 units of SKU-331 at 9.75 each, shipped 2026-03-16.\nOrder 4432: 8 units of SKU-204 at 9.75 each, shipped 2026-04-14.\nOrder 4437: 9 units of SKU-204 at 11.25 each, shipped 2026-04-11.\nOrder 4444: 6 units of SKU-118 at 14.00 each, shipped 2026-02-14.\nOrder 4451: 8 units of SKU-331 at 14.00 each, shipped 2026-04-11.\nOrder 4457: 3 units of SKU-118 at 8.50 each, shipped 2026-02-19.\nOrder 4464: 8 units of SKU-204 at 9.75 each, shipped 2026-01-28.\n</log>\n\nHow many units of SKU-407 were shipped in total? Give the number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "6"
+  },
+  {
+   "id": "t01",
+   "kind": 1,
+   "n_rec": 13,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4400: 5 units of SKU-407 at 8.50 each, shipped 2026-01-22.\nOrder 4411: 2 units of SKU-204 at 11.25 each, shipped 2026-06-05.\nOrder 4417: 1 units of SKU-204 at 14.00 each, shipped 2026-06-09.\nOrder 4425: 6 units of SKU-118 at 12.50 each, shipped 2026-05-23.\nOrder 4430: 8 units of SKU-331 at 12.50 each, shipped 2026-04-03.\nOrder 4437: 5 units of SKU-118 at 8.50 each, shipped 2026-03-03.\nOrder 4446: 1 units of SKU-331 at 12.50 each, shipped 2026-05-27.\nOrder 4449: 6 units of SKU-118 at 9.75 each, shipped 2026-04-12.\nOrder 4459: 1 units of SKU-407 at 9.75 each, shipped 2026-01-15.\nOrder 4465: 6 units of SKU-512 at 11.25 each, shipped 2026-04-06.\nOrder 4472: 7 units of SKU-331 at 11.25 each, shipped 2026-04-14.\nOrder 4481: 2 units of SKU-407 at 9.75 each, shipped 2026-03-11.\nOrder 4484: 8 units of SKU-118 at 14.00 each, shipped 2026-06-27.\n</log>\n\nWhich order in the log shipped the most units? Give its order number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "4430"
+  },
+  {
+   "id": "t02",
+   "kind": 2,
+   "n_rec": 12,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4401: 5 units of SKU-331 at 8.50 each, shipped 2026-03-17.\nOrder 4409: 6 units of SKU-204 at 14.00 each, shipped 2026-06-23.\nOrder 4417: 7 units of SKU-512 at 11.25 each, shipped 2026-02-17.\nOrder 4423: 6 units of SKU-407 at 9.75 each, shipped 2026-06-19.\nOrder 4430: 2 units of SKU-407 at 9.75 each, shipped 2026-04-19.\nOrder 4437: 7 units of SKU-512 at 9.75 each, shipped 2026-04-09.\nOrder 4446: 6 units of SKU-407 at 9.75 each, shipped 2026-06-23.\nOrder 4454: 7 units of SKU-512 at 9.75 each, shipped 2026-02-06.\nOrder 4458: 3 units of SKU-331 at 9.75 each, shipped 2026-06-11.\nOrder 4466: 8 units of SKU-512 at 8.50 each, shipped 2026-05-26.\nOrder 4472: 2 units of SKU-407 at 8.50 each, shipped 2026-05-26.\nOrder 4482: 9 units of SKU-118 at 8.50 each, shipped 2026-05-24.\n</log>\n\nHow many separate orders in the log include SKU-331? Give the count.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "2"
+  },
+  {
+   "id": "t03",
+   "kind": 3,
+   "n_rec": 10,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4403: 9 units of SKU-407 at 9.75 each, shipped 2026-02-14.\nOrder 4411: 2 units of SKU-118 at 12.50 each, shipped 2026-02-15.\nOrder 4415: 1 units of SKU-331 at 9.75 each, shipped 2026-03-19.\nOrder 4423: 1 units of SKU-204 at 8.50 each, shipped 2026-01-26.\nOrder 4432: 4 units of SKU-512 at 8.50 each, shipped 2026-02-02.\nOrder 4435: 8 units of SKU-331 at 9.75 each, shipped 2026-01-27.\nOrder 4442: 7 units of SKU-407 at 14.00 each, shipped 2026-04-24.\nOrder 4452: 6 units of SKU-118 at 11.25 each, shipped 2026-02-16.\nOrder 4461: 7 units of SKU-512 at 11.25 each, shipped 2026-06-27.\nOrder 4466: 3 units of SKU-118 at 12.50 each, shipped 2026-02-21.\n</log>\n\nWhich order shipped earliest? Give its order number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "4423"
+  },
+  {
+   "id": "t04",
+   "kind": 0,
+   "n_rec": 10,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4405: 9 units of SKU-118 at 12.50 each, shipped 2026-03-01.\nOrder 4411: 3 units of SKU-118 at 8.50 each, shipped 2026-04-08.\nOrder 4417: 1 units of SKU-512 at 9.75 each, shipped 2026-06-21.\nOrder 4423: 5 units of SKU-512 at 8.50 each, shipped 2026-04-04.\nOrder 4431: 6 units of SKU-512 at 9.75 each, shipped 2026-04-09.\nOrder 4435: 7 units of SKU-204 at 8.50 each, shipped 2026-03-21.\nOrder 4445: 7 units of SKU-204 at 8.50 each, shipped 2026-04-17.\nOrder 4450: 9 units of SKU-204 at 12.50 each, shipped 2026-02-15.\nOrder 4460: 4 units of SKU-204 at 14.00 each, shipped 2026-01-11.\nOrder 4468: 6 units of SKU-407 at 14.00 each, shipped 2026-02-05.\n</log>\n\nHow many units of SKU-512 were shipped in total? Give the number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "12"
+  },
+  {
+   "id": "t05",
+   "kind": 1,
+   "n_rec": 12,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4404: 1 units of SKU-204 at 12.50 each, shipped 2026-06-12.\nOrder 4410: 3 units of SKU-118 at 11.25 each, shipped 2026-04-05.\nOrder 4419: 8 units of SKU-512 at 9.75 each, shipped 2026-02-17.\nOrder 4425: 4 units of SKU-512 at 11.25 each, shipped 2026-04-26.\nOrder 4432: 8 units of SKU-118 at 12.50 each, shipped 2026-03-16.\nOrder 4438: 2 units of SKU-118 at 14.00 each, shipped 2026-04-06.\nOrder 4445: 3 units of SKU-331 at 12.50 each, shipped 2026-01-25.\nOrder 4449: 6 units of SKU-407 at 9.75 each, shipped 2026-03-28.\nOrder 4461: 4 units of SKU-512 at 12.50 each, shipped 2026-04-13.\nOrder 4468: 4 units of SKU-407 at 8.50 each, shipped 2026-03-18.\nOrder 4475: 9 units of SKU-118 at 14.00 each, shipped 2026-03-19.\nOrder 4479: 1 units of SKU-512 at 14.00 each, shipped 2026-04-17.\n</log>\n\nWhich order in the log shipped the most units? Give its order number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "4475"
+  },
+  {
+   "id": "t06",
+   "kind": 2,
+   "n_rec": 11,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4404: 3 units of SKU-512 at 8.50 each, shipped 2026-02-19.\nOrder 4410: 5 units of SKU-204 at 12.50 each, shipped 2026-03-11.\nOrder 4418: 1 units of SKU-118 at 9.75 each, shipped 2026-03-03.\nOrder 4426: 8 units of SKU-204 at 9.75 each, shipped 2026-03-01.\nOrder 4428: 6 units of SKU-407 at 12.50 each, shipped 2026-03-22.\nOrder 4436: 8 units of SKU-512 at 9.75 each, shipped 2026-03-27.\nOrder 4446: 8 units of SKU-118 at 14.00 each, shipped 2026-04-11.\nOrder 4452: 5 units of SKU-512 at 8.50 each, shipped 2026-02-09.\nOrder 4460: 3 units of SKU-331 at 12.50 each, shipped 2026-04-25.\nOrder 4466: 7 units of SKU-407 at 12.50 each, shipped 2026-01-20.\nOrder 4475: 5 units of SKU-118 at 8.50 each, shipped 2026-02-11.\n</log>\n\nHow many separate orders in the log include SKU-331? Give the count.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "1"
+  },
+  {
+   "id": "t07",
+   "kind": 3,
+   "n_rec": 12,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4401: 7 units of SKU-331 at 12.50 each, shipped 2026-04-06.\nOrder 4410: 6 units of SKU-512 at 9.75 each, shipped 2026-02-19.\nOrder 4417: 8 units of SKU-204 at 14.00 each, shipped 2026-01-22.\nOrder 4422: 8 units of SKU-118 at 8.50 each, shipped 2026-02-14.\nOrder 4433: 6 units of SKU-118 at 14.00 each, shipped 2026-04-14.\nOrder 4436: 9 units of SKU-512 at 12.50 each, shipped 2026-05-22.\nOrder 4442: 9 units of SKU-118 at 14.00 each, shipped 2026-04-18.\nOrder 4453: 7 units of SKU-407 at 12.50 each, shipped 2026-01-12.\nOrder 4461: 5 units of SKU-331 at 12.50 each, shipped 2026-05-27.\nOrder 4463: 4 units of SKU-512 at 9.75 each, shipped 2026-03-10.\nOrder 4470: 8 units of SKU-331 at 12.50 each, shipped 2026-04-26.\nOrder 4478: 9 units of SKU-118 at 14.00 each, shipped 2026-03-14.\n</log>\n\nWhich order shipped earliest? Give its order number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "4453"
+  },
+  {
+   "id": "t08",
+   "kind": 0,
+   "n_rec": 11,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4400: 6 units of SKU-407 at 11.25 each, shipped 2026-01-18.\nOrder 4412: 1 units of SKU-118 at 14.00 each, shipped 2026-03-05.\nOrder 4417: 8 units of SKU-331 at 11.25 each, shipped 2026-01-25.\nOrder 4421: 7 units of SKU-331 at 8.50 each, shipped 2026-01-11.\nOrder 4428: 4 units of SKU-331 at 11.25 each, shipped 2026-03-08.\nOrder 4440: 4 units of SKU-331 at 8.50 each, shipped 2026-06-06.\nOrder 4442: 8 units of SKU-331 at 12.50 each, shipped 2026-01-09.\nOrder 4451: 1 units of SKU-204 at 14.00 each, shipped 2026-01-11.\nOrder 4458: 7 units of SKU-512 at 8.50 each, shipped 2026-02-16.\nOrder 4465: 3 units of SKU-331 at 8.50 each, shipped 2026-03-15.\nOrder 4473: 5 units of SKU-118 at 8.50 each, shipped 2026-03-17.\n</log>\n\nHow many units of SKU-512 were shipped in total? Give the number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "7"
+  },
+  {
+   "id": "t09",
+   "kind": 1,
+   "n_rec": 11,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4400: 6 units of SKU-118 at 14.00 each, shipped 2026-04-24.\nOrder 4409: 4 units of SKU-512 at 12.50 each, shipped 2026-05-13.\nOrder 4416: 9 units of SKU-204 at 14.00 each, shipped 2026-05-22.\nOrder 4424: 1 units of SKU-204 at 9.75 each, shipped 2026-02-03.\nOrder 4428: 8 units of SKU-512 at 11.25 each, shipped 2026-01-24.\nOrder 4439: 7 units of SKU-204 at 11.25 each, shipped 2026-06-14.\nOrder 4447: 1 units of SKU-204 at 8.50 each, shipped 2026-05-08.\nOrder 4450: 8 units of SKU-118 at 8.50 each, shipped 2026-04-08.\nOrder 4456: 2 units of SKU-512 at 12.50 each, shipped 2026-06-22.\nOrder 4467: 9 units of SKU-331 at 9.75 each, shipped 2026-01-26.\nOrder 4471: 9 units of SKU-331 at 11.25 each, shipped 2026-02-28.\n</log>\n\nWhich order in the log shipped the most units? Give its order number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "4416"
+  },
+  {
+   "id": "t10",
+   "kind": 2,
+   "n_rec": 13,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4403: 6 units of SKU-204 at 12.50 each, shipped 2026-02-14.\nOrder 4410: 3 units of SKU-204 at 11.25 each, shipped 2026-05-06.\nOrder 4416: 2 units of SKU-407 at 14.00 each, shipped 2026-03-09.\nOrder 4426: 7 units of SKU-118 at 14.00 each, shipped 2026-02-19.\nOrder 4431: 2 units of SKU-331 at 8.50 each, shipped 2026-03-13.\nOrder 4437: 3 units of SKU-204 at 11.25 each, shipped 2026-04-05.\nOrder 4446: 1 units of SKU-407 at 14.00 each, shipped 2026-04-07.\nOrder 4451: 1 units of SKU-331 at 14.00 each, shipped 2026-03-09.\nOrder 4456: 1 units of SKU-331 at 11.25 each, shipped 2026-03-02.\nOrder 4463: 7 units of SKU-407 at 9.75 each, shipped 2026-03-05.\nOrder 4475: 7 units of SKU-407 at 9.75 each, shipped 2026-04-09.\nOrder 4478: 3 units of SKU-512 at 9.75 each, shipped 2026-02-03.\nOrder 4489: 2 units of SKU-204 at 12.50 each, shipped 2026-03-22.\n</log>\n\nHow many separate orders in the log include SKU-331? Give the count.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "3"
+  },
+  {
+   "id": "t11",
+   "kind": 3,
+   "n_rec": 11,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4400: 6 units of SKU-407 at 14.00 each, shipped 2026-04-19.\nOrder 4407: 5 units of SKU-331 at 9.75 each, shipped 2026-02-11.\nOrder 4418: 1 units of SKU-407 at 8.50 each, shipped 2026-04-15.\nOrder 4426: 2 units of SKU-331 at 8.50 each, shipped 2026-03-14.\nOrder 4429: 4 units of SKU-407 at 9.75 each, shipped 2026-05-08.\nOrder 4440: 8 units of SKU-407 at 14.00 each, shipped 2026-06-03.\nOrder 4443: 2 units of SKU-204 at 11.25 each, shipped 2026-02-05.\nOrder 4450: 5 units of SKU-204 at 12.50 each, shipped 2026-04-12.\nOrder 4457: 1 units of SKU-118 at 9.75 each, shipped 2026-05-28.\nOrder 4463: 7 units of SKU-204 at 14.00 each, shipped 2026-06-27.\nOrder 4472: 6 units of SKU-118 at 9.75 each, shipped 2026-05-22.\n</log>\n\nWhich order shipped earliest? Give its order number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "4443"
+  },
+  {
+   "id": "t12",
+   "kind": 0,
+   "n_rec": 10,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4400: 5 units of SKU-407 at 12.50 each, shipped 2026-02-17.\nOrder 4411: 3 units of SKU-512 at 9.75 each, shipped 2026-05-01.\nOrder 4417: 4 units of SKU-118 at 9.75 each, shipped 2026-01-07.\nOrder 4422: 5 units of SKU-331 at 11.25 each, shipped 2026-02-01.\nOrder 4430: 5 units of SKU-331 at 11.25 each, shipped 2026-06-02.\nOrder 4437: 8 units of SKU-118 at 12.50 each, shipped 2026-02-12.\nOrder 4445: 5 units of SKU-407 at 12.50 each, shipped 2026-01-15.\nOrder 4449: 4 units of SKU-204 at 8.50 each, shipped 2026-01-24.\nOrder 4460: 7 units of SKU-204 at 12.50 each, shipped 2026-05-09.\nOrder 4463: 3 units of SKU-118 at 11.25 each, shipped 2026-01-12.\n</log>\n\nHow many units of SKU-118 were shipped in total? Give the number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "15"
+  },
+  {
+   "id": "t13",
+   "kind": 1,
+   "n_rec": 11,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4404: 1 units of SKU-204 at 9.75 each, shipped 2026-01-08.\nOrder 4407: 6 units of SKU-407 at 11.25 each, shipped 2026-05-02.\nOrder 4417: 5 units of SKU-512 at 11.25 each, shipped 2026-06-24.\nOrder 4421: 2 units of SKU-407 at 14.00 each, shipped 2026-01-16.\nOrder 4431: 8 units of SKU-118 at 14.00 each, shipped 2026-02-20.\nOrder 4440: 6 units of SKU-512 at 12.50 each, shipped 2026-04-18.\nOrder 4446: 8 units of SKU-118 at 9.75 each, shipped 2026-03-14.\nOrder 4450: 6 units of SKU-407 at 8.50 each, shipped 2026-05-25.\nOrder 4460: 1 units of SKU-512 at 9.75 each, shipped 2026-06-17.\nOrder 4467: 8 units of SKU-331 at 8.50 each, shipped 2026-06-10.\nOrder 4475: 7 units of SKU-512 at 9.75 each, shipped 2026-01-15.\n</log>\n\nWhich order in the log shipped the most units? Give its order number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "4431"
+  },
+  {
+   "id": "t14",
+   "kind": 2,
+   "n_rec": 10,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4404: 9 units of SKU-331 at 14.00 each, shipped 2026-02-05.\nOrder 4412: 8 units of SKU-118 at 12.50 each, shipped 2026-01-12.\nOrder 4417: 1 units of SKU-331 at 14.00 each, shipped 2026-04-19.\nOrder 4422: 5 units of SKU-204 at 8.50 each, shipped 2026-04-12.\nOrder 4430: 4 units of SKU-512 at 12.50 each, shipped 2026-06-17.\nOrder 4440: 6 units of SKU-512 at 12.50 each, shipped 2026-03-18.\nOrder 4447: 9 units of SKU-118 at 14.00 each, shipped 2026-04-09.\nOrder 4453: 7 units of SKU-512 at 14.00 each, shipped 2026-06-16.\nOrder 4461: 3 units of SKU-118 at 11.25 each, shipped 2026-06-05.\nOrder 4467: 8 units of SKU-512 at 11.25 each, shipped 2026-02-27.\n</log>\n\nHow many separate orders in the log include SKU-204? Give the count.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "1"
+  },
+  {
+   "id": "t15",
+   "kind": 3,
+   "n_rec": 13,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4402: 1 units of SKU-204 at 12.50 each, shipped 2026-05-20.\nOrder 4407: 9 units of SKU-407 at 9.75 each, shipped 2026-02-03.\nOrder 4418: 4 units of SKU-118 at 11.25 each, shipped 2026-02-19.\nOrder 4425: 7 units of SKU-204 at 9.75 each, shipped 2026-05-22.\nOrder 4428: 3 units of SKU-331 at 9.75 each, shipped 2026-05-17.\nOrder 4440: 7 units of SKU-204 at 14.00 each, shipped 2026-05-12.\nOrder 4447: 1 units of SKU-118 at 14.00 each, shipped 2026-03-22.\nOrder 4453: 4 units of SKU-204 at 12.50 each, shipped 2026-01-15.\nOrder 4460: 6 units of SKU-118 at 9.75 each, shipped 2026-02-25.\nOrder 4464: 2 units of SKU-512 at 11.25 each, shipped 2026-01-27.\nOrder 4474: 2 units of SKU-118 at 11.25 each, shipped 2026-01-12.\nOrder 4478: 1 units of SKU-512 at 14.00 each, shipped 2026-05-18.\nOrder 4489: 7 units of SKU-331 at 12.50 each, shipped 2026-02-19.\n</log>\n\nWhich order shipped earliest? Give its order number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "4474"
+  },
+  {
+   "id": "t16",
+   "kind": 0,
+   "n_rec": 11,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4403: 1 units of SKU-118 at 14.00 each, shipped 2026-04-06.\nOrder 4408: 2 units of SKU-331 at 14.00 each, shipped 2026-01-05.\nOrder 4417: 8 units of SKU-204 at 11.25 each, shipped 2026-06-09.\nOrder 4423: 3 units of SKU-512 at 14.00 each, shipped 2026-02-24.\nOrder 4429: 7 units of SKU-204 at 11.25 each, shipped 2026-02-09.\nOrder 4440: 8 units of SKU-331 at 14.00 each, shipped 2026-05-08.\nOrder 4446: 6 units of SKU-512 at 11.25 each, shipped 2026-04-20.\nOrder 4453: 5 units of SKU-407 at 9.75 each, shipped 2026-02-26.\nOrder 4460: 9 units of SKU-118 at 9.75 each, shipped 2026-03-14.\nOrder 4465: 3 units of SKU-512 at 8.50 each, shipped 2026-01-16.\nOrder 4473: 2 units of SKU-331 at 9.75 each, shipped 2026-01-08.\n</log>\n\nHow many units of SKU-407 were shipped in total? Give the number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "5"
+  },
+  {
+   "id": "t17",
+   "kind": 1,
+   "n_rec": 10,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4401: 1 units of SKU-407 at 12.50 each, shipped 2026-01-12.\nOrder 4412: 5 units of SKU-204 at 12.50 each, shipped 2026-03-01.\nOrder 4417: 3 units of SKU-512 at 11.25 each, shipped 2026-02-01.\nOrder 4421: 3 units of SKU-204 at 9.75 each, shipped 2026-04-18.\nOrder 4428: 5 units of SKU-407 at 12.50 each, shipped 2026-02-24.\nOrder 4437: 8 units of SKU-407 at 8.50 each, shipped 2026-05-08.\nOrder 4444: 9 units of SKU-204 at 12.50 each, shipped 2026-05-06.\nOrder 4450: 8 units of SKU-407 at 8.50 each, shipped 2026-05-28.\nOrder 4458: 4 units of SKU-118 at 14.00 each, shipped 2026-03-12.\nOrder 4466: 5 units of SKU-407 at 14.00 each, shipped 2026-01-04.\n</log>\n\nWhich order in the log shipped the most units? Give its order number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "4444"
+  },
+  {
+   "id": "t18",
+   "kind": 2,
+   "n_rec": 13,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4402: 9 units of SKU-512 at 14.00 each, shipped 2026-02-01.\nOrder 4411: 3 units of SKU-118 at 14.00 each, shipped 2026-03-25.\nOrder 4415: 3 units of SKU-407 at 8.50 each, shipped 2026-05-19.\nOrder 4423: 3 units of SKU-407 at 12.50 each, shipped 2026-03-07.\nOrder 4428: 8 units of SKU-331 at 14.00 each, shipped 2026-06-18.\nOrder 4435: 5 units of SKU-407 at 11.25 each, shipped 2026-01-25.\nOrder 4444: 6 units of SKU-204 at 8.50 each, shipped 2026-02-03.\nOrder 4451: 2 units of SKU-331 at 8.50 each, shipped 2026-04-08.\nOrder 4457: 2 units of SKU-512 at 8.50 each, shipped 2026-05-14.\nOrder 4463: 3 units of SKU-331 at 11.25 each, shipped 2026-03-18.\nOrder 4471: 9 units of SKU-512 at 11.25 each, shipped 2026-05-04.\nOrder 4482: 2 units of SKU-512 at 14.00 each, shipped 2026-02-20.\nOrder 4485: 2 units of SKU-407 at 11.25 each, shipped 2026-01-03.\n</log>\n\nHow many separate orders in the log include SKU-204? Give the count.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "1"
+  },
+  {
+   "id": "t19",
+   "kind": 3,
+   "n_rec": 13,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4402: 7 units of SKU-118 at 9.75 each, shipped 2026-05-03.\nOrder 4412: 7 units of SKU-407 at 12.50 each, shipped 2026-01-23.\nOrder 4416: 5 units of SKU-118 at 12.50 each, shipped 2026-04-07.\nOrder 4424: 7 units of SKU-204 at 14.00 each, shipped 2026-01-26.\nOrder 4431: 7 units of SKU-331 at 11.25 each, shipped 2026-02-16.\nOrder 4440: 4 units of SKU-204 at 11.25 each, shipped 2026-05-09.\nOrder 4443: 4 units of SKU-512 at 8.50 each, shipped 2026-02-10.\nOrder 4451: 6 units of SKU-118 at 8.50 each, shipped 2026-04-07.\nOrder 4459: 9 units of SKU-118 at 14.00 each, shipped 2026-04-20.\nOrder 4467: 8 units of SKU-331 at 14.00 each, shipped 2026-04-09.\nOrder 4473: 7 units of SKU-118 at 9.75 each, shipped 2026-01-19.\nOrder 4482: 4 units of SKU-407 at 14.00 each, shipped 2026-06-19.\nOrder 4484: 2 units of SKU-118 at 14.00 each, shipped 2026-03-17.\n</log>\n\nWhich order shipped earliest? Give its order number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "4473"
+  },
+  {
+   "id": "t20",
+   "kind": 0,
+   "n_rec": 12,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4403: 4 units of SKU-331 at 14.00 each, shipped 2026-02-03.\nOrder 4407: 3 units of SKU-512 at 9.75 each, shipped 2026-04-12.\nOrder 4419: 4 units of SKU-407 at 11.25 each, shipped 2026-02-03.\nOrder 4421: 2 units of SKU-204 at 14.00 each, shipped 2026-01-01.\nOrder 4433: 6 units of SKU-407 at 11.25 each, shipped 2026-03-08.\nOrder 4438: 6 units of SKU-407 at 8.50 each, shipped 2026-06-22.\nOrder 4445: 9 units of SKU-512 at 11.25 each, shipped 2026-06-21.\nOrder 4449: 8 units of SKU-407 at 8.50 each, shipped 2026-04-01.\nOrder 4461: 2 units of SKU-204 at 8.50 each, shipped 2026-03-08.\nOrder 4464: 6 units of SKU-331 at 12.50 each, shipped 2026-03-10.\nOrder 4472: 7 units of SKU-118 at 11.25 each, shipped 2026-06-23.\nOrder 4482: 9 units of SKU-512 at 14.00 each, shipped 2026-06-19.\n</log>\n\nHow many units of SKU-118 were shipped in total? Give the number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "7"
+  },
+  {
+   "id": "t21",
+   "kind": 1,
+   "n_rec": 12,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4403: 8 units of SKU-204 at 12.50 each, shipped 2026-06-28.\nOrder 4408: 2 units of SKU-204 at 11.25 each, shipped 2026-01-26.\nOrder 4417: 4 units of SKU-118 at 14.00 each, shipped 2026-04-01.\nOrder 4423: 7 units of SKU-118 at 14.00 each, shipped 2026-01-20.\nOrder 4433: 1 units of SKU-331 at 12.50 each, shipped 2026-03-16.\nOrder 4438: 5 units of SKU-407 at 9.75 each, shipped 2026-01-15.\nOrder 4445: 2 units of SKU-331 at 9.75 each, shipped 2026-01-02.\nOrder 4450: 1 units of SKU-407 at 9.75 each, shipped 2026-06-19.\nOrder 4457: 1 units of SKU-407 at 8.50 each, shipped 2026-06-05.\nOrder 4463: 1 units of SKU-118 at 8.50 each, shipped 2026-03-17.\nOrder 4472: 3 units of SKU-512 at 12.50 each, shipped 2026-01-11.\nOrder 4479: 2 units of SKU-331 at 12.50 each, shipped 2026-05-04.\n</log>\n\nWhich order in the log shipped the most units? Give its order number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "4403"
+  },
+  {
+   "id": "t22",
+   "kind": 2,
+   "n_rec": 10,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4400: 8 units of SKU-407 at 12.50 each, shipped 2026-06-09.\nOrder 4410: 2 units of SKU-512 at 8.50 each, shipped 2026-06-28.\nOrder 4417: 8 units of SKU-331 at 9.75 each, shipped 2026-01-17.\nOrder 4423: 9 units of SKU-407 at 12.50 each, shipped 2026-06-14.\nOrder 4432: 4 units of SKU-407 at 12.50 each, shipped 2026-01-28.\nOrder 4437: 1 units of SKU-118 at 12.50 each, shipped 2026-06-18.\nOrder 4444: 9 units of SKU-407 at 9.75 each, shipped 2026-03-11.\nOrder 4453: 5 units of SKU-204 at 11.25 each, shipped 2026-02-15.\nOrder 4459: 2 units of SKU-204 at 14.00 each, shipped 2026-03-15.\nOrder 4468: 6 units of SKU-331 at 8.50 each, shipped 2026-01-19.\n</log>\n\nHow many separate orders in the log include SKU-512? Give the count.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "1"
+  },
+  {
+   "id": "t23",
+   "kind": 3,
+   "n_rec": 10,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4404: 1 units of SKU-407 at 8.50 each, shipped 2026-05-25.\nOrder 4412: 6 units of SKU-512 at 8.50 each, shipped 2026-06-28.\nOrder 4419: 6 units of SKU-331 at 14.00 each, shipped 2026-04-01.\nOrder 4425: 1 units of SKU-331 at 8.50 each, shipped 2026-03-05.\nOrder 4431: 3 units of SKU-407 at 8.50 each, shipped 2026-04-26.\nOrder 4439: 2 units of SKU-331 at 12.50 each, shipped 2026-05-19.\nOrder 4444: 7 units of SKU-204 at 11.25 each, shipped 2026-01-09.\nOrder 4450: 6 units of SKU-331 at 14.00 each, shipped 2026-01-08.\nOrder 4460: 2 units of SKU-512 at 12.50 each, shipped 2026-04-18.\nOrder 4466: 5 units of SKU-407 at 12.50 each, shipped 2026-04-24.\n</log>\n\nWhich order shipped earliest? Give its order number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "4450"
+  },
+  {
+   "id": "t24",
+   "kind": 0,
+   "n_rec": 13,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4402: 3 units of SKU-331 at 11.25 each, shipped 2026-04-04.\nOrder 4410: 7 units of SKU-331 at 12.50 each, shipped 2026-03-07.\nOrder 4418: 9 units of SKU-204 at 14.00 each, shipped 2026-02-11.\nOrder 4423: 9 units of SKU-204 at 9.75 each, shipped 2026-03-20.\nOrder 4433: 6 units of SKU-204 at 12.50 each, shipped 2026-02-18.\nOrder 4440: 9 units of SKU-512 at 12.50 each, shipped 2026-06-14.\nOrder 4443: 3 units of SKU-204 at 8.50 each, shipped 2026-03-13.\nOrder 4451: 4 units of SKU-331 at 12.50 each, shipped 2026-06-08.\nOrder 4457: 7 units of SKU-512 at 11.25 each, shipped 2026-01-26.\nOrder 4467: 8 units of SKU-118 at 9.75 each, shipped 2026-06-25.\nOrder 4473: 3 units of SKU-204 at 11.25 each, shipped 2026-06-28.\nOrder 4481: 4 units of SKU-204 at 14.00 each, shipped 2026-02-04.\nOrder 4484: 5 units of SKU-204 at 9.75 each, shipped 2026-03-10.\n</log>\n\nHow many units of SKU-204 were shipped in total? Give the number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "39"
+  },
+  {
+   "id": "t25",
+   "kind": 1,
+   "n_rec": 12,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4404: 2 units of SKU-204 at 9.75 each, shipped 2026-01-07.\nOrder 4410: 5 units of SKU-118 at 14.00 each, shipped 2026-03-16.\nOrder 4414: 1 units of SKU-204 at 11.25 each, shipped 2026-05-16.\nOrder 4426: 9 units of SKU-118 at 9.75 each, shipped 2026-03-11.\nOrder 4430: 9 units of SKU-407 at 14.00 each, shipped 2026-02-22.\nOrder 4437: 2 units of SKU-331 at 14.00 each, shipped 2026-05-22.\nOrder 4444: 4 units of SKU-204 at 12.50 each, shipped 2026-06-17.\nOrder 4452: 8 units of SKU-407 at 14.00 each, shipped 2026-03-26.\nOrder 4458: 6 units of SKU-204 at 12.50 each, shipped 2026-03-17.\nOrder 4467: 7 units of SKU-118 at 11.25 each, shipped 2026-02-11.\nOrder 4475: 1 units of SKU-331 at 9.75 each, shipped 2026-03-25.\nOrder 4482: 3 units of SKU-331 at 9.75 each, shipped 2026-02-07.\n</log>\n\nWhich order in the log shipped the most units? Give its order number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "4426"
+  },
+  {
+   "id": "t26",
+   "kind": 2,
+   "n_rec": 11,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4402: 7 units of SKU-118 at 9.75 each, shipped 2026-03-05.\nOrder 4411: 7 units of SKU-204 at 8.50 each, shipped 2026-01-09.\nOrder 4419: 1 units of SKU-204 at 8.50 each, shipped 2026-06-21.\nOrder 4426: 8 units of SKU-204 at 8.50 each, shipped 2026-02-14.\nOrder 4431: 4 units of SKU-512 at 11.25 each, shipped 2026-03-19.\nOrder 4435: 5 units of SKU-204 at 8.50 each, shipped 2026-06-27.\nOrder 4444: 9 units of SKU-331 at 8.50 each, shipped 2026-02-16.\nOrder 4449: 9 units of SKU-512 at 14.00 each, shipped 2026-05-03.\nOrder 4457: 7 units of SKU-331 at 12.50 each, shipped 2026-05-07.\nOrder 4464: 9 units of SKU-407 at 9.75 each, shipped 2026-02-08.\nOrder 4470: 5 units of SKU-512 at 8.50 each, shipped 2026-05-24.\n</log>\n\nHow many separate orders in the log include SKU-204? Give the count.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "4"
+  },
+  {
+   "id": "t27",
+   "kind": 3,
+   "n_rec": 10,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4405: 8 units of SKU-512 at 14.00 each, shipped 2026-01-23.\nOrder 4407: 8 units of SKU-407 at 12.50 each, shipped 2026-06-13.\nOrder 4417: 8 units of SKU-331 at 8.50 each, shipped 2026-04-03.\nOrder 4421: 1 units of SKU-407 at 8.50 each, shipped 2026-03-27.\nOrder 4433: 2 units of SKU-331 at 11.25 each, shipped 2026-05-09.\nOrder 4439: 9 units of SKU-407 at 12.50 each, shipped 2026-06-23.\nOrder 4446: 2 units of SKU-407 at 12.50 each, shipped 2026-04-13.\nOrder 4450: 1 units of SKU-204 at 11.25 each, shipped 2026-03-26.\nOrder 4458: 3 units of SKU-512 at 8.50 each, shipped 2026-01-15.\nOrder 4463: 4 units of SKU-331 at 11.25 each, shipped 2026-04-11.\n</log>\n\nWhich order shipped earliest? Give its order number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "4458"
+  },
+  {
+   "id": "t28",
+   "kind": 0,
+   "n_rec": 12,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4401: 5 units of SKU-512 at 14.00 each, shipped 2026-04-02.\nOrder 4408: 7 units of SKU-331 at 14.00 each, shipped 2026-04-17.\nOrder 4417: 4 units of SKU-118 at 8.50 each, shipped 2026-05-08.\nOrder 4421: 2 units of SKU-512 at 8.50 each, shipped 2026-05-19.\nOrder 4431: 2 units of SKU-407 at 9.75 each, shipped 2026-03-07.\nOrder 4439: 6 units of SKU-118 at 8.50 each, shipped 2026-02-02.\nOrder 4447: 3 units of SKU-512 at 9.75 each, shipped 2026-01-03.\nOrder 4453: 1 units of SKU-204 at 14.00 each, shipped 2026-06-12.\nOrder 4458: 6 units of SKU-118 at 14.00 each, shipped 2026-03-08.\nOrder 4465: 5 units of SKU-331 at 12.50 each, shipped 2026-06-16.\nOrder 4475: 1 units of SKU-512 at 12.50 each, shipped 2026-03-04.\nOrder 4478: 2 units of SKU-407 at 9.75 each, shipped 2026-04-12.\n</log>\n\nHow many units of SKU-118 were shipped in total? Give the number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "16"
+  },
+  {
+   "id": "t29",
+   "kind": 1,
+   "n_rec": 13,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4405: 1 units of SKU-118 at 14.00 each, shipped 2026-06-21.\nOrder 4411: 5 units of SKU-118 at 12.50 each, shipped 2026-01-24.\nOrder 4414: 9 units of SKU-407 at 8.50 each, shipped 2026-03-23.\nOrder 4425: 7 units of SKU-331 at 14.00 each, shipped 2026-02-17.\nOrder 4432: 8 units of SKU-512 at 9.75 each, shipped 2026-01-27.\nOrder 4437: 6 units of SKU-204 at 12.50 each, shipped 2026-06-16.\nOrder 4446: 3 units of SKU-118 at 12.50 each, shipped 2026-03-01.\nOrder 4454: 3 units of SKU-204 at 8.50 each, shipped 2026-04-05.\nOrder 4457: 1 units of SKU-118 at 12.50 each, shipped 2026-04-26.\nOrder 4467: 4 units of SKU-204 at 9.75 each, shipped 2026-06-01.\nOrder 4473: 3 units of SKU-512 at 12.50 each, shipped 2026-04-09.\nOrder 4482: 3 units of SKU-407 at 9.75 each, shipped 2026-01-26.\nOrder 4487: 7 units of SKU-331 at 11.25 each, shipped 2026-04-18.\n</log>\n\nWhich order in the log shipped the most units? Give its order number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "4414"
+  },
+  {
+   "id": "t30",
+   "kind": 2,
+   "n_rec": 12,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4401: 3 units of SKU-512 at 8.50 each, shipped 2026-02-10.\nOrder 4407: 9 units of SKU-204 at 11.25 each, shipped 2026-04-19.\nOrder 4415: 5 units of SKU-331 at 9.75 each, shipped 2026-04-27.\nOrder 4426: 6 units of SKU-118 at 8.50 each, shipped 2026-05-01.\nOrder 4433: 6 units of SKU-118 at 14.00 each, shipped 2026-05-04.\nOrder 4437: 9 units of SKU-407 at 14.00 each, shipped 2026-06-02.\nOrder 4444: 5 units of SKU-512 at 11.25 each, shipped 2026-06-06.\nOrder 4452: 8 units of SKU-512 at 9.75 each, shipped 2026-04-07.\nOrder 4456: 7 units of SKU-204 at 12.50 each, shipped 2026-03-23.\nOrder 4465: 5 units of SKU-204 at 8.50 each, shipped 2026-03-21.\nOrder 4472: 5 units of SKU-331 at 9.75 each, shipped 2026-03-25.\nOrder 4480: 1 units of SKU-512 at 11.25 each, shipped 2026-01-15.\n</log>\n\nHow many separate orders in the log include SKU-204? Give the count.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "3"
+  },
+  {
+   "id": "t31",
+   "kind": 3,
+   "n_rec": 12,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4401: 7 units of SKU-118 at 14.00 each, shipped 2026-01-14.\nOrder 4411: 4 units of SKU-512 at 12.50 each, shipped 2026-02-13.\nOrder 4414: 2 units of SKU-512 at 9.75 each, shipped 2026-01-07.\nOrder 4425: 7 units of SKU-204 at 8.50 each, shipped 2026-03-12.\nOrder 4433: 7 units of SKU-204 at 14.00 each, shipped 2026-03-18.\nOrder 4440: 9 units of SKU-331 at 11.25 each, shipped 2026-04-21.\nOrder 4445: 1 units of SKU-512 at 11.25 each, shipped 2026-05-07.\nOrder 4449: 4 units of SKU-331 at 14.00 each, shipped 2026-01-25.\nOrder 4459: 2 units of SKU-407 at 9.75 each, shipped 2026-04-03.\nOrder 4465: 2 units of SKU-118 at 8.50 each, shipped 2026-02-03.\nOrder 4475: 1 units of SKU-331 at 12.50 each, shipped 2026-03-22.\nOrder 4477: 9 units of SKU-118 at 11.25 each, shipped 2026-01-26.\n</log>\n\nWhich order shipped earliest? Give its order number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "4414"
+  },
+  {
+   "id": "t32",
+   "kind": 0,
+   "n_rec": 12,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4400: 5 units of SKU-204 at 9.75 each, shipped 2026-03-14.\nOrder 4409: 3 units of SKU-512 at 8.50 each, shipped 2026-04-22.\nOrder 4418: 3 units of SKU-407 at 9.75 each, shipped 2026-06-23.\nOrder 4421: 4 units of SKU-331 at 14.00 each, shipped 2026-05-01.\nOrder 4429: 3 units of SKU-204 at 9.75 each, shipped 2026-04-14.\nOrder 4438: 3 units of SKU-118 at 14.00 each, shipped 2026-01-22.\nOrder 4447: 3 units of SKU-407 at 12.50 each, shipped 2026-06-23.\nOrder 4451: 5 units of SKU-407 at 11.25 each, shipped 2026-04-01.\nOrder 4458: 1 units of SKU-331 at 12.50 each, shipped 2026-03-20.\nOrder 4463: 9 units of SKU-512 at 14.00 each, shipped 2026-05-17.\nOrder 4475: 6 units of SKU-407 at 8.50 each, shipped 2026-01-26.\nOrder 4481: 2 units of SKU-512 at 8.50 each, shipped 2026-03-03.\n</log>\n\nHow many units of SKU-407 were shipped in total? Give the number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "17"
+  },
+  {
+   "id": "t33",
+   "kind": 1,
+   "n_rec": 11,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4400: 3 units of SKU-512 at 11.25 each, shipped 2026-05-23.\nOrder 4410: 4 units of SKU-331 at 12.50 each, shipped 2026-06-08.\nOrder 4414: 5 units of SKU-118 at 12.50 each, shipped 2026-01-27.\nOrder 4423: 4 units of SKU-331 at 9.75 each, shipped 2026-05-19.\nOrder 4433: 6 units of SKU-331 at 14.00 each, shipped 2026-05-04.\nOrder 4435: 8 units of SKU-512 at 8.50 each, shipped 2026-04-02.\nOrder 4445: 1 units of SKU-118 at 14.00 each, shipped 2026-01-25.\nOrder 4453: 1 units of SKU-512 at 12.50 each, shipped 2026-01-28.\nOrder 4460: 8 units of SKU-331 at 8.50 each, shipped 2026-03-05.\nOrder 4465: 8 units of SKU-407 at 9.75 each, shipped 2026-03-01.\nOrder 4475: 7 units of SKU-407 at 14.00 each, shipped 2026-04-16.\n</log>\n\nWhich order in the log shipped the most units? Give its order number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "4435"
+  },
+  {
+   "id": "t34",
+   "kind": 2,
+   "n_rec": 11,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4400: 2 units of SKU-512 at 8.50 each, shipped 2026-03-12.\nOrder 4410: 6 units of SKU-204 at 9.75 each, shipped 2026-01-16.\nOrder 4416: 5 units of SKU-512 at 8.50 each, shipped 2026-05-02.\nOrder 4422: 1 units of SKU-204 at 12.50 each, shipped 2026-01-16.\nOrder 4428: 3 units of SKU-512 at 8.50 each, shipped 2026-01-28.\nOrder 4439: 9 units of SKU-512 at 12.50 each, shipped 2026-04-21.\nOrder 4443: 7 units of SKU-118 at 12.50 each, shipped 2026-01-24.\nOrder 4449: 9 units of SKU-512 at 12.50 each, shipped 2026-01-26.\nOrder 4459: 5 units of SKU-118 at 8.50 each, shipped 2026-04-27.\nOrder 4463: 5 units of SKU-204 at 9.75 each, shipped 2026-04-04.\nOrder 4475: 5 units of SKU-118 at 12.50 each, shipped 2026-06-26.\n</log>\n\nHow many separate orders in the log include SKU-407? Give the count.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "0"
+  },
+  {
+   "id": "t35",
+   "kind": 3,
+   "n_rec": 13,
+   "prompt": "You are given a shipment log. Answer the question using only the log; do not guess.\n\n<log>\nOrder 4400: 5 units of SKU-331 at 11.25 each, shipped 2026-04-17.\nOrder 4411: 7 units of SKU-331 at 9.75 each, shipped 2026-04-16.\nOrder 4414: 3 units of SKU-407 at 8.50 each, shipped 2026-05-11.\nOrder 4422: 9 units of SKU-204 at 14.00 each, shipped 2026-05-06.\nOrder 4431: 3 units of SKU-118 at 9.75 each, shipped 2026-01-12.\nOrder 4439: 2 units of SKU-118 at 8.50 each, shipped 2026-01-16.\nOrder 4444: 7 units of SKU-204 at 14.00 each, shipped 2026-02-06.\nOrder 4451: 9 units of SKU-331 at 14.00 each, shipped 2026-03-05.\nOrder 4459: 2 units of SKU-331 at 12.50 each, shipped 2026-04-05.\nOrder 4464: 3 units of SKU-407 at 11.25 each, shipped 2026-04-07.\nOrder 4475: 4 units of SKU-512 at 12.50 each, shipped 2026-01-09.\nOrder 4482: 9 units of SKU-407 at 14.00 each, shipped 2026-05-19.\nOrder 4486: 1 units of SKU-407 at 9.75 each, shipped 2026-06-18.\n</log>\n\nWhich order shipped earliest? Give its order number.\n\nPut the final answer on the last line exactly as: ANSWER: <value>",
+   "expect": "4475"
+  }
+ ]
+}

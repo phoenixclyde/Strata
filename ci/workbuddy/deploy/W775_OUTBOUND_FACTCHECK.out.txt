@@ -1,0 +1,145 @@
+############################################################################
+# W775 外发件事实核验（逐条对原始证据）
+# 生成时间：本机 2026-10-11 03:3x CST
+############################################################################
+
+## 0 本地证据件指纹（先钉证据，再谈结论）
+  deploy/tmp/_tok.txt                            40 B  md5=d509c68a34a9dbcd8803ea9e20c4e78b
+  deploy/tmp/_pf_ctx.txt                       5610 B  md5=3812615714490f89e1adc531b097068a
+  deploy/tmp/_t407_verify.txt                  2450 B  md5=16fd8dadc65194b9064cb430bca82fb4
+  deploy/tmp/_t407_after_patch.txt             1254 B  md5=3063d8b4edab25e9c7a08f6b60fd37ab
+  deploy/tmp/_apply_patch.txt                  1223 B  md5=fa195a0f7c97764482b5982a3e74fa73
+  deploy/tmp/_v42_rebuild_out.txt               438 B  md5=15226ef03d0b8813f384f2e39b938c29
+  deploy/tmp/_audit_g.out.txt                  7654 B  md5=d914d525787741e24aeff2bab3b4ea0c
+  deploy/tmp/_audit_h.out.txt                  3607 B  md5=f47512b2dfe410b25240d87ea7164248
+  deploy/tmp/_audit_i.out.txt                  3512 B  md5=ff2105510e44a0ecb6d0a9cb480f22a8
+  deploy/tmp/_bodies_v3.json                   4257 B  md5=af0fd8de901b5a34ce788c32dc149672
+  deploy/W718_P23_CPUSHARE.md                  9526 B  md5=4097c18a9bd115061d1d6030a842d688
+  deploy/W775_VERSION_SYNC_0142.md            16723 B  md5=572cbc09b6f2cd4b7e65c9b64aa55f9c
+  deploy/W775_AUDIT_G.md                       7463 B  md5=082a7fc6c82724fcf55f7ba130b99dcd
+
+## 1 GitHub 状态（API 实读，非转抄）
+  #1734  is_pr=False state=open   comments=0  labels=[]  by=phoenixclyde  created=2026-10-09T15:29:43Z updated=2026-10-09T15:29:43Z
+       title: Monitor: the PCIe tile asks for pcie_rx_mb, but amdgpu only exposes a total
+  #1735  is_pr=False state=open   comments=0  labels=[]  by=phoenixclyde  created=2026-10-09T15:29:45Z updated=2026-10-09T15:29:45Z
+       title: Monitor: the AMD GPU name is the board's FRU string and can disagree with the memory that is fitted
+  #1877  is_pr=True  state=open   comments=0  labels=[]  by=phoenixclyde  created=2026-10-10T18:44:48Z updated=2026-10-10T18:44:48Z
+       title: monitor: check the AMD board name's capacity against the memory the driver reads
+  #1729  is_pr=False state=open   comments=2  labels=[]  by=Simonqujian78  created=2026-10-09T14:43:32Z updated=2026-10-10T16:34:28Z
+       title: 0.1.41: STRATA_PREFILL_CPU_SHARE on by default halves decode throughput on a CPU without AVX-512 (i9-14900KF + RTX 5090 D, Windows), and auto decides sharing pays when it does not
+  #1733  is_pr=True  state=closed comments=1  labels=[]  by=phoenixclyde  created=2026-10-09T15:28:45Z updated=2026-10-10T16:33:03Z
+       title: telemetry: the Monitor's PCIe tile had no link for AMD cards on Linux
+  #1855  is_pr=True  state=open   comments=0  labels=[]  by=phoenixclyde  created=2026-10-10T15:15:54Z updated=2026-10-10T15:49:12Z
+       title: bench: community results on one MI50 32 GB (gfx906), 262,144 context
+
+## 1b PR #1877 详情
+  state              open
+  merged             False
+  merged_at          None
+  mergeable_state    clean
+  additions          16
+  deletions          1
+  changed_files      1
+  commits            1
+  comments           0
+  review_comments    0
+  head amd-monitor-name-consistency 0f3639456f0488881e06f7874da0db7a3257238e
+  base main 61b3fb5dd3f1e8ec09cf7e4e05208bc6d3c46406
+
+## 1c #1733 上游回复逐字（#1734 回帖的事实基础）
+  [Niko1221] 2026-10-10T16:33:02Z
+    | Thank you, in v0.1.42 with your authorship. The AMD reader now reports the narrowest and slowest PCIe hop (only when every hop could be read), the card's own hop, and how many hops were read. The throughput counters are left out for the reason you gave. We updated the existing AMD telemetry test for the new keys and added one for the hop walk.
+
+## 1d #1729 两条评论逐字（回帖 #2 的事实基础）
+  [phoenixclyde] 2026-10-09T15:29:34Z
+    | This one is CUDA, so the AMD build's guard bug does not explain it; posting the AMD side for completeness, because it is the same feature turned on by a different mechanism.
+    | 
+    | On gfx906 the CPU share is on by default because that build never defines `STRATA_USE_HIP` (see `src/core/expert_cache.cpp:5-6`), so `prefill.cpp:1839` takes the CUDA branch. Measured on one MI50 32 GB, CLI `generate`, 4-token prompt, two arms, identical output:
+    | 
+    | ```
+    | default   experts streamed 309 (295 by DMA, host 174.0 ms), resident 607,
+    |           on the CPU 197 (share 0.90)      prefill 928.3 ms
+    | =0        experts streamed 506 (492 by DMA, host 177.3 ms), resident 606,
+    |           on the CPU 0   (share 0.00)      prefill 929.5 ms
+    | ```
+    | 
+    | We only measured prompt time here, so we cannot say anything about decode on gfx906 either way - if it would help, we can run your 3-round protocol on that box and report decode as well.
+    | 
+    | Fix for the AMD side: one line at `prefill.cpp:1839` (#1732)
+  [Niko1221] 2026-10-10T16:34:27Z
+    | Thank you for the detailed log analysis, the GPU power and the split by session were exactly what we needed to look at.
+    | 
+    | We tried to reproduce the decode loss on two CPUs without AVX-512 (Core Ultra 7 265 with an RTX 3060, Xeon E5-2643 v3 with an RTX A4000), IQ3_XXS native pack with --resident-experts, the 0.1.42 candidate, 5 interleaved pairs of default vs STRATA_PREFILL_CPU_SHARE=0, 40 chat-like requests per run (prompts of 60 to 7000 tokens, 128 tokens decoded each). Decode: 47.5 vs 47.0 tok/s and 43.0 vs 42.9 tok/s, no difference, and no drift between the first and the last requests of a run. Prompts below 1024 tokens: 1,053 vs 1,444 ms and 1,395 vs 1,992 ms (about 30% faster with the share). So on those two machines the share does not touch decode, and we could not make the pool stay busy after a prompt.
+    | 
+    | That means we have not found your cause yet, and we do not want to turn the feature off for every CPU without AVX-512 on this evidence. What we know of your run: the drop came mid-session (request ~100), GPU power fell to ~170 W with ~22 cores busy, and the cache hit rate did not move. 0.1.42 adds a check that leaves the share off when RAM or the Windows commit limit is short at start-up, and turns it off for the run if a host allocation fails, which would cover a memory-pressure cause, but we cannot say yet that this is yours.
+    | 
+    | Could you help with one thing: when it is slow again, leave the engine running and send: (1) the 'prefill:' / 'on the CPU N (share X)' lines of the last few prompts from strata-*.log, (2) Task Manager / Resource Monitor memory at that moment (in use, standby, commit, and the Hard Faults/sec of strata.exe), and (3) the clean control you mention: the same session with the default, restarted with only STRATA_PREFILL_CPU_SHARE=0 and the same request mix. Until then STRATA_PREFILL_CPU_SHARE=0 is the right setting for you.
+
+## 2 源码断言（本地取证件逐字摘录）
+### 2.1 _pf_ctx.txt 里的关键行
+  md5 ==                                               @3
+  67c1d3d19ff50b344bea917362386ff2                     @10
+  2d844f3f605bc539ce3055de8f3470e9                     @73
+  1867:void Prefill::arm_cpu_share                     @841
+  1868:#if !defined(STRATA_USE_HIP)                    @907
+  1876:    (void) by_default;                          @1099
+  166:// Prefill::arm_cpu_share(.., true)              @425
+  6791:                                                @4990
+  6797:                                                @5113
+  6798:                                                @5248
+
+### 2.2 逐字摘出 prefill.cpp / generate.cpp 相关行
+  165:// STRATA_PREFILL_CPU_SHARE=0 turns it off: the output is then the 0.1.40.3 bytes.  g_share_default is set by
+  166:// Prefill::arm_cpu_share(.., true) from the paths that qualify; the layer split, batch slots and HIP stay off.
+  1867:void Prefill::arm_cpu_share(bool applies, bool by_default) {
+  1868:#if !defined(STRATA_USE_HIP) && !defined(STRATA_HIP_GFX906)
+  1869:    if (applies && by_default && cpu_share_explicit() == -2.0 && !g_share_default) {
+  1870:        g_share_default = true;
+  1876:    (void) by_default;
+  6791:        bool share_has_work = strata::prefill::share_rules::default_share_has_work(
+  6793:        if (!share_has_work)
+  6797:        if (share_pool && stages.empty() && !multi_gpu && share_has_work && !share_default_ok()) share_has_work = false;   // H11
+  6798:        strata::prefill::Prefill::arm_cpu_share(share_pool, share_pool && stages.empty() && !multi_gpu && share_has_work);
+
+### 2.3 0.1.41 守卫为单合取 —— W718 研究报告逐字
+  | 判据（错在这里） | `src/prefill/prefill.cpp:1839` `#if !defined(STRATA_USE_HIP)` | 用它当"是不是 AMD" |
+  | 本机构建的真实标记 | `CMakeLists.txt:134` `add_compile_definitions(STRATA_HIP_GFX906=1)`；`CMakeLists.txt:64-67` 明说 gfx906 与 `STRATA_ENABLE_HIP` 是 **"separate backends; enable only one"** | `STRATA_HIP_GFX906` |
+  | 编译命令实证 | `build-906/compile_commands.json` 里 `STRATA_USE_HIP` **计数 = 0**；`-DSTRATA_HIP_GFX906` **26 处** | 该宏**未定义** |
+  > `compile_commands.json` 查不到它属正常），因此那一条在 gfx906 上**正确地**走了 HIP 分支。
+  `prefill.cpp` 用 `STRATA_USE_HIP` 判"是否 HIP 后端"，但 **gfx906 兼容构建（`STRATA_HIP_GFX906`）不定义它**
+  **修法**：把该判据改成 `#if !defined(STRATA_USE_HIP) && !defined(STRATA_HIP_GFX906)`
+
+## 3 运行期数字（本地快照逐字）
+### 3.1 _t407_verify.txt（02:29:40 快照）里的 GPU 名与 activity
+  machine.gpu.name  = 'Radeon Instinct MI50 16GB'
+  machine.gpu.used_mib = 32325.0 / total_mib = 32752.0
+  engine            = '0.1.42'
+  uptime_s          = 9
+  activity.requests = 0
+  last_timings      = None
+
+### 3.1b /metrics 段（同文件）里的关键字段 —— 该 JSON **在 char 1500 处被截断**（审计员亦指出）
+  (metrics JSON 在第 3 行，len=1500)
+  解析失败（预期内，文件被截断）：Expecting property name enclosed in double quotes: line 1 column 1501 (char 1500)
+  ⇒ 改用正则摘字段：
+    version            = "0.1.42"
+    kv                 = "k8v4"
+    pcie_frac          = "0.20"
+    spec_min_p         = "0.70"
+    expert_slots       = 9761
+    expert_cache_mib   = 22516
+
+### 3.2 容器日志第 45 行（40 tokens in 4 s）—— _audit_g.out.txt 逐字
+  2026-10-10T18:34:05.273814883Z [strata] done: 40 tokens in 4 s (26.4 tok/s) (length, cancel=False), expert cache 80.3% hit (+1.0% of the routed experts over PCIe)
+  ### B. 所有 'done:' 行
+  45:[strata] done: 40 tokens in 4 s (26.4 tok/s) (length, cancel=False), expert cache 80.3% hit (+1.0% of the routed experts over PCIe)
+  189:[strata] done: 4644 tokens in 368 s (40.2 tok/s) (stop, cancel=False), expert cache 97.8% hit
+  206:[strata] done: 365 tokens in 43 s (29.9 tok/s) (stop, cancel=False), expert cache 90.9% hit (+0.4% of the routed experts over PCIe)
+  324:[strata] done: 4955 tokens in 130 s (41.8 tok/s) (stop, cancel=False), expert cache 98.0% hit
+  339:[strata] done: 304 tokens in 40 s (33.0 tok/s) (stop, cancel=False), expert cache 88.3% hit (+0.6% of the routed experts over PCIe)
+  ### C. 所有 draft / accept 行（大小写不敏感）
+  ### D. 所有 Radeon / MI50 行
+  45:[strata] done: 40 tokens in 4 s (26.4 tok/s) (length, cancel=False), expert cache 80.3% hit (+1.0% of the routed experts over PCIe)
+  206:[strata] done: 365 tokens in 43 s (29.9 tok/s) (stop, cancel=False), expert cache 90.9% hit (+0.4% of the routed experts over PCIe)
+  339:[strata] done: 304 tokens in 40 s (33.0 tok/s) (stop, cancel=False), expert cache 88.3% hit (+0.6% of the routed experts over PCIe)
+

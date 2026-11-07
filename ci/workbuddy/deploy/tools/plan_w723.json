@@ -1,0 +1,96 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W723：加「默认关!=不可达」方法论 + 登记 W723_COMBO.md；压冗余",
+ "ops": [
+  {
+   "kind": "line_replace",
+   "line": 3,
+   "new": "> 2026-10-08 自 routeK 迁出。**逐字原文归档 = `MEMORY_DETAIL.md`**。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 6,
+   "new": "- 本工作区 = Strata（gfx906/MI50 32GB）部署 + 调参。`deploy/`·`waves/`。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 8,
+   "new": "  切换/回滚：`switch_strata.sh <新容器>`（旧容器自动探测+回滚）。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 9,
+   "new": "- 模型 `qwen3.8-flash-next-ud-iq4_xs-abliterated`（huihui 仓，10-09 切），上下文 262144，`--kv k8v4`。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 10,
+   "new": "- 权威件：`PARAM_REGISTER.tsv`（参数唯一真值）· `W713_PLAN.md`（方案 + 全量账）· `W713_UPGRADE.md` · `W713_AUDIT{,2}.md` · `W716_BASELINE.md` · `W717_P31_PARITY.md` · `W718_P23_CPUSHARE.md` · `W719_P33_PREFIX.md` · `W720_P28_P32.md` · `W721_VIEW.md` · `W722_MEM_SKILL.md`。 · `W723_COMBO.md`"
+  },
+  {
+   "kind": "line_replace",
+   "line": 15,
+   "new": "  **漏推则「本机==166」不成立**（P0）=> 改完必对两侧 `md5sum`。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 16,
+   "new": "- **容器名/版本/指纹一律写指针、不写字面值**（已四次暴露，最近本件 §2）。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 22,
+   "new": "- **改本件一律走技能入口 `deploy/tools/mem_slim.py`**（`routek-memory-slim` 适配版；机主令第 5 次强调）：`auto 2900 [plan.json]`。**禁止**裸 Edit 挤牙膏 / 自写压缩脚本 / 先改后核 ---- 绕过技能里的 BAN/字符/归档断言，缺陷即隐形。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 25,
+   "new": "`--pcie-frac 0.20` · `--spec-min-p 0.70` · `--prompt-cache-every 8192`（8-16k 档）· `--conversation-cache-mib 4096`（多轮 -88~-90%）。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 27,
+   "new": "LIVE config=`strata-huihui-ud-iq4_xs.json`；register/config 的**行数/分布/md5 一律现算，不写字面值**。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 30,
+   "new": "- **「前缀须与 prefill chunk 整数倍对齐」为实测规律、非源码确证**（`every=4096`+`chunk=8192` 得 reused=0，**待追**）。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 34,
+   "new": "- **温 TTFT 两口径**：同 prompt 重发=复用上限（0.11~0.15 s）；追加=真实多轮（18k 档 5.75 s）。**不可混比**。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 35,
+   "new": "- **筛候选启发式（W721）**：收益上限 = 它省的环节在时延里的占比 ---- 省「重复预填」（多轮占 ~90%）才两位数，省搬运/显存/kernel/驱逐的仅 0~3% => **先读源码算作用面**，多半零发车关。一票否决：**改答案/破位一致**、官方说不该开。\n- **「默认关」≠「不可达」**：判可达性须核宏（P30 HIP 恒 false；P28 在 gfx906 宏内 => 可达）。**同路径开关不可组合测**（P28/P29 同在 spec/MTP，归因不分，W723）。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 38,
+   "new": "- **未做**：P29 GUMBEL（贪心=空操作）· C3 清理 · 上游 FR · vision 核验。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 39,
+   "new": "- **已关**：P30 `MMVQ_IL` · P31 `--conversation-cache-mib`（采纳 4096）· P23 `CPU_SHARE=0` · P33 `strata_prefix` · P28 `GR_SPLIT`（破位）· P32 `kv-grow`（<1%）· C4/C5。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 40,
+   "new": "- **重做**：0.1.40.x 读数须在 0.1.41 重取；0.1.41 新分母已建（0.1.40.1 仅存档）。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 44,
+   "new": "- PR **#1396**（gfx906 构建修复）**已并入 0.1.41** => 补丁面归零（H1~H6 全修），补丁器降为验证闸门。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 45,
+   "new": "- 2026-10-08 **两轮**独立审计：`W713_AUDIT.md`（6 条 P1）、`W713_AUDIT2.md`（P0）。"
+  }
+ ]
+}

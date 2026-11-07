@@ -1,0 +1,16 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W770 恢复波：把 L3/L4 削掉的两段语义补回（line 11 的「；漏推对 md5」、line 26 的「含 backend:hip + W760: P43 采纳 8192」）。这两处 P 判据看不见（P43 在 §4 另有一处），靠逐行核对才发现；走内容 op 同时获得 protect。",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- **改参数唯一通道**：register -> `gen_config.py --write` -> 推 166 -> restart -> `verify_config.py` FAIL=0",
+   "new": "- **改参数唯一通道**：register -> `gen_config.py --write` -> 推 166 -> restart -> `verify_config.py` FAIL=0；漏推对 md5"
+  },
+  {
+   "kind": "substr",
+   "old": "LIVE config `strata-huihui-ud-iq4_xs.json`",
+   "new": "LIVE config `strata-huihui-ud-iq4_xs.json`（含 `backend:hip`）；**W760：P43 采纳 8192**"
+  }
+ ]
+}

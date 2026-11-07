@@ -1,0 +1,12 @@
+{
+ "8000": {
+  "delta_pct": -2.72,
+  "band_2cv": 1.34,
+  "source": "W1042 p2_stats.json (cross-window guard only)"
+ },
+ "16000": {
+  "delta_pct": -1.72,
+  "band_2cv": 0.36,
+  "source": "W1042 p2_stats.json (cross-window guard only)"
+ }
+}

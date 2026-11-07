@@ -1,0 +1,176 @@
+# W802b cpu_share 0 vs auto  20261025_223519  order=A B B A A B  chat 80,280,80,280 gen64
+  setcs share=0 env_n=12
+  mark=42661
+=== ARM A share=0 rep 1 ready=71s
+  envsnap(容器内):
+    STRATA_GDN_HEAD=1
+    STRATA_GDN_PP=2
+    STRATA_GFX906_ATTN_QUERY_SWIZZLE=1
+    STRATA_HC_Q8=1
+    STRATA_HIP_PROMPT_F16=1
+    STRATA_PREFILL_CPU_SHARE=0
+    STRATA_PREFILL_TIMING=1
+    STRATA_RESIDENT_HEADROOM_GIB=0.5
+    STRATA_ROCBLAS_TUNING=/data/gfx906-rocblas-5.5.0.txt
+    STRATA_ROUTE_TAIL_SKIP=7
+    STRATA_SELECT_SIMT=1
+    STRATA_SRC=/src
+  args=['--conversation-cache-mib', '4096']
+BUILD wall=11.76 reused=0 read=7601 prompt_ms=11227.0
+T0 ask=80   read=101   reused=7596  prompt_ms=  1766.6 decode_ms=  1087.2 tok_s= 58.9 wall= 2.87
+T1 ask=280  read=316   reused=7596  prompt_ms=  2495.5 decode_ms=  1553.6 tok_s= 41.2 wall= 4.06
+T2 ask=80   read=125   reused=7596  prompt_ms=  1845.5 decode_ms=   942.9 tok_s= 67.9 wall= 2.80
+T3 ask=280  read=340   reused=7596  prompt_ms=  2404.1 decode_ms=   958.4 tok_s= 66.8 wall= 3.38
+DONE
+  LOG strata prefill timing: 896 tokens, GPU timeline 3178 ms, wall 3191 ms, host staging 55 ms: embed+steps 39 (1.2%) hc read 215 (6.8%) gdn 170 (5.4%) qsa proj 79 (
+  LOG strata prefill timing: 7596 tokens, GPU timeline 10535 ms, wall 10582 ms, host staging 155 ms: embed+steps 5 (0.0%) hc read 895 (8.5%) gdn 1309 (12.4%) qsa proj
+  LOG strata prefill timing: 96 tokens, GPU timeline 1357 ms, wall 1359 ms, host staging 175 ms: embed+steps 0 (0.0%) hc read 106 (7.8%) gdn 50 (3.7%) qsa proj 36 (2.
+  LOG strata prefill timing: 311 tokens, GPU timeline 2063 ms, wall 2066 ms, host staging 213 ms: embed+steps 0 (0.0%) hc read 118 (5.7%) gdn 85 (4.1%) qsa proj 38 (1
+  LOG strata prefill timing: 120 tokens, GPU timeline 1366 ms, wall 1368 ms, host staging 230 ms: embed+steps 0 (0.0%) hc read 274 (20.1%) gdn 51 (3.8%) qsa proj 39 (
+  LOG strata prefill timing: 335 tokens, GPU timeline 1957 ms, wall 1960 ms, host staging 264 ms: embed+steps 0 (0.0%) hc read 119 (6.1%) gdn 85 (4.4%) qsa proj 38 (1
+  setcs share=auto env_n=12
+  mark=42762
+=== ARM B share=auto rep 1 ready=46s
+  envsnap(容器内):
+    STRATA_GDN_HEAD=1
+    STRATA_GDN_PP=2
+    STRATA_GFX906_ATTN_QUERY_SWIZZLE=1
+    STRATA_HC_Q8=1
+    STRATA_HIP_PROMPT_F16=1
+    STRATA_PREFILL_CPU_SHARE=auto
+    STRATA_PREFILL_TIMING=1
+    STRATA_RESIDENT_HEADROOM_GIB=0.5
+    STRATA_ROCBLAS_TUNING=/data/gfx906-rocblas-5.5.0.txt
+    STRATA_ROUTE_TAIL_SKIP=7
+    STRATA_SELECT_SIMT=1
+    STRATA_SRC=/src
+  args=['--conversation-cache-mib', '4096']
+BUILD wall=11.88 reused=0 read=7601 prompt_ms=11209.7
+T0 ask=80   read=101   reused=7596  prompt_ms=  1134.1 decode_ms=  1481.9 tok_s= 43.2 wall= 2.63
+T1 ask=280  read=316   reused=7596  prompt_ms=  1919.2 decode_ms=  1338.2 tok_s= 47.8 wall= 3.27
+T2 ask=80   read=125   reused=7596  prompt_ms=  1319.1 decode_ms=  1016.7 tok_s= 62.9 wall= 2.35
+T3 ask=280  read=340   reused=7596  prompt_ms=  1883.2 decode_ms=   986.6 tok_s= 64.9 wall= 2.88
+DONE
+  LOG strata prefill timing: 896 tokens, GPU timeline 2486 ms, wall 2496 ms, host staging 62 ms: embed+steps 32 (1.3%) hc read 212 (8.5%) gdn 172 (6.9%) qsa proj 79 (
+  LOG strata prefill timing: 7596 tokens, GPU timeline 10530 ms, wall 10577 ms, host staging 163 ms: embed+steps 3 (0.0%) hc read 895 (8.5%) gdn 1309 (12.4%) qsa proj
+  LOG strata prefill timing: 96 tokens, GPU timeline 742 ms, wall 745 ms, host staging 178 ms: embed+steps 0 (0.0%) hc read 108 (14.6%) gdn 50 (6.8%) qsa proj 36 (4.9
+  LOG strata prefill timing: 311 tokens, GPU timeline 1493 ms, wall 1496 ms, host staging 202 ms: embed+steps 0 (0.0%) hc read 119 (8.0%) gdn 85 (5.7%) qsa proj 49 (3
+  LOG strata prefill timing: 120 tokens, GPU timeline 888 ms, wall 891 ms, host staging 214 ms: embed+steps 0 (0.0%) hc read 109 (12.3%) gdn 76 (8.6%) qsa proj 40 (4.
+  LOG strata prefill timing: 335 tokens, GPU timeline 1384 ms, wall 1387 ms, host staging 245 ms: embed+steps 0 (0.0%) hc read 143 (10.3%) gdn 85 (6.2%) qsa proj 38 (
+  setcs share=auto env_n=12
+  mark=42862
+=== ARM B share=auto rep 2 ready=49s
+  envsnap(容器内):
+    STRATA_GDN_HEAD=1
+    STRATA_GDN_PP=2
+    STRATA_GFX906_ATTN_QUERY_SWIZZLE=1
+    STRATA_HC_Q8=1
+    STRATA_HIP_PROMPT_F16=1
+    STRATA_PREFILL_CPU_SHARE=auto
+    STRATA_PREFILL_TIMING=1
+    STRATA_RESIDENT_HEADROOM_GIB=0.5
+    STRATA_ROCBLAS_TUNING=/data/gfx906-rocblas-5.5.0.txt
+    STRATA_ROUTE_TAIL_SKIP=7
+    STRATA_SELECT_SIMT=1
+    STRATA_SRC=/src
+  args=['--conversation-cache-mib', '4096']
+BUILD wall=11.79 reused=0 read=7601 prompt_ms=11259.3
+T0 ask=80   read=101   reused=7596  prompt_ms=  1152.8 decode_ms=  1491.9 tok_s= 42.9 wall= 2.66
+T1 ask=280  read=316   reused=7596  prompt_ms=  1734.3 decode_ms=  1741.8 tok_s= 36.7 wall= 3.49
+T2 ask=80   read=125   reused=7596  prompt_ms=  1253.5 decode_ms=   990.7 tok_s= 64.6 wall= 2.26
+T3 ask=280  read=340   reused=7596  prompt_ms=  2285.1 decode_ms=   965.6 tok_s= 66.3 wall= 3.26
+DONE
+  LOG strata prefill timing: 896 tokens, GPU timeline 2317 ms, wall 2327 ms, host staging 61 ms: embed+steps 44 (1.9%) hc read 212 (9.2%) gdn 172 (7.4%) qsa proj 79 (
+  LOG strata prefill timing: 7596 tokens, GPU timeline 10529 ms, wall 10576 ms, host staging 162 ms: embed+steps 3 (0.0%) hc read 896 (8.5%) gdn 1309 (12.4%) qsa proj
+  LOG strata prefill timing: 96 tokens, GPU timeline 747 ms, wall 749 ms, host staging 181 ms: embed+steps 0 (0.0%) hc read 108 (14.4%) gdn 50 (6.7%) qsa proj 36 (4.8
+  LOG strata prefill timing: 311 tokens, GPU timeline 1233 ms, wall 1236 ms, host staging 207 ms: embed+steps 0 (0.0%) hc read 119 (9.6%) gdn 85 (6.9%) qsa proj 38 (3
+  LOG strata prefill timing: 120 tokens, GPU timeline 781 ms, wall 784 ms, host staging 217 ms: embed+steps 0 (0.0%) hc read 109 (13.9%) gdn 51 (6.5%) qsa proj 40 (5.
+  LOG strata prefill timing: 335 tokens, GPU timeline 1745 ms, wall 1748 ms, host staging 241 ms: embed+steps 0 (0.0%) hc read 120 (6.9%) gdn 85 (4.9%) qsa proj 38 (2
+  setcs share=0 env_n=12
+  mark=42963
+=== ARM A share=0 rep 2 ready=71s
+  envsnap(容器内):
+    STRATA_GDN_HEAD=1
+    STRATA_GDN_PP=2
+    STRATA_GFX906_ATTN_QUERY_SWIZZLE=1
+    STRATA_HC_Q8=1
+    STRATA_HIP_PROMPT_F16=1
+    STRATA_PREFILL_CPU_SHARE=0
+    STRATA_PREFILL_TIMING=1
+    STRATA_RESIDENT_HEADROOM_GIB=0.5
+    STRATA_ROCBLAS_TUNING=/data/gfx906-rocblas-5.5.0.txt
+    STRATA_ROUTE_TAIL_SKIP=7
+    STRATA_SELECT_SIMT=1
+    STRATA_SRC=/src
+  args=['--conversation-cache-mib', '4096']
+BUILD wall=11.80 reused=0 read=7601 prompt_ms=11273.7
+T0 ask=80   read=101   reused=7596  prompt_ms=  1513.9 decode_ms=  1081.8 tok_s= 59.2 wall= 2.61
+T1 ask=280  read=316   reused=7596  prompt_ms=  2434.5 decode_ms=  1551.3 tok_s= 41.3 wall= 4.00
+T2 ask=80   read=125   reused=7596  prompt_ms=  1676.3 decode_ms=   939.6 tok_s= 68.1 wall= 2.63
+T3 ask=280  read=340   reused=7596  prompt_ms=  2500.7 decode_ms=   955.1 tok_s= 67.0 wall= 3.47
+DONE
+  LOG strata prefill timing: 896 tokens, GPU timeline 3108 ms, wall 3119 ms, host staging 54 ms: embed+steps 33 (1.1%) hc read 214 (6.9%) gdn 170 (5.5%) qsa proj 79 (
+  LOG strata prefill timing: 7596 tokens, GPU timeline 10530 ms, wall 10577 ms, host staging 158 ms: embed+steps 3 (0.0%) hc read 896 (8.5%) gdn 1309 (12.4%) qsa proj
+  LOG strata prefill timing: 96 tokens, GPU timeline 1138 ms, wall 1140 ms, host staging 176 ms: embed+steps 0 (0.0%) hc read 106 (9.3%) gdn 50 (4.4%) qsa proj 36 (3.
+  LOG strata prefill timing: 311 tokens, GPU timeline 2020 ms, wall 2023 ms, host staging 212 ms: embed+steps 0 (0.0%) hc read 118 (5.8%) gdn 85 (4.2%) qsa proj 38 (1
+  LOG strata prefill timing: 120 tokens, GPU timeline 1134 ms, wall 1136 ms, host staging 229 ms: embed+steps 0 (0.0%) hc read 107 (9.4%) gdn 51 (4.5%) qsa proj 39 (3
+  LOG strata prefill timing: 335 tokens, GPU timeline 1973 ms, wall 1977 ms, host staging 264 ms: embed+steps 0 (0.0%) hc read 119 (6.0%) gdn 85 (4.3%) qsa proj 38 (1
+  setcs share=0 env_n=12
+  mark=43064
+=== ARM A share=0 rep 3 ready=58s
+  envsnap(容器内):
+    STRATA_GDN_HEAD=1
+    STRATA_GDN_PP=2
+    STRATA_GFX906_ATTN_QUERY_SWIZZLE=1
+    STRATA_HC_Q8=1
+    STRATA_HIP_PROMPT_F16=1
+    STRATA_PREFILL_CPU_SHARE=0
+    STRATA_PREFILL_TIMING=1
+    STRATA_RESIDENT_HEADROOM_GIB=0.5
+    STRATA_ROCBLAS_TUNING=/data/gfx906-rocblas-5.5.0.txt
+    STRATA_ROUTE_TAIL_SKIP=7
+    STRATA_SELECT_SIMT=1
+    STRATA_SRC=/src
+  args=['--conversation-cache-mib', '4096']
+BUILD wall=11.79 reused=0 read=7601 prompt_ms=11274.5
+T0 ask=80   read=101   reused=7596  prompt_ms=  1520.0 decode_ms=  1084.7 tok_s= 59.0 wall= 2.62
+T1 ask=280  read=316   reused=7596  prompt_ms=  2453.8 decode_ms=  1549.2 tok_s= 41.3 wall= 4.02
+T2 ask=80   read=125   reused=7596  prompt_ms=  1558.3 decode_ms=   943.1 tok_s= 67.9 wall= 2.51
+T3 ask=280  read=340   reused=7596  prompt_ms=  2688.9 decode_ms=   954.7 tok_s= 67.0 wall= 3.66
+DONE
+  LOG strata prefill timing: 896 tokens, GPU timeline 3133 ms, wall 3144 ms, host staging 57 ms: embed+steps 45 (1.4%) hc read 213 (6.8%) gdn 171 (5.4%) qsa proj 79 (
+  LOG strata prefill timing: 7596 tokens, GPU timeline 10528 ms, wall 10575 ms, host staging 159 ms: embed+steps 3 (0.0%) hc read 894 (8.5%) gdn 1307 (12.4%) qsa proj
+  LOG strata prefill timing: 96 tokens, GPU timeline 1140 ms, wall 1142 ms, host staging 178 ms: embed+steps 0 (0.0%) hc read 105 (9.3%) gdn 50 (4.4%) qsa proj 36 (3.
+  LOG strata prefill timing: 311 tokens, GPU timeline 2042 ms, wall 2045 ms, host staging 217 ms: embed+steps 0 (0.0%) hc read 118 (5.8%) gdn 85 (4.2%) qsa proj 38 (1
+  LOG strata prefill timing: 120 tokens, GPU timeline 1130 ms, wall 1133 ms, host staging 234 ms: embed+steps 0 (0.0%) hc read 106 (9.4%) gdn 51 (4.5%) qsa proj 40 (3
+  LOG strata prefill timing: 335 tokens, GPU timeline 2210 ms, wall 2213 ms, host staging 271 ms: embed+steps 0 (0.0%) hc read 119 (5.4%) gdn 85 (3.9%) qsa proj 39 (1
+  setcs share=auto env_n=12
+  mark=43165
+=== ARM B share=auto rep 3 ready=76s
+  envsnap(容器内):
+    STRATA_GDN_HEAD=1
+    STRATA_GDN_PP=2
+    STRATA_GFX906_ATTN_QUERY_SWIZZLE=1
+    STRATA_HC_Q8=1
+    STRATA_HIP_PROMPT_F16=1
+    STRATA_PREFILL_CPU_SHARE=auto
+    STRATA_PREFILL_TIMING=1
+    STRATA_RESIDENT_HEADROOM_GIB=0.5
+    STRATA_ROCBLAS_TUNING=/data/gfx906-rocblas-5.5.0.txt
+    STRATA_ROUTE_TAIL_SKIP=7
+    STRATA_SELECT_SIMT=1
+    STRATA_SRC=/src
+  args=['--conversation-cache-mib', '4096']
+BUILD wall=11.73 reused=0 read=7601 prompt_ms=11212.8
+T0 ask=80   read=101   reused=7596  prompt_ms=  1149.5 decode_ms=  1498.0 tok_s= 42.7 wall= 2.66
+T1 ask=280  read=316   reused=7596  prompt_ms=  1748.7 decode_ms=  1447.8 tok_s= 44.2 wall= 3.21
+T2 ask=80   read=125   reused=7596  prompt_ms=  1322.6 decode_ms=   999.6 tok_s= 64.0 wall= 2.33
+T3 ask=280  read=340   reused=7596  prompt_ms=  1953.9 decode_ms=   972.6 tok_s= 65.8 wall= 2.94
+DONE
+  LOG strata prefill timing: 896 tokens, GPU timeline 2310 ms, wall 2320 ms, host staging 67 ms: embed+steps 31 (1.3%) hc read 210 (9.1%) gdn 172 (7.4%) qsa proj 79 (
+  LOG strata prefill timing: 7596 tokens, GPU timeline 10524 ms, wall 10571 ms, host staging 167 ms: embed+steps 3 (0.0%) hc read 895 (8.5%) gdn 1309 (12.4%) qsa proj
+  LOG strata prefill timing: 96 tokens, GPU timeline 748 ms, wall 750 ms, host staging 186 ms: embed+steps 0 (0.0%) hc read 108 (14.4%) gdn 50 (6.7%) qsa proj 36 (4.8
+  LOG strata prefill timing: 311 tokens, GPU timeline 1234 ms, wall 1238 ms, host staging 232 ms: embed+steps 0 (0.0%) hc read 118 (9.6%) gdn 85 (6.9%) qsa proj 38 (3
+  LOG strata prefill timing: 120 tokens, GPU timeline 776 ms, wall 779 ms, host staging 240 ms: embed+steps 0 (0.0%) hc read 108 (13.9%) gdn 51 (6.5%) qsa proj 40 (5.
+  LOG strata prefill timing: 335 tokens, GPU timeline 1444 ms, wall 1448 ms, host staging 272 ms: embed+steps 0 (0.0%) hc read 119 (8.3%) gdn 273 (18.9%) qsa proj 38 
+restored 49s

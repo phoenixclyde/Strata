@@ -1,0 +1,21 @@
+# W804 read sweep 20261025_235947 sizes=150,300,600,900,1500,2500 reps=3
+  arms: A=auto/MAX1024(生产) B=auto/MAX3072 C=0
+start env_n=12 share=auto max=1024
+  mark=47040
+=== ARM A ready=60s
+  ENVCHECK want=14 got=14 :: STRATA_PREFILL_CPU_SHARE=auto STRATA_PREFILL_CPU_SHARE_MAX=1024 
+Traceback (most recent call last):
+  File "/home/albus/strata166/tmp/mt_read.py", line 20, in <module>
+    POOL = json.load(open(sys.argv[6], encoding="utf-8"))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'kl_pool.json'
+  cpu_gate_share_lines=0
+  mark=47103
+=== ARM B ready=59s
+  ENVCHECK want=14 got=14 :: STRATA_PREFILL_CPU_SHARE=auto STRATA_PREFILL_CPU_SHARE_MAX=3072 
+Traceback (most recent call last):
+  File "/home/albus/strata166/tmp/mt_read.py", line 20, in <module>
+    POOL = json.load(open(sys.argv[6], encoding="utf-8"))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'kl_pool.json'
+  cpu_gate_share_lines=0

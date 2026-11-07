@@ -1,0 +1,25 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "槽9761->9901",
+   "new": "槽9732->9901"
+  },
+  {
+   "kind": "substr",
+   "old": "- 默认16384：8k~16k无复用；<8k reused=0；>16k 8192=16384",
+   "new": "- **复用绑chunk8192**：<8k reused=0(cc只park不restore);>16k 8192/16384;补final可88x(R1/P93)\n- **prefill热态=GPU+CPU双满(算力地板,file tier 0)**;decode仅占墙钟S43%/M10%/L0.5% => 按端到端排"
+  },
+  {
+   "kind": "substr",
+   "old": "**W775delta**：P55/P56于k8v4不可达;decode需5+runs;PLE用direct(ram-45%);**W17:352/262/132**;W26:缓存=预填+adapt迁移,复放0.9564;**W28=VRAM9761/RAM33.44G/SSD22G;冷读=budget关借区;stager30/30;**W28E:IO_STATS;P54=IO_PF_STAGE;判据=blob读0**;**B8无增益;B7:借区N==M/文件0/冷读-2.5%(W785 推翻);drop_caches不重置mmap页**",
+   "new": "**W775delta**：P55/P56于k8v4不可达;PLE ram -45%(否);P54=IO_PF_STAGE(判据blob读0);B8无增益;B7已废(W785);drop_caches不重置mmap页"
+  },
+  {
+   "kind": "substr",
+   "old": "- 源码走 `deploy/tmp/src142/`；对账器",
+   "new": "- 源码4树 `deploy/tmp/_src/`；对账"
+  }
+ ]
+}

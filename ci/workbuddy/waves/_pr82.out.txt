@@ -1,0 +1,60 @@
+rc = 0
+===== [0] 现有 z0-off 工具 =====
+-rwxrwxr-x 1 albus albus 3058 Sep 19 19:32 /home/albus/routeK/run/_zk5_z0off.sh
+5ffa9e7c7b2c4b9a8d079e0142ddae23  /home/albus/routeK/run/_zk5_z0off.sh
+--- run/ 下所有 z0* / *z0off* ---
+-rw-rw-r--  1 albus albus      30 Sep 21 07:11 _rk78_z0_on_issued.txt
+-rwxrwxr-x  1 albus albus    5894 Sep 21 08:17 _rk78_z0_state.sh
+-rw-rw-r--  1 albus albus     297 Sep 19 20:03 _zk5m2_gate_z0off.out
+-rw-rw-r--  1 albus albus     970 Sep 28 01:18 _zk5_z0off.out
+-rwxrwxr-x  1 albus albus    3058 Sep 19 19:32 _zk5_z0off.sh
+
+===== [1] BEFORE（执行前）=====
+  GPU perflevel : high
+  CPU governor  : performance
+  THP enabled   : [always] madvise never
+  THP defrag    : always defer defer+madvise [madvise] never
+  cur_freq_khz  : 3700000
+
+===== [2] 执行 z0-off =====
+--- via _zk5_z0off.sh ---
+[2026-10-07 04:23:52] SNAP BEFORE_OFF
+  perflevel     = Performance Level: high
+  dpm_force     = high
+  governor      = performance
+  cur_freq_khz  = 3700000 max=3700000
+  thp_enabled   = [always] madvise never
+  sclk_raw      = 
+  gpupower_W    = Power (W): 22.0
+  loadavg       = 0.30 0.67 4.02 1/1878 3522765
+  cmd1: sudo -n rocm-smi -d 0 --setperflevel auto
+GPU[0]		: Performance level set to auto
+  cmd2: sudo -n cpupower frequency-set -g schedutil
+Setting cpu: 42
+Setting cpu: 43
+  cmd3: echo madvise | sudo -n tee /sys/kernel/mm/transparent_hugepage/enabled
+  cmd3_rc=0
+[2026-10-07 04:23:55] SNAP AFTER_OFF
+  perflevel     = Performance Level: auto
+  dpm_force     = auto
+  governor      = schedutil
+  cur_freq_khz  = 1320177 max=3700000
+  thp_enabled   = always [madvise] never
+  sclk_raw      = 
+  gpupower_W    = Power (W): 17.0
+  loadavg       = 0.30 0.67 4.02 1/1878 3522882
+Z0OFF_DONE mode=off
+Z0OFF_VERIFY_OK perflevel=auto governor=schedutil thp=madvise
+z0off_rc=0
+
+===== [3] AFTER（执行后）=====
+  GPU perflevel : auto
+  CPU governor  : schedutil
+  THP enabled   : always [madvise] never
+  THP defrag    : always defer defer+madvise [madvise] never
+  cur_freq_khz  : 1405461
+
+===== [4] 判定 =====
+Z0OFF_FINAL perflevel=auto governor=schedutil thp=madvise
+Z0_OFF_VERIFY_OK=1 (三件均已清到省电档)
+

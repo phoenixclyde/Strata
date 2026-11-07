@@ -1,0 +1,160 @@
+# W801c chat PROD(11) vs BASE7(7)  20261025_221150  order=A B B A A B
+start env_n=11
+  setarm PROD env_n=11
+  mark=41777
+=== ARM PROD rep 1 ready=65s (want env_n=11)
+  envsnap(容器内):
+    STRATA_GDN_HEAD=1
+    STRATA_GDN_PP=2
+    STRATA_GFX906_ATTN_QUERY_SWIZZLE=1
+    STRATA_HC_Q8=1
+    STRATA_HIP_PROMPT_F16=1
+    STRATA_PREFILL_CPU_SHARE=0
+    STRATA_RESIDENT_HEADROOM_GIB=0.5
+    STRATA_ROCBLAS_TUNING=/data/gfx906-rocblas-5.5.0.txt
+    STRATA_ROUTE_TAIL_SKIP=7
+    STRATA_SELECT_SIMT=1
+    STRATA_SRC=/src
+  args=['--conversation-cache-mib', '4096']
+  ENVCHECK want=11 got=11
+BUILD wall=11.44 reused=0 read=7601 prompt_ms=10911.9
+T0 ask=80   read=101   reused=7596  prompt_ms=  1453.2 decode_ms=  1076.2 tok_s= 59.5 wall= 2.55
+T1 ask=280  read=316   reused=7596  prompt_ms=  2703.8 decode_ms=  1541.5 tok_s= 41.5 wall= 4.26
+T2 ask=80   read=125   reused=7596  prompt_ms=  1587.4 decode_ms=   937.3 tok_s= 68.3 wall= 2.54
+T3 ask=280  read=340   reused=7596  prompt_ms=  2547.2 decode_ms=   948.3 tok_s= 67.5 wall= 3.51
+DONE
+  LOG strata serve: conversation cache: parked 901 tokens in 131.7 ms; parked=1 bytes=247332940 evictions=0 snapshot_bytes=247332940 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7619 tokens in 191.6 ms; parked=2 bytes=577890496 evictions=0 snapshot_bytes=330557556 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7760 tokens in 242.3 ms; parked=2 bytes=697725140 evictions=0 snapshot_bytes=450392200 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7975 tokens in 305.3 ms; parked=3 bytes=1150787860 evictions=0 snapshot_bytes=453062720 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7786 tokens in 264.1 ms; parked=4 bytes=1601520868 evictions=0 snapshot_bytes=450733008 reused_kv_bytes=0
+  setarm BASE7 env_n=7
+  mark=41866
+=== ARM BASE7 rep 1 ready=73s (want env_n=7)
+  envsnap(容器内):
+    STRATA_GFX906_ATTN_QUERY_SWIZZLE=1
+    STRATA_HC_Q8=1
+    STRATA_HIP_PROMPT_F16=1
+    STRATA_PREFILL_CPU_SHARE=0
+    STRATA_RESIDENT_HEADROOM_GIB=0.5
+    STRATA_ROCBLAS_TUNING=/data/gfx906-rocblas-5.5.0.txt
+    STRATA_SRC=/src
+  args=['--conversation-cache-mib', '4096']
+  ENVCHECK want=7 got=7
+BUILD wall=11.92 reused=0 read=7601 prompt_ms=11394.8
+T0 ask=80   read=101   reused=7596  prompt_ms=  1574.7 decode_ms=  1414.2 tok_s= 45.3 wall= 3.00
+T1 ask=280  read=316   reused=7596  prompt_ms=  2476.1 decode_ms=  1592.3 tok_s= 40.2 wall= 4.08
+T2 ask=80   read=125   reused=7596  prompt_ms=  1838.3 decode_ms=   995.9 tok_s= 64.3 wall= 2.85
+T3 ask=280  read=340   reused=7596  prompt_ms=  2884.7 decode_ms=   993.0 tok_s= 64.5 wall= 3.89
+DONE
+  LOG strata serve: conversation cache: parked 901 tokens in 179.9 ms; parked=1 bytes=247332940 evictions=0 snapshot_bytes=247332940 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7619 tokens in 272.2 ms; parked=2 bytes=577890496 evictions=0 snapshot_bytes=330557556 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7760 tokens in 237.0 ms; parked=2 bytes=697725140 evictions=0 snapshot_bytes=450392200 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7975 tokens in 294.5 ms; parked=3 bytes=1150787860 evictions=0 snapshot_bytes=453062720 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7786 tokens in 316.6 ms; parked=4 bytes=1601520868 evictions=0 snapshot_bytes=450733008 reused_kv_bytes=0
+  setarm BASE7 env_n=7
+  mark=41954
+=== ARM BASE7 rep 2 ready=50s (want env_n=7)
+  envsnap(容器内):
+    STRATA_GFX906_ATTN_QUERY_SWIZZLE=1
+    STRATA_HC_Q8=1
+    STRATA_HIP_PROMPT_F16=1
+    STRATA_PREFILL_CPU_SHARE=0
+    STRATA_RESIDENT_HEADROOM_GIB=0.5
+    STRATA_ROCBLAS_TUNING=/data/gfx906-rocblas-5.5.0.txt
+    STRATA_SRC=/src
+  args=['--conversation-cache-mib', '4096']
+  ENVCHECK want=7 got=7
+BUILD wall=11.88 reused=0 read=7601 prompt_ms=11349.3
+T0 ask=80   read=101   reused=7596  prompt_ms=  1532.3 decode_ms=  1411.3 tok_s= 45.3 wall= 2.96
+T1 ask=280  read=316   reused=7596  prompt_ms=  2431.7 decode_ms=  1439.7 tok_s= 44.5 wall= 3.88
+T2 ask=80   read=125   reused=7596  prompt_ms=  1592.8 decode_ms=   968.7 tok_s= 66.1 wall= 2.57
+T3 ask=280  read=340   reused=7596  prompt_ms=  2476.7 decode_ms=   963.1 tok_s= 66.5 wall= 3.45
+DONE
+  LOG strata serve: conversation cache: parked 901 tokens in 143.3 ms; parked=1 bytes=247332940 evictions=0 snapshot_bytes=247332940 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7619 tokens in 227.9 ms; parked=2 bytes=577890496 evictions=0 snapshot_bytes=330557556 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7760 tokens in 216.6 ms; parked=2 bytes=697725140 evictions=0 snapshot_bytes=450392200 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7975 tokens in 286.8 ms; parked=3 bytes=1150787860 evictions=0 snapshot_bytes=453062720 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7786 tokens in 304.2 ms; parked=4 bytes=1601520868 evictions=0 snapshot_bytes=450733008 reused_kv_bytes=0
+  setarm PROD env_n=11
+  mark=42042
+=== ARM PROD rep 2 ready=75s (want env_n=11)
+  envsnap(容器内):
+    STRATA_GDN_HEAD=1
+    STRATA_GDN_PP=2
+    STRATA_GFX906_ATTN_QUERY_SWIZZLE=1
+    STRATA_HC_Q8=1
+    STRATA_HIP_PROMPT_F16=1
+    STRATA_PREFILL_CPU_SHARE=0
+    STRATA_RESIDENT_HEADROOM_GIB=0.5
+    STRATA_ROCBLAS_TUNING=/data/gfx906-rocblas-5.5.0.txt
+    STRATA_ROUTE_TAIL_SKIP=7
+    STRATA_SELECT_SIMT=1
+    STRATA_SRC=/src
+  args=['--conversation-cache-mib', '4096']
+  ENVCHECK want=11 got=11
+BUILD wall=11.57 reused=0 read=7601 prompt_ms=11045.4
+T0 ask=80   read=101   reused=7596  prompt_ms=  1476.4 decode_ms=  1374.3 tok_s= 46.6 wall= 2.86
+T1 ask=280  read=316   reused=7596  prompt_ms=  2452.7 decode_ms=  1545.8 tok_s= 41.4 wall= 4.01
+T2 ask=80   read=125   reused=7596  prompt_ms=  1539.3 decode_ms=   948.3 tok_s= 67.5 wall= 2.50
+T3 ask=280  read=340   reused=7596  prompt_ms=  2660.2 decode_ms=   950.8 tok_s= 67.3 wall= 3.63
+DONE
+  LOG strata serve: conversation cache: parked 901 tokens in 159.8 ms; parked=1 bytes=247332940 evictions=0 snapshot_bytes=247332940 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7619 tokens in 189.8 ms; parked=2 bytes=577890496 evictions=0 snapshot_bytes=330557556 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7760 tokens in 237.4 ms; parked=2 bytes=697725140 evictions=0 snapshot_bytes=450392200 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7975 tokens in 263.1 ms; parked=3 bytes=1150787860 evictions=0 snapshot_bytes=453062720 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7786 tokens in 330.8 ms; parked=4 bytes=1601520868 evictions=0 snapshot_bytes=450733008 reused_kv_bytes=0
+  setarm PROD env_n=11
+  mark=42131
+=== ARM PROD rep 3 ready=58s (want env_n=11)
+  envsnap(容器内):
+    STRATA_GDN_HEAD=1
+    STRATA_GDN_PP=2
+    STRATA_GFX906_ATTN_QUERY_SWIZZLE=1
+    STRATA_HC_Q8=1
+    STRATA_HIP_PROMPT_F16=1
+    STRATA_PREFILL_CPU_SHARE=0
+    STRATA_RESIDENT_HEADROOM_GIB=0.5
+    STRATA_ROCBLAS_TUNING=/data/gfx906-rocblas-5.5.0.txt
+    STRATA_ROUTE_TAIL_SKIP=7
+    STRATA_SELECT_SIMT=1
+    STRATA_SRC=/src
+  args=['--conversation-cache-mib', '4096']
+  ENVCHECK want=11 got=11
+BUILD wall=11.43 reused=0 read=7601 prompt_ms=10910.6
+T0 ask=80   read=101   reused=7596  prompt_ms=  1834.6 decode_ms=  1092.8 tok_s= 58.6 wall= 2.94
+T1 ask=280  read=316   reused=7596  prompt_ms=  2443.8 decode_ms=  1543.3 tok_s= 41.5 wall= 4.00
+T2 ask=80   read=125   reused=7596  prompt_ms=  2010.1 decode_ms=   946.2 tok_s= 67.6 wall= 2.97
+T3 ask=280  read=340   reused=7596  prompt_ms=  2531.2 decode_ms=   956.5 tok_s= 66.9 wall= 3.50
+DONE
+  LOG strata serve: conversation cache: parked 901 tokens in 133.9 ms; parked=1 bytes=247332940 evictions=0 snapshot_bytes=247332940 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7619 tokens in 280.9 ms; parked=2 bytes=577890496 evictions=0 snapshot_bytes=330557556 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7760 tokens in 221.8 ms; parked=2 bytes=697725140 evictions=0 snapshot_bytes=450392200 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7975 tokens in 319.0 ms; parked=3 bytes=1150787860 evictions=0 snapshot_bytes=453062720 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7786 tokens in 287.3 ms; parked=4 bytes=1601520868 evictions=0 snapshot_bytes=450733008 reused_kv_bytes=0
+  setarm BASE7 env_n=7
+  mark=42220
+=== ARM BASE7 rep 3 ready=51s (want env_n=7)
+  envsnap(容器内):
+    STRATA_GFX906_ATTN_QUERY_SWIZZLE=1
+    STRATA_HC_Q8=1
+    STRATA_HIP_PROMPT_F16=1
+    STRATA_PREFILL_CPU_SHARE=0
+    STRATA_RESIDENT_HEADROOM_GIB=0.5
+    STRATA_ROCBLAS_TUNING=/data/gfx906-rocblas-5.5.0.txt
+    STRATA_SRC=/src
+  args=['--conversation-cache-mib', '4096']
+  ENVCHECK want=7 got=7
+BUILD wall=11.93 reused=0 read=7601 prompt_ms=11392.7
+T0 ask=80   read=101   reused=7596  prompt_ms=  1559.0 decode_ms=  1398.6 tok_s= 45.8 wall= 2.97
+T1 ask=280  read=316   reused=7596  prompt_ms=  2477.8 decode_ms=  1434.0 tok_s= 44.6 wall= 3.92
+T2 ask=80   read=125   reused=7596  prompt_ms=  1645.8 decode_ms=   955.3 tok_s= 67.0 wall= 2.61
+T3 ask=280  read=340   reused=7596  prompt_ms=  2524.1 decode_ms=   965.8 tok_s= 66.3 wall= 3.50
+DONE
+  LOG strata serve: conversation cache: parked 901 tokens in 163.4 ms; parked=1 bytes=247332940 evictions=0 snapshot_bytes=247332940 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7619 tokens in 231.0 ms; parked=2 bytes=577890496 evictions=0 snapshot_bytes=330557556 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7760 tokens in 225.0 ms; parked=2 bytes=697725140 evictions=0 snapshot_bytes=450392200 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7975 tokens in 358.1 ms; parked=3 bytes=1150787860 evictions=0 snapshot_bytes=453062720 reused_kv_bytes=0
+  LOG strata serve: conversation cache: parked 7786 tokens in 297.1 ms; parked=4 bytes=1601520868 evictions=0 snapshot_bytes=450733008 reused_kv_bytes=0
+restored 76s
+final env_n=11

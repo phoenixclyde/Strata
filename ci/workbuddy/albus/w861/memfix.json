@@ -1,0 +1,16 @@
+{
+  "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+  "reason": "纠正 §5 仓库归属：压缩时把『上游 KI』混成『自有库=KI』，导致往别人的仓库推文档（404 拦住）。改为明确 phoenixclyde 自有 / KI+Niko1221 为上游只读。",
+  "ops": [
+    {
+      "kind": "line_replace",
+      "line": 67,
+      "new": "- **自有库**:phoenixclyde/*;上游=KIntegrated+Niko1221(只读)"
+    },
+    {
+      "kind": "line_replace",
+      "line": 68,
+      "new": "- **Token**:deploy/tmp/_tok.txt"
+    }
+  ]
+}

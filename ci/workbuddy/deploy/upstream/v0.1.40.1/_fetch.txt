@@ -1,0 +1,5 @@
+﻿OK   include/strata/platform/hip_compat/strata_hip.h  size=16583
+OK   include/strata/hip_compat/intrinsics.hpp  size=8363
+OK   src/kernels/cuda/fused_gr.cu  size=96423
+OK   src/core/mtp.cpp  size=79014
+OK   src/core/vmm.cpp  size=5480

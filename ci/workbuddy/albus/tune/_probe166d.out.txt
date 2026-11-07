@@ -1,0 +1,82 @@
+===GGUF===
+===PACKFILES===
+total 1485983744
+-rw-r--r-- 1 root root      21107 Oct  9 01:48 compat-bf16.json
+-rw-r--r-- 1 root root     167312 Oct  9 01:48 conversions.json
+-rw-r--r-- 1 root root 1485688320 Oct  9 01:48 dense.bin
+-rw-r--r-- 1 root root      93559 Oct  9 01:48 index.txt
+-rw-r--r-- 1 root root       5803 Oct  9 01:48 native_experts.txt
+drwxr-xr-x 2 root root        114 Oct  9 01:48 tokenizer
+===EXPERTS_LINES===
+[strata] 2026-10-21 17:50:22 engine started: /src/build-906/strata --serve --pack /data/packs/huihui-ud-iq4_xs --native /models/huihui-ai/Huihui-Qwen3.8-Flash-Next-abliterated-GGUF/unsloth-UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf --expert-profile /src/data/expert-profile.bin --expert-cache auto --pcie-frac 0.20 --spec 4 --spec-min-p 0.70 --mtp /data/mtp/rt --max-context 262144 --kv k8v4 --prefill auto --prompt-cache-every 8192 --expert-profile-save /data/profiles/huihui-ud-iq4_xs-learned.bin --conversation-cache-mib 4096 --vision --mtp-window 8192 --resident-experts
+strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+strata generate: native pack: /data/packs/huihui-ud-iq4_xs experts (largest blob 3.48 MB), token embedding Q8_0 in mapped host memory (644 MiB, 0.8 s)
+strata generate: profile /src/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots
+strata generate: PLE on, table 320001536 rows of /models/huihui-ai/Huihui-Qwen3.8-Flash-Next-abliterated-GGUF/unsloth-UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+strata mtp: draft layer loaded, 1089 MiB of VRAM (experts 675, dense 111), files read in 0.35 s (2220 MiB/s)
+strata generate: experts via mmap (--mmap-experts; the GGUF shards in place, no experts.bin)
+strata generate: file tier (Linux defaults, the GGUF read in place): page-cached experts computed from the mapping (STRATA_COLD_OVERLAP=4), io prefetch with whole-blob preads on 8 I/O threads, the decode's read-ahead only while the page cache has room for it and it pays (STRATA_IO_PF_GATE=1); off: STRATA_COLD_OVERLAP=0, STRATA_IO_PREFETCH=0, STRATA_IO_PF_GATE=0
+strata generate: expert cache auto: 22.89 GiB free, 700 MiB reserved (+218 MiB for the draft head) -> 6782 slots
+strata generate: expert cache 9761 slots, 21.99 GiB of VRAM; policy is
+strata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,
+strata generate: pre-filled 9761 of 9761 slots from the profile in 8.2 s (2876 MB/s); slot 0 verified
+strata generate: routing-aware prefetch on (the next layer's router, file tier)
+strata generate: R4 hit path ON - resident experts are computed on the GPU
+strata generate: 20 expert-pool workers + the host thread
+strata generate: token graph hit path: 9761 resident experts, decided on the device
+FileExpertSource: allocating 36.93 GiB page-locked cache complement
+FileExpertSource: copied cache complement through layer 8/48 (7.94 GiB, 2 s)
+FileExpertSource: copied cache complement through layer 16/48 (14.25 GiB, 4 s)
+FileExpertSource: copied cache complement through layer 24/48 (19.49 GiB, 5 s)
+FileExpertSource: copied cache complement through layer 32/48 (26.55 GiB, 7 s)
+FileExpertSource: copied cache complement through layer 40/48 (32.01 GiB, 8 s)
+FileExpertSource: copied cache complement through layer 48/48 (36.93 GiB, 9 s)
+FileExpertSource: mapped pinned cache complement ready: resident 36.93 GiB, pinned 36.93 GiB in 23 s; page-locked and mapped
+FileExpertSource: 1554 of the prompt path's 1554 lendable slots keep their experts in RAM too
+strata generate: resident RAM mode: 36.93 GiB of experts in RAM (page-locked), 9761 in the GPU cache; adaptive swaps exchange them with the GPU cache (no file reads)
+strata: prefill plan inputs: 55.4 GiB experts, 22.0 GiB in the GPU caches, 36.9 GiB RAM copy (1554 lend slots kept), file tier 0.0 GiB; 78.7 GiB available for the page cache; PCIe 12.0 GB/s; drive 0.45 GB/s (dm-1 is a SATA-class SSD (assumed)); a 32768-token prompt
+strata serve: prompt chunk auto: 8192 tokens, a 96-slot ring
+strata serve: the prompt path borrows 1554 CUDA0 cache slots (3.49 GiB)
+prefill: the GGUF experts are 100% in the page cache; the stager takes the RAM profile
+strata serve: STRATA_ROUTE_TAIL_SKIP=7 is ON (default): a missed expert that every token of a verify window routes at rank 7 or lower is skipped (+10..20% decode on 12-16 GB cards that miss experts, answers differ slightly from 0.1.41); STRATA_ROUTE_TAIL_SKIP=0 turns it off
+strata serve: 574 MiB of VRAM free with everything loaded
+strata verify: capturing the 6-token window (574 MiB of VRAM free)
+strata verify: capturing the 2-token window (522 MiB of VRAM free)
+strata verify: capturing the 4-token window (516 MiB of VRAM free)
+strata verify: capturing the 1-token window (510 MiB of VRAM free)
+strata serve: decode expert cache hit rate: 79.4% (335 hits / 422 lookups)
+strata serve: route tail skip: 1747 missed experts skipped (1971 entries) since the start
+strata serve: resident RAM: 36.93 GiB of experts in RAM, 0 exchanged with the VRAM tier, 0 blob reads from the file
+strata serve: expert tiers: GPU 335 hits this request; since the start RAM 3311 blobs, files 0 blobs 23613.1 MB read (the GGUF in place)
+===VRAMRESERVE===
+  --kv-grow            the K/V takes VRAM only for the cells the requests reach and the expert
+                       --expert-profile; STRATA_KV_GROW=1/0 also). Default: the whole --max-context
+  --native-flash-attn-short  diagnostic pinned vector attention; --max-context <=256
+  --max-context N      KV/state capacity (default 4096)
+  --peer-reserve-mib N  VRAM the peer tier leaves free on its card (default 600)
+  --shared-expert-arena FILE  Linux: back the resident arena with one MAP_SHARED file.
+===HEADER===
+strata generate --pack DIR --tokens "1,2,3" [options]
+
+  --pack DIR           the pack directory (default pack/full)
+  --tokens LIST        the prompt as comma-separated token IDS (required)
+  --tokens-file PATH   pretokenized prompt, commas or whitespace (alternative to --tokens)
+  --gpu LIST           run on these GPUs, comma-separated nvidia-smi/PCI indices (default: every
+                       visible one); sets CUDA_VISIBLE_DEVICES/CUDA_DEVICE_ORDER inside the engine,
+                       so a caller never has to export environment variables
+  --ple-gguf PATH      required PLE table (original second GGUF shard); with --native, the model's
+                       shard that holds per_layer_token_embd.weight when not given
+  --no-ple             explicit diagnostic ablation of the PLE layer
+  --ple-io direct|mmap|ram  n-gram table reads (plan v0.3 P2). direct (default): unbuffered SSD
+                       reads, the table never enters RAM or the file cache; mmap: A/B arm;
+                       ram: the whole table locked in RAM at start (VirtualLock on Windows,
+                       mlock elsewhere), so no SSD read sits on the prompt or token path
+  --ple-row-cache N    bounded cache of fetched rows, 90 B each (default 1048576; 0 = off)
+  --ple-inflight N     outstanding SSD reads (default 256)
+  --ple-delay-us U     fault injection: each row read completes no earlier than U us
+  --ple-sync-submit    A/B arm: submit table reads on the token thread (default: an I/O thread)
+  --kv fp16|int8       KV storage (plan v0.3 P7): int8 codes + fp16 scale per 64 values, half the
+                       VRAM; default fp16 until gate G-C accepts int8
+  --kv q4_0            4-bit K/V after a Hadamard rotation (PR #21): half of int8's memory,
+                       slightly lower precision (see bench/results/2026-09-27-kv-q4)
+  --kv k8v4            hybrid: INT8 K (exact attention scores) + rotated Q4_0 V, 816 B/cell

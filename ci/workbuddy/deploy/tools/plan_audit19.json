@@ -1,0 +1,26 @@
+{
+  "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+  "reason": "AUDIT19/R29：写入实测屋顶(读884/copy752)并把过期的「只判>=5%」换成「判据=2xCV(当次run)」；压掉两处冗余措辞",
+  "ops": [
+    {
+      "kind": "substr",
+      "old": "- **引擎级A/B只判>=5%**(host漂80%)=>亚百分点用微基准(W809)",
+      "new": "- **判据=2xCV(当次run)**;相位只定位(W809)"
+    },
+    {
+      "kind": "substr",
+      "old": "**decode占64-83%**(W798);**chat**TTFT1.03/1.56s(W803)",
+      "new": "**decode占64-83%**(W798);**屋顶读884**/copy752(实测,4blk/CU峰);**chat**TTFT1.03/1.56s(W803)"
+    },
+    {
+      "kind": "substr",
+      "old": "**多轮**(P94):地板=小chunk;share后wait copy 0.5%;park非关键路径;P126/P93 否",
+      "new": "**多轮**(P94):地板=小chunk;share后copy 0.5%;park非关键;P126/P93 否"
+    },
+    {
+      "kind": "substr",
+      "old": "**prefill可判0.2%**;gfx906无bf16点积=>f16(P103)",
+      "new": "**prefill可判0.2%**;无bf16点积=>f16(P103)"
+    }
+  ]
+}

@@ -1,0 +1,240 @@
+# W804 task gate 20261026_003955 max_tokens=64 tasks=36
+  arms: A=share 0 / B=auto / C=auto(同配置第二遍)
+  corpus sha16=3d6b664484ef7189
+  mark=52513
+=== ARM A ready=59s
+  ENVCHECK want=13 got=13 STRATA_PREFILL_CPU_SHARE=0
+  t00 kind=0 expect=6      got=6        OK   finish=stop ptok=492 wall=3.0s
+  t01 kind=1 expect=4430   got=4430     OK   finish=stop ptok=605 wall=2.8s
+  t02 kind=2 expect=2      got=2        OK   finish=stop ptok=564 wall=2.9s
+  t03 kind=3 expect=4423   got=4423     OK   finish=stop ptok=483 wall=2.7s
+  t04 kind=0 expect=12     got=12       OK   finish=stop ptok=490 wall=2.8s
+  t05 kind=1 expect=4475   got=4475     OK   finish=stop ptok=568 wall=2.8s
+  t06 kind=2 expect=1      got=1        OK   finish=stop ptok=529 wall=2.7s
+  t07 kind=3 expect=4453   got=4453     OK   finish=stop ptok=563 wall=2.7s
+  t08 kind=0 expect=7      got=7        OK   finish=stop ptok=530 wall=2.7s
+  t09 kind=1 expect=4416   got=4416     OK   finish=stop ptok=528 wall=2.7s
+  t10 kind=2 expect=3      got=3        OK   finish=stop ptok=609 wall=2.7s
+  t11 kind=3 expect=4443   got=4443     OK   finish=stop ptok=521 wall=2.7s
+  t12 kind=0 expect=15     got=15       OK   finish=stop ptok=493 wall=2.7s
+  t13 kind=1 expect=4431   got=4431     OK   finish=stop ptok=526 wall=2.7s
+  t14 kind=2 expect=1      got=1        OK   finish=stop ptok=495 wall=2.6s
+  t15 kind=3 expect=4474   got=4474     OK   finish=stop ptok=601 wall=2.8s
+  t16 kind=0 expect=5      got=5        OK   finish=stop ptok=531 wall=2.7s
+  t17 kind=1 expect=4444   got=4444     OK   finish=stop ptok=490 wall=2.5s
+  t18 kind=2 expect=1      got=1        OK   finish=stop ptok=609 wall=2.7s
+  t19 kind=3 expect=4473   got=4473     OK   finish=stop ptok=601 wall=2.8s
+  t20 kind=0 expect=7      got=7        OK   finish=stop ptok=570 wall=2.6s
+  t21 kind=1 expect=4403   got=4423     MISS  finish=stop ptok=566 wall=2.7s
+  t22 kind=2 expect=1      got=1        OK   finish=stop ptok=492 wall=2.5s
+  t23 kind=3 expect=4450   got=4450     OK   finish=stop ptok=484 wall=2.6s
+  t24 kind=0 expect=39     got=39       OK   finish=stop ptok=609 wall=2.8s
+  t25 kind=1 expect=4426   got=4426     OK   finish=stop ptok=567 wall=2.7s
+  t26 kind=2 expect=4      got=4        OK   finish=stop ptok=527 wall=2.6s
+  t27 kind=3 expect=4458   got=4458     OK   finish=stop ptok=485 wall=2.6s
+  t28 kind=0 expect=16     got=16       OK   finish=stop ptok=568 wall=2.8s
+  t29 kind=1 expect=4414   got=4414     OK   finish=stop ptok=605 wall=2.8s
+  t30 kind=2 expect=3      got=3        OK   finish=stop ptok=568 wall=2.6s
+  t31 kind=3 expect=4414   got=4414     OK   finish=stop ptok=562 wall=2.7s
+  t32 kind=0 expect=17     got=14       MISS  finish=stop ptok=568 wall=2.6s
+  t33 kind=1 expect=4435   got=4435     OK   finish=stop ptok=528 wall=2.6s
+  t34 kind=2 expect=0      got=0        OK   finish=stop ptok=529 wall=2.6s
+  t35 kind=3 expect=4475   got=4475     OK   finish=stop ptok=600 wall=2.7s
+  SCORE 34/36
+TASK_DONE A
+  cpu_gate_share_lines=0
+  LOG strata serve: prompt 492 tokens = 0 reused + 492 read in 2784 ms (176.8 tok/s), 6 generated in 194 ms (30.9 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 605 tokens = 0 reused + 605 read in 2630 ms (230.1 tok/s), 9 generated in 201 ms (44.9 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 564 tokens = 0 reused + 564 read in 2798 ms (201.6 tok/s), 6 generated in 132 ms (45.4 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 483 tokens = 0 reused + 483 read in 2453 ms (196.9 tok/s), 9 generated in 210 ms (42.8 tok/s), drafts accepted 6 of 9, 1 checkpoints
+  LOG strata serve: prompt 490 tokens = 0 reused + 490 read in 2479 ms (197.7 tok/s), 10 generated in 262 ms (38.1 tok/s), drafts accepted 6 of 9, 1 checkpoints
+  LOG strata serve: prompt 568 tokens = 0 reused + 568 read in 2579 ms (220.3 tok/s), 9 generated in 199 ms (45.1 tok/s), drafts accepted 6 of 9, 1 checkpoints
+  LOG strata serve: prompt 529 tokens = 0 reused + 529 read in 2540 ms (208.3 tok/s), 6 generated in 124 ms (48.5 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 563 tokens = 0 reused + 563 read in 2557 ms (220.2 tok/s), 9 generated in 169 ms (53.3 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 530 tokens = 0 reused + 530 read in 2571 ms (206.1 tok/s), 6 generated in 153 ms (39.2 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 528 tokens = 0 reused + 528 read in 2543 ms (207.7 tok/s), 9 generated in 167 ms (54.0 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 609 tokens = 0 reused + 609 read in 2626 ms (231.9 tok/s), 6 generated in 102 ms (59.0 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 521 tokens = 0 reused + 521 read in 2502 ms (208.3 tok/s), 9 generated in 169 ms (53.2 tok/s), drafts accepted 6 of 9, 1 checkpoints
+  LOG strata serve: prompt 493 tokens = 0 reused + 493 read in 2417 ms (204.0 tok/s), 10 generated in 266 ms (37.5 tok/s), drafts accepted 8 of 12, 1 checkpoints
+  LOG strata serve: prompt 526 tokens = 0 reused + 526 read in 2528 ms (208.1 tok/s), 9 generated in 183 ms (49.2 tok/s), drafts accepted 5 of 5, 1 checkpoints
+  LOG strata serve: prompt 495 tokens = 0 reused + 495 read in 2466 ms (200.7 tok/s), 6 generated in 102 ms (58.6 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 601 tokens = 0 reused + 601 read in 2610 ms (230.2 tok/s), 9 generated in 148 ms (60.7 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 531 tokens = 0 reused + 531 read in 2532 ms (209.7 tok/s), 8 generated in 191 ms (41.9 tok/s), drafts accepted 4 of 7, 1 checkpoints
+  LOG strata serve: prompt 490 tokens = 0 reused + 490 read in 2378 ms (206.1 tok/s), 9 generated in 149 ms (60.3 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 609 tokens = 0 reused + 609 read in 2582 ms (235.8 tok/s), 6 generated in 100 ms (60.0 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 601 tokens = 0 reused + 601 read in 2591 ms (231.9 tok/s), 9 generated in 159 ms (56.7 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 570 tokens = 0 reused + 570 read in 2493 ms (228.6 tok/s), 6 generated in 127 ms (47.1 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 566 tokens = 0 reused + 566 read in 2537 ms (223.1 tok/s), 9 generated in 177 ms (50.9 tok/s), drafts accepted 6 of 9, 1 checkpoints
+  LOG strata serve: prompt 492 tokens = 0 reused + 492 read in 2400 ms (205.0 tok/s), 6 generated in 103 ms (58.2 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 484 tokens = 0 reused + 484 read in 2393 ms (202.2 tok/s), 9 generated in 151 ms (59.5 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 609 tokens = 0 reused + 609 read in 2599 ms (234.3 tok/s), 7 generated in 156 ms (44.9 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 567 tokens = 0 reused + 567 read in 2538 ms (223.4 tok/s), 9 generated in 150 ms (60.1 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 527 tokens = 0 reused + 527 read in 2491 ms (211.5 tok/s), 6 generated in 101 ms (59.4 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 485 tokens = 0 reused + 485 read in 2416 ms (200.7 tok/s), 9 generated in 149 ms (60.5 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 568 tokens = 0 reused + 568 read in 2505 ms (226.8 tok/s), 10 generated in 291 ms (34.4 tok/s), drafts accepted 7 of 15, 1 checkpoints
+  LOG strata serve: prompt 605 tokens = 0 reused + 605 read in 2625 ms (230.5 tok/s), 9 generated in 164 ms (54.8 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 568 tokens = 0 reused + 568 read in 2501 ms (227.1 tok/s), 6 generated in 123 ms (48.9 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 562 tokens = 0 reused + 562 read in 2516 ms (223.3 tok/s), 9 generated in 149 ms (60.3 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 568 tokens = 0 reused + 568 read in 2454 ms (231.4 tok/s), 7 generated in 148 ms (47.1 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 528 tokens = 0 reused + 528 read in 2447 ms (215.7 tok/s), 9 generated in 149 ms (60.4 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 529 tokens = 0 reused + 529 read in 2507 ms (211.0 tok/s), 6 generated in 123 ms (49.0 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 600 tokens = 0 reused + 600 read in 2543 ms (235.9 tok/s), 9 generated in 150 ms (60.2 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  mark=52718
+=== ARM B ready=71s
+  ENVCHECK want=13 got=13 STRATA_PREFILL_CPU_SHARE=auto
+  t00 kind=0 expect=6      got=6        OK   finish=stop ptok=492 wall=2.1s
+  t01 kind=1 expect=4430   got=4430     OK   finish=stop ptok=605 wall=2.1s
+  t02 kind=2 expect=2      got=2        OK   finish=stop ptok=564 wall=2.0s
+  t03 kind=3 expect=4423   got=4423     OK   finish=stop ptok=483 wall=2.1s
+  t04 kind=0 expect=12     got=12       OK   finish=stop ptok=490 wall=2.0s
+  t05 kind=1 expect=4475   got=4475     OK   finish=stop ptok=568 wall=2.0s
+  t06 kind=2 expect=1      got=1        OK   finish=stop ptok=529 wall=1.9s
+  t07 kind=3 expect=4453   got=4453     OK   finish=stop ptok=563 wall=2.0s
+  t08 kind=0 expect=7      got=7        OK   finish=stop ptok=530 wall=1.9s
+  t09 kind=1 expect=4416   got=4416     OK   finish=stop ptok=528 wall=2.0s
+  t10 kind=2 expect=3      got=3        OK   finish=stop ptok=609 wall=2.0s
+  t11 kind=3 expect=4443   got=4443     OK   finish=stop ptok=521 wall=1.9s
+  t12 kind=0 expect=15     got=15       OK   finish=stop ptok=493 wall=1.9s
+  t13 kind=1 expect=4431   got=4431     OK   finish=stop ptok=526 wall=1.9s
+  t14 kind=2 expect=1      got=1        OK   finish=stop ptok=495 wall=1.8s
+  t15 kind=3 expect=4474   got=4474     OK   finish=stop ptok=601 wall=2.0s
+  t16 kind=0 expect=5      got=5        OK   finish=stop ptok=531 wall=1.9s
+  t17 kind=1 expect=4444   got=4444     OK   finish=stop ptok=490 wall=1.8s
+  t18 kind=2 expect=1      got=1        OK   finish=stop ptok=609 wall=1.9s
+  t19 kind=3 expect=4473   got=4473     OK   finish=stop ptok=601 wall=2.0s
+  t20 kind=0 expect=7      got=7        OK   finish=stop ptok=570 wall=1.9s
+  t21 kind=1 expect=4403   got=4423     MISS  finish=stop ptok=566 wall=1.9s
+  t22 kind=2 expect=1      got=1        OK   finish=stop ptok=492 wall=1.8s
+  t23 kind=3 expect=4450   got=4450     OK   finish=stop ptok=484 wall=1.8s
+  t24 kind=0 expect=39     got=39       OK   finish=stop ptok=609 wall=2.0s
+  t25 kind=1 expect=4426   got=4426     OK   finish=stop ptok=567 wall=2.0s
+  t26 kind=2 expect=4      got=4        OK   finish=stop ptok=527 wall=1.9s
+  t27 kind=3 expect=4458   got=4458     OK   finish=stop ptok=485 wall=1.9s
+  t28 kind=0 expect=16     got=None     MISS  finish=stop ptok=568 wall=1.9s
+  t29 kind=1 expect=4414   got=4414     OK   finish=stop ptok=605 wall=2.0s
+  t30 kind=2 expect=3      got=3        OK   finish=stop ptok=568 wall=1.9s
+  t31 kind=3 expect=4414   got=4414     OK   finish=stop ptok=562 wall=1.9s
+  t32 kind=0 expect=17     got=14       MISS  finish=stop ptok=568 wall=2.2s
+  t33 kind=1 expect=4435   got=4435     OK   finish=stop ptok=528 wall=1.9s
+  t34 kind=2 expect=0      got=0        OK   finish=stop ptok=529 wall=1.9s
+  t35 kind=3 expect=4475   got=4475     OK   finish=stop ptok=600 wall=2.0s
+  SCORE 33/36
+TASK_DONE B
+  cpu_gate_share_lines=1689
+  LOG strata serve: prompt 492 tokens = 0 reused + 492 read in 1870 ms (263.1 tok/s), 6 generated in 181 ms (33.2 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 605 tokens = 0 reused + 605 read in 1860 ms (325.2 tok/s), 9 generated in 225 ms (39.9 tok/s), drafts accepted 6 of 9, 1 checkpoints
+  LOG strata serve: prompt 564 tokens = 0 reused + 564 read in 1891 ms (298.2 tok/s), 6 generated in 133 ms (45.2 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 483 tokens = 0 reused + 483 read in 1839 ms (262.6 tok/s), 9 generated in 208 ms (43.3 tok/s), drafts accepted 6 of 9, 1 checkpoints
+  LOG strata serve: prompt 490 tokens = 0 reused + 490 read in 1668 ms (293.8 tok/s), 10 generated in 339 ms (29.5 tok/s), drafts accepted 7 of 10, 1 checkpoints
+  LOG strata serve: prompt 568 tokens = 0 reused + 568 read in 1805 ms (314.7 tok/s), 9 generated in 234 ms (38.5 tok/s), drafts accepted 7 of 9, 1 checkpoints
+  LOG strata serve: prompt 529 tokens = 0 reused + 529 read in 1770 ms (298.9 tok/s), 6 generated in 107 ms (56.2 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 563 tokens = 0 reused + 563 read in 1828 ms (307.9 tok/s), 9 generated in 154 ms (58.5 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 530 tokens = 0 reused + 530 read in 1766 ms (300.1 tok/s), 8 generated in 166 ms (48.3 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 528 tokens = 0 reused + 528 read in 1808 ms (292.1 tok/s), 9 generated in 151 ms (59.6 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 609 tokens = 0 reused + 609 read in 1870 ms (325.7 tok/s), 6 generated in 101 ms (59.3 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 521 tokens = 0 reused + 521 read in 1751 ms (297.6 tok/s), 9 generated in 169 ms (53.4 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 493 tokens = 0 reused + 493 read in 1705 ms (289.2 tok/s), 7 generated in 138 ms (50.6 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 526 tokens = 0 reused + 526 read in 1739 ms (302.4 tok/s), 9 generated in 163 ms (55.1 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 495 tokens = 0 reused + 495 read in 1664 ms (297.5 tok/s), 6 generated in 117 ms (51.3 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 601 tokens = 0 reused + 601 read in 1858 ms (323.5 tok/s), 9 generated in 163 ms (55.4 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 531 tokens = 0 reused + 531 read in 1775 ms (299.2 tok/s), 6 generated in 127 ms (47.3 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 490 tokens = 0 reused + 490 read in 1654 ms (296.2 tok/s), 9 generated in 169 ms (53.3 tok/s), drafts accepted 6 of 9, 1 checkpoints
+  LOG strata serve: prompt 609 tokens = 0 reused + 609 read in 1829 ms (333.0 tok/s), 6 generated in 101 ms (59.6 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 601 tokens = 0 reused + 601 read in 1875 ms (320.6 tok/s), 9 generated in 155 ms (58.1 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 570 tokens = 0 reused + 570 read in 1821 ms (313.0 tok/s), 6 generated in 107 ms (56.2 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 566 tokens = 0 reused + 566 read in 1784 ms (317.2 tok/s), 9 generated in 150 ms (60.2 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 492 tokens = 0 reused + 492 read in 1706 ms (288.5 tok/s), 6 generated in 110 ms (54.8 tok/s), drafts accepted 3 of 4, 1 checkpoints
+  LOG strata serve: prompt 484 tokens = 0 reused + 484 read in 1662 ms (291.2 tok/s), 9 generated in 171 ms (52.7 tok/s), drafts accepted 6 of 9, 1 checkpoints
+  LOG strata serve: prompt 609 tokens = 0 reused + 609 read in 1843 ms (330.4 tok/s), 7 generated in 155 ms (45.2 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 567 tokens = 0 reused + 567 read in 1801 ms (314.8 tok/s), 9 generated in 150 ms (59.9 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 527 tokens = 0 reused + 527 read in 1736 ms (303.5 tok/s), 6 generated in 102 ms (59.1 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 485 tokens = 0 reused + 485 read in 1715 ms (282.8 tok/s), 9 generated in 149 ms (60.5 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 568 tokens = 0 reused + 568 read in 1798 ms (316.0 tok/s), 3 generated in 128 ms (23.5 tok/s), drafts accepted 3 of 6, 1 checkpoints
+  LOG strata serve: prompt 605 tokens = 0 reused + 605 read in 1819 ms (332.6 tok/s), 9 generated in 165 ms (54.4 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 568 tokens = 0 reused + 568 read in 1798 ms (315.9 tok/s), 6 generated in 102 ms (58.6 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 562 tokens = 0 reused + 562 read in 1768 ms (317.8 tok/s), 9 generated in 169 ms (53.3 tok/s), drafts accepted 6 of 9, 1 checkpoints
+  LOG strata serve: prompt 568 tokens = 0 reused + 568 read in 1787 ms (317.8 tok/s), 16 generated in 416 ms (38.5 tok/s), drafts accepted 9 of 11, 1 checkpoints
+  LOG strata serve: prompt 528 tokens = 0 reused + 528 read in 1749 ms (301.9 tok/s), 9 generated in 149 ms (60.4 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 529 tokens = 0 reused + 529 read in 1742 ms (303.7 tok/s), 6 generated in 124 ms (48.3 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 600 tokens = 0 reused + 600 read in 1841 ms (325.9 tok/s), 9 generated in 153 ms (59.0 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  mark=54614
+=== ARM C ready=78s
+  ENVCHECK want=13 got=13 STRATA_PREFILL_CPU_SHARE=auto
+  t00 kind=0 expect=6      got=6        OK   finish=stop ptok=492 wall=2.3s
+  t01 kind=1 expect=4430   got=4430     OK   finish=stop ptok=605 wall=2.1s
+  t02 kind=2 expect=2      got=2        OK   finish=stop ptok=564 wall=2.0s
+  t03 kind=3 expect=4423   got=4423     OK   finish=stop ptok=483 wall=2.2s
+  t04 kind=0 expect=12     got=12       OK   finish=stop ptok=490 wall=2.0s
+  t05 kind=1 expect=4475   got=4475     OK   finish=stop ptok=568 wall=2.1s
+  t06 kind=2 expect=1      got=1        OK   finish=stop ptok=529 wall=1.9s
+  t07 kind=3 expect=4453   got=4453     OK   finish=stop ptok=563 wall=2.0s
+  t08 kind=0 expect=7      got=7        OK   finish=stop ptok=530 wall=1.9s
+  t09 kind=1 expect=4416   got=4416     OK   finish=stop ptok=528 wall=2.0s
+  t10 kind=2 expect=3      got=3        OK   finish=stop ptok=609 wall=2.0s
+  t11 kind=3 expect=4443   got=4443     OK   finish=stop ptok=521 wall=1.9s
+  t12 kind=0 expect=15     got=15       OK   finish=stop ptok=493 wall=2.0s
+  t13 kind=1 expect=4431   got=4431     OK   finish=stop ptok=526 wall=2.0s
+  t14 kind=2 expect=1      got=1        OK   finish=stop ptok=495 wall=1.9s
+  t15 kind=3 expect=4474   got=4474     OK   finish=stop ptok=601 wall=2.0s
+  t16 kind=0 expect=5      got=5        OK   finish=stop ptok=531 wall=1.9s
+  t17 kind=1 expect=4444   got=4444     OK   finish=stop ptok=490 wall=1.9s
+  t18 kind=2 expect=1      got=1        OK   finish=stop ptok=609 wall=2.0s
+  t19 kind=3 expect=4473   got=4473     OK   finish=stop ptok=601 wall=2.1s
+  t20 kind=0 expect=7      got=7        OK   finish=stop ptok=570 wall=1.9s
+  t21 kind=1 expect=4403   got=4423     MISS  finish=stop ptok=566 wall=2.0s
+  t22 kind=2 expect=1      got=1        OK   finish=stop ptok=492 wall=1.8s
+  t23 kind=3 expect=4450   got=4450     OK   finish=stop ptok=484 wall=1.9s
+  t24 kind=0 expect=39     got=39       OK   finish=stop ptok=609 wall=2.0s
+  t25 kind=1 expect=4426   got=4426     OK   finish=stop ptok=567 wall=2.0s
+  t26 kind=2 expect=4      got=4        OK   finish=stop ptok=527 wall=1.9s
+  t27 kind=3 expect=4458   got=4458     OK   finish=stop ptok=485 wall=1.9s
+  t28 kind=0 expect=16     got=None     MISS  finish=stop ptok=568 wall=1.9s
+  t29 kind=1 expect=4414   got=4414     OK   finish=stop ptok=605 wall=2.1s
+  t30 kind=2 expect=3      got=3        OK   finish=stop ptok=568 wall=1.9s
+  t31 kind=3 expect=4414   got=4414     OK   finish=stop ptok=562 wall=1.9s
+  t32 kind=0 expect=17     got=17       OK   finish=stop ptok=568 wall=2.0s
+  t33 kind=1 expect=4435   got=4435     OK   finish=stop ptok=528 wall=2.0s
+  t34 kind=2 expect=0      got=0        OK   finish=stop ptok=529 wall=1.9s
+  t35 kind=3 expect=4475   got=4475     OK   finish=stop ptok=600 wall=2.0s
+  SCORE 34/36
+TASK_DONE C
+  cpu_gate_share_lines=1689
+  LOG strata serve: prompt 492 tokens = 0 reused + 492 read in 2104 ms (233.9 tok/s), 6 generated in 182 ms (32.9 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 605 tokens = 0 reused + 605 read in 1878 ms (322.1 tok/s), 9 generated in 238 ms (37.8 tok/s), drafts accepted 5 of 8, 1 checkpoints
+  LOG strata serve: prompt 564 tokens = 0 reused + 564 read in 1854 ms (304.1 tok/s), 6 generated in 159 ms (37.6 tok/s), drafts accepted 3 of 6, 1 checkpoints
+  LOG strata serve: prompt 483 tokens = 0 reused + 483 read in 1976 ms (244.5 tok/s), 9 generated in 183 ms (49.2 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 490 tokens = 0 reused + 490 read in 1671 ms (293.2 tok/s), 10 generated in 337 ms (29.7 tok/s), drafts accepted 7 of 10, 1 checkpoints
+  LOG strata serve: prompt 568 tokens = 0 reused + 568 read in 1826 ms (311.0 tok/s), 9 generated in 234 ms (38.4 tok/s), drafts accepted 7 of 9, 1 checkpoints
+  LOG strata serve: prompt 529 tokens = 0 reused + 529 read in 1754 ms (301.6 tok/s), 6 generated in 106 ms (56.7 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 563 tokens = 0 reused + 563 read in 1832 ms (307.4 tok/s), 9 generated in 154 ms (58.5 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 530 tokens = 0 reused + 530 read in 1751 ms (302.6 tok/s), 6 generated in 104 ms (57.7 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 528 tokens = 0 reused + 528 read in 1788 ms (295.3 tok/s), 9 generated in 167 ms (53.7 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 609 tokens = 0 reused + 609 read in 1869 ms (325.8 tok/s), 6 generated in 119 ms (50.4 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 521 tokens = 0 reused + 521 read in 1758 ms (296.3 tok/s), 9 generated in 172 ms (52.4 tok/s), drafts accepted 6 of 7, 1 checkpoints
+  LOG strata serve: prompt 493 tokens = 0 reused + 493 read in 1738 ms (283.6 tok/s), 10 generated in 277 ms (36.1 tok/s), drafts accepted 7 of 10, 1 checkpoints
+  LOG strata serve: prompt 526 tokens = 0 reused + 526 read in 1844 ms (285.3 tok/s), 9 generated in 148 ms (60.7 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 495 tokens = 0 reused + 495 read in 1738 ms (284.8 tok/s), 6 generated in 101 ms (59.7 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 601 tokens = 0 reused + 601 read in 1841 ms (326.4 tok/s), 9 generated in 165 ms (54.5 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 531 tokens = 0 reused + 531 read in 1787 ms (297.2 tok/s), 6 generated in 134 ms (44.7 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 490 tokens = 0 reused + 490 read in 1723 ms (284.4 tok/s), 9 generated in 160 ms (56.1 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 609 tokens = 0 reused + 609 read in 1867 ms (326.2 tok/s), 6 generated in 104 ms (57.7 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 601 tokens = 0 reused + 601 read in 1887 ms (318.6 tok/s), 9 generated in 176 ms (51.0 tok/s), drafts accepted 6 of 9, 1 checkpoints
+  LOG strata serve: prompt 570 tokens = 0 reused + 570 read in 1810 ms (314.9 tok/s), 6 generated in 124 ms (48.5 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 566 tokens = 0 reused + 566 read in 1853 ms (305.4 tok/s), 9 generated in 149 ms (60.4 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 492 tokens = 0 reused + 492 read in 1711 ms (287.6 tok/s), 6 generated in 121 ms (49.7 tok/s), drafts accepted 3 of 6, 1 checkpoints
+  LOG strata serve: prompt 484 tokens = 0 reused + 484 read in 1725 ms (280.5 tok/s), 9 generated in 157 ms (57.3 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 609 tokens = 0 reused + 609 read in 1873 ms (325.2 tok/s), 7 generated in 151 ms (46.2 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 567 tokens = 0 reused + 567 read in 1856 ms (305.4 tok/s), 9 generated in 156 ms (57.5 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 527 tokens = 0 reused + 527 read in 1777 ms (296.5 tok/s), 6 generated in 102 ms (58.6 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 485 tokens = 0 reused + 485 read in 1715 ms (282.9 tok/s), 9 generated in 173 ms (51.9 tok/s), drafts accepted 6 of 9, 1 checkpoints
+  LOG strata serve: prompt 568 tokens = 0 reused + 568 read in 1781 ms (318.8 tok/s), 3 generated in 128 ms (23.4 tok/s), drafts accepted 3 of 6, 1 checkpoints
+  LOG strata serve: prompt 605 tokens = 0 reused + 605 read in 1865 ms (324.3 tok/s), 9 generated in 179 ms (50.2 tok/s), drafts accepted 6 of 9, 1 checkpoints
+  LOG strata serve: prompt 568 tokens = 0 reused + 568 read in 1802 ms (315.3 tok/s), 6 generated in 102 ms (58.8 tok/s), drafts accepted 3 of 3, 1 checkpoints
+  LOG strata serve: prompt 562 tokens = 0 reused + 562 read in 1786 ms (314.6 tok/s), 9 generated in 149 ms (60.5 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 568 tokens = 0 reused + 568 read in 1787 ms (317.9 tok/s), 10 generated in 233 ms (42.9 tok/s), drafts accepted 7 of 9, 1 checkpoints
+  LOG strata serve: prompt 528 tokens = 0 reused + 528 read in 1848 ms (285.8 tok/s), 9 generated in 164 ms (54.9 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 529 tokens = 0 reused + 529 read in 1771 ms (298.6 tok/s), 6 generated in 125 ms (47.9 tok/s), drafts accepted 6 of 6, 1 checkpoints
+  LOG strata serve: prompt 600 tokens = 0 reused + 600 read in 1874 ms (320.3 tok/s), 9 generated in 150 ms (60.1 tok/s), drafts accepted 6 of 6, 1 checkpoints
+restored 48s
+final env_n=12 share=auto
+  trap-restored (any exit path)

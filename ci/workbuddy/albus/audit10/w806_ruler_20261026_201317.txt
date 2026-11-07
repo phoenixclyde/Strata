@@ -1,0 +1,3 @@
+# W806 determinism ruler 20261026_201317 short_read=300 arms='A B C D E F'
+  start env_n=12 args_n=33 prefill=auto
+  trap-restored (any exit path)

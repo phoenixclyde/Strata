@@ -1,0 +1,37 @@
+# W806b MMVQ A/B 20261026_203501 arms='A B C D E'
+  bin 184f8adea850bd6409a675d635fd8465  /src/build-906/_staged/strata_p4
+  bin b87ef3ac76a8199d0a301d101af4769a  /src/build-906/_staged/strata_p6
+  start env_n=12 args_n=33
+  CFGCHECK keys=11 env_n=12
+  mark=59432
+=== ARM A bin=p4 mmvq=0 maxt=default ready=56s
+  BINCHECK arm=A want=p4 md5=184f8adea850 184f8adea850 OK
+  ENVCHECK want=11 got=12 img_extra=1 OK
+BUILD wall=11.50 reused=0 read=7601 prompt_ms=10985.3
+T0 ask=80   read=101   reused=7596  prompt_ms=  1122.0 decode_ms=  1140.2 tok_s= 56.1 wall= 2.27
+T1 ask=280  read=316   reused=7596  prompt_ms=  1587.9 decode_ms=  1498.8 tok_s= 42.7 wall= 3.10
+T2 ask=80   read=125   reused=7596  prompt_ms=  1262.8 decode_ms=   980.2 tok_s= 65.3 wall= 2.26
+T3 ask=280  read=340   reused=7596  prompt_ms=  1683.4 decode_ms=   960.3 tok_s= 66.6 wall= 2.66
+DONE
+BUILD wall=0.97 reused=7596 read=5 prompt_ms=553.8
+T0 ask=80   read=101   reused=7596  prompt_ms=  1021.5 decode_ms=  1133.0 tok_s= 56.5 wall= 2.17
+T1 ask=280  read=316   reused=7596  prompt_ms=  1582.6 decode_ms=  1231.9 tok_s= 52.0 wall= 2.83
+T2 ask=80   read=5     reused=7716  prompt_ms=   353.1 decode_ms=   923.2 tok_s= 69.3 wall= 1.29
+T3 ask=280  read=5     reused=7931  prompt_ms=   353.7 decode_ms=   910.5 tok_s= 70.3 wall= 1.28
+DONE
+  rep0 target=150   chars=537    prompt_tokens=191    wall=1.38s 
+  rep0 target=220   chars=805    prompt_tokens=244    wall=1.35s 
+  rep0 target=300   chars=1228   prompt_tokens=387    wall=1.62s 
+  rep0 target=600   chars=2126   prompt_tokens=620    wall=2.03s 
+  rep1 target=150   chars=621    prompt_tokens=219    wall=1.36s 
+  rep1 target=220   chars=848    prompt_tokens=267    wall=1.45s 
+  rep1 target=300   chars=1066   prompt_tokens=320    wall=1.62s 
+  rep1 target=600   chars=2110   prompt_tokens=495    wall=1.88s 
+READ_DONE A
+  read_results=8
+  CFGCHECK keys=11 env_n=12
+  mark=59585
+=== ARM B bin=p6 mmvq=0 maxt=default ready=89s
+  BINCHECK arm=B want=p6 md5=184f8adea850 b87ef3ac76a8 MISMATCH
+!! ABORT binary mismatch
+  trap-restored (any exit path)

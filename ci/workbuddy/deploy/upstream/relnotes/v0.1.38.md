@@ -1,0 +1,100 @@
+**Faster prompts, `--kv q4_0` prompts on tensor cores, a 6 GB card that starts, and a large batch of community PRs.**
+
+**Security: the server without an API key (DNS rebinding, cross-site requests).** Without `api_key`, the server now
+answers only requests addressed to a name it knows (`localhost`, an IP address, the address it listens on and, when it
+listens beyond this PC, this PC's name), and a browser page from another site can no longer send it requests (`403`).
+`/unload` and `/load` take only JSON: `curl -X POST -H "Content-Type: application/json" localhost:8080/unload`.
+Clients without an `Origin` header (curl, the OpenAI and Anthropic SDKs, other servers) are not affected, and with an
+API key the key decides. **Behind a reverse proxy, a tunnel or Docker under another name, without a key:** add the
+name, `"allowed_hosts": ["strata.example.com"]` in `strata-<model>.json` (or `STRATA_ALLOWED_HOSTS`), or set an API
+key. Details: docs/DETAILS.md.
+
+**Faster prompts:**
+- The prompt path gathers a group of experts in one launch with one wait (#372), reads the first chunk's n-gram rows
+  beside layer 0 instead of before it (#374), and runs the DeltaNet recurrence three heads per thread (#413). The
+  answers are the same bits as before.
+- Measured on an RTX 5070 12 GB (3 alternating pairs each against 0.1.37): Q2_0 prompts +10% at 4K, +2.7% at 32K,
+  +3.0% at 128K; IQ2_XS +1.9% at 32K and +6.4% at 128K (4K: within the run-to-run spread).
+- Decode time per verify round is the same or a little shorter. Since #463 a greedy answer no longer depends on when
+  the adaptive tier's expert copies land, so on some long prompts the drafts are accepted a little more or less often
+  than before (Q2_0 at 128K: 70.9 instead of 75.1 tokens/s on the measured prompt, IQ2_XS at 32K: 73.0 instead of
+  69.7).
+
+**`--kv q4_0` (#452):** prompts read their Q4_0 K/V on tensor cores (RTX 30 and newer; RTX 20 keeps the old kernel
+for now): a 32K prompt on Q2_0 in 14.3 s instead of 18.8 s. Against an FP16 K/V reference, over 2,000 teacher-forced
+positions after the prompt: at 32K, KL 0.026 and top-1 95.1% (0.031 / 93.6% with the old kernel); at 8K, KL 0.079 and
+top-1 89.3% (0.077 / 90.0%). The default `--kv int8` is unchanged.
+
+**A 6 GB card starts (#496):** when the default VRAM reserve leaves the expert cache too little room, the engine
+lowers the reserve (down to 300 MiB) until the cache fits, and warns if the card ends nearly full. If even that is
+not enough, the start stops with how many MiB are short and what frees them; setup gives the same tip on cards under
+8 GB.
+
+**More formats and CPUs:**
+- **Q5_0 experts on the GPU** (#473): community Q4_K_M GGUFs that put Q5_0 on the down projections now load. Q5_0
+  n-gram tables also read with `--ple-io direct`.
+- **IQ4_XS on AVX-2-only CPUs** (#415): the multi-token kernel the other i-quants already had. AVX-512 CPUs are
+  unchanged.
+
+**Loading and memory:**
+- **Windows, short on RAM** (#357 #362): the experts are read past the file cache when it cannot keep them anyway, at
+  start and in the RAM-budget tier (faster starts and decode on 32-64 GB PCs, the same tokens).
+- **Linux** (#488): `STRATA_NO_LARGEPAGES=1` works there too, and a hugetlb pool that is too small is named.
+
+**AMD:** hipBLASLt tables for gfx1201 and gfx1200 with hipBLASLt 1.2.2 (system ROCm 7.2.x; ~1.5-2x prompt speed there,
+#386 #387), and the draft layer's prompt pass runs per group on HIP, which fixes a prompt hang on gfx1201 (#382).
+
+**New options (off by default; the default output is unchanged):**
+- `--peer-device N` (#531): a second GPU as an extra expert cache (needs P2P, e.g. NVLink); see docs/SECOND_GPU.md.
+- `--adapt-decay F` (#407): how fast the adaptive tier forgets (0.7, as before).
+- `STRATA_GR_DOWN_MAX4=1` (#443): a smaller decode kernel variant for short windows (the same bits).
+
+**Also:** a native pack with `STRATA_PF_FUSED=1` whose fused kernels don't cover every layer (Unsloth UD-IQ4_XS) no
+longer gives garbage or hangs on long prompts; the verify window's PCIe call launches less (#363), the adaptive tier
+waits for its expert copies so a decode no longer depends on their timing (#463), a stager race with unpinned blobs is
+closed (#385), RTX 20 cards pick a faster top-k at long contexts (#512), and `--dump-logits` no longer writes a header
+without rows (#463).
+
+**Fixes from your reports:**
+- **AMD on a Linux desktop** (#560 #516): when the desktop or apps crash once the model is loaded, the expert cache
+  has filled the card the desktop needs. Setup and the server now recommend `--vram-reserve-mib 3072` there (nothing
+  is changed for you).
+- **A slow CUDA build** (#542): MMQ reads the GPU's limits in a way a mismatched CUDA runtime cannot shift, and the
+  engine warns when its runtime is older than the toolkit it was built with.
+- **The weight arena does not fit** (#486): the error says how much VRAM was free at that moment.
+- **Setup and the server** (#549 #545 #530 #564): `setup --update` skips a `strata-*.json` that is no model config;
+  the "exceeds the context" error says how to get past it; a reply that reaches its token limit while still thinking
+  is logged with what helps; each start prints the settings it uses.
+- **Docs:** an OpenCode config example (#543); MODELS.md says plainly that the Coder is the 32 GB fit, weaker outside
+  code, and recommends the full models for general use.
+- A parity test waits for its uploads (#548).
+
+Thanks to everyone who sent PRs for this release, and especially to sergqwer and BlueKingMuch for the prompt-path and
+decode work.
+
+**Checked before the release:**
+- **The same answers as 0.1.37 on all four quants** (Q2_0, IQ3_XXS, IQ3_S, the Coder), 10/10 each with a fixed cache,
+  and the prompt path's internal state at 4K and 20K tokens (Q2_0, the Coder).
+- **Speed:** the 5-pair A/B on Q2_0 and IQ3_S: Q2_0 +4.0% / +1.9%, IQ3_S +0.2% / +0.1%, the same expert slots; the
+  prompt/decode table above.
+- **Kernel parity tests** (the new DeltaNet, grouped-expert, top-k and Q4_0 attention tests included), **real use at a
+  57K-token prompt** (Q2_0, the Coder), **Linux** (WSL) Q2_0 identical 10/10.
+- **AMD on Windows:** the HIP zip builds; the AMD changes are untested on an AMD card here (we have none).
+- **After the report fixes were merged:** Q2_0 and IQ3_XXS still identical 10/10 and at 4K, and the Q2_0 speed A/B
+  +0.7% / +0.6% (the new start-up checks cost nothing).
+- **Tests:** tools/setup 287, server 197 (the new security tests included).
+
+**Updating:** run `UPDATE.bat` (Linux: `./update.sh`). Setup installs engine 0.1.38.
+
+The ready-made Strata engines for Windows, which `START-HERE.bat` fetches by itself:
+- `strata-windows-x64.zip`: NVIDIA (RTX 20 / 30 / 40 / 50: sm_75, sm_86, sm_89, sm_120 + PTX), CUDA 13.0, needs an
+  NVIDIA driver 580 or newer. Contents: `strata.exe`, `strata-vision.exe` (the optional image encoder), `BUILD.json`.
+- `strata-windows-x64-hip.zip`: AMD (gfx1100, gfx1101, gfx1102, gfx1200, gfx1201, gfx1030), ROCm 10.2.0a20260930
+  from AMD's TheRock builds, needs a current AMD driver. Contents: `strata.exe`, `strata-device.exe`, the HIP runtime
+  next to them, `BUILD.json`, `rocm\` (the ROCm libraries and their licenses).
+
+---
+
+Strata is free and open source. If it runs well on your PC, a coffee keeps the work on it going:
+
+<a href="https://buymeacoffee.com/strataengine"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="50"></a>

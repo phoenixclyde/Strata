@@ -1,0 +1,46 @@
+=== [1] prefill.cpp:399 附近（失败点）===
+    389|         pinned.assign((size_t) kRing, 0);
+    390|         dma_done.assign((size_t) kRing, nullptr);
+    391|         pageable.resize(kRing);
+    392|         for (int i = 0; i < kRing; ++i) {
+    393|             pinned[i] = !force_pageable() && cudaHostAlloc((void**) &buf[i], blob_bytes, cudaHostAllocDefault) == cudaSuccess;
+    394|             if (!pinned[i]) {
+    395|                 cudaGetLastError();
+    396|                 pageable[(size_t) i].resize(blob_bytes);
+    397|                 buf[i] = pageable[(size_t) i].data();
+    398|             }
+    399|             if (cudaEventCreateWithFlags(&dma_done[i], stager_sleep() ? (cudaEventDisableTiming | cudaEventBlockingSync)   <== ERROR
+    400|                                                                       : cudaEventDisableTiming) != cudaSuccess) return false;
+    401|         }
+    402|         cudaGetDevice(&device);
+    403|         for (int t = 0; t < nthreads; ++t) threads.emplace_back([this] { work(); });
+    404|         return true;
+    405|     }
+    406|     ~Stager() {
+    407|         finish();
+    408|         { std::lock_guard<std::mutex> lk(mu); quit = true; }
+    409|         cv.notify_all();
+    410|         for (auto& t : threads) t.join();
+
+=== [2] 全树里 cudaEventBlockingSync 的出现 ===
+  include/strata/hip_compat/cuda_runtime.h       :39    #define cudaEventBlockingSync hipEventBlockingSync
+  src/prefill/prefill.cpp                        :399   if (cudaEventCreateWithFlags(&dma_done[i], stager_sleep() ? (cudaEventDisableTiming | cudaEventBlockingSync)
+
+=== [3] strata_hip.h 里现有的 cudaEvent* 映射 ===
+     34| #define cudaEvent_t hipEvent_t
+     51| #define cudaEventDisableTiming hipEventDisableTiming
+     52| #define cudaEventDefault hipEventDefault
+    138| #define cudaEventCreate hipEventCreate
+    139| #define cudaEventCreateWithFlags hipEventCreateWithFlags
+    140| #define cudaEventDestroy hipEventDestroy
+    141| #define cudaEventRecord hipEventRecord
+    142| #define cudaEventQuery hipEventQuery
+    143| #define cudaEventSynchronize hipEventSynchronize
+    144| #define cudaEventElapsedTime hipEventElapsedTime
+
+=== [4] 该头文件里 cudaStreamCreateWithFlags 那几行（找插入锚点）===
+    129| #define cudaStreamCreateWithFlags hipStreamCreateWithFlags
+    131| #define cudaStreamSynchronize hipStreamSynchronize
+
+=== [5] prefill.cpp 是否被 gfx906 gate ===
+  全文 STRATA_HIP_GFX906 命中 = 0  STRATA_USE_HIP 命中 = 2

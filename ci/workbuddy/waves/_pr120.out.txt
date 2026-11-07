@@ -1,0 +1,11 @@
+[1] branch ref: HTTP 200  sha=87c6d0218da9  期望=87c6d0218da9  OK
+[2] compare vs main: status=ahead ahead_by=1 behind_by=0  commits=1
+      CMakeLists.txt                                                   modified +2/-2
+      include/strata/platform/hip_compat/strata_hip.h                  modified +1/-0
+
+[3] 创建 PR  head=phoenixclyde:gfx906-build-fixes-402  base=main
+    CREATED #1396
+    url      = https://github.com/Niko1221/Strata/pull/1396
+    head     = phoenixclyde:gfx906-build-fixes-402 @ 87c6d0218da9
+    base     = Niko1221:main @ e8ca9afd03d8
+    files=2  +3/-2  commits=1  state=open  mergeable=None

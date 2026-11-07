@@ -1,0 +1,19 @@
+# W808c decode timing (production config + STRATA_DECODE_TIMING=1) 20261026_215631 arms='P O'
+  CFGCHECK keys=11 env_n=13 add='none'
+  mark=63310
+=== ARM P add='none' ready=77s
+  p0  ptok=76   out=200  decode=4684.5  ms  42.7 tok/s  wall=6.0s
+  MEDIAN decode_tps = 42.69  (n=1)
+WROTE /home/albus/strata166/data/w808c_gen_P.json
+  DT strata decode timing: 106 windows, avg T 2.30, 1.89 tokens/window, 44.19 ms/window = verify 38.71 (GPU-reach wait 31.85 + per-layer host 4.16 [plan 0.15 actq 0.14 jobs 0.04 CPU 3.76] + stage 0.05) + commit/emit 0.04 + draft 3.82; per layer-window: CPU experts 0.80 (0.98 entries), VRAM hits 21.22, PCIe 0.01; adapt wait 1.60 join 0.00, 15.4 swaps/window
+  SV strata serve: prompt 76 tokens = 0 reused + 76 read in 1263 ms (60.2 tok/s), 200 generated in 4685 ms (42.7 tok/s), drafts accepted 94 of 138, 1 checkpoints
+  CFGCHECK keys=11 env_n=14 add='STRATA_ONE_TOKEN_COMMIT=1'
+  mark=63376
+=== ARM O add='STRATA_ONE_TOKEN_COMMIT=1' ready=44s
+  p0  ptok=76   out=200  decode=4565.6  ms  43.8 tok/s  wall=5.7s
+  MEDIAN decode_tps = 43.81  (n=1)
+WROTE /home/albus/strata166/data/w808c_gen_O.json
+  DT strata decode timing: 120 windows, avg T 2.05, 1.67 tokens/window, 38.05 ms/window = verify 32.78 (GPU-reach wait 26.37 + per-layer host 3.75 [plan 0.13 actq 0.12 jobs 0.04 CPU 3.37] + stage 0.07) + commit/emit 0.03 + draft 3.63; per layer-window: CPU experts 0.76 (0.95 entries), VRAM hits 18.78, PCIe 0.01; adapt wait 1.58 join 0.00, 14.6 swaps/window
+  SV strata serve: prompt 76 tokens = 0 reused + 76 read in 1113 ms (68.3 tok/s), 200 generated in 4566 ms (43.8 tok/s), drafts accepted 80 of 126, 1 checkpoints
+restored 53s
+  trap-restored (any exit path)

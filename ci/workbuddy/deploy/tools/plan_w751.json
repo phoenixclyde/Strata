@@ -1,0 +1,41 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W751：未做清单注明 W750 已含 W749（合并件核对后的留痕）",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- **未做**（`W750_MASTER_PLAN.md`）：",
+   "new": "- **未做**（`W750_MASTER_PLAN.md`·含W749）："
+  },
+  {
+   "kind": "substr",
+   "old": "- 查容器内文件走 `docker exec`（宿主假阴性）。",
+   "new": "- 查容器内文件走 `docker exec`（宿主假阴性）"
+  },
+  {
+   "kind": "substr",
+   "old": "- 改既有长件前**先备份该件**。",
+   "new": "- 改既有长件前**先备份该件**"
+  },
+  {
+   "kind": "substr",
+   "old": "- 多文件同走 stdout 须先补结尾换行。",
+   "new": "- 多文件同走 stdout 须先补结尾换行"
+  },
+  {
+   "kind": "substr",
+   "old": "- **`--prefill` 会改答案** => **不改 P10**。",
+   "new": "- **`--prefill` 会改答案** => **不改 P10**"
+  },
+  {
+   "kind": "substr",
+   "old": "（P0=0/P1=4）。",
+   "new": "（P0=0/P1=4）"
+  },
+  {
+   "kind": "substr",
+   "old": "评论 4 条。",
+   "new": "评论 4 条"
+  }
+ ]
+}

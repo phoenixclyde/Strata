@@ -1,0 +1,41 @@
+[1] register: P20 已是 ADOPTED（幂等跳过）
+[2] gen_config rc=0
+[2] 生成 args = ['--pack', '/data/packs/ud-iq4_xs', '--native', '/weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf', '--resident-budget-gib', '76', '--expert-profile', '/src/data/expert-profile.bin', '--expert-cache', 'auto', '--spec', '4', '--spec-min-p', '0.5', '--mtp', '/data/mtp/rt', '--max-context', '262144', '--kv', 'k8v4', '--prefill', 'auto', '--expert-profile-save', '/data/profiles/ud-iq4_xs-learned.bin']
+    env = {'HSA_OVERRIDE_GFX_VERSION': '9.0.6'}
+[3] profiles 目录: drwxrwxr-x 2 albus albus 6 Oct  8 00:48 /home/albus/strata166/data/profiles
+    备份: backup_ok
+    推送新 config: ok=True size=744 md5=547d280c4c7c5d69f2440c9b8a16b975
+    落盘: 
+[4] 重启: restart_rc=0
+    [ 10s] http=000
+    [ 20s] http=000
+    [ 30s] http=000
+    [ 40s] http=200
+    就绪 = True
+[5] 固化复验：
+id    name                               value                                结果     依据
+----------------------------------------------------------------------------------------------------------------------------
+P00   --pack                             /data/packs/ud-iq4_xs                PASS   config JSON + 引擎启动行
+P01   --native                           /weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf PASS   config JSON + 引擎启动行
+P09   --resident-budget-gib              76                                   PASS   config JSON + 引擎启动行
+P08   --expert-profile                   /src/data/expert-profile.bin         PASS   config JSON + 引擎启动行
+P07   --expert-cache                     auto                                 PASS   config JSON + 引擎启动行
+P05   --spec                             4                                    PASS   config JSON + 引擎启动行
+P06   --spec-min-p                       0.5                                  PASS   config JSON + 引擎启动行
+P02   --mtp                              /data/mtp/rt                         PASS   config JSON + 引擎启动行
+P03   --max-context                      262144                               PASS   config JSON + 引擎启动行
+P04   --kv                               k8v4                                 PASS   config JSON + 引擎启动行
+P10   --prefill                          auto                                 PASS   config JSON + 引擎启动行
+P11   HSA_OVERRIDE_GFX_VERSION           9.0.6                                PASS   docker Config.Env
+P20   --expert-profile-save              /data/profiles/ud-iq4_xs-learned.bin FAIL   config=False(started=False)
+----------------------------------------------------------------------------------------------------------------------------
+PASS=12  FAIL=1
+
+锚定的启动行（最后一次 engine started）：
+  [strata] 2026-10-07 16:48:34 engine started: /src/build-906/strata --serve --pack /data/packs/ud-iq4_xs --native /weights/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf --resident-budget-gib 76 --expert-profile /src/data/expert-
+
+容器 Cmd：
+  qwen3.8-flash-next-ud-iq4_xs  <- config: /home/albus/strata166/data/strata-ud-iq4_xs.json
+
+verify rc = 1
+备份 ts = 20261008_004826

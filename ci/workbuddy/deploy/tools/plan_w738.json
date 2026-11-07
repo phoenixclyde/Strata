@@ -1,0 +1,106 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W738：三问（K-quant/ki 引擎/ki 借鉴）+ 引擎一族默认关按位等价开关（register 0 登记）",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "；漏推则「本机==166」假 => 必对两侧 md5。",
+   "new": "；漏推 => 必对两侧 md5。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 交付件禁用码位见 `mem_slim.py` 的 `BAN`；CR=0。",
+   "new": "- 禁用码位见 `mem_slim.py` 的 `BAN`；CR=0。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 本机 shim 把 `/data/x.py` 转成 Windows 路径 => 只传短记号；别用 ASCII 引号包中文串。",
+   "new": "- 本机 shim 把 `/data/x.py` 转成 Win 路径 => 只传短记号；别用 ASCII 引号包中文串。"
+  },
+  {
+   "kind": "substr",
+   "old": "）。切换/回滚 `switch_strata.sh`。",
+   "new": "）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- 「前缀须与 prefill chunk 整数倍对齐」= 实测规律（待追）。\n",
+   "new": ""
+  },
+  {
+   "kind": "substr",
+   "old": "- **筛候选（W721）**：收益上限=该环节时延占比 => 省「重复预填」（多轮~90%）才两位数（P31/P34）；一票否决：**改答案/破位**。",
+   "new": "- **筛候选**：收益上限=该环节时延占比 => 省「重复预填」（多轮~90%）才两位数（P31/P34）；一票否决：**改答案/破位**。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **容器名/版本/指纹一律写指针、不写字面值**（已四次暴露）。",
+   "new": "- **容器名/版本/指纹一律写指针**（已四次暴露）。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **已交上游（W736）**：PR #1731（`app.js` 轴）/#1732（gfx906 守卫）/#1733（AMD PCIe）· issue #1734/#1735 · 评论 4 条。`mtp.cpp:428` 无差。",
+   "new": "- **已交上游（W736）**：PR #1731（`app.js` 轴）/#1732（gfx906 守卫）/#1733（AMD PCIe）· issue #1734/#1735 · 评论 4 条。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **温 TTFT 两口径**：同 prompt 重发=上限；追加=多轮。**不可混比**。",
+   "new": "- **温 TTFT 两口径**：重发=上限；追加=多轮。**不可混比**。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **`--prefill` 会改答案**（6,831-token 段长度变）=> **不改 P10**。",
+   "new": "- **`--prefill` 会改答案**（段长度变）=> **不改 P10**。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **源码写法 != 实际发射**：内循环能力须 `objdump`（W737）。",
+   "new": "- **源码写法 != 实际发射**：内循环能力须 `objdump`。"
+  },
+  {
+   "kind": "substr",
+   "old": "`ARCHIVE.md` 只作对照（W737 被打回一次）。",
+   "new": "`ARCHIVE.md` 只作对照。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **166 的 PCIe**：MI50 有效链路 **Gen3 x16**（根口上限）；`pcie_bw` 读 ~1 s 须独立线程缓存；同机另有 RTX 2070+ASPEED；`product_name` = **FRU 串** => 容量按**实读显存**纠正。",
+   "new": "- **166 的 PCIe**：有效链路 **Gen3 x16**（根口上限）；`pcie_bw` 读 ~1 s 须独立线程；`product_name` = **FRU 串** => 容量按**实读显存**纠正。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改前端展示先照上游参考件**；**报「链路/容量」须走独立工具**（lspci/rocm-smi）并区分「设备自身跳」与「整条路径」；`spark()` 无上限按序列最大值缩放（W734 下限 1）；JS 路径 `/web/app.js`。",
+   "new": "- **改前端先照上游参考件**；报「链路/容量」须走独立工具（lspci/rocm-smi）；`spark()` 无上限按序列最大值缩放（W734 下限 1）；JS 路径 `/web/app.js`。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **「默认关」不等于「不可达」**：判可达性须核宏（P30 恒 false / P28 可）。**同路径开关不可组合测**（W723）。",
+   "new": "- **「默认关」!=「不可达」**：判可达性须核宏。**同路径开关不可组合测**（W723）。"
+  },
+  {
+   "kind": "substr",
+   "old": "**i4 解包+dot4 = 1,375（0.24x）** => int4 须原生 nibble。**布局类改动只在 multi-token 侧赚钱**。",
+   "new": "**i4 解包+dot4=1,375（0.24x）** => int4 须原生 nibble；**布局改动只在 multi-token 侧赚钱**。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **重做**：0.1.40.x 读数须在 0.1.41 重取（\"别弄了\"）。",
+   "new": "- **重做**：0.1.40.x 读数须在 0.1.41 重取。"
+  },
+  {
+   "kind": "substr",
+   "old": "- PR **#1396** **ported 进 0.1.41**，closed-not-merged；审计 `W713_AUDIT{,2}.md` + `W735_AUDIT.md`（W717~W734 全轮，P0=0 / P1=4）。",
+   "new": "- PR **#1396** **ported 进 0.1.41**（closed-not-merged）；审计 `W713_AUDIT{,2}.md`+`W735_AUDIT.md`（P0=0/P1=4）。"
+  },
+  {
+   "kind": "substr",
+   "old": "·`W737_ROUTEK_PORT.md`（移植面）；其余 `deploy/W7*.md` 按号查。",
+   "new": "·`W737_ROUTEK_PORT.md`·`W738_KQUANT_ENGINE_PORT.md`；其余 `deploy/W7*.md` 按号查。"
+  },
+  {
+   "kind": "substr",
+   "old": "- **已关**：P23·P28·P29·P30·P31·P32·P33·C3/C4/C5·vision 核验·#1454。",
+   "new": "- **已关**：P23·P28·P29·P30·P31·P32·P33·C3/C4/C5·vision 核验·#1454。\n- **引擎有一族默认关、按位等价的开关**（`EXPERT_V2`·`TSUM`·`LFUSE`·`QFUSE`·`SH_STREAM`，见 `docs/STRIX_HALO.md §4`，只在 gfx1151 自动开）=> **register 0 登记**。我们 pack 命中 `EXPERT_V2`：**IQ3_S/IQ4_NL + n_embd 2560/n_ff 640**，**零 K-quant**（K-quant 流 `EXPERT_V2K` 已在树）。"
+  }
+ ]
+}

@@ -1,0 +1,126 @@
+=== [1] H5 锚点：0.1.40.2 的 CMakeLists.txt ===
+  0.1.40.2 CMakeLists.txt = 99675 B
+    new:STRATA_Q6K_EXPERTS OR STRATA_H     count=0
+    new:STRATA_Q6K_EXPERTS                 count=5
+          78| # grouped-kernel instance is loaded when the engine starts (CUDA_MODULE_LOADING=EAGER), so one more costs VRAM that
+          79| # every other model would lose as expert slots (PR #860 review)
+          80| option(STRATA_Q6K_EXPERTS "Build the Q6_K gate/up grouped expert kernels (UD-Q6_K_XL)" OFF)
+          81| if(STRATA_Q6K_EXPERTS)
+          82|   add_compile_definitions(STRATA_Q6K_EXPERTS=1)
+      ----
+          79| # every other model would lose as expert slots (PR #860 review)
+          80| option(STRATA_Q6K_EXPERTS "Build the Q6_K gate/up grouped expert kernels (UD-Q6_K_XL)" OFF)
+          81| if(STRATA_Q6K_EXPERTS)
+          82|   add_compile_definitions(STRATA_Q6K_EXPERTS=1)
+          83| endif()
+      ----
+          80| option(STRATA_Q6K_EXPERTS "Build the Q6_K gate/up grouped expert kernels (UD-Q6_K_XL)" OFF)
+          81| if(STRATA_Q6K_EXPERTS)
+          82|   add_compile_definitions(STRATA_Q6K_EXPERTS=1)
+          83| endif()
+          84| option(STRATA_ORCA_Q4KS_MMQ "Build the GGML Q5_0 MMQ instance for OrcaRouter Q4_K_S" OFF)
+      ----
+        1268|     if(STRATA_MMQ_KQUANTS)
+        1269|       list(APPEND _strata_mmq_cuda_types q4_k q5_k q5_1)
+        1270|       if(STRATA_Q6K_EXPERTS)   # UD-Q6_K_XL gate/up (docs/UNSLOTH_Q6.md)
+        1271|         list(APPEND _strata_mmq_cuda_types q6_k)
+        1272|       endif()
+      ----
+        1400|       # q6_K/q8_0: Unsloth UD-Q6_K_XL gate/up Q6_K with Q8_0 down (docs/UNSLOTH_Q6.md). Layer 2 is q8_0/q8_0, already listed.
+        1401|       set(_strata_parity_pairs q4_K/q5_1 q4_K/q8_0 q5_K/q8_0 q8_0/q8_0 q4_K/q5_0 q5_0/q8_0 q4_0/q4_0 q4_0/q4_1)
+        1402|       if(STRATA_Q6K_EXPERTS)
+        1403|         list(APPEND _strata_parity_pairs q6_K/q8_0)
+        1404|       else()   # a pair without GPU kernels (Q6_K gate/up) is refused by native_expert_supported, not run
+      ----
+  --- 0.1.40.1 对照 (94848 B) ---
+    old:STRATA_Q6K_EXPERTS OR STRATA_H     count=1
+    old:STRATA_Q6K_EXPERTS                 count=5
+          78| # grouped-kernel instance is loaded when the engine starts (CUDA_MODULE_LOADING=EAGER), so one more costs VRAM that
+          79| # every other model would lose as expert slots (PR #860 review)
+          80| option(STRATA_Q6K_EXPERTS "Build the Q6_K gate/up grouped expert kernels (UD-Q6_K_XL)" OFF)
+          81| if(STRATA_Q6K_EXPERTS)
+          82|   add_compile_definitions(STRATA_Q6K_EXPERTS=1)
+      ----
+          79| # every other model would lose as expert slots (PR #860 review)
+          80| option(STRATA_Q6K_EXPERTS "Build the Q6_K gate/up grouped expert kernels (UD-Q6_K_XL)" OFF)
+          81| if(STRATA_Q6K_EXPERTS)
+          82|   add_compile_definitions(STRATA_Q6K_EXPERTS=1)
+          83| endif()
+      ----
+          80| option(STRATA_Q6K_EXPERTS "Build the Q6_K gate/up grouped expert kernels (UD-Q6_K_XL)" OFF)
+          81| if(STRATA_Q6K_EXPERTS)
+          82|   add_compile_definitions(STRATA_Q6K_EXPERTS=1)
+          83| endif()
+          84| option(STRATA_ORCA_Q4KS_MMQ "Build the GGML Q5_0 MMQ instance for OrcaRouter Q4_K_S" OFF)
+      ----
+        1204|     if(STRATA_MMQ_KQUANTS)
+        1205|       list(APPEND _strata_mmq_cuda_types q4_k q5_k q5_1)
+        1206|       if(STRATA_Q6K_EXPERTS OR STRATA_HIP_GFX906)   # UD-Q6_K_XL gate/up (docs/UNSLOTH_Q6.md),
+        1207|         list(APPEND _strata_mmq_cuda_types q6_k)    #   and gfx906: moe_mmq.cu calls it under __HIPCC__
+        1208|       endif()
+      ----
+        1336|       # q6_K/q8_0: Unsloth UD-Q6_K_XL gate/up Q6_K with Q8_0 down (docs/UNSLOTH_Q6.md). Layer 2 is q8_0/q8_0, already listed.
+        1337|       set(_strata_parity_pairs q4_K/q5_1 q4_K/q8_0 q5_K/q8_0 q8_0/q8_0 q4_K/q5_0 q5_0/q8_0 q4_0/q4_0 q4_0/q4_1)
+        1338|       if(STRATA_Q6K_EXPERTS)
+        1339|         list(APPEND _strata_parity_pairs q6_K/q8_0)
+        1340|       else()   # a pair without GPU kernels (Q6_K gate/up) is refused by native_expert_supported, not run
+      ----
+
+=== [2] 166 现状 ===
+rc = 0
+--- 镜像 ---
+strata-gfx906:0.1.40.1	d742bb37fdee	6.55GB	2026-10-07 00:40:22 +0800 CST
+strata-gfx906:0.1.39	7714526ed0c2	6.52GB	2026-10-06 00:15:59 +0800 CST
+docker.1ms.run/mixa3607/rocm-gfx906:7.14-complete	b8b8200afce8	5.69GB	2026-08-05 03:23:19 +0800 CST
+--- 容器 ---
+strata166-401	strata-gfx906:0.1.40.1	Up 21 hours	0.0.0.0:8090->8090/tcp, [::]:8090->8090/tcp
+strata166	strata-gfx906:0.1.39	Exited (137) 23 hours ago	
+--- 运行中（全部）---
+strata166-401 | Up 21 hours
+open-webui | Up 35 hours (healthy)
+netdata | Up 35 hours (healthy)
+comfyui-cu130 | Up 35 hours
+portainer | Up 35 hours
+searxng | Up 35 hours
+--- 磁盘 ---
+Filesystem                    Size  Used Avail Use% Mounted on
+/dev/mapper/ubuntu--vg-lv--0  935G  682G  253G  73% /
+/dev/mapper/ubuntu--vg-lv--0  935G  682G  253G  73% /
+--- /data 挂载 ---
+ls: cannot access '/home/albus/routeK/strata': No such file or directory
+--- 现有 systemd unit ---
+lrwxrwxrwx  1 root root    9 Oct  1 18:43 apt-daily.timer -> /dev/null
+lrwxrwxrwx  1 root root    9 Oct  1 18:43 apt-daily-upgrade.timer -> /dev/null
+lrwxrwxrwx  1 root root   42 Sep 27  2025 dbus-fi.w1.wpa_supplicant1.service -> /lib/systemd/system/wpa_supplicant.service
+lrwxrwxrwx  1 root root   40 Sep 11  2024 dbus-org.freedesktop.ModemManager1.service -> /lib/systemd/system/ModemManager.service
+lrwxrwxrwx  1 root root   44 Sep 11  2024 dbus-org.freedesktop.resolve1.service -> /lib/systemd/system/systemd-resolved.service
+lrwxrwxrwx  1 root root   36 Sep 27  2025 dbus-org.freedesktop.thermald.service -> /lib/systemd/system/thermald.service
+lrwxrwxrwx  1 root root   45 Sep 11  2024 dbus-org.freedesktop.timesync1.service -> /lib/systemd/system/systemd-timesyncd.service
+-rw-r--r--  1 root root  708 Sep 17 23:37 fanctl.service
+-rw-r--r--  1 root root  615 Sep 17 23:37 fanctl-watchdog.service
+lrwxrwxrwx  1 root root   38 Sep 11  2024 iscsi.service -> /lib/systemd/system/open-iscsi.service
+lrwxrwxrwx  1 root root   38 Sep 11  2024 multipath-tools.service -> /lib/systemd/system/multipathd.service
+-rw-r--r--  1 root root  509 Sep 25 09:41 opencode-serve.service
+lrwxrwxrwx  1 root root    9 Sep 11  2024 sudo.service -> /dev/null
+lrwxrwxrwx  1 root root   35 Sep 11  2024 syslog.service -> /lib/systemd/system/rsyslog.service
+lrwxrwxrwx  1 root root    9 Oct  7  2025 ubuntu-fan.service -> /dev/null
+lrwxrwxrwx  1 root root   41 Sep 11  2024 vmtoolsd.service -> /lib/systemd/system/open-vm-tools.service
+--- 启动脚本痕迹 ---
+-rw-rw-r--  1 albus albus    4893 Sep 19 17:53 _bak_df21_serve_moe_sym_ml64k_nomtp_bt4096_pmu64.sh
+-rw-rw-r--  1 albus albus      88 Oct  1 06:12 batch_serve_27b_routeK_64k.sh.log
+-rwxrwxr-x  1 albus albus      74 Sep 20 16:35 _d41_dummy_serve.sh
+drwxrwxr-x  2 albus albus       6 Oct  1 06:12 prof_serve_27b_routeK_64k.sh
+-rwxr-xr-x  1 albus albus    5042 Oct  1 05:35 serve_27b_clean.sh
+-rwxr-xr-x  1 albus albus    5059 Oct  1 05:35 serve_27b_df2_graph.sh
+-rwxr-xr-x  1 albus albus    5316 Oct  1 05:35 serve_27b_f3c_128k.sh
+-rw-rw-r--  1 albus albus    5296 Oct  1 05:35 serve_27b_f7_mtp_128k.sh
+-rwxrwxr-x  1 albus albus    6195 Oct  1 05:35 serve_27b_k05a.sh
+-rwxrwxr-x  1 albus albus    6198 Oct  1 05:35 serve_27b_k05b.sh
+-rwxrwxr-x  1 albus albus    6156 Oct  1 05:35 serve_27b_k05c.sh
+-rwxrwxr-x  1 albus albus    6159 Oct  1 05:35 serve_27b_k05d.sh
+--- 端口 8090 ---
+{"object": "list", "data": [{"id": "qwen3.8-flash-next-ud-iq4_xs", "object": "model", "status": {"value": "loaded"}, "meta": {"n_ctx": 262144}, "architecture": {"input_modalities": ["text"], "output_modalities": ["text"]}}]}
+--- VRAM / 时间 ---
+GPU[0]		: VRAM Total Used Memory (B): 34158706688
+2026-10-07T23:45:46+08:00
+

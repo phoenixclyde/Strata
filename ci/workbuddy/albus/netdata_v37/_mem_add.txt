@@ -1,0 +1,5 @@
+
+- 追加（01:00）：机主要求「html 全在容器内 + 更新镜像不影响」。已把 upgrade_netdata_image.sh 改成自动两段重建
+  （5a 落新基础镜像 -> 5b build_image 重建派生层 -> 5c 再落派生镜像）+ 前置 fail-closed（缺 build_image 或构建上下文直接拒绝）。
+  用旧派生镜像 dc90964234e8 做了真实演练：verify 全绿、页面回到 165820 B、IMG 行与容器镜像一致。
+  教训：build_image 的 FROM 取「运行中容器的镜像」，所以必须先落一次新基础镜像再构建，否则等于没升级。

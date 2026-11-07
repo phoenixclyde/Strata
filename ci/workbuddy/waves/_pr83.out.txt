@@ -1,0 +1,142 @@
+=== [1] 现有部署目录 D:/strata166 ===
+  [\]  dirs=8 files=0
+  [\configs]  dirs=0 files=1
+       workbuddy-strata166.md                                     4942
+  [\docker]  dirs=0 files=4
+       Dockerfile                                                 4290
+       Dockerfile-0.1.40.1                                        4455
+       patch_gfx906.py                                            6685
+       patch_hipcompat.py                                         2738
+  [\logs]  dirs=1 files=49
+       _166_base_probe.txt                                        8734
+       _166_mkdir.txt                                             1549
+       _166_probe.txt                                            11041
+       _166_probe2.txt                                            9921
+       _166_wrongpath.txt                                         4643
+       _ab_ab.txt                                                12964
+       _ab_ctx.txt                                                4257
+       _ab_mmq.txt                                                3032
+       _ab_mmq_wrap.txt                                             39
+       _ab_pleio.txt                                              5551
+       _ab_pleio_wrap.txt                                           41
+       _ab_round4.txt                                             7300
+       _ab_round4_wrap.txt                                          42
+       _ab_round5.txt                                             3588
+       _ab_round5_wrap.txt                                          42
+       _apply_ctx262.txt                                          2313
+       _bench131k.txt                                             3650
+       _bench131k_wrap.txt                                           6
+       _bench166.txt                                              7095
+       _bench166b.txt                                             7254
+       _ctx131k166.txt                                           24861
+       _deploy2_pack.txt                                          1516
+       _deploy2_run.txt                                           3650
+       _deploy_iq4xs.txt                                          1904
+       _diag_prefill.txt                                          4409
+       ... (+24 more)
+  [\logs\_upstream_check]  dirs=0 files=29
+       _listing.txt                                                429
+       assets_v0.1.40.1.txt                                        589
+       assets_v0.1.40.txt                                          577
+       cmt_758.txt                                                 740
+       cmt_808.txt                                                1174
+       cmt_858.txt                                                 740
+       hdr_status_v0.1.39.txt                                       26
+       hdr_status_v0.1.40.1.txt                                     28
+       hdr_status_v0.1.40.txt                                       26
+       hdr_v0.1.39.h                                             15813
+       hdr_v0.1.40.1.h                                           16588
+       hdr_v0.1.40.h                                             16588
+       issue_641.txt                                              2543
+       pr_1083.txt                                                2035
+       pr_1084.txt                                                1950
+       pr_1187.txt                                                1040
+       pr_638.txt                                                 1167
+       pr_641.txt                                                   64
+       pr_677.txt                                                 1181
+       pr_758.txt                                                 1170
+       pr_808.txt                                                 1202
+       pr_858.txt                                                 1226
+       probe_dl.txt                                                198
+       q_repo_Niko1221_Strata__22too_many_arguments_22.txt         400
+       q_repo_Niko1221_Strata_cudaFuncSetAttribute.txt             763
+       ... (+4 more)
+  [\scripts]  dirs=0 files=139
+       _ab_ab166.py                                               3088
+       _ab_ctx166.py                                              3299
+       _ab_mmq166.py                                              4533
+       _ab_peek.py                                                1791
+       _ab_pleio166.py                                            4804
+       _ab_round4.py                                              5028
+       _ab_round5.py                                              5603
+       _ab_version166.py                                          8008
+       _accept166.py                                              2366
+       _accept401.py                                              2525
+       _analyze_0.1.40.1.py                                       3081
+       _anchors_0.1.40.1.py                                       2138
+       _append_mem34.py                                           6580
+       _append_mem35.py                                           4300
+       _append_mem36.py                                           5151
+       _append_mem37.py                                           4136
+       _append_mem38.py                                           2909
+       _append_mem39.py                                           5480
+       _append_mem40.py                                           4182
+       _append_mem41.py                                           3201
+       _append_mem42.py                                           3771
+       _append_mem43.py                                           3188
+       _append_mem44.py                                           2830
+       _append_mem45.py                                           3632
+       _append_mem46.py                                           3483
+       ... (+114 more)
+  [\tmp]  dirs=5 files=0
+  [\tmp\dryrun_0_1_39]  dirs=2 files=1
+       CMakeLists.txt                                            81655
+  [\tmp\dryrun_0_1_40_1]  dirs=2 files=1
+       CMakeLists.txt                                            94848
+  [\tmp\dryrun_bad]  dirs=2 files=1
+       CMakeLists.txt                                            94746
+  [\tmp\src401]  dirs=1 files=0
+  [\tmp\src401_pristine]  dirs=1 files=0
+  [\transfer]  dirs=0 files=3
+       llama.cpp-3cf0325.tar.gz                               34593028
+       strata-src-0.1.39.zip                                  15393161
+       strata-src-0.1.40.1.zip                                15883041
+  [\upstream]  dirs=2 files=0
+  [\upstream\v0.1.40.1]  dirs=0 files=7
+       _fetch.txt                                                  239
+       _listing.txt                                                 93
+       include__strata__hip_compat__intrinsics.hpp                8363
+       include__strata__platform__hip_compat__strata_hip.h       16583
+       src__core__mtp.cpp                                        79014
+       src__core__vmm.cpp                                         5480
+       src__kernels__cuda__fused_gr.cu                           96423
+  [\upstream\_dryrun]  dirs=3 files=0
+  [\weights]  dirs=0 files=0
+
+=== [2] Strata 最新 release / tag（api.github.com）===
+  HTTP 200  (7.3s)
+    v0.1.40.2      2026-10-07T12:13:49  Strata v0.1.40.2  assets=3
+    v0.1.40.1      2026-10-06T09:53:35  Strata v0.1.40.1  assets=3
+    v0.1.40        2026-10-06T06:29:21  Strata v0.1.40  assets=3
+    v0.1.39        2026-10-04T12:32:47  Strata v0.1.39  assets=3
+    v0.1.38        2026-10-03T01:17:05  Strata v0.1.38  assets=2
+    v0.1.37        2026-10-02T19:51:24  Strata v0.1.37  assets=2
+    v0.1.36        2026-10-02T16:38:48  Strata v0.1.36  assets=2
+    v0.1.35        2026-10-02T09:05:28  Strata v0.1.35  assets=2
+    v0.1.34        2026-10-02T01:21:56  Strata v0.1.34  assets=2
+    v0.1.33        2026-10-01T21:16:13  Strata v0.1.33  assets=1
+    v0.1.32        2026-10-01T17:28:36  Strata v0.1.32  assets=1
+    v0.1.31        2026-10-01T05:13:47  Strata v0.1.31  assets=1
+    v0.1.30        2026-09-30T17:50:57  Strata v0.1.30  assets=1
+    v0.1.29        2026-09-30T12:18:09  Strata v0.1.29  assets=1
+    v0.1.28        2026-09-30T09:45:28  Strata v0.1.28  assets=1
+
+  --- main 最近 5 个 commit (HTTP 200, 0.9s) ---
+    e8ca9afd03  2026-10-07T11:22:57  setup: engine versions compare all four numbers and MIN_ENGINE is 0.1.40.2
+    b8617c4b63  2026-10-07T10:40:07  Merge branch 'f-141-pf' into f-1402
+    8f70a52cfa  2026-10-07T10:35:33  Merge branch 'f-141-intel' into f-1402
+    3838a40a0c  2026-10-07T10:22:27  sycl: the sampler's top_p/temperature tail accumulates in float (FP64 is e
+    f1ed65b92e  2026-10-07T09:51:33  docs: STRATA_PREFILL_CPU_SHARE (opt-in) with the measured prompt times and
+
+  --- repo meta (HTTP 200) ---
+    pushed_at=2026-10-07T12:13:48Z  default=main  stars=16684  archived=False

@@ -1,0 +1,18 @@
+{
+ "2.5K": {
+  "answer": "XK-4471-QN || We need answer user's request. User says: \"The access code for the vault is XK-4471-QN . Remember it.\n\nkelp quartz ... [long list] ...\n\nQuestion: what is the access code for the vault? Answer with the code only. [1794032100]\"\n\nNeed output code only. Need likely XK-4471-QN. Ensure no extra. Final only code.\n",
+  "prompt_tokens": 3585,
+  "cached": 0,
+  "secs": 8.6,
+  "hit": true,
+  "finish": "stop"
+ },
+ "21K": {
+  "answer": "XK-4471-QN || We need answer user's question. User provided long text with initial: \"The access code for the vault is XK-4471-QN . Remember it.\" Then huge word soup. Question: \"what is the access code for the vault? Answer with the code only. [1794032108]\" Need output code only. Need ensure maybe code is XK-4471-QN. Need final only code.\n",
+  "prompt_tokens": 28695,
+  "cached": 0,
+  "secs": 39.0,
+  "hit": true,
+  "finish": "stop"
+ }
+}

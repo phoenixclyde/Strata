@@ -1,0 +1,728 @@
+{
+ "tag": "B",
+ "max_tokens": 64,
+ "score": 33,
+ "n": 36,
+ "results": [
+  {
+   "ok": true,
+   "text": "ANSWER: 6",
+   "usage": {
+    "prompt_tokens": 492,
+    "completion_tokens": 6,
+    "total_tokens": 498,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 2.13,
+   "id": "t00",
+   "kind": 0,
+   "expect": "6",
+   "prompt_tokens": 492,
+   "got": "6",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 4430",
+   "usage": {
+    "prompt_tokens": 605,
+    "completion_tokens": 9,
+    "total_tokens": 614,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 2.14,
+   "id": "t01",
+   "kind": 1,
+   "expect": "4430",
+   "prompt_tokens": 605,
+   "got": "4430",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 2",
+   "usage": {
+    "prompt_tokens": 564,
+    "completion_tokens": 6,
+    "total_tokens": 570,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.92,
+   "id": "t02",
+   "kind": 2,
+   "expect": "2",
+   "prompt_tokens": 564,
+   "got": "2",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 4423",
+   "usage": {
+    "prompt_tokens": 483,
+    "completion_tokens": 9,
+    "total_tokens": 492,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.87,
+   "id": "t03",
+   "kind": 3,
+   "expect": "4423",
+   "prompt_tokens": 483,
+   "got": "4423",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "12\nANSWER: 12",
+   "usage": {
+    "prompt_tokens": 490,
+    "completion_tokens": 10,
+    "total_tokens": 500,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 2.1,
+   "id": "t04",
+   "kind": 0,
+   "expect": "12",
+   "prompt_tokens": 490,
+   "got": "12",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 4475",
+   "usage": {
+    "prompt_tokens": 568,
+    "completion_tokens": 9,
+    "total_tokens": 577,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 2.08,
+   "id": "t05",
+   "kind": 1,
+   "expect": "4475",
+   "prompt_tokens": 568,
+   "got": "4475",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 1",
+   "usage": {
+    "prompt_tokens": 529,
+    "completion_tokens": 6,
+    "total_tokens": 535,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.89,
+   "id": "t06",
+   "kind": 2,
+   "expect": "1",
+   "prompt_tokens": 529,
+   "got": "1",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 4453",
+   "usage": {
+    "prompt_tokens": 563,
+    "completion_tokens": 9,
+    "total_tokens": 572,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.98,
+   "id": "t07",
+   "kind": 3,
+   "expect": "4453",
+   "prompt_tokens": 563,
+   "got": "4453",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 7",
+   "usage": {
+    "prompt_tokens": 530,
+    "completion_tokens": 6,
+    "total_tokens": 536,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.91,
+   "id": "t08",
+   "kind": 0,
+   "expect": "7",
+   "prompt_tokens": 530,
+   "got": "7",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 4416",
+   "usage": {
+    "prompt_tokens": 528,
+    "completion_tokens": 9,
+    "total_tokens": 537,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.99,
+   "id": "t09",
+   "kind": 1,
+   "expect": "4416",
+   "prompt_tokens": 528,
+   "got": "4416",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 3",
+   "usage": {
+    "prompt_tokens": 609,
+    "completion_tokens": 6,
+    "total_tokens": 615,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 2.03,
+   "id": "t10",
+   "kind": 2,
+   "expect": "3",
+   "prompt_tokens": 609,
+   "got": "3",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 4443",
+   "usage": {
+    "prompt_tokens": 521,
+    "completion_tokens": 9,
+    "total_tokens": 530,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.94,
+   "id": "t11",
+   "kind": 3,
+   "expect": "4443",
+   "prompt_tokens": 521,
+   "got": "4443",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "15\nANSWER: 15",
+   "usage": {
+    "prompt_tokens": 493,
+    "completion_tokens": 10,
+    "total_tokens": 503,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.98,
+   "id": "t12",
+   "kind": 0,
+   "expect": "15",
+   "prompt_tokens": 493,
+   "got": "15",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 4431",
+   "usage": {
+    "prompt_tokens": 526,
+    "completion_tokens": 9,
+    "total_tokens": 535,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.96,
+   "id": "t13",
+   "kind": 1,
+   "expect": "4431",
+   "prompt_tokens": 526,
+   "got": "4431",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 1",
+   "usage": {
+    "prompt_tokens": 495,
+    "completion_tokens": 6,
+    "total_tokens": 501,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.82,
+   "id": "t14",
+   "kind": 2,
+   "expect": "1",
+   "prompt_tokens": 495,
+   "got": "1",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 4474",
+   "usage": {
+    "prompt_tokens": 601,
+    "completion_tokens": 9,
+    "total_tokens": 610,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 2.03,
+   "id": "t15",
+   "kind": 3,
+   "expect": "4474",
+   "prompt_tokens": 601,
+   "got": "4474",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 5",
+   "usage": {
+    "prompt_tokens": 531,
+    "completion_tokens": 6,
+    "total_tokens": 537,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.94,
+   "id": "t16",
+   "kind": 0,
+   "expect": "5",
+   "prompt_tokens": 531,
+   "got": "5",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 4444",
+   "usage": {
+    "prompt_tokens": 490,
+    "completion_tokens": 9,
+    "total_tokens": 499,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.92,
+   "id": "t17",
+   "kind": 1,
+   "expect": "4444",
+   "prompt_tokens": 490,
+   "got": "4444",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 1",
+   "usage": {
+    "prompt_tokens": 609,
+    "completion_tokens": 6,
+    "total_tokens": 615,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.95,
+   "id": "t18",
+   "kind": 2,
+   "expect": "1",
+   "prompt_tokens": 609,
+   "got": "1",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 4473",
+   "usage": {
+    "prompt_tokens": 601,
+    "completion_tokens": 9,
+    "total_tokens": 610,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 2.05,
+   "id": "t19",
+   "kind": 3,
+   "expect": "4473",
+   "prompt_tokens": 601,
+   "got": "4473",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 7",
+   "usage": {
+    "prompt_tokens": 570,
+    "completion_tokens": 6,
+    "total_tokens": 576,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.93,
+   "id": "t20",
+   "kind": 0,
+   "expect": "7",
+   "prompt_tokens": 570,
+   "got": "7",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "Order 4423 shipped 7 units, which is the highest quantity in the log.\n\nANSWER: 4423",
+   "usage": {
+    "prompt_tokens": 566,
+    "completion_tokens": 30,
+    "total_tokens": 596,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 2.33,
+   "id": "t21",
+   "kind": 1,
+   "expect": "4403",
+   "prompt_tokens": 566,
+   "got": "4423",
+   "correct": false
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 1",
+   "usage": {
+    "prompt_tokens": 492,
+    "completion_tokens": 6,
+    "total_tokens": 498,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.85,
+   "id": "t22",
+   "kind": 2,
+   "expect": "1",
+   "prompt_tokens": 492,
+   "got": "1",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 4450",
+   "usage": {
+    "prompt_tokens": 484,
+    "completion_tokens": 9,
+    "total_tokens": 493,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.83,
+   "id": "t23",
+   "kind": 3,
+   "expect": "4450",
+   "prompt_tokens": 484,
+   "got": "4450",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 39",
+   "usage": {
+    "prompt_tokens": 609,
+    "completion_tokens": 7,
+    "total_tokens": 616,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 2.0,
+   "id": "t24",
+   "kind": 0,
+   "expect": "39",
+   "prompt_tokens": 609,
+   "got": "39",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 4426",
+   "usage": {
+    "prompt_tokens": 567,
+    "completion_tokens": 9,
+    "total_tokens": 576,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 2.02,
+   "id": "t25",
+   "kind": 1,
+   "expect": "4426",
+   "prompt_tokens": 567,
+   "got": "4426",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 4",
+   "usage": {
+    "prompt_tokens": 527,
+    "completion_tokens": 6,
+    "total_tokens": 533,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.88,
+   "id": "t26",
+   "kind": 2,
+   "expect": "4",
+   "prompt_tokens": 527,
+   "got": "4",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 4458",
+   "usage": {
+    "prompt_tokens": 485,
+    "completion_tokens": 9,
+    "total_tokens": 494,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.92,
+   "id": "t27",
+   "kind": 3,
+   "expect": "4458",
+   "prompt_tokens": 485,
+   "got": "4458",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "16",
+   "usage": {
+    "prompt_tokens": 568,
+    "completion_tokens": 3,
+    "total_tokens": 571,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.95,
+   "id": "t28",
+   "kind": 0,
+   "expect": "16",
+   "prompt_tokens": 568,
+   "got": null,
+   "correct": false
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 4414",
+   "usage": {
+    "prompt_tokens": 605,
+    "completion_tokens": 9,
+    "total_tokens": 614,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 2.04,
+   "id": "t29",
+   "kind": 1,
+   "expect": "4414",
+   "prompt_tokens": 605,
+   "got": "4414",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 3",
+   "usage": {
+    "prompt_tokens": 568,
+    "completion_tokens": 6,
+    "total_tokens": 574,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.93,
+   "id": "t30",
+   "kind": 2,
+   "expect": "3",
+   "prompt_tokens": 568,
+   "got": "3",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 4414",
+   "usage": {
+    "prompt_tokens": 562,
+    "completion_tokens": 9,
+    "total_tokens": 571,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.96,
+   "id": "t31",
+   "kind": 3,
+   "expect": "4414",
+   "prompt_tokens": 562,
+   "got": "4414",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "14\nANSWER: 14",
+   "usage": {
+    "prompt_tokens": 568,
+    "completion_tokens": 10,
+    "total_tokens": 578,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 2.06,
+   "id": "t32",
+   "kind": 0,
+   "expect": "17",
+   "prompt_tokens": 568,
+   "got": "14",
+   "correct": false
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 4435",
+   "usage": {
+    "prompt_tokens": 528,
+    "completion_tokens": 9,
+    "total_tokens": 537,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.93,
+   "id": "t33",
+   "kind": 1,
+   "expect": "4435",
+   "prompt_tokens": 528,
+   "got": "4435",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 0",
+   "usage": {
+    "prompt_tokens": 529,
+    "completion_tokens": 6,
+    "total_tokens": 535,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 1.89,
+   "id": "t34",
+   "kind": 2,
+   "expect": "0",
+   "prompt_tokens": 529,
+   "got": "0",
+   "correct": true
+  },
+  {
+   "ok": true,
+   "text": "ANSWER: 4475",
+   "usage": {
+    "prompt_tokens": 600,
+    "completion_tokens": 9,
+    "total_tokens": 609,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "finish": "stop",
+   "wall_s": 2.02,
+   "id": "t35",
+   "kind": 3,
+   "expect": "4475",
+   "prompt_tokens": 600,
+   "got": "4475",
+   "correct": true
+  }
+ ]
+}

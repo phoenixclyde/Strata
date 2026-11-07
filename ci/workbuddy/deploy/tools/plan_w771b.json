@@ -1,0 +1,36 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W771 fix v2：恢复被反解器削掉的 KV 行（紧凑完整版），并加 5 条小压缩，让全文 <=2900 => 反解器不动刀。",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- **KV 门已建**：门=上游 `STRATA_LOGPOS`；**self=0**。**W768/769：分布门被驻留布局主导、无法判 `--kv`**；**W770：needle 两臂 6/6 => `k8v4` 无质量损失**。**槽位可复现**",
+   "new": "- **KV 门已建**（W767）：门=上游 `STRATA_LOGPOS`（须**两请求**，fresh <= `--short-read` 才评分）；**self=0**。**W768/769：分布门被驻留布局主导、无法判 `--kv`**（同 dtype 同 MC 差 **96 槽**=KL .284 阶跃，机理=命中/未命中路径不同）。**W770：needle 两臂 6/6 => `k8v4` 无质量损失**（decode +7.7~16.6%）。**槽位可复现**"
+  },
+  {
+   "kind": "substr",
+   "old": "**W739：前慢 5.6% / 后不复现 => P36/P37 REJECTED**",
+   "new": "**W739：慢 5.6%/不复现 => P36/P37 REJECTED**"
+  },
+  {
+   "kind": "substr",
+   "old": "BF16 483/1407 MiB（`hc_*` 85%）",
+   "new": "BF16 483/1407 MiB（hc_* 85%）"
+  },
+  {
+   "kind": "substr",
+   "old": "- 改既有长件前先备份（含 register/config/verify_config，W765）",
+   "new": "- 改既有长件前先备份（register/config/verify_config，W765）"
+  },
+  {
+   "kind": "substr",
+   "old": "（§5）；本地树只作副本",
+   "new": "（§5）；本地树仅副本"
+  },
+  {
+   "kind": "substr",
+   "old": "；否决改答案",
+   "new": "；否决改答"
+  }
+ ]
+}

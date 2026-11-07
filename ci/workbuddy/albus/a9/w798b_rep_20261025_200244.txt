@@ -1,0 +1,27 @@
+START 2026-10-25_20:02:44 ts=20261025_200244
+env=[('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_GDN_HEAD', '1'), ('STRATA_GDN_PP', '2'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt'), ('STRATA_SELECT_SIMT', '1')]
+=== REP 1 20:02:44 ===
+health 51s
+sensor_before: Temperature (Sensor edge) (C): 46.0 Temperature (Sensor junction) (C): 47.0 mclk clock level: 0: (350Mhz) sclk clock level: 0: (925Mhz) Current Socket Graphics Package Power (W): 18.0 
+build: prompt_tok=7581 prompt_ms=11067.7
+  r1 prompt_ms=  718.9 decode_ms= 4376.7 decode_tok_s= 58.50 dur=5.11
+  r2 prompt_ms= 1866.0 decode_ms= 5464.7 decode_tok_s= 46.80 dur=7.34
+  r3 prompt_ms=  697.1 decode_ms= 4952.7 decode_tok_s= 51.70 dur=5.66
+  r4 prompt_ms=  767.6 decode_ms= 5101.2 decode_tok_s= 50.20 dur=5.88
+  r5 prompt_ms=  827.7 decode_ms= 5375.6 decode_tok_s= 47.60 dur=6.22
+  r6 prompt_ms= 1270.1 decode_ms= 5464.0 decode_tok_s= 46.90 dur=6.75
+MEDIAN decode_ms=5375.6 decode_tok_s=47.60  (r4-r6, 极差 7.1%)
+sensor_after: Temperature (Sensor edge) (C): 53.0 Temperature (Sensor junction) (C): 61.0 mclk clock level: 0: (350Mhz) sclk clock level: 0: (925Mhz) Current Socket Graphics Package Power (W): 19.0 
+=== REP 2 20:04:40 ===
+health 53s
+sensor_before: Temperature (Sensor edge) (C): 46.0 Temperature (Sensor junction) (C): 47.0 mclk clock level: 0: (350Mhz) sclk clock level: 0: (925Mhz) Current Socket Graphics Package Power (W): 17.0 
+build: prompt_tok=7581 prompt_ms=10937.6
+  r1 prompt_ms=  709.7 decode_ms= 4334.1 decode_tok_s= 59.10 dur=5.06
+  r2 prompt_ms= 1684.5 decode_ms= 5354.7 decode_tok_s= 47.80 dur=7.05
+  r3 prompt_ms=  676.2 decode_ms= 5513.5 decode_tok_s= 46.40 dur=6.20
+  r4 prompt_ms=  733.4 decode_ms= 5232.1 decode_tok_s= 48.90 dur=5.98
+  r5 prompt_ms=  825.0 decode_ms= 5557.7 decode_tok_s= 46.10 dur=6.40
+  r6 prompt_ms= 1581.8 decode_ms= 5283.4 decode_tok_s= 48.50 dur=6.88
+MEDIAN decode_ms=5283.4 decode_tok_s=48.50  (r4-r6, 极差 6.2%)
+sensor_after: Temperature (Sensor edge) (C): 53.0 Temperature (Sensor junction) (C): 61.0 mclk clock level: 0: (350Mhz) sclk clock level: 0: (925Mhz) Current Socket Graphics Package Power (W): 19.0 
+=== REP 3 20:06:40 ===

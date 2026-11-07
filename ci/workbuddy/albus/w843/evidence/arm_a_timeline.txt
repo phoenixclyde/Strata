@@ -1,0 +1,65 @@
+=== 18:14-18:23 容器日志（带时间戳）关键行 ===
+2026-10-31T10:14:15.438465938Z [strata] still starting (174 s) - please wait ...
+2026-10-31T10:14:35.450763963Z [strata] still starting (194 s) - please wait ...
+2026-10-31T10:14:55.462962501Z [strata] still starting (214 s) - please wait ...
+2026-10-31T10:15:06.080212996Z ready: http://127.0.0.1:8090/v1  (OpenAI: /v1/chat/completions, Anthropic: /v1/messages, context 262144 tokens, images on)
+2026-10-31T10:16:25.602216393Z Traceback (most recent call last):
+2026-10-31T10:16:27.725730173Z [strata] starting the engine: reading the model's weights ...
+2026-10-31T10:16:27.751645462Z Traceback (most recent call last):
+2026-10-31T10:16:27.764079486Z FileNotFoundError: [Errno 2] No such file or directory: '/home/albus/strata166/data/bin/strata-0.1.54n4'
+2026-10-31T10:16:30.094103990Z [strata] starting the engine: reading the model's weights ...
+2026-10-31T10:16:30.119829020Z Traceback (most recent call last):
+2026-10-31T10:16:30.132098250Z FileNotFoundError: [Errno 2] No such file or directory: '/home/albus/strata166/data/bin/strata-0.1.54n4'
+2026-10-31T10:16:32.461968739Z [strata] starting the engine: reading the model's weights ...
+2026-10-31T10:16:32.484103360Z Traceback (most recent call last):
+2026-10-31T10:16:32.489334390Z FileNotFoundError: [Errno 2] No such file or directory: '/home/albus/strata166/data/bin/strata-0.1.54n4'
+2026-10-31T10:16:34.994444756Z [strata] starting the engine: reading the model's weights ...
+2026-10-31T10:16:35.019852676Z Traceback (most recent call last):
+2026-10-31T10:16:35.032234115Z FileNotFoundError: [Errno 2] No such file or directory: '/home/albus/strata166/data/bin/strata-0.1.54n4'
+2026-10-31T10:16:37.933996390Z [strata] starting the engine: reading the model's weights ...
+2026-10-31T10:16:37.956363083Z Traceback (most recent call last):
+2026-10-31T10:16:37.962013739Z FileNotFoundError: [Errno 2] No such file or directory: '/home/albus/strata166/data/bin/strata-0.1.54n4'
+2026-10-31T10:16:41.667614746Z [strata] starting the engine: reading the model's weights ...
+2026-10-31T10:16:41.689675721Z Traceback (most recent call last):
+2026-10-31T10:16:41.695087898Z FileNotFoundError: [Errno 2] No such file or directory: '/home/albus/strata166/data/bin/strata-0.1.54n4'
+2026-10-31T10:16:47.036372961Z [strata] starting the engine: reading the model's weights ...
+2026-10-31T10:16:47.057612805Z Traceback (most recent call last):
+2026-10-31T10:16:47.067975906Z FileNotFoundError: [Errno 2] No such file or directory: '/home/albus/strata166/data/bin/strata-0.1.54n4'
+2026-10-31T10:16:51.943706080Z [strata] starting the engine: reading the model's weights ...
+2026-10-31T10:17:25.463613323Z [strata] still starting (34 s) - please wait ...
+2026-10-31T10:17:45.476186791Z [strata] still starting (54 s) - please wait ...
+2026-10-31T10:18:05.488230834Z [strata] still starting (74 s) - please wait ...
+
+=== 该时段内引擎日志的 boot 序列（session is up 行号 + 前后 SIMT 横幅） ===
+75740:strata generate: session is up (engine 0.1.54)
+75816:strata generate: session is up (engine 0.1.54)
+75843:qsa select: FP32 tiled scorer (STRATA_SELECT_SIMT=1), tiles 32/64/32/4
+76213:strata generate: session is up (engine 0.1.54)
+76225:qsa select: FP32 tiled scorer (STRATA_SELECT_SIMT=1), tiles 32/64/32/4
+76357:strata generate: session is up (engine 0.1.54)
+76369:qsa select: FP32 tiled scorer (STRATA_SELECT_SIMT=1), tiles 32/64/32/4
+76572:strata generate: session is up (engine 0.1.54)
+76627:strata generate: session is up (engine 0.1.54)
+76639:qsa select: FP32 tiled scorer (STRATA_SELECT_SIMT=2), tiles 32/128
+76741:strata generate: session is up (engine 0.1.54)
+76773:qsa select: FP32 tiled scorer (STRATA_SELECT_SIMT=1), tiles 32/64/32/4
+
+=== n3 在这段有没有跑起来的证据（n3 boot 会打 engine 0.1.54 + 无 SIMT=2） ===
+75083:strata generate: session is up (engine 0.1.54)
+75135:strata generate: session is up (engine 0.1.54)
+75272:strata generate: session is up (engine 0.1.54)
+75334:strata generate: session is up (engine 0.1.54)
+75411:strata generate: session is up (engine 0.1.54)
+75463:strata generate: session is up (engine 0.1.54)
+75515:strata generate: session is up (engine 0.1.54)
+75601:strata generate: session is up (engine 0.1.54)
+75653:strata generate: session is up (engine 0.1.54)
+75740:strata generate: session is up (engine 0.1.54)
+75816:strata generate: session is up (engine 0.1.54)
+76213:strata generate: session is up (engine 0.1.54)
+76357:strata generate: session is up (engine 0.1.54)
+76572:strata generate: session is up (engine 0.1.54)
+76627:strata generate: session is up (engine 0.1.54)
+76741:strata generate: session is up (engine 0.1.54)
+
+[rc=0]

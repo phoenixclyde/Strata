@@ -1,0 +1,60 @@
+=== 1) 证据链：交付件的数字 -> 原始输出 ===
+  [OK ] P34 效果 A-r1 温TTFT 23.072         in w733     <- A 臂 23.072/23.074
+  [OK ] P34 效果 A-r3 温TTFT 23.074         in w733     <- A 臂 23.072/23.074
+  [OK ] P34 效果 B-r2 温TTFT 5.861          in w733     <- B 臂 5.861/5.877
+  [OK ] P34 效果 B-r4 温TTFT 5.877          in w733     <- B 臂 5.861/5.877
+  [OK ] P34 reused=8192 (B臂)             in w733     <- reused=8192
+  [OK ] P34 A臂 reused=0                  in w733     <- A 臂 cached=0
+  [OK ] 解码确认 A-r1 43.7                   in pr131    <- +9.0% 的 A 臂首轮
+  [OK ] 解码确认 A-r3 42.2                   in pr131    <- +9.0% 的 A 臂次轮
+  [OK ] 解码确认 B 两轮 46.8                   in pr131    <- +9.0% 的 B 臂
+  [OK ] 解码确认 B-r4                        in pr131    <- +9.0% 的 B 臂
+  [OK ] 解码确认 预填 A 455.8                  in pr131    <- 预填 A 455.8/455.3
+  [OK ] 解码确认 预填 A-r3 455.3               in pr131    <- 预填 A 455.8/455.3
+  [OK ] 解码确认 预填 B 455.6                  in pr131    <- 预填 B 455.6/456.0
+  [OK ] 解码确认 预填 B-r4 456.0               in pr131    <- 预填 B 455.6/456.0
+  [OK ] 预填A/B A-r1 455.0                 in w726     <- auto:16384 的 A 455.0/455.1
+  [OK ] 预填A/B A-r3 455.1                 in w726     <- auto:16384 的 A 455.0/455.1
+  [OK ] 预填A/B B-r2 454.4                 in w726     <- auto:16384 的 B 454.4/453.7
+  [OK ] 预填A/B B-r4 453.7                 in w726     <- auto:16384 的 B 454.4/453.7
+  [OK ] tail 18k A-r1 温5.805             in w731     <- tail 无效果
+  [OK ] tail 18k B-r4 温5.805             in w731     <- tail 无效果
+  [OK ] tail 18k reused=16384            in w731     <- 两臂 reused 恒 16384
+  [OK ] 4096 A-r1 温14.742                in w732     <- every=4096 无效果
+  [OK ] 4096 B-r4 温14.730                in w732     <- every=4096 无效果
+  [OK ] calibrate settings               in calib    <- settings 两项
+  [OK ] calibrate settings min_p         in calib    <- settings 两项
+  [OK ] sweep pcie 0.20=35.681           in calib    <- pcie sweep
+  [OK ] sweep pcie 0.36=33.708           in calib    <- pcie sweep（原 auto）
+  [OK ] sweep min_p 0.7=36.963           in calib    <- min_p sweep
+  [OK ] sweep workers 21                 in calib    <- workers 21 最优
+  [OK ] sweep workers 5                  in calib    <- workers 5 最差
+  [OK ] sweep adapt default              in calib    <- adapt default 最优
+  [OK ] confirm 0.36/0.5                 in calib    <- +10.9% 的默认臂
+  [OK ] confirm 0.20/0.70                in calib    <- +10.9% 的最优臂
+  [MISS] 复核器 PASS=15                      in verify   <- verify_config 复验
+  [OK ] register P34                     in reg      <- P34 新行
+  [OK ] LIVE config 三旋钮                  in gen      <- config 含 P34
+  合计 OK=35  MISS=1
+
+=== 2) 分辨力区间的可复算性 ===
+  预填 spread 读数 = [1.5, 1.3, 1.5, 1.7, 1.2, 1.3, 1.4, 1.2] => 区间 1.2~1.7% | 交付件称 1.2~1.7%%
+  解码 spread 读数 = [12.1, 12.3, 9.5, 11.6, 14.0, 15.0, 11.0, 11.6] => 区间 9.5~15.0% | 交付件称 9.5~15.0%%
+
+=== 3) 无效实验 _w727 有没有被误用 ===
+  交付件    提及 _w727 的行数 = 0
+  交接件    提及 _w727 的行数 = 1
+        **已知的无效产物（不要引用）**：`D:/workbuddy/_z_rk81/_w727.out.txt`
+  记忆     提及 _w727 的行数 = 0
+  _w727 头部自证（证明它跑的是错 bench）：
+        ### 单变量 A/B：CLI  --prompt-cache-tail (flag)   bench=/data/bench_prefix.py
+
+=== 4) 落盘件洁净度 ===
+  交付件              13705 B md5=550be73648e89d03 CR=0 BAN=CLEAN
+  交接件               9666 B md5=d6efd0bc17f053b5 CR=0 BAN={'0x21d2': 3, '0x2014': 3, '0x2013': 1, '0x2212': 1, '0xd7': 4}
+  register          6488 B md5=a91b677ea13905cb CR=0 BAN=CLEAN
+  生成 config          808 B md5=d2b10f0c4e8293ba CR=0 BAN=CLEAN
+  gen_config.py     3729 B md5=ad8f9b8efb0b6215 CR=0 BAN=CLEAN
+  verify_config.py    4372 B md5=e9311241c792646d CR=0 BAN=CLEAN
+  记忆日志             27224 B CR=0 全件BAN={'0x21d2': 12, '0x2192': 1, '0x2014': 20, '0x2026': 10}
+  （增量段）          本波增量段 BAN=CLEAN

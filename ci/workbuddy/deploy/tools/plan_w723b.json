@@ -1,0 +1,26 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W723b：补回 P34 编号 + 同步再削三处",
+ "ops": [
+  {
+   "kind": "line_replace",
+   "line": 3,
+   "new": "> 2026-10-08 自 routeK 迁。**逐字原文归档 = `MEMORY_DETAIL.md`**。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 6,
+   "new": "- 本工作区 = Strata（gfx906/MI50 32GB）部署+调参。`deploy/`·`waves/`。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 30,
+   "new": "- **「前缀须与 prefill chunk 整数倍对齐」为实测规律非源码确证**（`every=4096`+`chunk=8192` 得 reused=0，**待追**）。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 35,
+   "new": "- **筛候选启发式（W721）**：收益上限 = 它省的环节在时延里的占比 ---- 省「重复预填」（多轮~90%）才两位数（P31/P34），省搬运/显存/kernel/驱逐的仅 0~3% => **先读源码算作用面**，多半零发车关。一票否决：**改答案/破位一致**、官方说不该开。"
+  }
+ ]
+}

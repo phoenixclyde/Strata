@@ -1,0 +1,28 @@
+// W863: MEASURED rows-per-wavefront table (real kernel, production flags, gfx906).
+// Replaces W862's formula. 0 = R=1 (the old one-row-per-wavefront behaviour).
+// Cell = fastest of R in {1,2,4}, kept only when it beat R=1 by >= 3 % on that shape
+// at that column count; ncols=1 is forced to R=1 (the 3 %-level differences there were
+// not reproducible across arms). Measured 2026-11-01, 40 iters/cell, tool:
+// albus/w862/q8_group_bench.cpp --group single --cols N --rows {1,2,4}
+static const struct { int n_in, n_out; const unsigned char r[8]; } kWaveRows[] = {
+    { 2560, 10240, {0, 4, 4, 4, 2, 2, 2, 2}},   // GDN qkv
+    { 2560,  6144, {0, 2, 2, 2, 2, 2, 2, 2}},   // GDN gate
+    { 6144,  2560, {0, 2, 4, 4, 2, 2, 2, 2}},   // GDN/QSA out
+    { 2560, 12288, {0, 2, 2, 2, 2, 2, 2, 2}},   // QSA q
+    { 2560,   512, {0, 0, 2, 2, 2, 2, 2, 2}},   // QSA k/v
+    {10240,   320, {0, 0, 2, 2, 2, 2, 2, 2}},   // HC down
+    {  320, 10240, {0, 2, 2, 2, 2, 0, 2, 0}},   // HC up
+    { 2560,   640, {0, 0, 2, 2, 2, 2, 2, 2}},   // shared g/u
+    {  640,  2560, {0, 0, 2, 2, 2, 2, 2, 2}},   // shared down
+};
+
+int wave_rows_for(int ncols, int n_in, int n_out) {
+    if (g_wave_rows > 0) return g_wave_rows;          // STRATA_MMVQ_WAVE_ROWS / setter
+    if (ncols < 1 || ncols > 8) return 1;
+    for (const auto& e : kWaveRows)
+        if (e.n_in == n_in && e.n_out == n_out) {
+            const int R = e.r[ncols - 1];
+            return R == 0 ? 1 : R;
+        }
+    return 1;        // an unmeasured shape keeps the old behaviour
+}

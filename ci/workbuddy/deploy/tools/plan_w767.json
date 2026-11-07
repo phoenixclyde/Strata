@@ -1,0 +1,26 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W767：固化「--kv 四档质量门已建成 + 上游原生 teacher-forced 探针 + 两请求协议 + self=0 读数下限 + 读数与方向未判」，并把 §4 的 KV 门改成任务级门/驻留对照(P50)、审计链补 W767",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "`W737`-`W765`；余按号",
+   "new": "`W737`-`W767`；余按号"
+  },
+  {
+   "kind": "substr",
+   "old": "- **非专家**：Q8_0 303（lm_head/qkv/shexp）· BF16 483/1407 MiB（`hc_*` 85%）=> routeK T1 不成立；上游 bench 规范 `COMMUNITY_BENCHMARKS.md`、`AMD_HIP:504` 单卡未做（W754/W756）",
+   "new": "- **非专家**：Q8_0 303（lm_head/qkv/shexp）· BF16 483/1407 MiB（`hc_*` 85%）=> routeK T1 不成立；上游 bench 规范 `COMMUNITY_BENCHMARKS.md`、`AMD_HIP:504` 单卡未做（W754/W756）\n- **KV 门已建**（W767）：门 = 上游原生 `STRATA_LOGPOS`（`verify.cpp:2202`）；**self=0**；评分区间须**两请求**（fresh <= `--short-read` 才走 verify 窗口，`generate.cpp:9397`）；`--kv` KL 中位 i8 .042 < k8v4 .070 < q4_0 .105、k8v4 argmax 81.9%，**方向未判**"
+  },
+  {
+   "kind": "substr",
+   "old": "：`--kv` 门·`lookup-chain`(P42)",
+   "new": "：**KV 任务级门+驻留对照(P50)**·`lookup-chain`(P42)"
+  },
+  {
+   "kind": "substr",
+   "old": "·`W752`·`W765`（P0=0/P1=4）",
+   "new": "·`W752`·`W765`·`W767`（P0=0/P1=4）"
+  }
+ ]
+}

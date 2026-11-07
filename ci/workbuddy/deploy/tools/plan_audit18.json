@@ -1,0 +1,11 @@
+{
+  "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+  "reason": "AUDIT18/A3：MEMORY env(12) 把「有效 env」写成「config 里的 env」，已导致 HC 误判；改为分开表述 cfg 6 项 + tuned 注入",
+  "ops": [
+    {
+      "kind": "substr",
+      "old": "env(12):HC_Q8·PROMPT_F16(P103)·ROCBLAS·ATTN_SWIZZLE·SELECT_SIMT·GDN_HEAD+PP2·RT_SKIP=7·CPU_SHARE=auto+MAX3072(P23/P129)",
+      "new": "env:config 6项+tuned注入(HC_Q8·PROMPT_F16·ATTN_SWIZZLE·SELECT_SIMT·GDN_PP2·RT_SKIP7);CPU_SHARE=auto+MAX3072(P23/P129)"
+    }
+  ]
+}

@@ -1,0 +1,196 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W798：decode 侧 7 个开关全否（含 GDN_SPLIT rec +37.8%）；规则 R（decode 必用 GPU stages 分相位）；gfx1151 默认项四分类",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- **相位标签会迁移**:省下的ms从相邻涨回,对账闭合!=只有它动(W797)",
+   "new": "- **相位标签会迁移**:省下的ms从相邻涨回,对账闭合!=只有它动(W797)\n- **decode端到端不可判**(draft随内容/问题各异/两次反向)=>必用decode GPU stages(W798规则R)\n- **gfx1151默认项4类**:内核结构=有效/内存带宽=反向/换显存=不可/架构特化=没编进(W797-798)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **队列**:P1·P2·P3 采纳(P103/P107/P108);P4/P6 降级;P109·P110·P115·P116 采纳;P111·P117·P118 否;P5=MMQ耗尽(P112/P113/P114);下一轮=decode10开关+PF_HCDOWN/PF_GEMM/CVEC;P105->P107,P106->P109",
+   "new": "- **队列**:P1·P2·P3 采纳(P103/P107/P108);P105->P107,P106->P109;P5=MMQ耗尽(P112/P113/P114);P109·P110·P115·P116 采纳;P4·P6·P111·P117·P118·P119·P120·P121·P122·P123·P124·P125 否;下=内核(MMQ/attn)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **prefill非地板**;单轮decode占M10/L0.5%;**gov schedutil快1.2%**(P97)",
+   "new": "- **prefill非地板**;**decode多轮占64-83%**(W798);**gov schedutil快1.2%**(P97)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **引擎跨请求不确定**(同env三次两结果)=>禁哈希当位等价(W794)",
+   "new": "- **引擎跨请求不确定**=>禁哈希当位等价(W794)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **规则Q**:上游没设默认=(1)只验过别的架构(找parity单测,5秒)(2)需特定硬件(3)真更差;先单测再引擎",
+   "new": "- **规则Q**:没设默认=只验过别的架构(找单测5秒)/需硬件/真更差;先单测再引擎"
+  },
+  {
+   "kind": "substr",
+   "old": "- **arch_default只给gfx12/1151**=>gfx906空表,20个S23/25/26全关(W797)",
+   "new": "- **arch_default只给gfx12/1151**=>gfx906空表,20项默认全关(W797)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **专家MMQ**=36.4%/18%dp4a;J=64=48KB=>1WG/CU;封顶全负;FP16专家+61%(P112/113)",
+   "new": "- **专家MMQ**=36.4%/18%dp4a;J=64=48KB=>1WG/CU;封顶全负;FP16+61%(P112/113)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **rocBLAS表**:T=8192桶多1.00;瘦N(320x10240 1.27/4x10240 2.38);max-ilp弱(P107/108)",
+   "new": "- **rocBLAS表**:T=8192桶多1.00;瘦N(320x10240 1.27/4x10240 2.38)(P107/108)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **多轮复用正常**(P94):第2轮reused=7344/685ms;P93 废",
+   "new": "- **多轮复用**(P94):第2轮reused=7344/685ms;P93 废"
+  },
+  {
+   "kind": "substr",
+   "old": "- **KV门**(P51):LOGPOS须两请求(W770 6/6)",
+   "new": "- **KV门**(P51):LOGPOS两请求(W770 6/6)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **筛**:上限=环节占比(P31/P34)",
+   "new": "- **筛**:上限=占比(P31/P34)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **dot**:dot4 62,596/dot8 0=>dp4a(P38)",
+   "new": "- **dot**:dot4 62,596/dot8 0(P38)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **路由**:k10 native_router;GR_SPLIT净负(P101/P102)",
+   "new": "- **路由**:k10 native_router;GR_SPLIT负(P101/P102)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **自比同形状**;比ms/step;先排冷热;**计时含adapt+join**",
+   "new": "- **自比同形状**;比ms/step;先排冷热;**含adapt+join**"
+  },
+  {
+   "kind": "substr",
+   "old": "- **占用率**=块/CU/64/40;HC 41块6.8%(P96)",
+   "new": "- **占用率**=块/CU/64/40;HC 6.8%(P96)"
+  },
+  {
+   "kind": "substr",
+   "old": "- 「默认关」4种:+编译成__trap__;不采用标[EXT:面]",
+   "new": "- 「默认关」4种:+__trap__;不采用标[EXT:面]"
+  },
+  {
+   "kind": "substr",
+   "old": "- 审计 W713_AUDIT{,2}·W735/752/765·W767-W773·AUDIT3/4/5(P0/P1)·W792-795·AUDIT8",
+   "new": "- 审计 W713_AUDIT{,2}·W735/752/765·W767-773·AUDIT3/4/5(P0/P1)·W792-798"
+  },
+  {
+   "kind": "substr",
+   "old": "- **GitHub API**:token 在 deploy/tmp/_tok.txt",
+   "new": "- **GitHub API**:token deploy/tmp/_tok.txt"
+  },
+  {
+   "kind": "substr",
+   "old": "- 容器名/版本/指纹写指针;读Z0=off;CR=0(W21)",
+   "new": "- 容器/版本/指纹写指针;Z0=off;CR=0(W21)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改参唯一道**:register->gen_config --write->推166->restart->verify FAIL=0",
+   "new": "- **改参唯一道**:register->gen_config --write->推166->restart->verify"
+  },
+  {
+   "kind": "substr",
+   "old": "- shim把/data/x.py转Win路径=>只传短记号、禁ASCII引号",
+   "new": "- shim把/data/x.py转Win路径=>传短记号,禁ASCII引号"
+  },
+  {
+   "kind": "substr",
+   "old": "- 本工作区=Strata(gfx906/MI50)部署调参",
+   "new": "- 本工作区=Strata(gfx906/MI50)调参"
+  },
+  {
+   "kind": "substr",
+   "old": "- 生产:`strata166-407`/8090(**0.2.4p4**;回滚.bak_w793=0.2.4;遥测入镜像,禁apply_telemetry)",
+   "new": "- 生产:`strata166-407`/8090(**0.2.4p4**;回滚.bak_w793;遥测入镜像,禁apply_telemetry)"
+  },
+  {
+   "kind": "substr",
+   "old": "- 上游=镜像0.2.4p4(0.2.4+rocBLAS+max-ilp+swizzle);PR #1877",
+   "new": "- 上游=镜像0.2.4p4(+rocBLAS+max-ilp+swizzle);PR #1877"
+  },
+  {
+   "kind": "substr",
+   "old": "## 4 队列/待办（唯一入口 W776 §12.5）",
+   "new": "## 4 队列/待办(W776 §12.5)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **prefill=主战场**:M90%/L99.5%",
+   "new": "- **prefill主战场**:M90%/L99.5%"
+  },
+  {
+   "kind": "substr",
+   "old": "- **草稿深度**,kShape(W8);L2 8MB/~805",
+   "new": "- **草稿深度**,kShape(W8);L2 8MB"
+  },
+  {
+   "kind": "substr",
+   "old": "- **重启丢前2请求**;A/B同会话交错(P98);臂漂1.7%下限=>**先相位判**",
+   "new": "- **重启丢前2请求**;A/B交错(P98);臂漂1.7%=>**先相位判**"
+  },
+  {
+   "kind": "substr",
+   "old": "- **KV门**(P51):LOGPOS两请求(W770 6/6)",
+   "new": "- **KV门**(P51):LOGPOS两请求(W770)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **arch_default只给gfx12/1151**=>gfx906空表,20项默认全关(W797)",
+   "new": "- **arch_default只给gfx12/1151**=>gfx906空表,20项全关(W797)"
+  },
+  {
+   "kind": "substr",
+   "old": "## 1 铁律与通道",
+   "new": "## 1 铁律"
+  },
+  {
+   "kind": "substr",
+   "old": "## 2 现役关键参数",
+   "new": "## 2 现役参数"
+  },
+  {
+   "kind": "substr",
+   "old": "LIVE strata-huihui-ud-iq4_xs.json",
+   "new": "LIVE strata-huihui-ud-iq4_xs"
+  },
+  {
+   "kind": "substr",
+   "old": "- 源码4树 deploy/tmp/_src/;todo_reconcile.py",
+   "new": "- 源码4树 deploy/tmp/_src/;todo_reconcile"
+  },
+  {
+   "kind": "substr",
+   "old": "- 改裁定按ID grep(W752)",
+   "new": "- 改裁定按IDgrep(W752)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **规则Q**:没设默认=只验过别的架构(找单测5秒)/需硬件/真更差;先单测再引擎",
+   "new": "- **规则Q**:没设默认=只验过别的架构(单测5秒)/需硬件/真更差;先单测再引擎"
+  },
+  {
+   "kind": "substr",
+   "old": "- **自比同形状**;比ms/step;先排冷热;**含adapt+join**",
+   "new": "- **自比同形状**;比ms/step;排冷热;**含adapt+join**"
+  },
+  {
+   "kind": "substr",
+   "old": "- **占用率**=块/CU/64/40;HC 6.8%(P96)",
+   "new": "- **占用率**=块/CU/64/40;HC6.8%(P96)"
+  }
+ ]
+}

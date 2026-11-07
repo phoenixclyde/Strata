@@ -1,0 +1,97 @@
+{
+ "label": "on",
+ "code": "XK-4471-QN",
+ "grid": {
+  "16000@0%": {
+   "hit": true,
+   "prompt_tokens": 16137,
+   "cached": 0,
+   "secs": 23.2,
+   "finish": "stop",
+   "answer": "ess code for the vault? Answer with the code only. [on-16000-0-1794043967730]\" Need output code only. Need likely XK-4471-QN. Ensure no extra. Final only code.\n",
+   "nwords": 10000,
+   "salt": "on-16000-0-1794043967730"
+  },
+  "16000@50%": {
+   "hit": true,
+   "prompt_tokens": 15986,
+   "cached": 0,
+   "secs": 22.2,
+   "finish": "stop",
+   "answer": "ss code for the vault? Answer with the code only. [on-16000-50-1794043990901]\" Need output code only. Need ensure exact code: XK-4471-QN. Need final only code.\n",
+   "nwords": 10000,
+   "salt": "on-16000-50-1794043990901"
+  },
+  "16000@100%": {
+   "hit": true,
+   "prompt_tokens": 16020,
+   "cached": 0,
+   "secs": 21.7,
+   "finish": "stop",
+   "answer": ". Remember it. Question: what is the access code for the vault? Answer with the code only. [on-16000-100-1794044013099]\n\nNeed final only code. Ensure no extra.\n",
+   "nwords": 10000,
+   "salt": "on-16000-100-1794044013099"
+  },
+  "32000@0%": {
+   "hit": true,
+   "prompt_tokens": 31895,
+   "cached": 0,
+   "secs": 41.7,
+   "finish": "stop",
+   "answer": "ess code for the vault? Answer with the code only. [on-32000-0-1794044034847]\" Need output code only. Need likely XK-4471-QN. Ensure no extra. Final only code.\n",
+   "nwords": 20000,
+   "salt": "on-32000-0-1794044034847"
+  },
+  "32000@50%": {
+   "hit": true,
+   "prompt_tokens": 32076,
+   "cached": 0,
+   "secs": 41.7,
+   "finish": "stop",
+   "answer": " code for the vault? Answer with the code only. [on-32000-50-1794044076544]\" Need output code only. Need ensure maybe code is XK-4471-QN. Need final only code.\n",
+   "nwords": 20000,
+   "salt": "on-32000-50-1794044076544"
+  },
+  "32000@100%": {
+   "hit": true,
+   "prompt_tokens": 32020,
+   "cached": 0,
+   "secs": 41.3,
+   "finish": "stop",
+   "answer": "N. Remember it. Question: what is the access code for the vault? Answer with the code only. [on-32000-100-1794044118288]\nNeed final only code. Ensure no extra.\n",
+   "nwords": 20000,
+   "salt": "on-32000-100-1794044118288"
+  },
+  "64000@0%": {
+   "hit": true,
+   "prompt_tokens": 63920,
+   "cached": 0,
+   "secs": 81.8,
+   "finish": "stop",
+   "answer": "de for the vault? Answer with the code only. [on-64000-0-1794044159591]\"\n\nNeed output code only. Need likely XK-4471-QN. Need ensure no extra. Final only code.\n",
+   "nwords": 40000,
+   "salt": "on-64000-0-1794044159591"
+  },
+  "64000@50%": {
+   "hit": true,
+   "prompt_tokens": 63589,
+   "cached": 0,
+   "secs": 80.9,
+   "finish": "stop",
+   "answer": "ss code for the vault? Answer with the code only. [on-64000-50-1794044241450]\" Need output code only. Need likely XK-4471-QN. Ensure no extra. Final only code.\n",
+   "nwords": 40000,
+   "salt": "on-64000-50-1794044241450"
+  },
+  "64000@100%": {
+   "hit": true,
+   "prompt_tokens": 63618,
+   "cached": 0,
+   "secs": 80.1,
+   "finish": "stop",
+   "answer": "N. Remember it. Question: what is the access code for the vault? Answer with the code only. [on-64000-100-1794044322401]\nNeed final only code. Ensure no extra.\n",
+   "nwords": 40000,
+   "salt": "on-64000-100-1794044322401"
+  }
+ },
+ "invalid": []
+}

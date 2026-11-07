@@ -1,0 +1,111 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W793：P107 rocBLAS表(-3.0%)/P108 镜像0.2.4p3(max-ilp)/P109 SIMT否决",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- 生产：`strata166-407`/8090(0.2.4;回滚bak023/022b/0142;遥测入镜像,禁apply_telemetry)",
+   "new": "- 生产：`strata166-407`/8090(**0.2.4p3**;回滚.bak_w793=0.2.4/bak023;遥测入镜像,禁apply_telemetry)"
+  },
+  {
+   "kind": "substr",
+   "old": "env：**HC_Q8=1**(+0.6%,槽9901)·**HIP_PROMPT_F16=1**(prefill-20.7%,P103)",
+   "new": "env：**HC_Q8=1**(槽9901)·**HIP_PROMPT_F16=1**(prefill-20.7%,P103)·**ROCBLAS_TUNING**(-3.0%,P107)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **队列**:P1采纳(P103);P2 rocblas表(P105);P3 max-ilp;P4 SIMT=1(P106);P6 decode降最低",
+   "new": "- **队列**:P1·P2·P3 采纳(P103/P107/P108;M482->653tok/s);P4 否(P109);P5=MMQ+attn;P6 最低;P105->P107,P106->P109"
+  },
+  {
+   "kind": "substr",
+   "old": "- **prefill可判0.2%**;46%走rocBLAS=>杠杆=GEMM速率",
+   "new": "- **prefill可判0.2%**;**gfx906无bf16点积**(F32 13.2T vs FP16 26.5T)=>P1改f16:M-20.7%"
+  },
+  {
+   "kind": "substr",
+   "old": "- **占用率**=块/CUx线程/64/40(wave64);HC 41块6.8%(P96)",
+   "new": "- **占用率**=块/CUx线程/64/40;HC 41块6.8%(P96)\n- **rocBLAS表**:T=8192桶多1.00;瘦N(320x10240 1.27/4x10240 2.38);max-ilp-1.7~3.6%(P107/108)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **多轮复用正常**(P94):第2轮reused=7344/685ms(22x);<8k零复用=错误测法;补final(P93)废",
+   "new": "- **多轮复用正常**(P94):第2轮reused=7344/685ms;<8k零复用=错误测法;final(P93)废"
+  },
+  {
+   "kind": "substr",
+   "old": "- **HC**:down不敏感int8/bf16;up余量14%;HC_Q8优-3.2%+169槽(P100)",
+   "new": "- **HC**:down不敏感;up余量14%;HC_Q8优-3.2%+169槽(P100)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **W775delta**:P56不可达;PLE-45%(否);P54=IO_PF_STAGE;B8/B7废;drop_caches不重置mmap",
+   "new": "- **W775delta**:P56不可达;PLE-45%(否);P54=IO_PF_STAGE;drop_caches不重置mmap"
+  },
+  {
+   "kind": "substr",
+   "old": "- **166 PCIe**：Gen3x16;pcie_bw读~1s须独线程",
+   "new": "- **166 PCIe**:Gen3x16;pcie_bw须独线程"
+  },
+  {
+   "kind": "substr",
+   "old": "- 上游=镜像 `strata-gfx906:0.2.4`；PR #1877",
+   "new": "- 上游=镜像0.2.4p3(0.2.4+rocBLAS接线+max-ilp);PR #1877"
+  },
+  {
+   "kind": "substr",
+   "old": "- 审计 W713_AUDIT{,2}·W735/752/765·W767-W773·AUDIT3/4(P0/P1=0/4·0/6)·AUDIT5(0/3)·W792",
+   "new": "- 审计 W713_AUDIT{,2}·W735/752/765·W767-W773·AUDIT3/4(P0/P1=0/4·0/6)·AUDIT5(0/3)·W792/793"
+  },
+  {
+   "kind": "substr",
+   "old": "- **温TTFT**:重发=上限,追加=多轮,不可混\n",
+   "new": ""
+  },
+  {
+   "kind": "substr",
+   "old": "- 多文件同走stdout须补尾换行\n",
+   "new": ""
+  },
+  {
+   "kind": "substr",
+   "old": "- **GitHub API**：写/读通道可用(token 在 `deploy/tmp/_tok.txt`)",
+   "new": "- **GitHub API**:token 在 deploy/tmp/_tok.txt"
+  },
+  {
+   "kind": "substr",
+   "old": "- **筛候选**:上限=环节占比(P31/P34)",
+   "new": "- **筛**:上限=环节占比(P31/P34)"
+  },
+  {
+   "kind": "substr",
+   "old": "## 3 机制（按证据等级）",
+   "new": "## 3 机制"
+  },
+  {
+   "kind": "substr",
+   "old": "- **草稿深度自适应**,kShape编译期常量非旋钮(W8);同卡L2=8MB/HBM~805",
+   "new": "- **草稿深度自适应**,kShape编译期常量(W8);同卡L2=8MB/HBM~805"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改答案判据**：按index跨臂对齐(W739)",
+   "new": "- **改答案**:按index跨臂对齐(W739)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **重启丢前2请求**(专家冷);A/B同会话交错(P98)",
+   "new": "- **重启丢前2请求**;A/B同会话交错(P98)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **dot**:dot4 62,596/dot8 0=>dp4a;换dot8须双方i4(P38)",
+   "new": "- **dot**:dot4 62,596/dot8 0=>dp4a;dot8须双方i4(P38)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **KV门**(P51):LOGPOS须两请求,fresh<=--short-read,self=0;W770 6/6=>k8v4无损",
+   "new": "- **KV门**(P51):LOGPOS须两请求,fresh<=--short-read;W770 6/6"
+  }
+ ]
+}

@@ -1,0 +1,14 @@
+目标容器（自动探测运行中的 strata 容器）= strata166-407
+id    name                               value                                结果     依据
+----------------------------------------------------------------------------------------------------------------------------
+--    (数据面2) 容器 Cmd -> LIVE              strata-huihui-ud-iq4_xs.json         PASS   Cmd 的 /data/strata-huihui-ud-iq4_xs.json 经 bind /home/albus/strata166/data:/data 映射到 LIVE
+P00   --pack                             /data/packs/huihui-ud-iq4_xs         PASS   config JSON + 引擎启动行
+P01   --native                           /models/huihui-ai/Huihui-Qwen3.8-Flash-Next-abliterated-GGUF/unsloth-UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf PASS   config JSON + 引擎启动行
+Traceback (most recent call last):
+  File "D:\workbuddy_space\strata_ws\deploy\params\verify_config.py", line 317, in <module>
+    main()
+    ~~~~^^
+  File "D:\workbuddy_space\strata_ws\deploy\params\verify_config.py", line 229, in main
+    if r['scope'] == 'CFG':
+       ~^^^^^^^^^
+KeyError: 'scope'

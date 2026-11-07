@@ -1,0 +1,77 @@
+# W812 P138 second car 20261026_233941 arms='K4 K2 RD RDN'
+  CFGCHECK keys=11 env_n=14 prefill=4096 ple_io=direct(缺省) extra=-
+  mark=66076
+=== ARM K4 ready=45s start_wall=50s drop=0
+  MODE strata generate: PLE direct read probe: 34062 rows/s (fine)
+  MODE strata generate: PLE direct read probe: 34268 rows/s (fine)
+    PLEMAP rss=0.0 MB
+    MemFree:         2307968 kB MemAvailable:   65624440 kB Cached:         64232844 kB AnonPages:      61849024 kB 
+  rep0 target=1500  chars=5321   prompt_tokens=1453   wall=3.44s 
+  rep0 target=3000  chars=10560  prompt_tokens=2498   wall=5.05s 
+  rep0 target=6000  chars=21058  prompt_tokens=4568   wall=9.57s 
+  rep1 target=1500  chars=5286   prompt_tokens=1132   wall=2.95s 
+  rep1 target=3000  chars=10594  prompt_tokens=2777   wall=5.46s 
+  rep1 target=6000  chars=21004  prompt_tokens=4840   wall=9.88s 
+READ_DONE K4
+  client_results=6
+  PL strata serve: prompt 1453 tokens = 0 reused + 1453 read in 3337 ms (435.4 tok/s), 1 generated in 50 ms (20.1 tok/s), drafts accepted 0 of 0, 1 checkpo
+  PL strata serve: prompt 2498 tokens = 0 reused + 2498 read in 5000 ms (499.6 tok/s), 1 generated in 30 ms (33.8 tok/s), drafts accepted 0 of 0, 1 checkpo
+  PL strata serve: prompt 4568 tokens = 0 reused + 4568 read in 9508 ms (480.4 tok/s), 1 generated in 29 ms (34.0 tok/s), drafts accepted 0 of 0, 1 checkpo
+  PL strata serve: prompt 1132 tokens = 0 reused + 1132 read in 2904 ms (389.8 tok/s), 1 generated in 30 ms (33.9 tok/s), drafts accepted 0 of 0, 1 checkpo
+  PL strata serve: prompt 2777 tokens = 0 reused + 2777 read in 5417 ms (512.7 tok/s), 1 generated in 28 ms (36.1 tok/s), drafts accepted 0 of 0, 1 checkpo
+  PL strata serve: prompt 4840 tokens = 0 reused + 4840 read in 9822 ms (492.8 tok/s), 1 generated in 27 ms (36.7 tok/s), drafts accepted 0 of 0, 1 checkpo
+  PH strata prefill timing: 1448 tokens, GPU timeline 3056 ms, wall 3070 ms, host staging 43 ms: embed+steps 38 (1.2%) hc read 254 (8.3%) gdn 268 (8.8%) qsa proj 123 (4.0%) qsa indexer 0 (0.0%) qsa select 3 (0.1%) qsa attn 177 (5.8%) router+shared 218 (7.1%) host grouping 84 (2.7%) gather 12 (0.4%) wait copy 38 (1.3%) dequant 233 (7.6%) gemm gate/up 741 (24.2%) gemm down 361 (11.8%) combine 24 (0.8%) ple 260 (8.5%) gdn conv+gates 11 (0.4%) gdn recurrence 82 (2.7%) gdn out proj 97 (3.2%) hc write 33 (1.1%)
+  PH strata prefill timing: 2493 tokens, GPU timeline 4542 ms, wall 4559 ms, host staging 76 ms: embed+steps 2 (0.1%) hc read 343 (7.6%) gdn 439 (9.7%) qsa proj 199 (4.4%) qsa indexer 0 (0.0%) qsa select 8 (0.2%) qsa attn 454 (10.0%) router+shared 135 (3.0%) host grouping 122 (2.7%) gather 11 (0.2%) wait copy 19 (0.4%) dequant 222 (4.9%) gemm gate/up 992 (21.8%) gemm down 468 (10.3%) combine 34 (0.8%) ple 722 (15.9%) gdn conv+gates 18 (0.4%) gdn recurrence 139 (3.1%) gdn out proj 166 (3.6%) hc write 50 (1.1%)
+  PH strata prefill timing: 4563 tokens, GPU timeline 8908 ms, wall 8912 ms, host staging 216 ms: embed+steps 30 (0.3%) hc read 651 (7.3%) gdn 816 (9.2%) qsa proj 375 (4.2%) qsa indexer 1 (0.0%) qsa select 23 (0.3%) qsa attn 1055 (11.8%) router+shared 227 (2.6%) host grouping 60 (0.7%) gather 22 (0.2%) wait copy 65 (0.7%) dequant 722 (8.1%) gemm gate/up 2036 (22.9%) gemm down 976 (11.0%) combine 57 (0.6%) ple 1085 (12.2%) gdn conv+gates 33 (0.4%) gdn recurrence 253 (2.8%) gdn out proj 329 (3.7%) hc write 94 (1.1%)
+  PH strata prefill timing: 1127 tokens, GPU timeline 2469 ms, wall 2478 ms, host staging 264 ms: embed+steps 1 (0.0%) hc read 193 (7.8%) gdn 205 (8.3%) qsa proj 95 (3.9%) qsa indexer 0 (0.0%) qsa select 2 (0.1%) qsa attn 115 (4.7%) router+shared 68 (2.8%) host grouping 57 (2.3%) gather 10 (0.4%) wait copy 36 (1.5%) dequant 221 (8.9%) gemm gate/up 629 (25.5%) gemm down 296 (12.0%) combine 21 (0.9%) ple 341 (13.8%) gdn conv+gates 9 (0.4%) gdn recurrence 65 (2.6%) gdn out proj 76 (3.1%) hc write 28 (1.1%)
+  PH strata prefill timing: 2772 tokens, GPU timeline 4926 ms, wall 4945 ms, host staging 300 ms: embed+steps 1 (0.0%) hc read 363 (7.4%) gdn 514 (10.4%) qsa proj 221 (4.5%) qsa indexer 0 (0.0%) qsa select 9 (0.2%) qsa attn 534 (10.8%) router+shared 154 (3.1%) host grouping 132 (2.7%) gather 12 (0.2%) wait copy 24 (0.5%) dequant 224 (4.5%) gemm gate/up 1073 (21.8%) gemm down 507 (10.3%) combine 37 (0.8%) ple 704 (14.3%) gdn conv+gates 20 (0.4%) gdn recurrence 154 (3.1%) gdn out proj 187 (3.8%) hc write 54 (1.1%)
+  PH strata prefill timing: 4835 tokens, GPU timeline 9226 ms, wall 9231 ms, host staging 428 ms: embed+steps 30 (0.3%) hc read 668 (7.2%) gdn 848 (9.2%) qsa proj 386 (4.2%) qsa indexer 1 (0.0%) qsa select 25 (0.3%) qsa attn 1135 (12.3%) router+shared 230 (2.5%) host grouping 71 (0.8%) gather 27 (0.3%) wait copy 89 (1.0%) dequant 760 (8.2%) gemm gate/up 2142 (23.2%) gemm down 1055 (11.4%) combine 53 (0.6%) ple 981 (10.6%) gdn conv+gates 35 (0.4%) gdn recurrence 269 (2.9%) gdn out proj 323 (3.5%) hc write 99 (1.1%)
+  PHH strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 37 ms, waiting for each chunk 9 ms, after each chunk (the draft layer, progress) 11 ms, PLE 289 ms
+  PHH strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 2 ms, waiting for each chunk 16 ms, after each chunk (the draft layer, progress) 17 ms, PLE 1024 ms
+  PHH strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 3 ms, waiting for each chunk 63 ms, after each chunk (the draft layer, progress) 30 ms, PLE 2144 ms
+  PHH strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 0 ms, waiting for each chunk 9 ms, after each chunk (the draft layer, progress) 9 ms, PLE 2497 ms
+  PHH strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 0 ms, waiting for each chunk 22 ms, after each chunk (the draft layer, progress) 19 ms, PLE 3206 ms
+  PHH strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 3 ms, waiting for each chunk 64 ms, after each chunk (the draft layer, progress) 31 ms, PLE 4222 ms
+    PLEMAP rss=0.0 MB
+    MemFree:         1055236 kB MemAvailable:   64060444 kB Cached:         64045064 kB AnonPages:      63179524 kB 
+  mark=66122
+  CFGCHECK keys=11 env_n=14 prefill=2048 ple_io=direct(缺省) extra=-
+  mark=66172
+=== ARM K2 ready=35s start_wall=36s drop=0
+  MODE strata generate: PLE direct read probe: 34268 rows/s (fine)
+  MODE strata generate: PLE direct read probe: 34762 rows/s (fine)
+    PLEMAP rss=0.0 MB
+    MemFree:         1906876 kB MemAvailable:   65599648 kB Cached:         64567992 kB AnonPages:      61845264 kB 
+  rep0 target=1500  chars=5321   prompt_tokens=1453   wall=3.43s 
+  rep0 target=3000  chars=10560  prompt_tokens=2498   wall=5.70s 
+  rep0 target=6000  chars=21058  prompt_tokens=4568   wall=9.26s 
+  rep1 target=1500  chars=5286   prompt_tokens=1132   wall=2.92s 
+  rep1 target=3000  chars=10594  prompt_tokens=2777   wall=6.21s 
+  rep1 target=6000  chars=21004  prompt_tokens=4840   wall=9.62s 
+READ_DONE K2
+  client_results=6
+  PL strata serve: prompt 1453 tokens = 0 reused + 1453 read in 3327 ms (436.7 tok/s), 1 generated in 51 ms (19.5 tok/s), drafts accepted 0 of 0, 1 checkpo
+  PL strata serve: prompt 2498 tokens = 0 reused + 2498 read in 5642 ms (442.8 tok/s), 1 generated in 29 ms (34.2 tok/s), drafts accepted 0 of 0, 1 checkpo
+  PL strata serve: prompt 4568 tokens = 0 reused + 4568 read in 9197 ms (496.7 tok/s), 1 generated in 29 ms (34.4 tok/s), drafts accepted 0 of 0, 1 checkpo
+  PL strata serve: prompt 1132 tokens = 0 reused + 1132 read in 2871 ms (394.3 tok/s), 1 generated in 30 ms (33.6 tok/s), drafts accepted 0 of 0, 1 checkpo
+  PL strata serve: prompt 2777 tokens = 0 reused + 2777 read in 6165 ms (450.5 tok/s), 1 generated in 27 ms (36.8 tok/s), drafts accepted 0 of 0, 1 checkpo
+  PL strata serve: prompt 4840 tokens = 0 reused + 4840 read in 9570 ms (505.8 tok/s), 1 generated in 28 ms (35.9 tok/s), drafts accepted 0 of 0, 1 checkpo
+  PH strata prefill timing: 1448 tokens, GPU timeline 3049 ms, wall 3062 ms, host staging 47 ms: embed+steps 32 (1.0%) hc read 253 (8.3%) gdn 267 (8.8%) qsa proj 123 (4.0%) qsa indexer 0 (0.0%) qsa select 3 (0.1%) qsa attn 177 (5.8%) router+shared 213 (7.0%) host grouping 85 (2.8%) gather 12 (0.4%) wait copy 36 (1.2%) dequant 232 (7.6%) gemm gate/up 743 (24.4%) gemm down 360 (11.8%) combine 24 (0.8%) ple 267 (8.8%) gdn conv+gates 11 (0.4%) gdn recurrence 82 (2.7%) gdn out proj 97 (3.2%) hc write 33 (1.1%)
+  PH strata prefill timing: 2493 tokens, GPU timeline 5249 ms, wall 5253 ms, host staging 132 ms: embed+steps 16 (0.3%) hc read 415 (7.9%) gdn 460 (8.8%) qsa proj 220 (4.2%) qsa indexer 1 (0.0%) qsa select 8 (0.1%) qsa attn 454 (8.7%) router+shared 158 (3.0%) host grouping 139 (2.7%) gather 20 (0.4%) wait copy 39 (0.7%) dequant 396 (7.5%) gemm gate/up 1262 (24.0%) gemm down 598 (11.4%) combine 46 (0.9%) ple 607 (11.6%) gdn conv+gates 19 (0.4%) gdn recurrence 141 (2.7%) gdn out proj 191 (3.6%) hc write 59 (1.1%)
+  PH strata prefill timing: 4563 tokens, GPU timeline 8820 ms, wall 8824 ms, host staging 280 ms: embed+steps 31 (0.3%) hc read 702 (8.0%) gdn 811 (9.2%) qsa proj 387 (4.4%) qsa indexer 1 (0.0%) qsa select 23 (0.3%) qsa attn 1054 (12.0%) router+shared 273 (3.1%) host grouping 229 (2.6%) gather 26 (0.3%) wait copy 83 (0.9%) dequant 609 (6.9%) gemm gate/up 2161 (24.5%) gemm down 1019 (11.6%) combine 84 (1.0%) ple 597 (6.8%) gdn conv+gates 34 (0.4%) gdn recurrence 258 (2.9%) gdn out proj 334 (3.8%) hc write 102 (1.2%)
+  PH strata prefill timing: 1127 tokens, GPU timeline 2482 ms, wall 2491 ms, host staging 332 ms: embed+steps 1 (0.0%) hc read 204 (8.2%) gdn 213 (8.6%) qsa proj 95 (3.8%) qsa indexer 0 (0.0%) qsa select 2 (0.1%) qsa attn 115 (4.6%) router+shared 68 (2.8%) host grouping 58 (2.3%) gather 9 (0.4%) wait copy 41 (1.6%) dequant 217 (8.8%) gemm gate/up 629 (25.4%) gemm down 295 (11.9%) combine 21 (0.9%) ple 334 (13.5%) gdn conv+gates 9 (0.3%) gdn recurrence 65 (2.6%) gdn out proj 77 (3.1%) hc write 28 (1.1%)
+  PH strata prefill timing: 2772 tokens, GPU timeline 5700 ms, wall 5706 ms, host staging 433 ms: embed+steps 16 (0.3%) hc read 432 (7.6%) gdn 491 (8.6%) qsa proj 231 (4.1%) qsa indexer 1 (0.0%) qsa select 10 (0.2%) qsa attn 534 (9.4%) router+shared 161 (2.8%) host grouping 257 (4.5%) gather 20 (0.4%) wait copy 54 (0.9%) dequant 429 (7.5%) gemm gate/up 1375 (24.1%) gemm down 649 (11.4%) combine 49 (0.9%) ple 555 (9.7%) gdn conv+gates 21 (0.4%) gdn recurrence 159 (2.8%) gdn out proj 192 (3.4%) hc write 64 (1.1%)
+  PH strata prefill timing: 4835 tokens, GPU timeline 9116 ms, wall 9122 ms, host staging 573 ms: embed+steps 31 (0.3%) hc read 721 (7.9%) gdn 844 (9.3%) qsa proj 400 (4.4%) qsa indexer 1 (0.0%) qsa select 25 (0.3%) qsa attn 1135 (12.5%) router+shared 275 (3.0%) host grouping 248 (2.7%) gather 29 (0.3%) wait copy 81 (0.9%) dequant 639 (7.0%) gemm gate/up 2241 (24.6%) gemm down 1056 (11.6%) combine 80 (0.9%) ple 559 (6.1%) gdn conv+gates 36 (0.4%) gdn recurrence 274 (3.0%) gdn out proj 334 (3.7%) hc write 107 (1.2%)
+  PHH strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 31 ms, waiting for each chunk 9 ms, after each chunk (the draft layer, progress) 11 ms, PLE 296 ms
+  PHH strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 0 ms, waiting for each chunk 21 ms, after each chunk (the draft layer, progress) 18 ms, PLE 908 ms
+  PHH strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 0 ms, waiting for each chunk 33 ms, after each chunk (the draft layer, progress) 32 ms, PLE 1511 ms
+  PHH strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 0 ms, waiting for each chunk 7 ms, after each chunk (the draft layer, progress) 9 ms, PLE 1858 ms
+  PHH strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 0 ms, waiting for each chunk 18 ms, after each chunk (the draft layer, progress) 20 ms, PLE 2430 ms
+  PHH strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 0 ms, waiting for each chunk 33 ms, after each chunk (the draft layer, progress) 34 ms, PLE 2991 ms
+    PLEMAP rss=0.0 MB
+    MemFree:         1140204 kB MemAvailable:   64192120 kB Cached:         64043356 kB AnonPages:      63164240 kB 
+  mark=66218
+  CFGCHECK keys=11 env_n=14 prefill=auto ple_io=ram extra=-
+  DROPCACHES done
+    PLEMAP rss=0.0 MB
+    MemFree:        63626200 kB MemAvailable:   64191348 kB Cached:          1567668 kB AnonPages:      63164760 kB 

@@ -1,0 +1,236 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W797：gfx906 从不继承 arch_default_env（20 开关默认全关）+ P115/P116 GDN_HEAD/PP2 采纳（M-2.6%/L-2.9%）+ 规则 Q",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "env：**HC_Q8=1**·**HIP_PROMPT_F16=1**(-20.7%)·**ROCBLAS_TUNING**(-1.8%)·**ATTN_SWIZZLE**(-1.6%)·**SELECT_SIMT**(-4.8%L)",
+   "new": "env：**HC_Q8**·**HIP_PROMPT_F16**(-20.7%)·**ROCBLAS_TUNING**(-1.8%)·**ATTN_SWIZZLE**(-1.6%)·**SELECT_SIMT**(-4.8%L)·**GDN_HEAD+PP2**(-2.6%,P115/116)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **路由**:k10 native_router;GR_SPLIT净负(P101/P102)",
+   "new": "- **路由**:k10 native_router;GR_SPLIT净负(P101/P102)\n- **规则Q**:上游没设默认=(1)只验过别的架构(找parity单测,5秒)(2)需特定硬件(3)真更差;先单测再引擎\n- **arch_default只给gfx12/1151** => gfx906空表,20个S23/25/26默认全关(W797)\n- **相位标签会迁移**:省下的ms从相邻相位涨回,对账闭合!=只有它动(W797)"
+  },
+  {
+   "kind": "substr",
+   "old": "- 「默认关」3种:可用/被挡死/没编进;不采用标[EXT:面]",
+   "new": "- 「默认关」4种:+编译成__trap__;不采用标[EXT:面]"
+  },
+  {
+   "kind": "substr",
+   "old": "- **队列**:P1·P2·P3 采纳(P103/P107/P108);P4/P6 降级;P110 采纳;**P109 翻案采纳(L-4.8%)**;P111 否;P5=MMQ 耗尽(P112/P113/P114);此后=内核,先 MMQ;P105->P107,P106->P109",
+   "new": "- **队列**:P1·P2·P3 采纳(P103/P107/P108);P4/P6 降级;P109·P110·P115·P116 采纳;P111·P117·P118 否;P5=MMQ耗尽(P112/P113/P114);下一轮=decode10开关(多轮)+PF_HCDOWN/PF_GEMM/CVEC;P105->P107,P106->P109"
+  },
+  {
+   "kind": "substr",
+   "old": "- 生产：`strata166-407`/8090(**0.2.4p4**;回滚.bak_w793=0.2.4/bak023;遥测入镜像,禁apply_telemetry)",
+   "new": "- 生产:`strata166-407`/8090(**0.2.4p4**;回滚.bak_w793=0.2.4;遥测入镜像,禁apply_telemetry)"
+  },
+  {
+   "kind": "substr",
+   "old": "- 模型 qwen3.8-flash-next-ud-iq4_xs(huihui),262144ctx,--kv k8v4",
+   "new": "- 模型 qwen3.8-flash-next-ud-iq4_xs(huihui),262144ctx,k8v4"
+  },
+  {
+   "kind": "substr",
+   "old": "- 上游=镜像0.2.4p4(0.2.4+rocBLAS接线+max-ilp+attn swizzle);PR #1877",
+   "new": "- 上游=镜像0.2.4p4(0.2.4+rocBLAS+max-ilp+swizzle);PR #1877"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改参唯一道**：register -> gen_config.py --write -> 推 166 -> restart -> verify_config FAIL=0",
+   "new": "- **改参唯一道**:register->gen_config --write->推166->restart->verify FAIL=0"
+  },
+  {
+   "kind": "substr",
+   "old": "- 容器名/版本/指纹写指针；读数 `Z0=off`；CR=0(W21)",
+   "new": "- 容器名/版本/指纹写指针;读Z0=off;CR=0(W21)"
+  },
+  {
+   "kind": "substr",
+   "old": "- 查容器内文件走 `docker exec`",
+   "new": "- 容器内文件走 docker exec"
+  },
+  {
+   "kind": "substr",
+   "old": "- 改既有长件前先备份(register/config/日志,W765/773)",
+   "new": "- 改长件前先备份(W765/773)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改本件走技能入口 mem_slim.py**；禁 Edit/自写",
+   "new": "- **改本件走mem_slim.py**;禁Edit"
+  },
+  {
+   "kind": "substr",
+   "old": "- **verify_config只判配置面**=>运行期取引擎/proc(W764)",
+   "new": "- **verify只判配置面**=>运行期取引擎(W764)"
+  },
+  {
+   "kind": "substr",
+   "old": "- 源码4树 deploy/tmp/_src/;对账 todo_reconcile.py",
+   "new": "- 源码4树 deploy/tmp/_src/;todo_reconcile.py"
+  },
+  {
+   "kind": "substr",
+   "old": "- **prefill非地板**(P1 后仍-20.7%);单轮decode占M10/L0.5%;**gov schedutil快1.2%**(P97)",
+   "new": "- **prefill非地板**;单轮decode占M10/L0.5%;**gov schedutil快1.2%**(P97)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **prefill=主战场**:M90%/L99.5%;M:hc18.2/GU15.9/attn15.5/gdn13.8/gemmd8.6(P104)",
+   "new": "- **prefill=主战场**:M90%/L99.5%;M:hc18/GU16/attn16/gdn14/gemmd9(P104)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **prefill可判0.2%**;**gfx906无bf16点积**(F32 13.2T vs FP16 26.5T)=>P1改f16:M-20.7%",
+   "new": "- **prefill可判0.2%**;**gfx906无bf16点积**(F32 13.2 vs FP16 26.5T)=>改f16(P103)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **rocBLAS表**:T=8192桶多1.00;瘦N(320x10240 1.27/4x10240 2.38);max-ilp-1.7~3.6%(P107/108)",
+   "new": "- **rocBLAS表**:T=8192桶多1.00;瘦N(320x10240 1.27/4x10240 2.38);max-ilp弱(P107/108)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **引擎跨请求不确定**:同env同prompt三次两结果=>禁哈希当位等价(W794)",
+   "new": "- **引擎跨请求不确定**(同env三次两结果)=>禁哈希当位等价(W794)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **重启丢前2请求**;A/B同会话交错(P98);臂漂1.7%下限=>**先相位判**(规则P)",
+   "new": "- **重启丢前2请求**;A/B同会话交错(P98);臂漂1.7%下限=>**先相位判**(P)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **专家MMQ**=36.4%/18%dp4a;J=64=48KB=>1WG/CU;J封顶全负;FP16专家+61%(P112/113)",
+   "new": "- **专家MMQ**=36.4%/18%dp4a;J=64=48KB=>1WG/CU;封顶全负;FP16专家+61%(P112/113)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **W775**:P56不可达;PLE-45%;P54=IO_PF;drop_caches不重置mmap",
+   "new": "- **W775**:P56不可达;PLE-45%;P54=IO_PF"
+  },
+  {
+   "kind": "substr",
+   "old": "- **裁**:B7:P09废·P66 废·P65 惰性·P43·P40 否·P50 6/6·P36·P37·P39 关·P59·P60 REJ·P57 更正",
+   "new": "- **裁**:B7:P09 废·P66 废·P65 惰性·P43·P40 否·P50 6/6·P36·P37·P39 关·P59·P60 REJ·P57 更正"
+  },
+  {
+   "kind": "substr",
+   "old": "- **自比同形状**;比ms/step;先排冷热;**计时行含adapt+join**",
+   "new": "- **自比同形状**;比ms/step;先排冷热;**计时含adapt+join**"
+  },
+  {
+   "kind": "substr",
+   "old": "- **KV门**(P51):LOGPOS须两请求;W770 6/6",
+   "new": "- **KV门**(P51):LOGPOS须两请求(W770 6/6)"
+  },
+  {
+   "kind": "substr",
+   "old": "- 改裁定按ID全文grep同步(W752)",
+   "new": "- 改裁定按ID全文grep(W752)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **自有库**:KIntegrated/vllm-gfx906-mobydick(fork同名)",
+   "new": "- **自有库**:KIntegrated/vllm-gfx906-mobydick"
+  },
+  {
+   "kind": "substr",
+   "old": "LIVE config strata-huihui-ud-iq4_xs.json",
+   "new": "LIVE strata-huihui-ud-iq4_xs.json"
+  },
+  {
+   "kind": "substr",
+   "old": "- shim 把 `/data/x.py` 转 Win 路径 => 只传短记号、禁 ASCII 引号",
+   "new": "- shim把/data/x.py转Win路径=>只传短记号、禁ASCII引号"
+  },
+  {
+   "kind": "substr",
+   "old": "- 本工作区=Strata(gfx906/MI50 32GB)部署调参",
+   "new": "- 本工作区=Strata(gfx906/MI50)部署调参"
+  },
+  {
+   "kind": "substr",
+   "old": "- 权威件:PARAM_REGISTER.tsv·W713_PLAN.md",
+   "new": "- 权威件:PARAM_REGISTER.tsv·W713_PLAN"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改答案**:按index对齐(W739)",
+   "new": "- **改答案**:按index(W739)"
+  },
+  {
+   "kind": "substr",
+   "old": "下一轮=decode10开关(多轮)+PF_HCDOWN/PF_GEMM/CVEC",
+   "new": "下一轮=decode10开关+PF_HCDOWN/PF_GEMM/CVEC"
+  },
+  {
+   "kind": "substr",
+   "old": "- **requests 表倒序**",
+   "new": "- **requests表倒序**"
+  },
+  {
+   "kind": "substr",
+   "old": "- **写文件禁同式内 read+open**",
+   "new": "- **写文件禁同式内read+open**"
+  },
+  {
+   "kind": "substr",
+   "old": "- **--prefill 改答案**=>不动 P10",
+   "new": "- **--prefill改答案**=>不动 P10"
+  },
+  {
+   "kind": "substr",
+   "old": "- 容器内文件走 docker exec",
+   "new": "- 容器内文件走docker exec"
+  },
+  {
+   "kind": "substr",
+   "old": "## 0 定位与权威件",
+   "new": "## 0 定位"
+  },
+  {
+   "kind": "substr",
+   "old": "- **多轮复用正常**(P94):第2轮reused=7344/685ms;final(P93)废",
+   "new": "- **多轮复用正常**(P94):第2轮reused=7344/685ms;P93 废"
+  },
+  {
+   "kind": "substr",
+   "old": "- **arch_default只给gfx12/1151** => gfx906空表,20个S23/25/26默认全关(W797)",
+   "new": "- **arch_default只给gfx12/1151**=>gfx906空表,20个S23/25/26全关(W797)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **相位标签会迁移**:省下的ms从相邻相位涨回,对账闭合!=只有它动(W797)",
+   "new": "- **相位标签会迁移**:省下的ms从相邻涨回,对账闭合!=只有它动(W797)"
+  },
+  {
+   "kind": "substr",
+   "old": "- 引routeK结论须读自有库(§5)",
+   "new": "- 引routeK须读自有库(§5)"
+  },
+  {
+   "kind": "substr",
+   "old": "- 改裁定按ID全文grep(W752)",
+   "new": "- 改裁定按ID grep(W752)"
+  },
+  {
+   "kind": "substr",
+   "old": "现役：--pcie-frac 0.20·--spec-min-p 0.70·--prompt-cache-every 8192·--vram-reserve-mib 768·无--resident-experts",
+   "new": "现役:pcie-frac .20·spec-min-p .70·prompt-cache-every 8192·vram-reserve-mib 768·无--resident-experts"
+  },
+  {
+   "kind": "substr",
+   "old": "- **草稿深度**,kShape(W8);L2 8MB/HBM~805",
+   "new": "- **草稿深度**,kShape(W8);L2 8MB/~805"
+  },
+  {
+   "kind": "substr",
+   "old": "- **重启丢前2请求**;A/B同会话交错(P98);臂漂1.7%下限=>**先相位判**(P)",
+   "new": "- **重启丢前2请求**;A/B同会话交错(P98);臂漂1.7%下限=>**先相位判**"
+  }
+ ]
+}

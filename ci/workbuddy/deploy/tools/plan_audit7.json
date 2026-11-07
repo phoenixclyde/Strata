@@ -1,0 +1,30 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- **自比须同形状**；比 `ms/step`（`tok/s` 受净出污染）；不可复现先排冷热",
+   "new": "- **自比须同形状**；比 `ms/step`；不可复现先排冷热；**计时行=verify+commit+draft+adapt+join**(adapt曾10.69ms被漏)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **草稿深度自适应**，kShape编译期常量非旋钮(W8)；同卡 L2=8MB/HBM~805",
+   "new": "- **草稿深度自适应**，kShape编译期常量非旋钮(W8)；同卡 L2=8MB/HBM~805\n- **占用率**=块/CUx线程/64/40(wave64/60CU)；HC 41块=6.8% => 只加块数,TILEV无用(P96/W789)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **prefill热态=GPU+CPU双满(地板,file tier 0)**;单轮decode占S43/M10/L0.5%,**多轮复用后decode占大头**",
+   "new": "- **prefill热态=GPU+CPU双满(地板,file tier 0)**;单轮decode占S43/M10/L0.5%,**多轮后decode占大头**;基线均测于gov=performance,现schedutil(P97)"
+  },
+  {
+   "kind": "substr",
+   "old": "无--resident-experts(W785去掉;三档decode+10~12%,prompt不减;spec仍6)",
+   "new": "无--resident-experts(W785;decode+10~12%)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改答案判据**：按 index 跨臂对齐（spread 才真判据，W739）",
+   "new": "- **改答案判据**：按 index 跨臂对齐(W739)"
+  }
+ ]
+}

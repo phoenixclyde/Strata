@@ -1,0 +1,91 @@
+{
+ "target": "prefill_gpu_8k",
+ "target_kind": "latency",
+ "baseline": {
+  "n": 3,
+  "mean": 13587,
+  "cv_pct": 0.26
+ },
+ "candidate": {
+  "n": 3,
+  "mean": 13217.3,
+  "cv_pct": 0.67
+ },
+ "guard": [
+  {
+   "name": "prefill_2500_gpu",
+   "n": 2,
+   "mean_base": 5484,
+   "mean_cand": 5380.5,
+   "cv_pct": 2.98
+  },
+  {
+   "name": "prefill_16000_gpu",
+   "n": 2,
+   "mean_base": 27540.7,
+   "mean_cand": 27067.7,
+   "cv_pct": 0.18
+  }
+ ],
+ "numeric": {
+  "mode": "anchor",
+  "build_floor_bitident": true,
+  "build_floor_evidence": "W1042 P1: attn 无开关臂 vs kvg, fp32 全词表 logits 四个长度逐字节相同; W1041 B≡A 同样四点逐字节",
+  "anchor": [
+   {
+    "length": "1K",
+    "kl_cand": 0.00037,
+    "kl_anchor": 0.00155,
+    "ratio": 4.19
+   },
+   {
+    "length": "8K",
+    "kl_cand": 0.00345,
+    "kl_anchor": 0.01113,
+    "ratio": 3.23
+   },
+   {
+    "length": "16K",
+    "kl_cand": 0.01429,
+    "kl_anchor": 0.01699,
+    "ratio": 1.19
+   },
+   {
+    "length": "20K",
+    "kl_cand": 0.1875,
+    "kl_anchor": 0.38387,
+    "ratio": 2.05
+   }
+  ],
+  "anchor_definition": "D = 同一 kvg 引擎 + --kv fp16, 即我们为省显存主动放弃的那一档; 预算线取它而不是 0.0139 (该阈值属于已退役的 LOGPOS 取样面, W1041 实测同一对臂两把尺差一个量级)",
+  "task_gate": "W1044 窗口 A 实测：16K/32K/64K × 深度 0/50/100% × off/on = 18/18 命中，cached=0；证据 albus/w1044/grid_off.json + grid_on.json；窗口 B 复用同批次数据作跨窗口护栏",
+  "task_gate_status": "PASS（judge.py G4=true；不再是 WEAK_PENDING）",
+  "w1044_kl": {
+   "1K": {
+    "kl_cand": 0.000371,
+    "kl_anchor": 0.001551
+   },
+   "8K": {
+    "kl_cand": 0.003453,
+    "kl_anchor": 0.011125
+   },
+   "20K": {
+    "kl_cand": 0.187498,
+    "kl_anchor": 0.383867
+   },
+   "32K": {
+    "kl_cand": 0.001457,
+    "kl_anchor": 0.010032
+   },
+   "note": "set32k_v2 non-repeating ids; ratio@32K=0.145 <= 2*ratio@20K=0.977 (G3 PASS)"
+  }
+ },
+ "source": "albus/w1042/p2_stats.json + p3_needle.json; W1041 §5 判决表; W1042 P1 build floor",
+ "caveats": [
+  "组合已覆盖（W1043 自查纠正 P510）：W1042 的 cfgP_{kvg,attn}.json 均 38 args 且含 --kv-grow（远端 JSON 逐项实测）；qq_r103.py 的 DROP_VALUE/DROP_FLAG 不含 --kv-grow ⇒ P1 数值臂保留它；P2/P3 的 serve/server.py 用同一 cfgP_attn.json 原样起服务。故 A/B floor、C 数值、2.5K/8K/16K 计时、16K/28K needle 全在带 --kv-grow 的形态下跑过。本轮初稿曾误写成「组合未测」（把 W1041 四臂去掉 --kv-grow 的旧信息套到 W1042），已纠正；LONGCTX_GATE.md 的 G1 因此降级为跨窗口复验，不是首测。",
+  "开关真名 STRATA_GFX906_ATTN_DP4A=1 (bit1=2), 源码 gfx906_attn_opt() @ attn-opt:1062; 装引擎不加这个 env 等于没装",
+  "gfx906_attn_opt()!=0 会切到 <M,false,false,false,OPT> 内核变体 (无 query swizzle / 无 reduce12), 不是单变量点积替换; W1042 的 A 臂是生产形态, 实测已覆盖整包差异",
+  "D5 配置面: register 里尚无 STRATA_GFX906_ATTN_DP4A 的 ADOPTED 行, 装机窗口必须先登记再生成 cfg_new, 否则 D5 REFUSE"
+ ],
+ "installed": "W1044 17:57: engine=strata-0.1.57-attn, config=3dde880125925d785a49da69fa1ebdfb"
+}

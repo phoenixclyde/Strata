@@ -1,0 +1,14 @@
+{
+  "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+  "reason": "落 env 打包判据（机主 2026-11-02 01:06 令），并修三处已被实测改写的旧说法（4KB 页、park 非关键、屋顶 803~884 的适用范围）",
+  "ops": [
+    {"kind": "substr", "old": "·无--resident-experts", "new": ""},
+    {"kind": "substr", "old": "(多轮80%;余=4KB页翻译)", "new": "(多轮80%;余=停放move)"},
+    {"kind": "substr", "old": "env:config 6项+tuned注入(HC_Q8·PROMPT_F16·ATTN_SWIZZLE·SELECT_SIMT·GDN_PP2·RT_SKIP7)", "new": "env:config 10项=17生效;tuned7(HC_Q8·PROMPT_F16·ATTN_SWIZZLE·SELECT_SIMT·GDN_PP2·RT_SKIP7·MMQ_KQ);打包:exact=>默认,改比特+交互=>套装,机制/观测=>独立,套装项可单设(P245)"},
+    {"kind": "substr", "old": ";park非关键;", "new": ";park在下请求内;"},
+    {"kind": "substr", "old": "**屋顶读803~884**(实测,4blk/CU峰)", "new": "**屋顶884仅大块读**(W875)"},
+    {"kind": "substr", "old": ";算术仅18%;专家24.9%@295;pcie.20非默认.55", "new": ";算术18%;专家24.9%@295"},
+    {"kind": "substr", "old": "- **规则Q**:没设默认=只验过别的架构(单测5秒)/需硬件/真更差", "new": "- **规则Q**:没设默认=只验别的架构/需硬件/真更差"},
+    {"kind": "substr", "old": "- 禁哈希(W794);share后prefill逐次不同=>n>=2(X);删失观测非事件(Y);相位表>=2%全列(Z)", "new": "- 禁哈希(W794);n>=2(X);删失观测非事件(Y);相位>=2%全列(Z)"}
+  ]
+}

@@ -1,0 +1,47 @@
+START 2026-10-25_15:06:25 ts=20261025_150625
+backup=/home/albus/strata166/data/strata-huihui-ud-iq4_xs.json.bak_r5pf_20261025_150625
+36f6f8fb3638eeabee73c55b176c9f6c  /home/albus/strata166/data/strata-huihui-ud-iq4_xs.json
+governor=     44 schedutil 
+env_injected [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_HC_Q8', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5')]
+health 60s
+--- TIER M 15:07:52 ---
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=45241 prompt_tps=482.5 decode_tps=54.4 out=320 wall=51.1s
+  [M] n=1 reused0=1 | prompt_tps median=482.5  decode_tps median=54.4
+strata prefill timing: 893 tokens, GPU timeline 3952 ms, wall 3966 ms, host staging 56 ms: embed+steps 47 (1.2%) hc read 757 (19.2%) gdn 343 (8.7%) qsa proj 164 (4.2%) qsa indexer 0 (0.0%) qsa select 1 (0.0%) qsa attn 85 (2.2%) router+shared 96 (2.4%) host grouping 16 (0.4%) gather 5 (0.1%) wait copy 545 (13.8%) dequant 381 (9.6%) gemm gate/up 796 (20.1%) gemm down 438 (11.1%) combine 7 (0.2%) ple 11 (0.3%) gdn conv+gates 7 (0.2%) gdn recurrence 100 (2.5%) gdn out proj 124 (3.1%) hc write 26 (0.7%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 47 ms, waiting for each chunk 56 ms, after each chunk (the draft layer, progress) 12 ms, PLE 9 ms
+strata prefill timing: 21822 tokens, GPU timeline 44481 ms, wall 44535 ms, host staging 360 ms: embed+steps 185 (0.4%) hc read 8098 (18.2%) gdn 6144 (13.8%) qsa proj 2615 (5.9%) qsa indexer 1 (0.0%) qsa select 716 (1.6%) qsa attn 6905 (15.5%) router+shared 1667 (3.7%) host grouping 137 (0.3%) gather 87 (0.2%) wait copy 102 (0.2%) dequant 1406 (3.2%) gemm gate/up 7057 (15.9%) gemm down 3801 (8.5%) combine 178 (0.4%) ple 199 (0.4%) gdn conv+gates 152 (0.3%) gdn recurrence 2505 (5.6%) gdn out proj 2144 (4.8%) hc write 382 (0.9%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 5 ms, waiting for each chunk 254 ms, after each chunk (the draft layer, progress) 228 ms, PLE 10 ms
+--- TIER M 15:08:47 ---
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=45345 prompt_tps=481.4 decode_tps=61.6 out=320 wall=50.6s
+  [M] n=1 reused0=1 | prompt_tps median=481.4  decode_tps median=61.6
+strata prefill timing: 21822 tokens, GPU timeline 44630 ms, wall 44683 ms, host staging 659 ms: embed+steps 168 (0.4%) hc read 8115 (18.2%) gdn 6099 (13.7%) qsa proj 2620 (5.9%) qsa indexer 1 (0.0%) qsa select 737 (1.7%) qsa attn 6968 (15.6%) router+shared 1667 (3.7%) host grouping 135 (0.3%) gather 87 (0.2%) wait copy 104 (0.2%) dequant 1433 (3.2%) gemm gate/up 7056 (15.8%) gemm down 3853 (8.6%) combine 179 (0.4%) ple 195 (0.4%) gdn conv+gates 152 (0.3%) gdn recurrence 2538 (5.7%) gdn out proj 2141 (4.8%) hc write 382 (0.9%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 5 ms, waiting for each chunk 257 ms, after each chunk (the draft layer, progress) 210 ms, PLE 10 ms
+--- TIER M 15:09:39 ---
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=45246 prompt_tps=482.4 decode_tps=67.4 out=320 wall=50.0s
+  [M] n=1 reused0=1 | prompt_tps median=482.4  decode_tps median=67.4
+strata prefill timing: 21822 tokens, GPU timeline 44530 ms, wall 44584 ms, host staging 959 ms: embed+steps 184 (0.4%) hc read 8100 (18.2%) gdn 6102 (13.7%) qsa proj 2621 (5.9%) qsa indexer 1 (0.0%) qsa select 718 (1.6%) qsa attn 6910 (15.5%) router+shared 1667 (3.7%) host grouping 131 (0.3%) gather 87 (0.2%) wait copy 105 (0.2%) dequant 1433 (3.2%) gemm gate/up 7056 (15.8%) gemm down 3805 (8.5%) combine 178 (0.4%) ple 203 (0.5%) gdn conv+gates 152 (0.3%) gdn recurrence 2504 (5.6%) gdn out proj 2191 (4.9%) hc write 382 (0.9%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 7 ms, waiting for each chunk 254 ms, after each chunk (the draft layer, progress) 227 ms, PLE 11 ms
+--- TIER M 15:10:30 ---
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=45543 prompt_tps=479.3 decode_tps=68.8 out=320 wall=50.2s
+  [M] n=1 reused0=1 | prompt_tps median=479.3  decode_tps median=68.8
+strata prefill timing: 21822 tokens, GPU timeline 44588 ms, wall 44642 ms, host staging 1263 ms: embed+steps 213 (0.5%) hc read 8110 (18.2%) gdn 6148 (13.8%) qsa proj 2620 (5.9%) qsa indexer 1 (0.0%) qsa select 717 (1.6%) qsa attn 6910 (15.5%) router+shared 1670 (3.7%) host grouping 133 (0.3%) gather 87 (0.2%) wait copy 107 (0.2%) dequant 1443 (3.2%) gemm gate/up 7066 (15.8%) gemm down 3808 (8.5%) combine 178 (0.4%) ple 198 (0.4%) gdn conv+gates 152 (0.3%) gdn recurrence 2500 (5.6%) gdn out proj 2146 (4.8%) hc write 382 (0.9%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 5 ms, waiting for each chunk 254 ms, after each chunk (the draft layer, progress) 255 ms, PLE 13 ms
+--- TIER L 15:11:21 ---
+  [L] cpt=1.62 chars/token
+  [L] run1 ptok=99387 reused=0 prompt_ms=215073 prompt_tps=462.1 decode_tps=44.8 out=32 wall=215.9s
+  [L] n=1 reused0=1 | prompt_tps median=462.1  decode_tps median=44.8
+strata prefill timing: 99382 tokens, GPU timeline 214450 ms, wall 214462 ms, host staging 2566 ms: embed+steps 1249 (0.6%) hc read 36956 (17.2%) gdn 27842 (13.0%) qsa proj 12044 (5.6%) qsa indexer 5 (0.0%) qsa select 14812 (6.9%) qsa attn 32876 (15.3%) router+shared 7550 (3.5%) host grouping 598 (0.3%) gather 405 (0.2%) wait copy 481 (0.2%) dequant 6102 (2.8%) gemm gate/up 31306 (14.6%) gemm down 16833 (7.8%) combine 813 (0.4%) ple 903 (0.4%) gdn conv+gates 691 (0.3%) gdn recurrence 11497 (5.4%) gdn out proj 9751 (4.5%) hc write 1737 (0.8%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 12 ms, waiting for each chunk 1083 ms, after each chunk (the draft layer, progress) 1152 ms, PLE 15 ms
+DONE 15:14:58
+=== RESTORE 15:14:58 ===
+config restored from /home/albus/strata166/data/strata-huihui-ud-iq4_xs.json.bak_r5pf_20261025_150625
+36f6f8fb3638eeabee73c55b176c9f6c  /home/albus/strata166/data/strata-huihui-ud-iq4_xs.json
+container restarted
+prod ready 56s
+after slots 9901 vram 642 ver 0.1.49.2
+env_after={'HSA_OVERRIDE_GFX_VERSION': '9.0.6', 'STRATA_PREFILL_CPU_SHARE': '0', 'STRATA_RESIDENT_HEADROOM_GIB': '0.5', 'STRATA_HC_Q8': '1'}
+=== END 15:15:57 ===

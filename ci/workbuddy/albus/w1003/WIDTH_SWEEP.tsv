@@ -1,0 +1,36 @@
+﻿# W1003 width/type sweep — TIMING-ONLY probe (weights are random bytes of the
+# correct repacked geometry; correctness is C5's job, not this file's).
+#
+# What changed vs RESULTS.tsv: W1001 measured only the arm the mx dispatch rule
+# picks, on one type (Q5_1) and one shape. This sweep measures ALL THREE arms
+# (canonical / repacked 32-wide / repacked 64-wide) on the types and shapes the
+# production pack actually contains.
+#
+# Production truth, from /data/packs/ud-q4_k_xl/native_experts.txt
+# (columns: layer gu_type d_type ...): gate/up is Q4_K(12) or Q5_K(13) at
+# [out=1280, K=2560] — one 1280-row call, prefill.cpp:5300 `gu.w_rows = 1280`;
+# down is Q5_1(7) or Q8_0(8) at [out=2560, K=640] — prefill.cpp:5311
+# `dn.w_cols = 640`. K=640 is not a multiple of QK_K=256, so the K-quants
+# cannot appear on down at all; Unsloth's UD mix uses them only on gate/up.
+#
+# 10 columns: shape type_id type rows_per canonical_ms w32_ms ratio32 w64_ms ratio64 winner
+gu	12	Q4_K	32	0.2965	0.8824	2.9763	1.1472	3.8694	canonical
+gu	12	Q4_K	128	1.0238	2.3087	2.2550	1.0472	1.0228	canonical
+gu	12	Q4_K	320	2.2585	5.8575	2.5935	2.7959	1.2380	canonical
+gu	12	Q4_K	512	3.4890	9.3748	2.6869	3.8338	1.0988	canonical
+gu	12	Q4_K	1024	6.7248	18.7193	2.7836	7.5205	1.1183	canonical
+gu	13	Q5_K	32	0.4841	0.7597	1.5691	1.0893	2.2498	canonical
+gu	13	Q5_K	128	1.0462	2.2771	2.1765	1.0584	1.0116	canonical
+gu	13	Q5_K	320	2.4427	5.7535	2.3554	2.8308	1.1589	canonical
+gu	13	Q5_K	512	3.8553	9.3128	2.4156	3.8476	0.9980	w64
+gu	13	Q5_K	1024	7.5006	18.8134	2.5082	7.6011	1.0134	canonical
+dn	7	Q5_1	32	0.2317	0.1490	0.6430	0.5285	2.2811	w32
+dn	7	Q5_1	128	0.5611	0.4458	0.7944	0.5360	0.9552	w32
+dn	7	Q5_1	320	1.3078	1.0536	0.8056	1.4571	1.1141	w32
+dn	7	Q5_1	512	2.0708	1.6753	0.8090	1.9572	0.9451	w32
+dn	7	Q5_1	1024	4.1420	3.3186	0.8012	3.8564	0.9310	w32
+dn	8	Q8_0	32	0.2347	0.1259	0.5365	0.3312	1.4110	w32
+dn	8	Q8_0	128	0.6253	0.3757	0.6008	0.3603	0.5763	w64
+dn	8	Q8_0	320	1.5627	0.9027	0.5777	0.9441	0.6042	w32
+dn	8	Q8_0	512	2.1356	1.4453	0.6767	1.2771	0.5980	w64
+dn	8	Q8_0	1024	4.1602	2.8732	0.6906	2.5315	0.6085	w64

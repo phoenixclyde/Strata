@@ -1,0 +1,40 @@
+START 2026-10-25_16:50:37 ts=20261025_165037
+bak=/home/albus/strata166/data/strata-huihui-ud-iq4_xs.json.bak_w794_20261025_165037
+image=strata-gfx906:0.2.4p3
+=== swap to p4 16:50:37 ===
+f7b3f6f5486a49122fffb102c28567d9a0e27b7aaec48f886ead2d161cf84577
+docker: Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint strata166-407 (f226b2313551263da66ac542b073d4371e2ac76ae3ebdf9f35d3ea245aea480b): Bind for 0.0.0.0:8090 failed: port is already allocated
+
+Run 'docker run --help' for more information
+new_container=strata-gfx906:0.2.4p4
+p4 healthy 1s
+=== ARM A 16:50:37 ===
+arm A env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt')]
+health 1s
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=33189 prompt_tps=657.6 decode_tps=67.9 out=320 wall=37.9s
+  [M] n=1 reused0=1 | prompt_tps median=657.6  decode_tps median=67.9
+Traceback (most recent call last):
+  File "<stdin>", line 9, in <module>
+AttributeError: 'NoneType' object has no attribute 'encode'
+=== ARM B 16:51:27 ===
+arm B env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt')]
+health 1s
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=33252 prompt_tps=656.4 decode_tps=62.5 out=320 wall=38.4s
+  [M] n=1 reused0=1 | prompt_tps median=656.4  decode_tps median=62.5
+Traceback (most recent call last):
+  File "<stdin>", line 9, in <module>
+AttributeError: 'NoneType' object has no attribute 'encode'
+=== ARM C 16:52:16 ===
+arm C env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_GFX906_ATTN_QUERY_SWIZZLE', '1'), ('STRATA_GFX906_ATTN_REDUCE12', '1'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt')]
+health 1s
+  [M] cpt=1.62 chars/token
+  [M] run1 ptok=21827 reused=0 prompt_ms=33154 prompt_tps=658.3 decode_tps=67.1 out=320 wall=37.9s
+  [M] n=1 reused0=1 | prompt_tps median=658.3  decode_tps median=67.1
+Traceback (most recent call last):
+  File "<stdin>", line 9, in <module>
+AttributeError: 'NoneType' object has no attribute 'encode'
+=== ARM A 16:53:05 ===
+arm A env [('HSA_OVERRIDE_GFX_VERSION', '9.0.6'), ('STRATA_HC_Q8', '1'), ('STRATA_HIP_PROMPT_F16', '1'), ('STRATA_PREFILL_CPU_SHARE', '0'), ('STRATA_PREFILL_TIMING', '1'), ('STRATA_RESIDENT_HEADROOM_GIB', '0.5'), ('STRATA_ROCBLAS_TUNING', '/data/gfx906-rocblas-5.5.0.txt')]
+health 1s

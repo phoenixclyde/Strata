@@ -1,0 +1,15 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "## 4 队列/待办(下=P138 ple-io;解码参数面已关)",
+   "new": "## 4 队列/待办(下=R23 开R行数1.52x未部署;P138)"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改参唯一道**:register->gen_config --write->推166->restart\n",
+   "new": "- **改参唯一道**:register->gen_config --write->推166->restart\n- **重编须逐字抄build.ninja的flags**(漏DNDEBUG -47%,错compat -45%);**改工作树=改生产资产**\n"
+  }
+ ]
+}

@@ -1,0 +1,141 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W758：补固化 W754/W756 两项（合并一行）+ 机械压缩",
+ "ops": [
+  {
+   "kind": "substr",
+   "old": "- **草稿深度自适应**，`kShape` 是 **RTX 5070 曲线**；routeK 同卡 L2=8MB/HBM~805（W749）",
+   "new": "- **草稿深度自适应**，`kShape` 是 **RTX 5070 曲线**；routeK 同卡 L2=8MB/HBM~805（W749）\n- **非专家**：Q8_0 303（lm_head/qkv/shexp）· BF16 483/1407 MiB（`hc_*` 85%）=> routeK T1 前提不成立（W754）；上游 bench 规范 `COMMUNITY_BENCHMARKS.md`，`AMD_HIP.md:504` 自认**单卡未做**（W756）"
+  },
+  {
+   "kind": "substr",
+   "old": "- 权威件：`PARAM_REGISTER.tsv`·`W713_PLAN.md`（全量账）·`W737`-`W752`；其余按号",
+   "new": "- 权威件：`PARAM_REGISTER.tsv`·`W713_PLAN.md`·`W737`-`W756`；其余按号"
+  },
+  {
+   "kind": "substr",
+   "old": "- 生产：`strata166-407`（`-406`=回滚位）/8090；**引擎补丁面 0/serve 覆写 2**（不提上游；重建后跑 `apply_telemetry_pcie.sh`）",
+   "new": "- 生产：`strata166-407`（`-406`=回滚位）/8090；**引擎补丁面 0/serve 覆写 2**（重建后跑 `apply_telemetry_pcie.sh`）"
+  },
+  {
+   "kind": "substr",
+   "old": "- 本工作区 = Strata（gfx906/MI50 32GB）部署+调参。",
+   "new": "- 本工作区 = Strata（gfx906/MI50 32GB）部署+调参"
+  },
+  {
+   "kind": "substr",
+   "old": "- 模型 `qwen3.8-flash-next-ud-iq4_xs`（huihui），262144 上下文，`--kv k8v4`。",
+   "new": "- 模型 `qwen3.8-flash-next-ud-iq4_xs`（huihui），262144 上下文，`--kv k8v4`"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改参数唯一通道**：register -> `gen_config.py --write` -> 推 166 -> restart -> `verify_config.py` FAIL=0；漏推对两侧 md5",
+   "new": "- **改参数唯一通道**：register -> `gen_config.py --write` -> 推 166 -> restart -> `verify_config.py` FAIL=0；漏推对 md5"
+  },
+  {
+   "kind": "substr",
+   "old": "- **性能读数须声明 `Z0=off`**（省电档）",
+   "new": "- **性能读数须声明 `Z0=off`**"
+  },
+  {
+   "kind": "substr",
+   "old": "- 禁用码位见 `mem_slim.py` 的 `BAN`；CR=0。",
+   "new": "- 禁用码位见 `mem_slim.py` 的 `BAN`；CR=0"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改本件走技能入口 `deploy/tools/mem_slim.py`**（`auto 2900 [plan.json]`）",
+   "new": "- **改本件走技能入口 `mem_slim.py`**（`auto 2900 [plan.json]`）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **引用 routeK 内核结论须读自有库**（见 §5）；本地树只作副本（`ARCHIVE.md` 只作对照）",
+   "new": "- **引用 routeK 结论须读自有库**（见 §5）；本地树只作副本"
+  },
+  {
+   "kind": "substr",
+   "old": "- **反汇编只答源答不了的**（实际发射/ISA 可编码/源同否）；**dump 记 md5+mtime**；工具 `isa_probe.py`",
+   "new": "- **反汇编只答源答不了的**（实际发射/ISA 可编码/源同否）；**dump 记 md5+mtime**；`isa_probe.py`"
+  },
+  {
+   "kind": "substr",
+   "old": "- **`/metrics` 的 `requests` 表倒序**；生产日志混入**测试脚本/他臂**的行 => 引用前剔（W747/W748）",
+   "new": "- **`/metrics` 的 `requests` 表倒序**；生产日志混入**测试脚本/他臂**的行 => 引用前剔"
+  },
+  {
+   "kind": "substr",
+   "old": "- 默认 16384 使 8k~16k 无复用；`<8k` 恒 `reused=0`；`>16k` 时 8192=16384、32768 归 0",
+   "new": "- 默认 16384：8k~16k 无复用；`<8k` 恒 `reused=0`；`>16k` 时 8192=16384、32768 归 0"
+  },
+  {
+   "kind": "substr",
+   "old": "- **筛候选**：收益上限=该环节时延占比；省「重复预填」（多轮~90%）才两位数（P31/P34）；否决：改答案/破位",
+   "new": "- **筛候选**：收益上限=环节占比；省「重复预填」（~90%）才两位数（P31/P34）；否决：改答案/破位"
+  },
+  {
+   "kind": "substr",
+   "old": "- **166 的 PCIe**：有效链路 **Gen3 x16**；`pcie_bw` 读 ~1 s 须独立线程；`product_name`=**FRU 串** => 容量按实读显存纠正",
+   "new": "- **166 的 PCIe**：有效链路 **Gen3 x16**；`pcie_bw` 读 ~1 s 须独立线程；`product_name`=**FRU 串** => 按实读显存纠正"
+  },
+  {
+   "kind": "substr",
+   "old": "- **改前端先照上游参考件**；报链路/容量走独立工具；`spark()` 无上限按序列最大值缩放；JS 路径 `/web/app.js`",
+   "new": "- **改前端照上游参考件**；报链路/容量走独立工具；`spark()` 无上限按序列最大缩放；JS 路径 `/web/app.js`"
+  },
+  {
+   "kind": "substr",
+   "old": "- **判「改答案」按 index 跨臂对齐**：同 prompt 连发输出按会话态递进，但同 index 可跨臂逐字节复现；臂内 spread 才是真判据（W739）",
+   "new": "- **判「改答案」按 index 跨臂对齐**：同 prompt 连发输出按会话态递进，但同 index 可跨臂逐字节复现；臂内 spread 才真判据（W739）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **dot**：dot4 25,877；dot8 49,600；解包+dot4=1,375 GMAC/s。**W740 普查 dot4 62,596/dot8 0 => dp4a+解包**；换 dot8 须双方 i4（P38）",
+   "new": "- **dot**：dot4 25,877；dot8 49,600；解包 1,375 GMAC/s。**W740：dot4 62,596/dot8 0 => dp4a+解包**；换 dot8 须双方 i4（P38）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **自比须同形状**（同 pt/gen）；`ms/step` 最干净（`tok/s` 受草稿净出污染）；**现役最快**；判「不可复现」先排缓存冷热（W739-W748）",
+   "new": "- **自比须同形状**；`ms/step` 最干净（`tok/s` 受草稿净出污染）；**现役最快**；判不可复现先排缓存冷热（W739-W748）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **gfx1151 专属开关族**（`EXPERT_V2`·`TSUM` 等，`STRIX_HALO.md §4`）=> register 0 登记；pack 命中 `EXPERT_V2`。**W739：`EXPERT_V2` 慢 5.60%、`TSUM` 不可复现 => P36/P37 REJECTED**",
+   "new": "- **gfx1151 专属开关族**（`EXPERT_V2`·`TSUM`，`STRIX_HALO.md §4`）=> register 0 登记。**W739：`EXPERT_V2` 慢 5.60%、`TSUM` 不可复现 => P36/P37 REJECTED**"
+  },
+  {
+   "kind": "substr",
+   "old": "- **未做**（`W750_MASTER_PLAN.md`·含W749）：`--mtp-window`(P43)·`--kv` 门·`lookup-chain`(P42)·§4 族(P40/P41)·**并发(P97 回 CANDIDATE)**；R5(P39)·R1/R2 已关",
+   "new": "- **未做**（`W750_MASTER_PLAN.md`）：`--mtp-window`(P43)·`--kv` 门·`lookup-chain`(P42)·§4 族(P40/P41)·**并发(P97)**；R5(P39)·R1/R2 已关"
+  },
+  {
+   "kind": "substr",
+   "old": "- PR **#1396** ported 进 0.1.41（closed-not-merged）；审计 `W713_AUDIT{,2}`·`W735_AUDIT`·`W752_AUDIT`（P0=0/P1=4）",
+   "new": "- PR **#1396** ported 进 0.1.41（closed-not-merged）；审计 `W713_AUDIT{,2}`·`W735`·`W752_AUDIT`（P0=0/P1=4）"
+  },
+  {
+   "kind": "substr",
+   "old": "> 窗 <=3000；上游 `Niko1221/Strata`；部署 166 `/home/albus/strata166/`\n> 原文归档 `MEMORY_DETAIL.md`",
+   "new": "> 窗<=3000；上游 `Niko1221/Strata`；166 `/home/albus/strata166/`；原文归档 `MEMORY_DETAIL.md`"
+  },
+  {
+   "kind": "substr",
+   "old": "- **「默认关」!=「不可达」**：判可达性须核宏；**同路径开关不可组合测**（W723）",
+   "new": "- **「默认关」!=「不可达」**：判可达性核宏；**同路径开关不可组合测**（W723）"
+  },
+  {
+   "kind": "substr",
+   "old": "- **`--prefill` 会改答案** => **不改 P10**",
+   "new": "- **`--prefill` 会改答案** => 不改 P10"
+  },
+  {
+   "kind": "substr",
+   "old": "`AMD_HIP.md:504` 自认**单卡未做**（W756）",
+   "new": "`AMD_HIP.md:504` 自认单卡未做（W756）"
+  },
+  {
+   "kind": "substr",
+   "old": "- 改既有长件前**先备份该件**",
+   "new": "- 改既有长件前先备份"
+  }
+ ]
+}

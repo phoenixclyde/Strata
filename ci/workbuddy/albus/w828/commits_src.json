@@ -1,0 +1,3327 @@
+[
+ {
+  "sha": "b119f40f089aeee402eaa3d31cb2f8ca7a4dcb01",
+  "node_id": "C_kwDOUpvcvdoAKGIxMTlmNDBmMDg5YWVlZTQwMmVhYTNkMzFjYjJmOGNhN2E0ZGNiMDE",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-29T14:39:47Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-29T16:22:02Z"
+   },
+   "message": "window_limits_test: setenv/unsetenv for MSVC (the Windows test build stopped on it)",
+   "tree": {
+    "sha": "226f12e469cdf92568aef8beff878324fe9632dd",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/226f12e469cdf92568aef8beff878324fe9632dd"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/b119f40f089aeee402eaa3d31cb2f8ca7a4dcb01",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/b119f40f089aeee402eaa3d31cb2f8ca7a4dcb01",
+  "html_url": "https://github.com/Niko1221/Strata/commit/b119f40f089aeee402eaa3d31cb2f8ca7a4dcb01",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/b119f40f089aeee402eaa3d31cb2f8ca7a4dcb01/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "32f0c44f0802bbccaf6c5d32b2fe3d8fb0889191",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/32f0c44f0802bbccaf6c5d32b2fe3d8fb0889191",
+    "html_url": "https://github.com/Niko1221/Strata/commit/32f0c44f0802bbccaf6c5d32b2fe3d8fb0889191"
+   }
+  ]
+ },
+ {
+  "sha": "32f0c44f0802bbccaf6c5d32b2fe3d8fb0889191",
+  "node_id": "C_kwDOUpvcvdoAKDMyZjBjNDRmMDgwMmJiY2NhZjZjNWQzMmIyZmUzZDhmYjA4ODkxOTE",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-29T14:11:01Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-29T14:11:01Z"
+   },
+   "message": "Merge f-028-par",
+   "tree": {
+    "sha": "e2c6318c5e22d9d337005d573f371ef9ef6812dd",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/e2c6318c5e22d9d337005d573f371ef9ef6812dd"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/32f0c44f0802bbccaf6c5d32b2fe3d8fb0889191",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/32f0c44f0802bbccaf6c5d32b2fe3d8fb0889191",
+  "html_url": "https://github.com/Niko1221/Strata/commit/32f0c44f0802bbccaf6c5d32b2fe3d8fb0889191",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/32f0c44f0802bbccaf6c5d32b2fe3d8fb0889191/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "93dd9b421dccdffdfd787af1d244ce0dd58e3403",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/93dd9b421dccdffdfd787af1d244ce0dd58e3403",
+    "html_url": "https://github.com/Niko1221/Strata/commit/93dd9b421dccdffdfd787af1d244ce0dd58e3403"
+   },
+   {
+    "sha": "5c8bcf43077d31002ed121d886c7843ad08a52c7",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/5c8bcf43077d31002ed121d886c7843ad08a52c7",
+    "html_url": "https://github.com/Niko1221/Strata/commit/5c8bcf43077d31002ed121d886c7843ad08a52c7"
+   }
+  ]
+ },
+ {
+  "sha": "92a867be178d8b7ef6233f14d56db36841fc6eaf",
+  "node_id": "C_kwDOUpvcvdoAKDkyYTg2N2JlMTc4ZDhiN2VmNjIzM2YxNGQ1NmRiMzY4NDFmYzZlYWY",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-29T14:11:00Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-29T14:11:00Z"
+   },
+   "message": "Merge f-arc-cpumsg",
+   "tree": {
+    "sha": "28d3421886ac65931f8b10e397582d334c9a6810",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/28d3421886ac65931f8b10e397582d334c9a6810"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/92a867be178d8b7ef6233f14d56db36841fc6eaf",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/92a867be178d8b7ef6233f14d56db36841fc6eaf",
+  "html_url": "https://github.com/Niko1221/Strata/commit/92a867be178d8b7ef6233f14d56db36841fc6eaf",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/92a867be178d8b7ef6233f14d56db36841fc6eaf/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "a3d62982975a3398539867e3bdfbe86f154ae17b",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/a3d62982975a3398539867e3bdfbe86f154ae17b",
+    "html_url": "https://github.com/Niko1221/Strata/commit/a3d62982975a3398539867e3bdfbe86f154ae17b"
+   },
+   {
+    "sha": "c3326979fccc20fcf35c28c85a89e482086e3686",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/c3326979fccc20fcf35c28c85a89e482086e3686",
+    "html_url": "https://github.com/Niko1221/Strata/commit/c3326979fccc20fcf35c28c85a89e482086e3686"
+   }
+  ]
+ },
+ {
+  "sha": "a3d62982975a3398539867e3bdfbe86f154ae17b",
+  "node_id": "C_kwDOUpvcvdoAKGEzZDYyOTgyOTc1YTMzOTg1Mzk4NjdlM2JkZmJlODZmMTU0YWUxN2I",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-29T14:10:59Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-29T14:10:59Z"
+   },
+   "message": "Merge f-pr4366",
+   "tree": {
+    "sha": "024dc50e2c4a790b08a904c538895951e622378c",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/024dc50e2c4a790b08a904c538895951e622378c"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/a3d62982975a3398539867e3bdfbe86f154ae17b",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/a3d62982975a3398539867e3bdfbe86f154ae17b",
+  "html_url": "https://github.com/Niko1221/Strata/commit/a3d62982975a3398539867e3bdfbe86f154ae17b",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/a3d62982975a3398539867e3bdfbe86f154ae17b/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "b82d1d4567b5e31aeef244f00e77bea66255b8eb",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/b82d1d4567b5e31aeef244f00e77bea66255b8eb",
+    "html_url": "https://github.com/Niko1221/Strata/commit/b82d1d4567b5e31aeef244f00e77bea66255b8eb"
+   },
+   {
+    "sha": "d52b73dc657333e855c914e63c363c3f2ced1a52",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/d52b73dc657333e855c914e63c363c3f2ced1a52",
+    "html_url": "https://github.com/Niko1221/Strata/commit/d52b73dc657333e855c914e63c363c3f2ced1a52"
+   }
+  ]
+ },
+ {
+  "sha": "b82d1d4567b5e31aeef244f00e77bea66255b8eb",
+  "node_id": "C_kwDOUpvcvdoAKGI4MmQxZDQ1NjdiNWUzMWFlZWYyNDRmMDBlNzdiZWE2NjI1NWI4ZWI",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-29T14:10:59Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-29T14:10:59Z"
+   },
+   "message": "Merge f-028-tools-p1",
+   "tree": {
+    "sha": "df9d9e0492aeb0b663abbbe631f828b626e42eda",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/df9d9e0492aeb0b663abbbe631f828b626e42eda"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/b82d1d4567b5e31aeef244f00e77bea66255b8eb",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/b82d1d4567b5e31aeef244f00e77bea66255b8eb",
+  "html_url": "https://github.com/Niko1221/Strata/commit/b82d1d4567b5e31aeef244f00e77bea66255b8eb",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/b82d1d4567b5e31aeef244f00e77bea66255b8eb/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "3b8dc8fa351e5b57650372772e1686ea1fa9f3b0",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/3b8dc8fa351e5b57650372772e1686ea1fa9f3b0",
+    "html_url": "https://github.com/Niko1221/Strata/commit/3b8dc8fa351e5b57650372772e1686ea1fa9f3b0"
+   },
+   {
+    "sha": "01d6f7b995649240b87b5be38b5d0be26cb6fc8d",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/01d6f7b995649240b87b5be38b5d0be26cb6fc8d",
+    "html_url": "https://github.com/Niko1221/Strata/commit/01d6f7b995649240b87b5be38b5d0be26cb6fc8d"
+   }
+  ]
+ },
+ {
+  "sha": "77287f13ecaceb1f1974e690c83e94b37305b33a",
+  "node_id": "C_kwDOUpvcvdoAKDc3Mjg3ZjEzZWNhY2ViMWYxOTc0ZTY5MGM4M2U5NGIzNzMwNWIzM2E",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-29T14:10:41Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-29T14:10:41Z"
+   },
+   "message": "Merge f-028-eng-p1: engine P1 fixes",
+   "tree": {
+    "sha": "c3215fea01884087cda3e4194934c425d0524807",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/c3215fea01884087cda3e4194934c425d0524807"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/77287f13ecaceb1f1974e690c83e94b37305b33a",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/77287f13ecaceb1f1974e690c83e94b37305b33a",
+  "html_url": "https://github.com/Niko1221/Strata/commit/77287f13ecaceb1f1974e690c83e94b37305b33a",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/77287f13ecaceb1f1974e690c83e94b37305b33a/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "95563ff292527c70b3e4e9c7685cf2de681bcd36",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/95563ff292527c70b3e4e9c7685cf2de681bcd36",
+    "html_url": "https://github.com/Niko1221/Strata/commit/95563ff292527c70b3e4e9c7685cf2de681bcd36"
+   },
+   {
+    "sha": "cfa197e21a323ea552ac4d6a18f7fb19023d26ed",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/cfa197e21a323ea552ac4d6a18f7fb19023d26ed",
+    "html_url": "https://github.com/Niko1221/Strata/commit/cfa197e21a323ea552ac4d6a18f7fb19023d26ed"
+   }
+  ]
+ },
+ {
+  "sha": "9d3c8c3664f130f3ea4dc79cab4574b493c3bdba",
+  "node_id": "C_kwDOUpvcvdoAKDlkM2M4YzM2NjRmMTMwZjNlYTRkYzc5Y2FiNDU3NGI0OTNjM2JkYmE",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-29T14:06:02Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-29T14:06:02Z"
+   },
+   "message": "Verify and batch windows of up to 16 rows: HIP builds default to 16, narrow builds unchanged\n\nA pipelined group of a layer split is its own window, so 32 slots on four cards were four groups of 8 and nothing\nlarger could run. The window limit is now a build option (STRATA_WINDOW_MAX_T = auto | 8 | 16; auto is 16 for HIP,\n8 for CUDA; SYCL and Metal never set it): include/strata/kernels/window_limits.hpp.\n\nA window of up to 8 rows runs exactly the kernels it ran before (HIP gfx1201 window 8 against main: 3096 of 3097\nkernels identical, the other a debug variant; CUDA sm_86 and sm_60: identical or renamed but for a few prefill kernels\nNVVM compiles differently, with identical results). The code for 9 to 16 rows is only reached by a wider window:\n- per-row arrays of the verifier, the expert source tables (128 / 256 entries) and the remote / peer expert tables follow\n  the window; CPU expert jobs stay at 8 tokens (a 9..16-row group is two jobs over the same expert);\n- the hyper-connection read is made in slices of 8 rows (its Q8_0 launch would otherwise skip rows);\n- the grouped expert kernels run a second pass (SKIP template argument) instead of a 16-entry shared array (51 KB,\n  over the 48 KB static limit of CUDA);\n- resident_plan runs on 128 threads (up to 8 rows, as it was) or 256; MMVQ, bf16 GEMV, shared expert and MoE combine\n  take 9..16 columns only in a wide build; the sm_60 packed path runs wide calls in passes of 8;\n- STRATA_P4_TIMING and STRATA_P4_TRACE (include/strata/program/pipe_probe.hpp): opt-in timing and trace of the\n  pipelined windows, off unless set.\n\nTests: src/core/window_limits_test.cpp (target window_limits_test). Real 16-row windows (--batch 64 on four stages,\n--batch 16 --batch-groups 1) decode the tokens they decode alone.",
+   "tree": {
+    "sha": "365ba47b9c8d687c93c064fe4a9dc30201fb0849",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/365ba47b9c8d687c93c064fe4a9dc30201fb0849"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/9d3c8c3664f130f3ea4dc79cab4574b493c3bdba",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/9d3c8c3664f130f3ea4dc79cab4574b493c3bdba",
+  "html_url": "https://github.com/Niko1221/Strata/commit/9d3c8c3664f130f3ea4dc79cab4574b493c3bdba",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/9d3c8c3664f130f3ea4dc79cab4574b493c3bdba/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "46c152a1310f77cd2f0ce2c7cd213962df14fe83",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/46c152a1310f77cd2f0ce2c7cd213962df14fe83",
+    "html_url": "https://github.com/Niko1221/Strata/commit/46c152a1310f77cd2f0ce2c7cd213962df14fe83"
+   }
+  ]
+ },
+ {
+  "sha": "20a63cf0f0c9b0d028f0037eafe26d367db14383",
+  "node_id": "C_kwDOUpvcvdoAKDIwYTYzY2YwZjBjOWIwZDAyOGYwMDM3ZWFmZTI2ZDM2N2RiMTQzODM",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-29T08:08:41Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-29T09:25:07Z"
+   },
+   "message": "Residency-biased routing (STRATA_ROUTE_PRIOR) is off by default again on 12 GB NVIDIA cards (#4402)\n\n0.2.7 turned STRATA_ROUTE_PRIOR=1.5 on by itself on a discrete NVIDIA card of 13 GiB or less. Reports and our own 0.2.7 agent check (4.5 of 10\ntasks with it on, 5.6 with it off) tie it to repetition loops and weaker results in long agent sessions, so the owner took the default back\n(2026-10-29). With nothing set the engine now routes exactly as 0.2.6 and as STRATA_ROUTE_PRIOR=0 did; STRATA_DEFAULTS=026 is unchanged.\n\n- sm120_series.hpp: route_prior_default() answers 0 on every card; route_prior_resolve() is the pure rule the engine reads (a set value wins on every\n  card); kRoutePriorSmallCard stays the 1.5 opt-in value.\n- verify.cpp: g_route_prior() uses it; the \"on by default on this card\" start line is gone.\n- Expert settings / Terminal: \"Faster answers on 12 GB NVIDIA cards\" is now an Off-by-default row that writes STRATA_ROUTE_PRIOR=1.5; the words\n  say it is faster on 12 GB cards but can repeat itself in long agent sessions (nine languages). A 0.2.7 file with STRATA_ROUTE_PRIOR=0 reads as Off.\n- Tests: arch_defaults_test (default table over 12 cards x hip x integrated x 026, explicit opt-in values), speed-switches.test.mjs and\n  tests/terminal/test_speed_switches.py.\n- docs/DETAILS.md: both places that described the 0.2.7 default.",
+   "tree": {
+    "sha": "dd41632a296d4f0841580fee9443e2059c9b3352",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/dd41632a296d4f0841580fee9443e2059c9b3352"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/20a63cf0f0c9b0d028f0037eafe26d367db14383",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/20a63cf0f0c9b0d028f0037eafe26d367db14383",
+  "html_url": "https://github.com/Niko1221/Strata/commit/20a63cf0f0c9b0d028f0037eafe26d367db14383",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/20a63cf0f0c9b0d028f0037eafe26d367db14383/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "46c152a1310f77cd2f0ce2c7cd213962df14fe83",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/46c152a1310f77cd2f0ce2c7cd213962df14fe83",
+    "html_url": "https://github.com/Niko1221/Strata/commit/46c152a1310f77cd2f0ce2c7cd213962df14fe83"
+   }
+  ]
+ },
+ {
+  "sha": "cfa197e21a323ea552ac4d6a18f7fb19023d26ed",
+  "node_id": "C_kwDOUpvcvdoAKGNmYTE5N2UyMWEzMjNlYTU1MmFjNGQ2YTE4ZjdmYjE5MDIzZDI2ZWQ",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T23:19:50Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T23:19:50Z"
+   },
+   "message": "Qwen: the automatic expert cache leaves the reserve it was asked to keep - the ~245 MiB the load allocates after it are priced (#4474)\n\n--expert-cache auto sized the cache from the VRAM free after the weights, less --vram-reserve-mib, the draft head and the other priced\nbuffers. What the load allocates after the cache and no setting prices - the CUDA libraries the prompt path and the verifier warm up\n(cuBLAS handles and workspaces, lazily loaded modules) and the verifier's small buffers - came out of the reserve, so the card ended\nabout 240 MiB under it: 459 MiB free at --vram-reserve-mib 700 on an RTX A4000 16 GB, 457 MiB on an RTX A6000 48 GB, under the 512 MiB line\nthe serve check warns about at every request (#2065). Measured with STRATA_TRACE=1: -164 MiB at the prompt path and -80 MiB at the verifier\nbeyond the draft head, the same with --prefill 512, 2048 and auto, on both cards, and the same on v0.2.6 (so not new in 0.2.7).\n\nauto_cache_slots() (include/strata/core/auto_cache.hpp, tested in src/core/auto_cache_test.cpp) now leaves kLateAllocMib = 256 for it,\nunless the card could not keep min_slots (#496) after it, and not under STRATA_DEFAULTS=026. An explicit --expert-cache N and\n--vram-reserve-mib N are untouched; the cache is ~100 slots (about 1.8% on a 16 GB card) smaller.",
+   "tree": {
+    "sha": "002a433d8db3a919d8a37924ba7dbc5da1af63dc",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/002a433d8db3a919d8a37924ba7dbc5da1af63dc"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/cfa197e21a323ea552ac4d6a18f7fb19023d26ed",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/cfa197e21a323ea552ac4d6a18f7fb19023d26ed",
+  "html_url": "https://github.com/Niko1221/Strata/commit/cfa197e21a323ea552ac4d6a18f7fb19023d26ed",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/cfa197e21a323ea552ac4d6a18f7fb19023d26ed/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "22fb183cf6de15d2b35f52080732d94edb341fde",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/22fb183cf6de15d2b35f52080732d94edb341fde",
+    "html_url": "https://github.com/Niko1221/Strata/commit/22fb183cf6de15d2b35f52080732d94edb341fde"
+   }
+  ]
+ },
+ {
+  "sha": "22fb183cf6de15d2b35f52080732d94edb341fde",
+  "node_id": "C_kwDOUpvcvdoAKDIyZmIxODNjZjZkZTE1ZDJiMzVmNTIwODA3MzJkOTRlZGIzNDFmZGU",
+  "commit": {
+   "author": {
+    "name": "WenyuanXu",
+    "email": "wyxu95@gmail.com",
+    "date": "2026-10-28T23:05:56Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T23:05:59Z"
+   },
+   "message": "DeepSeek engine: a layer split's chunked prompt no longer deadlocks - the host waits for another group's flag before it queues the device-side wait (2x H100, IST-DAS-2.25bpw)\n\nOn a two-GPU layer split, every prompt on the chunked path stalled: a device's wait kernel spun for a\nhand-off while that device's thread blocked in its first cuBLAS call, and the other device's thread too.\nhost_wait_at_least polls the same host-mapped flag (the kernels' signed flag - seq test) before the four\ncross-group waits of the chunk path, so the kernel finds the flag up. The GPU work and its order do not\nchange.",
+   "tree": {
+    "sha": "57990ff63789924348e307f10e523ff890267e86",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/57990ff63789924348e307f10e523ff890267e86"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/22fb183cf6de15d2b35f52080732d94edb341fde",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/22fb183cf6de15d2b35f52080732d94edb341fde",
+  "html_url": "https://github.com/Niko1221/Strata/commit/22fb183cf6de15d2b35f52080732d94edb341fde",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/22fb183cf6de15d2b35f52080732d94edb341fde/comments",
+  "author": {
+   "login": "Anemone95",
+   "id": 4996660,
+   "node_id": "MDQ6VXNlcjQ5OTY2NjA=",
+   "avatar_url": "https://avatars.githubusercontent.com/u/4996660?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Anemone95",
+   "html_url": "https://github.com/Anemone95",
+   "followers_url": "https://api.github.com/users/Anemone95/followers",
+   "following_url": "https://api.github.com/users/Anemone95/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Anemone95/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Anemone95/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Anemone95/subscriptions",
+   "organizations_url": "https://api.github.com/users/Anemone95/orgs",
+   "repos_url": "https://api.github.com/users/Anemone95/repos",
+   "events_url": "https://api.github.com/users/Anemone95/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Anemone95/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "b18292d702e8ee3b8705263c83951c514ac972b5",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/b18292d702e8ee3b8705263c83951c514ac972b5",
+    "html_url": "https://github.com/Niko1221/Strata/commit/b18292d702e8ee3b8705263c83951c514ac972b5"
+   }
+  ]
+ },
+ {
+  "sha": "07d5ecfacb4c90cfaf06ba23aa3f96733247c088",
+  "node_id": "C_kwDOUpvcvdoAKDA3ZDVlY2ZhY2I0YzkwY2ZhZjA2YmEyM2FhM2Y5NjczMzI0N2MwODg",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T23:01:54Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T23:01:54Z"
+   },
+   "message": "engine: wait up to 20 s for the RAM the expert arena needs, then load with a plainer warning (#4051)\n\nAn arena load with 10 GiB available for a 40 GiB arena sent a 60 GiB host into\nmemory reclaim until it was reset.  The check that is there warns only (a\ncgroup limit below the arena still stops the start), and its own example is an\nengine that is still exiting.  Before the warning, the load now waits for the\nRAM to come back, re-reading it every 0.25 s for up to 20 s, and says so in the\nlog every 5 s (STRATA_ARENA_RAM_WAIT_S changes the seconds, 0 loads at once).\nIf it is still short the load goes on as before, with the numbers; below half\nof the arena the warning says the whole PC can stall in reclaim and names a\nsystemd MemoryHigh= as the way to keep one program from taking all the RAM.\nNothing is refused or capped.\n\ndetail::wait_for_ram is the loop with its sampler and sleeper passed in, tested\nin file_expert_source_test (test_wait_for_ram).  expert_source.cpp passes\ng++ -std=c++20 -fsyntax-only against the CUDA 13.1 headers; the engine itself\nwas not built or run for this change.",
+   "tree": {
+    "sha": "8b3ed43d562a65a0ffb0f05ec4e8ae3523bcd45f",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/8b3ed43d562a65a0ffb0f05ec4e8ae3523bcd45f"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/07d5ecfacb4c90cfaf06ba23aa3f96733247c088",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/07d5ecfacb4c90cfaf06ba23aa3f96733247c088",
+  "html_url": "https://github.com/Niko1221/Strata/commit/07d5ecfacb4c90cfaf06ba23aa3f96733247c088",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/07d5ecfacb4c90cfaf06ba23aa3f96733247c088/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "d71132738e615aef47ff22989673036bd04db63b",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/d71132738e615aef47ff22989673036bd04db63b",
+    "html_url": "https://github.com/Niko1221/Strata/commit/d71132738e615aef47ff22989673036bd04db63b"
+   }
+  ]
+ },
+ {
+  "sha": "587a47443328ee4a289b4dfad842d88a4b1453f3",
+  "node_id": "C_kwDOUpvcvdoAKDU4N2E0NzQ0MzMyOGVlNGEyODliNGRmYWQ4NDJkODhhNGIxNDUzZjM",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T22:41:53Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T22:41:53Z"
+   },
+   "message": "Qwen: the PLE residency policy gives its lock back when the lock is what leaves the automatic conversation cache too little RAM (#4518)\n\nThe 0.2.7 policy locks the 26.8 GiB PLE table in RAM at start when table + expert arena + 8 GiB fit. What the rest of the load takes\nafterwards (KV pools, pinned staging, host buffers of two GPUs) is not known then: on a 128 GB two-GPU PC it left under 5 GiB and the\nautomatic conversation cache turned itself off, a regression against 0.2.6, which kept 8192 MiB.\n\nWhen the cache is automatic and the lock came from the policy (not --ple-io ram), the cache is sized first: if unlocking the table\nwould give the cache more room, PleTable::unlock() hands the lock back (the pages stay cached, the OS may reclaim them), the log says\nso, and the cache is sized from the RAM then free. --conversation-cache-mib N and an explicit --ple-io ram are untouched.\nple_lock_blocks_cache() is the decision, unit-tested in src/core/ple_residency_test.cpp.",
+   "tree": {
+    "sha": "dc9559ca60ffbbce8f293bf96b1b12ce1494293b",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/dc9559ca60ffbbce8f293bf96b1b12ce1494293b"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/587a47443328ee4a289b4dfad842d88a4b1453f3",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/587a47443328ee4a289b4dfad842d88a4b1453f3",
+  "html_url": "https://github.com/Niko1221/Strata/commit/587a47443328ee4a289b4dfad842d88a4b1453f3",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/587a47443328ee4a289b4dfad842d88a4b1453f3/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "35c0c9a8ae19f7f697dcd0eb92d2eb7001af45cc",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/35c0c9a8ae19f7f697dcd0eb92d2eb7001af45cc",
+    "html_url": "https://github.com/Niko1221/Strata/commit/35c0c9a8ae19f7f697dcd0eb92d2eb7001af45cc"
+   }
+  ]
+ },
+ {
+  "sha": "35c0c9a8ae19f7f697dcd0eb92d2eb7001af45cc",
+  "node_id": "C_kwDOUpvcvdoAKDM1YzBjOWE4YWUxOWY3ZjY5N2RjZDBlYjkyZDJlYjcwMDFhZjQ1Y2M",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T22:41:53Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T22:41:53Z"
+   },
+   "message": "DeepSeek engine: slot_load() writes each tensor-parallel member's window ring and compressor group under its own device (#4350)\n\nslot_load() selected the lead layer's device once and then copied into every member of a tensor-parallel group; the members' buffers\nsit on their own GPUs, so on two identical cards (tp 2) the second member's copy ran with the wrong device current. A failed copy\nmakes slot_load() fail, and slot_take() then deletes the saved conversation. Every other per-member loop (restore, reset) already\nselects the member's device; slot_load() now does too.",
+   "tree": {
+    "sha": "adf1fc00ae91ac2de89227dc98307e0700b3bd23",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/adf1fc00ae91ac2de89227dc98307e0700b3bd23"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/35c0c9a8ae19f7f697dcd0eb92d2eb7001af45cc",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/35c0c9a8ae19f7f697dcd0eb92d2eb7001af45cc",
+  "html_url": "https://github.com/Niko1221/Strata/commit/35c0c9a8ae19f7f697dcd0eb92d2eb7001af45cc",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/35c0c9a8ae19f7f697dcd0eb92d2eb7001af45cc/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "c7a0cef13a7b22569369f5e423bafa34b746c19c",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/c7a0cef13a7b22569369f5e423bafa34b746c19c",
+    "html_url": "https://github.com/Niko1221/Strata/commit/c7a0cef13a7b22569369f5e423bafa34b746c19c"
+   }
+  ]
+ },
+ {
+  "sha": "c7a0cef13a7b22569369f5e423bafa34b746c19c",
+  "node_id": "C_kwDOUpvcvdoAKGM3YTBjZWYxM2E3YjIyNTY5MzY5ZjVlNDIzYmFmYTM0Yjc0NmMxOWM",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T22:41:44Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T22:41:44Z"
+   },
+   "message": "Conversation cache: parking an idle --batch slot no longer drops the main session's copy with the shared-prefix checkpoint (#4420)\n\nA batch slot's chain holds one checkpoint (the one its admission copied in). park_slot() went through park_source(), whose\ndrop_superseded() (#342) removes a parked entry when the outgoing chain holds that entry's deepest checkpoint; the main session's\ncopy of the same conversation qualifies, and the root checkpoint at the end of an agent's system prompt went with it. The next\noverlapping request then read the whole 5 K-token prefix again (323 ms in 0.2.6, 4130 ms in 0.2.7).\n\nConversationCache::supersedes_richer() says when the park would drop an entry that has a checkpoint the slot's chain lacks; park_slot()\nthen leaves the slot unparked (it is overwritten, as in 0.2.6) and says so. A slot with no such parked copy is parked as before.\nThe predicate and its test come from the report (shenmintao, #4420).",
+   "tree": {
+    "sha": "1f98c1a50dc7f77a003e77bb2ee38faf2919fc9f",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/1f98c1a50dc7f77a003e77bb2ee38faf2919fc9f"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/c7a0cef13a7b22569369f5e423bafa34b746c19c",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/c7a0cef13a7b22569369f5e423bafa34b746c19c",
+  "html_url": "https://github.com/Niko1221/Strata/commit/c7a0cef13a7b22569369f5e423bafa34b746c19c",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/c7a0cef13a7b22569369f5e423bafa34b746c19c/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "ea73eab442589493cef140db1997587f7383618b",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/ea73eab442589493cef140db1997587f7383618b",
+    "html_url": "https://github.com/Niko1221/Strata/commit/ea73eab442589493cef140db1997587f7383618b"
+   }
+  ]
+ },
+ {
+  "sha": "ea73eab442589493cef140db1997587f7383618b",
+  "node_id": "C_kwDOUpvcvdoAKGVhNzNlYWI0NDI1ODk0OTNjZWYxNDBkYjE5OTc1ODdmNzM4MzYxOGI",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T22:41:26Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T22:41:26Z"
+   },
+   "message": "DeepSeek engine: the auto RAM store no longer reads a discrete GPU's pinned buffers as unified memory (#4147)\n\nstore_gb_now() took any drop of 4 GB or more in the free RAM between the first estimate and the end of the weight upload for a\nGPU that shares the PC's RAM, and subtracted a context-sized reserve (27 GB at 256K). On a discrete pair (2 x RTX 3090) the\npinned staging buffers and the page cache cause the same drop, so a 256K context shrank the store from 48 GB to 15-18 GB and\ndecode fell from 9-12 to 3-4 tokens a second (a regression since 0.2.4.2).\n\nThe decision is now store_gpu_shares_ram() (ds4_experts_rule.hpp): the RAM must have dropped AND a device must report\ncudaDevAttrIntegrated. Strix Halo, the DGX Spark's GB10 and the Apple path keep the old rule; a discrete card never counts.\nUnit test in tests/dsv41/experts_rule_test.cpp.",
+   "tree": {
+    "sha": "3133e931781924121ccd959eaf40a43f4c9f5f26",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/3133e931781924121ccd959eaf40a43f4c9f5f26"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/ea73eab442589493cef140db1997587f7383618b",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/ea73eab442589493cef140db1997587f7383618b",
+  "html_url": "https://github.com/Niko1221/Strata/commit/ea73eab442589493cef140db1997587f7383618b",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/ea73eab442589493cef140db1997587f7383618b/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "46c152a1310f77cd2f0ce2c7cd213962df14fe83",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/46c152a1310f77cd2f0ce2c7cd213962df14fe83",
+    "html_url": "https://github.com/Niko1221/Strata/commit/46c152a1310f77cd2f0ce2c7cd213962df14fe83"
+   }
+  ]
+ },
+ {
+  "sha": "7a80b3a96bf0dbb28d0548054c6cacef761d8022",
+  "node_id": "C_kwDOUpvcvdoAKDdhODBiM2E5NmJmMGRiYjI4ZDA1NDgwNTRjNmNhY2VmNzYxZDgwMjI",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T14:37:12Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T14:37:12Z"
+   },
+   "message": "Say plainly why a CPU without AVX-512 stops the engine: the pack folder without native_experts.txt, not the CPU, is the cause; doctor warns before the start, the launcher gives the next step, the SYCL engine names the folder like the CUDA one does",
+   "tree": {
+    "sha": "3651beaa73364054718bfc2d9fe16434233f97d4",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/3651beaa73364054718bfc2d9fe16434233f97d4"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/7a80b3a96bf0dbb28d0548054c6cacef761d8022",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/7a80b3a96bf0dbb28d0548054c6cacef761d8022",
+  "html_url": "https://github.com/Niko1221/Strata/commit/7a80b3a96bf0dbb28d0548054c6cacef761d8022",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/7a80b3a96bf0dbb28d0548054c6cacef761d8022/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "46c152a1310f77cd2f0ce2c7cd213962df14fe83",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/46c152a1310f77cd2f0ce2c7cd213962df14fe83",
+    "html_url": "https://github.com/Niko1221/Strata/commit/46c152a1310f77cd2f0ce2c7cd213962df14fe83"
+   }
+  ]
+ },
+ {
+  "sha": "d52b73dc657333e855c914e63c363c3f2ced1a52",
+  "node_id": "C_kwDOUpvcvdoAKGQ1MmI3M2RjNjU3MzMzZTg1NWM5MTRlNjNjMzYzYzNmMmNlZDFhNTI",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T14:13:37Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T14:13:37Z"
+   },
+   "message": "DS4_FAT_ROWS follow-up to the port: launches through strata_ds4_launch (the Mac build), off on Metal, only for the types f16_rows decodes (no trellis, no Q5_K / Q6_K down: a request would have stopped on 'not decoded'), at least 17 rows (the light kernels own the small experts)",
+   "tree": {
+    "sha": "bc45d0f0a22334362b50bfcb8a090ee22072f4d4",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/bc45d0f0a22334362b50bfcb8a090ee22072f4d4"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/d52b73dc657333e855c914e63c363c3f2ced1a52",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/d52b73dc657333e855c914e63c363c3f2ced1a52",
+  "html_url": "https://github.com/Niko1221/Strata/commit/d52b73dc657333e855c914e63c363c3f2ced1a52",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/d52b73dc657333e855c914e63c363c3f2ced1a52/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "0c5b157fbd9bdf036f7dba584e7f5fbdbcce76d1",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/0c5b157fbd9bdf036f7dba584e7f5fbdbcce76d1",
+    "html_url": "https://github.com/Niko1221/Strata/commit/0c5b157fbd9bdf036f7dba584e7f5fbdbcce76d1"
+   }
+  ]
+ },
+ {
+  "sha": "0c5b157fbd9bdf036f7dba584e7f5fbdbcce76d1",
+  "node_id": "C_kwDOUpvcvdoAKDBjNWIxNTdmYmQ5YmRmMDM2ZjdkYmE1ODRlN2Y1ZmJkYmNjZTc2ZDE",
+  "commit": {
+   "author": {
+    "name": "Lyes SBAHI",
+    "email": "143282344+lyesrock@users.noreply.github.com",
+    "date": "2026-10-25T14:55:49Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T14:07:48Z"
+   },
+   "message": "DeepSeek engine opt-in: the busy experts of a prompt take FP16 GEMMs, not the tiles (DS4_FAT_ROWS=N, default 0: byte-identical path, the packed tiles run exactly as before).  An expert of N rows or more has its weights decoded to FP16 once (iq::f16_rows, the values the tiles multiply), the rows gathered (gather_f16), cublasGemmEx, clamped SwiGLU in FP16 (swiglu_f16); SetArgs skip_ge leaves those experts out of the tiles.  The tiles decode an expert's weights again for every 64 of its rows; a popular expert of a long chunk has hundreds.  Measured on the RTX 5090 with the IST-DAS 2.25 bpw pack, v0.2.7 base, DS4_FAT_ROWS=64: a 13K-token prompt 1,400 -> 1,950 tok/s, a 5.4K prompt 1,065 -> 1,181, decode unchanged (28-33 short, 47-49 warm).  3x V100, Maya-XS: +6-8% on 8K and 32K prompts.  The same products, the sums' order differs: greedy output can diverge after the first rounding (wording equivalent); KL vs the reference 0.276, the stock path 0.285 (the same band, measured on Maya-XS; not yet re-measured on this base).",
+   "tree": {
+    "sha": "ae2363f99c7e4f08e5f08062da891f2cf53d05c8",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/ae2363f99c7e4f08e5f08062da891f2cf53d05c8"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/0c5b157fbd9bdf036f7dba584e7f5fbdbcce76d1",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/0c5b157fbd9bdf036f7dba584e7f5fbdbcce76d1",
+  "html_url": "https://github.com/Niko1221/Strata/commit/0c5b157fbd9bdf036f7dba584e7f5fbdbcce76d1",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/0c5b157fbd9bdf036f7dba584e7f5fbdbcce76d1/comments",
+  "author": {
+   "login": "lyesrock",
+   "id": 143282344,
+   "node_id": "U_kgDOCIpQqA",
+   "avatar_url": "https://avatars.githubusercontent.com/u/143282344?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/lyesrock",
+   "html_url": "https://github.com/lyesrock",
+   "followers_url": "https://api.github.com/users/lyesrock/followers",
+   "following_url": "https://api.github.com/users/lyesrock/following{/other_user}",
+   "gists_url": "https://api.github.com/users/lyesrock/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/lyesrock/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/lyesrock/subscriptions",
+   "organizations_url": "https://api.github.com/users/lyesrock/orgs",
+   "repos_url": "https://api.github.com/users/lyesrock/repos",
+   "events_url": "https://api.github.com/users/lyesrock/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/lyesrock/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "46c152a1310f77cd2f0ce2c7cd213962df14fe83",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/46c152a1310f77cd2f0ce2c7cd213962df14fe83",
+    "html_url": "https://github.com/Niko1221/Strata/commit/46c152a1310f77cd2f0ce2c7cd213962df14fe83"
+   }
+  ]
+ },
+ {
+  "sha": "55a557bb6d77facc73d291c3f9894289496c770c",
+  "node_id": "C_kwDOUpvcvdoAKDU1YTU1N2JiNmQ3N2ZhY2M3M2QyOTFjM2Y5ODk0Mjg5NDk2Yzc3MGM",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T05:20:11Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T05:20:11Z"
+   },
+   "message": "Merge f-0271-macds: the Mac reads DeepSeek's Engram rows with two threads (identical words run to run); DEEPSEEK_MAC.md numbers from that build",
+   "tree": {
+    "sha": "1b8fec95c59c2e0e7cc4699ade52af1087ba6050",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/1b8fec95c59c2e0e7cc4699ade52af1087ba6050"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/55a557bb6d77facc73d291c3f9894289496c770c",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/55a557bb6d77facc73d291c3f9894289496c770c",
+  "html_url": "https://github.com/Niko1221/Strata/commit/55a557bb6d77facc73d291c3f9894289496c770c",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/55a557bb6d77facc73d291c3f9894289496c770c/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "a9686a900a01c672c9a6c74661c6a725f850b6bf",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/a9686a900a01c672c9a6c74661c6a725f850b6bf",
+    "html_url": "https://github.com/Niko1221/Strata/commit/a9686a900a01c672c9a6c74661c6a725f850b6bf"
+   },
+   {
+    "sha": "ed1e5546c2b256706cd9297a5aad9106d5011a22",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/ed1e5546c2b256706cd9297a5aad9106d5011a22",
+    "html_url": "https://github.com/Niko1221/Strata/commit/ed1e5546c2b256706cd9297a5aad9106d5011a22"
+   }
+  ]
+ },
+ {
+  "sha": "bc6c32555b7bb31389e32d3201115ac0dac9258a",
+  "node_id": "C_kwDOUpvcvdoAKGJjNmMzMjU1NWI3YmIzMTM4OWUzMmQzMjAxMTE1YWMwZGFjOTI1OGE",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T04:33:46Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-28T04:33:46Z"
+   },
+   "message": "metal: the Engram rows are read with two threads (more gave different words run to run; the cause is not found yet); a failed Engram row read is reported",
+   "tree": {
+    "sha": "aec7bada0e479b39a58bece896dfc5f5b114a383",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/aec7bada0e479b39a58bece896dfc5f5b114a383"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/bc6c32555b7bb31389e32d3201115ac0dac9258a",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/bc6c32555b7bb31389e32d3201115ac0dac9258a",
+  "html_url": "https://github.com/Niko1221/Strata/commit/bc6c32555b7bb31389e32d3201115ac0dac9258a",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/bc6c32555b7bb31389e32d3201115ac0dac9258a/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "979639e9cd9e565374e6a2b559b689f0e96a5c73",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/979639e9cd9e565374e6a2b559b689f0e96a5c73",
+    "html_url": "https://github.com/Niko1221/Strata/commit/979639e9cd9e565374e6a2b559b689f0e96a5c73"
+   }
+  ]
+ },
+ {
+  "sha": "9258e4086e81a98274daaa606a1427fb07c4c4a9",
+  "node_id": "C_kwDOUpvcvdoAKDkyNThlNDA4NmU4MWE5ODI3NGRhYWE2MDZhMTQyN2ZiMDdjNGM0YTk",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T23:33:44Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T23:33:44Z"
+   },
+   "message": "Merge f-0271-macds (DeepSeek on the Mac) into 0.2.7.1: setup.py keeps the Mac sentence and adds the DGX Spark one for Linux ARM64",
+   "tree": {
+    "sha": "45b6113ba9b787e93d01b3eecf3a3d21589abd22",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/45b6113ba9b787e93d01b3eecf3a3d21589abd22"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/9258e4086e81a98274daaa606a1427fb07c4c4a9",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/9258e4086e81a98274daaa606a1427fb07c4c4a9",
+  "html_url": "https://github.com/Niko1221/Strata/commit/9258e4086e81a98274daaa606a1427fb07c4c4a9",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/9258e4086e81a98274daaa606a1427fb07c4c4a9/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "09c18d3e9858740a97c0581fd8d0c1ee43fda20d",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/09c18d3e9858740a97c0581fd8d0c1ee43fda20d",
+    "html_url": "https://github.com/Niko1221/Strata/commit/09c18d3e9858740a97c0581fd8d0c1ee43fda20d"
+   },
+   {
+    "sha": "2a220c1d1c5af7e9d5da679e6b17a775473f801c",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/2a220c1d1c5af7e9d5da679e6b17a775473f801c",
+    "html_url": "https://github.com/Niko1221/Strata/commit/2a220c1d1c5af7e9d5da679e6b17a775473f801c"
+   }
+  ]
+ },
+ {
+  "sha": "864afc7421f5ccebe342a10b508de55a3f8b1d5f",
+  "node_id": "C_kwDOUpvcvdoAKDg2NGFmYzc0MjFmNWNjZWJlMzQyYTEwYjUwOGRlNTVhM2Y4YjFkNWY",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T20:58:12Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T20:58:12Z"
+   },
+   "message": "mac: the DSpark message says it is not supported on a Mac yet; --dspark on warns before loading (engine and launch)",
+   "tree": {
+    "sha": "96eabc8b78ba441c4cd5ac6f52b69e75d6b870b9",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/96eabc8b78ba441c4cd5ac6f52b69e75d6b870b9"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/864afc7421f5ccebe342a10b508de55a3f8b1d5f",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/864afc7421f5ccebe342a10b508de55a3f8b1d5f",
+  "html_url": "https://github.com/Niko1221/Strata/commit/864afc7421f5ccebe342a10b508de55a3f8b1d5f",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/864afc7421f5ccebe342a10b508de55a3f8b1d5f/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "d50f6a77ed7fe86ac14964238b96fedace7cca6d",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/d50f6a77ed7fe86ac14964238b96fedace7cca6d",
+    "html_url": "https://github.com/Niko1221/Strata/commit/d50f6a77ed7fe86ac14964238b96fedace7cca6d"
+   }
+  ]
+ },
+ {
+  "sha": "d50f6a77ed7fe86ac14964238b96fedace7cca6d",
+  "node_id": "C_kwDOUpvcvdoAKGQ1MGY2YTc3ZWQ3ZmU4NmFjMTQ5NjQyMzhiOTZmZWRhY2U3Y2NhNmQ",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T20:55:25Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T20:55:37Z"
+   },
+   "message": "metal: the DSpark drafter stays off on a Mac unless asked for (its quantised Markov bias has no Metal kernel; the setup test stopped with kernel launch with no Metal dispatch)",
+   "tree": {
+    "sha": "32c85ff997fb8113b27ceb23d4ce26c4047f3523",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/32c85ff997fb8113b27ceb23d4ce26c4047f3523"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/d50f6a77ed7fe86ac14964238b96fedace7cca6d",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/d50f6a77ed7fe86ac14964238b96fedace7cca6d",
+  "html_url": "https://github.com/Niko1221/Strata/commit/d50f6a77ed7fe86ac14964238b96fedace7cca6d",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/d50f6a77ed7fe86ac14964238b96fedace7cca6d/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "5729a6e50a72c224cfaec1781e6984ce381e795e",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/5729a6e50a72c224cfaec1781e6984ce381e795e",
+    "html_url": "https://github.com/Niko1221/Strata/commit/5729a6e50a72c224cfaec1781e6984ce381e795e"
+   }
+  ]
+ },
+ {
+  "sha": "845941f522c49b5964f017a4fefd43e77586a718",
+  "node_id": "C_kwDOUpvcvdoAKDg0NTk0MWY1MjJjNDliNTk2NGYwMTdhNGZlZmQ0M2U3NzU4NmE3MTg",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T20:17:42Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T20:17:42Z"
+   },
+   "message": "metal: cand_blocks ran the block maxima and returned before the block selection: contexts past 16K tokens read an unwritten candidate list (needle lost at 17K+)",
+   "tree": {
+    "sha": "20b835350c9a7675ed3c017c92b911bac8675fbe",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/20b835350c9a7675ed3c017c92b911bac8675fbe"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/845941f522c49b5964f017a4fefd43e77586a718",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/845941f522c49b5964f017a4fefd43e77586a718",
+  "html_url": "https://github.com/Niko1221/Strata/commit/845941f522c49b5964f017a4fefd43e77586a718",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/845941f522c49b5964f017a4fefd43e77586a718/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "e3ed743f210907985ae6490deee11990b9b2709d",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/e3ed743f210907985ae6490deee11990b9b2709d",
+    "html_url": "https://github.com/Niko1221/Strata/commit/e3ed743f210907985ae6490deee11990b9b2709d"
+   }
+  ]
+ },
+ {
+  "sha": "e3ed743f210907985ae6490deee11990b9b2709d",
+  "node_id": "C_kwDOUpvcvdoAKGUzZWQ3NDNmMjEwOTA3OTg1YWU2NDkwZGVlZTExOTkwYjliMjcwOWQ",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T19:54:49Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T19:54:49Z"
+   },
+   "message": "metal: the expert share leaves room for other programs' anonymous memory (a 60 GB Qwen server beside the engine froze the M5 Max twice)",
+   "tree": {
+    "sha": "cb490766b2f18d1bd3f9eedd6838ecb81c4e5936",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/cb490766b2f18d1bd3f9eedd6838ecb81c4e5936"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/e3ed743f210907985ae6490deee11990b9b2709d",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/e3ed743f210907985ae6490deee11990b9b2709d",
+  "html_url": "https://github.com/Niko1221/Strata/commit/e3ed743f210907985ae6490deee11990b9b2709d",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/e3ed743f210907985ae6490deee11990b9b2709d/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "732e4bfb606608bc72e068756caa0cd6588aa7f1",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/732e4bfb606608bc72e068756caa0cd6588aa7f1",
+    "html_url": "https://github.com/Niko1221/Strata/commit/732e4bfb606608bc72e068756caa0cd6588aa7f1"
+   }
+  ]
+ },
+ {
+  "sha": "8f7d53ccd5892388d44954f818f757fe8e23ccdf",
+  "node_id": "C_kwDOUpvcvdoAKDhmN2Q1M2NjZDU4OTIzODhkNDQ5NTRmODE4Zjc1N2ZlOGUyM2NjZGY",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T16:38:12Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T16:38:12Z"
+   },
+   "message": "SetArgs: the Metal fields exist only in Metal builds (the CUDA/HIP kernels take the struct by value)",
+   "tree": {
+    "sha": "de46814dbb717b2004c12a51e1e10aeba5441ab3",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/de46814dbb717b2004c12a51e1e10aeba5441ab3"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/8f7d53ccd5892388d44954f818f757fe8e23ccdf",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/8f7d53ccd5892388d44954f818f757fe8e23ccdf",
+  "html_url": "https://github.com/Niko1221/Strata/commit/8f7d53ccd5892388d44954f818f757fe8e23ccdf",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/8f7d53ccd5892388d44954f818f757fe8e23ccdf/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "2cb47c34c2b1ca6cfb28f8e971928e5650dc15b4",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/2cb47c34c2b1ca6cfb28f8e971928e5650dc15b4",
+    "html_url": "https://github.com/Niko1221/Strata/commit/2cb47c34c2b1ca6cfb28f8e971928e5650dc15b4"
+   }
+  ]
+ },
+ {
+  "sha": "232fa357fd0820a4dc11a043819ef5a55b2123cb",
+  "node_id": "C_kwDOUpvcvdoAKDIzMmZhMzU3ZmQwODIwYTRkYzExYTA0MzgxOWVmNWE1NWIyMTIzY2I",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T16:30:28Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T16:30:28Z"
+   },
+   "message": "SetArgs: the Metal fields go last, so the CUDA/HIP kernels' parameter layout (and SASS) is exactly v0.2.7's",
+   "tree": {
+    "sha": "a31190f1aa55d6ddf821d773d473d56ad746f463",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/a31190f1aa55d6ddf821d773d473d56ad746f463"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/232fa357fd0820a4dc11a043819ef5a55b2123cb",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/232fa357fd0820a4dc11a043819ef5a55b2123cb",
+  "html_url": "https://github.com/Niko1221/Strata/commit/232fa357fd0820a4dc11a043819ef5a55b2123cb",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/232fa357fd0820a4dc11a043819ef5a55b2123cb/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "828fc8000445fbf7b4dfa7675a796cd0cd4a58bd",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/828fc8000445fbf7b4dfa7675a796cd0cd4a58bd",
+    "html_url": "https://github.com/Niko1221/Strata/commit/828fc8000445fbf7b4dfa7675a796cd0cd4a58bd"
+   }
+  ]
+ },
+ {
+  "sha": "d551ab028249a69243e0205484c2a51619fec873",
+  "node_id": "C_kwDOUpvcvdoAKGQ1NTFhYjAyODI0OWE2OTI0M2UwMjA1NDg0YzJhNTE2MTlmZWM4NzM",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T16:13:08Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T16:13:08Z"
+   },
+   "message": "DeepSeek Metal port: DS4_FAKE_CPU_US reads its own value (build fix found by the HIP build)",
+   "tree": {
+    "sha": "d04f82a1d948fbe6609b3c33a7388b83c34acbcb",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/d04f82a1d948fbe6609b3c33a7388b83c34acbcb"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/d551ab028249a69243e0205484c2a51619fec873",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/d551ab028249a69243e0205484c2a51619fec873",
+  "html_url": "https://github.com/Niko1221/Strata/commit/d551ab028249a69243e0205484c2a51619fec873",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/d551ab028249a69243e0205484c2a51619fec873/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "56ab127c871b6165a845601ac46c697217783dd1",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/56ab127c871b6165a845601ac46c697217783dd1",
+    "html_url": "https://github.com/Niko1221/Strata/commit/56ab127c871b6165a845601ac46c697217783dd1"
+   }
+  ]
+ },
+ {
+  "sha": "8544420180e22ef37b10881f17bbd75920e9da7b",
+  "node_id": "C_kwDOUpvcvdoAKDg1NDQ0MjAxODBlMjJlZjM3YjEwODgxZjE3YmJkNzU5MjBlOWRhN2I",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T15:56:42Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T16:12:36Z"
+   },
+   "message": "nv_defaults_test: the sm_121 table, its two off switches (STRATA_SM121_PERF=0, STRATA_DEFAULTS=026) and that the other tables are untouched",
+   "tree": {
+    "sha": "66942c359abb8d395604b56e8756c7a8c18572f9",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/66942c359abb8d395604b56e8756c7a8c18572f9"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/8544420180e22ef37b10881f17bbd75920e9da7b",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/8544420180e22ef37b10881f17bbd75920e9da7b",
+  "html_url": "https://github.com/Niko1221/Strata/commit/8544420180e22ef37b10881f17bbd75920e9da7b",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/8544420180e22ef37b10881f17bbd75920e9da7b/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "f436dba81b19753d81f9f0bc4096792ad9329223",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/f436dba81b19753d81f9f0bc4096792ad9329223",
+    "html_url": "https://github.com/Niko1221/Strata/commit/f436dba81b19753d81f9f0bc4096792ad9329223"
+   }
+  ]
+ },
+ {
+  "sha": "e3d8823e6c8e6cec732f3db7640c909c609a1b28",
+  "node_id": "C_kwDOUpvcvdoAKGUzZDg4MjNlNmM4ZTZjZWM3MzJmM2RiNzY0MGM5MDljNjA5YTFiMjg",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T15:51:53Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T16:12:36Z"
+   },
+   "message": "DeepSeek on arm64 Linux: the same two compile fixes as the Metal branch (amd_family() on a non-x86 CPU, iq256x stubs in portable.cpp)\n\nTaken verbatim from 756380301 so the two branches merge without a conflict.",
+   "tree": {
+    "sha": "6bc8bd41e225bf40e610ab12289eed3aaad276c4",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/6bc8bd41e225bf40e610ab12289eed3aaad276c4"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/e3d8823e6c8e6cec732f3db7640c909c609a1b28",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/e3d8823e6c8e6cec732f3db7640c909c609a1b28",
+  "html_url": "https://github.com/Niko1221/Strata/commit/e3d8823e6c8e6cec732f3db7640c909c609a1b28",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/e3d8823e6c8e6cec732f3db7640c909c609a1b28/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "9a398bd5bf60c90d25dfebec1172ceacf68d0c9e",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/9a398bd5bf60c90d25dfebec1172ceacf68d0c9e",
+    "html_url": "https://github.com/Niko1221/Strata/commit/9a398bd5bf60c90d25dfebec1172ceacf68d0c9e"
+   }
+  ]
+ },
+ {
+  "sha": "9a398bd5bf60c90d25dfebec1172ceacf68d0c9e",
+  "node_id": "C_kwDOUpvcvdoAKDlhMzk4YmQ1YmY2MGM5MGQyNWRmZWJlYzExNzJjZWFjZjY4ZDBjOWU",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T15:46:03Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T16:12:36Z"
+   },
+   "message": "sm_121 (GB10, DGX Spark) speed defaults and the fused prompt tile\n\nnv_defaults.cpp gets an sm_121 table beside sm_86 and sm_60: STRATA_PF_FUSED=1 (fused IQ prompt kernels), STRATA_PREFILL_NVFP4=w4a4\n(NVFP4 prompt MMQ with FP4 activations), STRATA_HC_UPMIX=1 (fused hyper-connection read), STRATA_SPEC_COST=1 (cost-aware MTP window).\nMeasured on one GB10 with paired A/Bs (docs/DGX_SPARK_LINUX.md); a switch the user set is kept. STRATA_SM121_PERF=0 turns the table\noff, and so does the 0.2.7 master switch STRATA_DEFAULTS=026. Unlike the sm_86 / sm_60 tables these are not bit-exact (the fused prompt\npath and the FP4 activations round differently; 24 of 24 greedy answers were identical), so the start line does not call them exact.\n\nmoe_fused_iq.cu: on a GB10 the work-item rule never reached its 128-row tile (the launch average is above 112 rows an expert at every\nprompt size), so pick_ww takes the 128-row tile from 65,536 routed rows a launch up (+3% prompt at 16K and 32K; 4K keeps 64).\nSTRATA_PF_TILE_DEBUG=1 prints the choice. Other parts take the line they took before.",
+   "tree": {
+    "sha": "80b4c9d331cbdb206b2de7fa33486e49ef2e14fd",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/80b4c9d331cbdb206b2de7fa33486e49ef2e14fd"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/9a398bd5bf60c90d25dfebec1172ceacf68d0c9e",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/9a398bd5bf60c90d25dfebec1172ceacf68d0c9e",
+  "html_url": "https://github.com/Niko1221/Strata/commit/9a398bd5bf60c90d25dfebec1172ceacf68d0c9e",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/9a398bd5bf60c90d25dfebec1172ceacf68d0c9e/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "4e06c84b915961ec2fdc603499e6526e333f6544",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/4e06c84b915961ec2fdc603499e6526e333f6544",
+    "html_url": "https://github.com/Niko1221/Strata/commit/4e06c84b915961ec2fdc603499e6526e333f6544"
+   }
+  ]
+ },
+ {
+  "sha": "4e06c84b915961ec2fdc603499e6526e333f6544",
+  "node_id": "C_kwDOUpvcvdoAKDRlMDZjODRiOTE1OTYxZWMyZmRjNjAzNDk5ZTY1MjZlMzMzZjY1NDQ",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T15:46:03Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T16:12:36Z"
+   },
+   "message": "DeepSeek engine on an integrated NVIDIA GPU (DGX Spark): arm64 build and placement from MemAvailable\n\n- ds4_gg_cpu.cpp: amd_family() on a non-x86 CPU read no variable the rest of the function uses; it now reports no AMD family\n- exl3_cpu.cpp: kGemmK moved above the AVX-512 section, as exl3_cpu_gemm_scratch() sizes by it on every CPU\n- ds4_model.cu: uma_free(): on an integrated NVIDIA GPU on Linux cudaMemGetInfo counts only MemFree, while the model files' page cache\n  holds most of what the kernel can still give back. The placement, the CPU-lane warm-up and the vision tower size their room from\n  MemAvailable less DS4_UMA_HEADROOM_GIB (default 6) when that is larger. A discrete GPU, HIP and Windows are not touched.\n  On a GB10: 12,163-12,226 of 15,744 experts in graphics memory where cudaMemGetInfo's free placed 11,961.",
+   "tree": {
+    "sha": "3b7e856ae712b6c36c0773115b12811fa72491d6",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/3b7e856ae712b6c36c0773115b12811fa72491d6"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/4e06c84b915961ec2fdc603499e6526e333f6544",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/4e06c84b915961ec2fdc603499e6526e333f6544",
+  "html_url": "https://github.com/Niko1221/Strata/commit/4e06c84b915961ec2fdc603499e6526e333f6544",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/4e06c84b915961ec2fdc603499e6526e333f6544/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "f262b81b28974cfac1fd21e176d6fda2790efac5",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/f262b81b28974cfac1fd21e176d6fda2790efac5",
+    "html_url": "https://github.com/Niko1221/Strata/commit/f262b81b28974cfac1fd21e176d6fda2790efac5"
+   }
+  ]
+ },
+ {
+  "sha": "f262b81b28974cfac1fd21e176d6fda2790efac5",
+  "node_id": "C_kwDOUpvcvdoAKGYyNjJiODFiMjg5NzRjZmFjMWZkMjFlMTc2ZDZmZGEyNzkwZWZhYzU",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T15:45:54Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T16:12:36Z"
+   },
+   "message": "Engine for the DGX Spark: the arm64 CUDA build on top of #3622\n\n#3622 made the strata target compile on aarch64. This adds what a Spark build needs beyond that:\n- the trellis dispatcher (tq_cpu.cpp, its scalar rows) is part of the arm64 kernel library, as it is in the Metal build, so the\n  DeepSeek engine's CPU lane links; ds4_tq_cpu.cpp names the AVX units on x86-64 only\n- a STRATA_PORTABLE build on arm64 sets ggml-cpu's -march to armv8.2-a+dotprod+fp16+i8mm (STRATA_ARM64_ARCH) instead of the build\n  host's; GGML_NATIVE OFF alone would leave plain armv8-a and no NEON dot products\n- the x86 kernels' parity programs and benches are not configured on arm64; the test suite defaults off there (-DSTRATA_BUILD_TESTS=ON\n  still builds what builds)\n- spark/build_engine.sh: the reproducible build of strata, strata-dsv41 and the picture reader into an engine folder, with the CUDA\n  libraries beside them (RUNPATH $ORIGIN)\n\nEvery change is behind STRATA_CPU_X86 being OFF or inside a new file; the x86 and Metal builds do not take it.",
+   "tree": {
+    "sha": "cd68d2e26110a8be3e47a2e69cabe105bff63987",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/cd68d2e26110a8be3e47a2e69cabe105bff63987"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/f262b81b28974cfac1fd21e176d6fda2790efac5",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/f262b81b28974cfac1fd21e176d6fda2790efac5",
+  "html_url": "https://github.com/Niko1221/Strata/commit/f262b81b28974cfac1fd21e176d6fda2790efac5",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/f262b81b28974cfac1fd21e176d6fda2790efac5/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
+    "html_url": "https://github.com/Niko1221/Strata/commit/5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d"
+   }
+  ]
+ },
+ {
+  "sha": "56ab127c871b6165a845601ac46c697217783dd1",
+  "node_id": "C_kwDOUpvcvdoAKDU2YWIxMjdjODcxYjYxNjVhODQ1NjAxYWM0NmM2OTcyMTc3ODNkZDE",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T16:07:21Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T16:07:21Z"
+   },
+   "message": "DeepSeek Metal port: keep the CUDA/HIP paths as in 0.2.7 (chunk-path hc mix through cuBLAS, async embedding upload, no extra h16 rows, no diagnostics on hot paths, type_on_chunk true off Metal)",
+   "tree": {
+    "sha": "d3368fa3d38c26936c2e65ca497b33a97b7ac974",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/d3368fa3d38c26936c2e65ca497b33a97b7ac974"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/56ab127c871b6165a845601ac46c697217783dd1",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/56ab127c871b6165a845601ac46c697217783dd1",
+  "html_url": "https://github.com/Niko1221/Strata/commit/56ab127c871b6165a845601ac46c697217783dd1",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/56ab127c871b6165a845601ac46c697217783dd1/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "5ed8ae03be72249785bce43c75a558bb18307424",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/5ed8ae03be72249785bce43c75a558bb18307424",
+    "html_url": "https://github.com/Niko1221/Strata/commit/5ed8ae03be72249785bce43c75a558bb18307424"
+   }
+  ]
+ },
+ {
+  "sha": "5ed8ae03be72249785bce43c75a558bb18307424",
+  "node_id": "C_kwDOUpvcvdoAKDVlZDhhZTAzYmU3MjI0OTc4NWJjZTQzYzc1YTU1OGJiMTgzMDc0MjQ",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T16:01:02Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T16:01:02Z"
+   },
+   "message": "launch header: exl3.cu includes it for every backend; exl3_cpu kGemmK only off x86",
+   "tree": {
+    "sha": "65bb922515873f1f733482f6edbec5f204f10687",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/65bb922515873f1f733482f6edbec5f204f10687"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/5ed8ae03be72249785bce43c75a558bb18307424",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/5ed8ae03be72249785bce43c75a558bb18307424",
+  "html_url": "https://github.com/Niko1221/Strata/commit/5ed8ae03be72249785bce43c75a558bb18307424",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/5ed8ae03be72249785bce43c75a558bb18307424/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "756380301beb58ac0908fa5444a2d0c8d0bc1b33",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/756380301beb58ac0908fa5444a2d0c8d0bc1b33",
+    "html_url": "https://github.com/Niko1221/Strata/commit/756380301beb58ac0908fa5444a2d0c8d0bc1b33"
+   }
+  ]
+ },
+ {
+  "sha": "756380301beb58ac0908fa5444a2d0c8d0bc1b33",
+  "node_id": "C_kwDOUpvcvdoAKDc1NjM4MDMwMWJlYjU4YWMwOTA4ZmE1NDQ0YTJkMGM4ZDBiYzFiMzM",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T15:49:46Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T15:49:46Z"
+   },
+   "message": "DeepSeek on Metal: compile fixes on the 0.2.7 tree (huge pages, wmma include, DeviceProp.integrated, iq256x stubs)",
+   "tree": {
+    "sha": "2f8e6fdec0246ca9df3026ab0c5a65914022a241",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/2f8e6fdec0246ca9df3026ab0c5a65914022a241"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/756380301beb58ac0908fa5444a2d0c8d0bc1b33",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/756380301beb58ac0908fa5444a2d0c8d0bc1b33",
+  "html_url": "https://github.com/Niko1221/Strata/commit/756380301beb58ac0908fa5444a2d0c8d0bc1b33",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/756380301beb58ac0908fa5444a2d0c8d0bc1b33/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "314a6ecf69f42b2597611c8a2d40879db2eb4584",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/314a6ecf69f42b2597611c8a2d40879db2eb4584",
+    "html_url": "https://github.com/Niko1221/Strata/commit/314a6ecf69f42b2597611c8a2d40879db2eb4584"
+   }
+  ]
+ },
+ {
+  "sha": "8477811197d9b26ba78e8d0b58721c20e4ac347d",
+  "node_id": "C_kwDOUpvcvdoAKDg0Nzc4MTExOTdkOWIyNmJhNzhlOGQwYjU4NzIxYzIwZTRhYzM0N2Q",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T15:44:27Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T15:44:27Z"
+   },
+   "message": "Merge f-dsv41-mac (DeepSeek on Metal) into v0.2.7\n\nThe 0.2.7 DeepSeek changes (persistent-grid IQ kernels, int8 rounding batches, hc_mix_split with a block counter, head columns,\nchunk-path knobs) are kept; the Metal engine's hooks sit on top of them: every kernel launch is strata_ds4_launch(), the rounding\nbatch ends in the Metal multi-quantiser dispatch, the head stays at 4 columns a pass on Metal (8 moves the KL), and the macOS\nparallel expert prefetch is macOS-only.",
+   "tree": {
+    "sha": "050e5f6dba5a655296085716d5a6bf890884a34d",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/050e5f6dba5a655296085716d5a6bf890884a34d"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/8477811197d9b26ba78e8d0b58721c20e4ac347d",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/8477811197d9b26ba78e8d0b58721c20e4ac347d",
+  "html_url": "https://github.com/Niko1221/Strata/commit/8477811197d9b26ba78e8d0b58721c20e4ac347d",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/8477811197d9b26ba78e8d0b58721c20e4ac347d/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
+    "html_url": "https://github.com/Niko1221/Strata/commit/5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d"
+   },
+   {
+    "sha": "1b667c7abbe09618596f392fec70576e6c56ab4b",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/1b667c7abbe09618596f392fec70576e6c56ab4b",
+    "html_url": "https://github.com/Niko1221/Strata/commit/1b667c7abbe09618596f392fec70576e6c56ab4b"
+   }
+  ]
+ },
+ {
+  "sha": "2526f2ff99ff79cbfbe9f4c6f253c945119a477d",
+  "node_id": "C_kwDOUpvcvdoAKDI1MjZmMmZmOTlmZjc5Y2JmYmU5ZjRjNmYyNTNjOTQ1MTE5YTQ3N2Q",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T08:10:53Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T08:10:53Z"
+   },
+   "message": "Merge two-card batch default (owner choice a): two NVIDIA cards pipeline by default\n\nPipelined groups beat the serial default at 2 and 4 streams on 2x A6000 (+17/+22%) and 2x A4000 (+7..12/+17..20%);\none stream equal, -4% on A4000 IQ3_XXS. STRATA_BATCH_GROUPS_NV_SERIAL=1 or STRATA_DEFAULTS=026 gives serial.",
+   "tree": {
+    "sha": "7d15d45ed72ab995d1e1ffa3343cdec346e83663",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/7d15d45ed72ab995d1e1ffa3343cdec346e83663"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/2526f2ff99ff79cbfbe9f4c6f253c945119a477d",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/2526f2ff99ff79cbfbe9f4c6f253c945119a477d",
+  "html_url": "https://github.com/Niko1221/Strata/commit/2526f2ff99ff79cbfbe9f4c6f253c945119a477d",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/2526f2ff99ff79cbfbe9f4c6f253c945119a477d/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "4c7bce3ad1ec5035913177b62096df06500d1170",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/4c7bce3ad1ec5035913177b62096df06500d1170",
+    "html_url": "https://github.com/Niko1221/Strata/commit/4c7bce3ad1ec5035913177b62096df06500d1170"
+   },
+   {
+    "sha": "ec8e405909f8aa3af6f084b13ed97ebce35790ef",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/ec8e405909f8aa3af6f084b13ed97ebce35790ef",
+    "html_url": "https://github.com/Niko1221/Strata/commit/ec8e405909f8aa3af6f084b13ed97ebce35790ef"
+   }
+  ]
+ },
+ {
+  "sha": "4c7bce3ad1ec5035913177b62096df06500d1170",
+  "node_id": "C_kwDOUpvcvdoAKDRjN2JjZTNhZDFlYzUwMzU5MTMxNzdiNjIwOTZkZjA2NTAwZDExNzA",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T04:26:53Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T04:26:53Z"
+   },
+   "message": "generate: the gated-proposal check reads use_df2 only where the DFlash2 drafter is built (the Metal build has none; #3416 broke its compile)",
+   "tree": {
+    "sha": "914236c5f8c6a7f8eafaf6f1afc708850d153aa7",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/914236c5f8c6a7f8eafaf6f1afc708850d153aa7"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/4c7bce3ad1ec5035913177b62096df06500d1170",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/4c7bce3ad1ec5035913177b62096df06500d1170",
+  "html_url": "https://github.com/Niko1221/Strata/commit/4c7bce3ad1ec5035913177b62096df06500d1170",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/4c7bce3ad1ec5035913177b62096df06500d1170/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "8dce24a0a13a0a461f5abedd45621fb7f4c3aca4",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/8dce24a0a13a0a461f5abedd45621fb7f4c3aca4",
+    "html_url": "https://github.com/Niko1221/Strata/commit/8dce24a0a13a0a461f5abedd45621fb7f4c3aca4"
+   }
+  ]
+ },
+ {
+  "sha": "447460e8cc60138640c3510be13a94d26635b34f",
+  "node_id": "C_kwDOUpvcvdoAKDQ0NzQ2MGU4Y2M2MDEzODY0MGMzNTEwYmUxM2E5NGQyNjYzNWIzNGY",
+  "commit": {
+   "author": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T03:18:06Z"
+   },
+   "committer": {
+    "name": "Niko1221",
+    "email": "Niko1221@users.noreply.github.com",
+    "date": "2026-10-27T03:18:06Z"
+   },
+   "message": "native experts: the window-invariant reference rows are used only where they match the linked ggml dot (#3416)\n\nnative_arithmetic_parity failed on an Intel i9-13900K (AVX2 + AVX-VNNI, ggml built native)\nin five of its eight configurations: \"gu=16 down=20 ff=96 nt=2 token=0\". Not the VNNI row\npath: STRATA_NO_AVXVNNI=1 changes nothing, STRATA_NO_IQ4NL=1 passes. The IQ4_NL down\nreference (iq4nl_reference_rows) differs from that ggml's one-token dot on the scalar tail\nblock of a row with an odd number of blocks (ff=96 is three): that ggml does not contract\n`sumf += d * sumi` into an FMA, the reference lets the compiler do it. On the other\nmachines tested the two agree, so it is a property of the ggml build, not of the CPU.\nWith an unfused tail in the reference all eight configurations pass on that machine.\n\nThe invariant path now checks each reference once against the linked ggml-cpu on synthetic\nblocks before using it (iq4nl_reference_ok for IQ4_NL with 2, 3, 5 and 20 blocks;\niq512_reference_ok for types 18, 21 and 22 with SwiGLU, on AVX-512 CPUs). On a mismatch\nit prints one line and the invariant path uses ggml's own one-token dot per token: slower\non such a build, never different. The Default path is not touched; only the opt-in\nSTRATA_SPEC_PROB=1 decode reaches this code.\n\nTests: native_arithmetic_parity, eight configurations, on the i9-13900K (4,866,048\ncomparisons, with the fallback line), z440 and the owner PC (see the series notes).",
+   "tree": {
+    "sha": "2dec3283a0b399f15d44044c51d50b1d9abfd5c6",
+    "url": "https://api.github.com/repos/Niko1221/Strata/git/trees/2dec3283a0b399f15d44044c51d50b1d9abfd5c6"
+   },
+   "url": "https://api.github.com/repos/Niko1221/Strata/git/commits/447460e8cc60138640c3510be13a94d26635b34f",
+   "comment_count": 0,
+   "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+   }
+  },
+  "url": "https://api.github.com/repos/Niko1221/Strata/commits/447460e8cc60138640c3510be13a94d26635b34f",
+  "html_url": "https://github.com/Niko1221/Strata/commit/447460e8cc60138640c3510be13a94d26635b34f",
+  "comments_url": "https://api.github.com/repos/Niko1221/Strata/commits/447460e8cc60138640c3510be13a94d26635b34f/comments",
+  "author": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "committer": {
+   "login": "Niko1221",
+   "id": 86886444,
+   "node_id": "MDQ6VXNlcjg2ODg2NDQ0",
+   "avatar_url": "https://avatars.githubusercontent.com/u/86886444?v=4",
+   "gravatar_id": "",
+   "url": "https://api.github.com/users/Niko1221",
+   "html_url": "https://github.com/Niko1221",
+   "followers_url": "https://api.github.com/users/Niko1221/followers",
+   "following_url": "https://api.github.com/users/Niko1221/following{/other_user}",
+   "gists_url": "https://api.github.com/users/Niko1221/gists{/gist_id}",
+   "starred_url": "https://api.github.com/users/Niko1221/starred{/owner}{/repo}",
+   "subscriptions_url": "https://api.github.com/users/Niko1221/subscriptions",
+   "organizations_url": "https://api.github.com/users/Niko1221/orgs",
+   "repos_url": "https://api.github.com/users/Niko1221/repos",
+   "events_url": "https://api.github.com/users/Niko1221/events{/privacy}",
+   "received_events_url": "https://api.github.com/users/Niko1221/received_events",
+   "type": "User",
+   "user_view_type": "public",
+   "site_admin": false
+  },
+  "parents": [
+   {
+    "sha": "5ac66e5005e5ee382c328c21d8b2768ee153e295",
+    "url": "https://api.github.com/repos/Niko1221/Strata/commits/5ac66e5005e5ee382c328c21d8b2768ee153e295",
+    "html_url": "https://github.com/Niko1221/Strata/commit/5ac66e5005e5ee382c328c21d8b2768ee153e295"
+   }
+  ]
+ }
+]

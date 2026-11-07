@@ -1,0 +1,71 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W722 机主令：把「压 MEMORY.md 必须走技能」写成铁律（第 5 次强调）=> 需 +1 条铁律 + DETAIL 指针，同时压窗口",
+ "ops": [
+  {
+   "kind": "line_replace",
+   "line": 3,
+   "new": "> 2026-10-08 自 routeK 工作区迁出。**本版逐字原文归档 = `MEMORY_DETAIL.md`（`Z-*` 节）**。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 22,
+   "new": "- **改本件（压/改 MEMORY.md）一律走技能入口 `deploy/tools/mem_slim.py`**（技能 `routek-memory-slim` 的适配版；机主令 2026-10-09 第 5 次强调）：命令 `auto 2900 [plan.json]`。**禁止**裸 Edit 挤牙膏 / 自写临时压缩脚本 / 先改后核 ---- 那会绕过技能里的 BAN/字符/归档断言，缺陷因此隐形。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 6,
+   "new": "- 本工作区 = Strata（gfx906 / MI50 32GB）部署 + 参数调优。`deploy/` · `waves/`。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 8,
+   "new": "  切换/回滚：`switch_strata.sh <新容器>`（旧容器自动探测 + 自动回滚）。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 14,
+   "new": "- **改参数唯一合法通道**：register -> `gen_config.py --write` -> **推 166** -> restart -> `verify_config.py` FAIL=0。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 15,
+   "new": "  **漏推会让「本机==166」不成立**（P0 实证）=> 改完必对两侧 `md5sum`。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 17,
+   "new": "- **引用任何性能读数必须声明 `Z0=off`**（省电档，见 W706）。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 19,
+   "new": "- 查容器内文件走 `docker exec`（宿主路径假阴性）；只读探针也落盘 + `python -u` + 时间戳 + 断言 rc。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 27,
+   "new": "LIVE config=`strata-huihui-ud-iq4_xs.json`；register/config 的**行数/分布/md5 一律现算，不写字面值**（每次改动都让旧值过期）。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 30,
+   "new": "- **「前缀须与 prefill chunk 整数倍对齐」是实测规律、非源码确证**（`every=4096`+`chunk=8192` 得 reused=0 说不通，**待追**）。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 38,
+   "new": "- **未做**：P29 GUMBEL（默认贪心=空操作）· C3 清理 · 上游 FR · vision 核验。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 40,
+   "new": "- **重做**：0.1.40.x 读数引用前须在 0.1.41 重取；0.1.40.1 仅存档。0.1.41 新分母已建。"
+  },
+  {
+   "kind": "line_replace",
+   "line": 44,
+   "new": "- PR **#1396**（gfx906 构建修复）**已并入 0.1.41** => 补丁面归零（H1~H6 上游全修），补丁器降级为验证/回归闸门。"
+  }
+ ]
+}

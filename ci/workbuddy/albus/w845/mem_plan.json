@@ -1,0 +1,16 @@
+{
+ "skill_md5": "0fc29a99cd09db831f57afb3f128143f",
+ "reason": "W845 更正：生产 pack 是 ud-q4_k_xl（配置文件名为 iq4_xs 的历史遗留）；顺带记 /src 在镜像内建",
+ "ops": [
+  {
+   "kind": "line_replace",
+   "line": 7,
+   "new": "- 模型 ud-q4_k_xl(huihui;配置名iq4_xs=遗留),262144ctx,k8v4"
+  },
+  {
+   "kind": "line_replace",
+   "line": 14,
+   "new": "- 容器内文件走docker exec;镜像内建"
+  }
+ ]
+}

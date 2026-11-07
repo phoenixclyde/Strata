@@ -126,3 +126,15 @@ Still missing (needs a policy decision, tracked as R113):
   - the three working branches (`gfx906/lcpp-k10`, `gfx906/attn-opt`,
     `gfx906/dot48`) are not in the branch whitelist, so pushes to them produce no run;
   - `deploy/` and `albus/` are not under version control at all.
+
+## W1047 (2026-11-07): full coverage and retrospective provenance
+
+Corrections to earlier rounds are recorded in `ci/provenance/HISTORY_CORRECTIONS.md`.
+The active WorkBuddy script/patch surface is no longer local-only: it is mirrored
+under `ci/workbuddy/**`, syntax-checked and self-tested by this workflow. Every
+auditable workspace file also has a SHA-256 row in
+`ci/provenance/workspace_manifest.tsv`; historical source snapshots are not
+copied wholesale into the engine repository, but they cannot disappear silently.
+
+The workflow is still static-only. It now covers **all push branches** and the
+local gate/tool paths, but it does not compile ROCm or run GPU benchmarks.

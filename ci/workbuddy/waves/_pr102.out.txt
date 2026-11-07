@@ -1,0 +1,41 @@
+rc = 0
+===== [1] 新镜像 =====
+strata-gfx906:0.1.40.2	125cb5b1bbfd	6.57GB	2026-10-07 23:53:22 +0800 CST
+strata-gfx906:0.1.40.1	d742bb37fdee	6.55GB	2026-10-07 00:40:22 +0800 CST
+strata-gfx906:0.1.39	7714526ed0c2	6.52GB	2026-10-06 00:15:59 +0800 CST
+
+===== [2] 镜像内自证（不占 GPU）=====
+--- 引擎二进制 ---
+-rwxr-xr-x 1 root root 24862088 Oct  7 15:53 /src/build-906/strata
+--- 版本（CMakeLists project VERSION）---
+project(strata VERSION 0.1.40.2 LANGUAGES CXX)
+--- 补丁落点复核（H1/H5/H6）---
+163:inline hipError_t cudaFuncSetAttribute(Kernel kernel, hipFuncAttribute attribute, int value) {
+52:#define cudaEventBlockingSync hipEventBlockingSync
+1270:      if(STRATA_Q6K_EXPERTS OR STRATA_HIP_GFX906)   # UD-Q6_K_XL gate/up (docs/UNSLOTH_Q6.md),
+--- 源码自带 /src/data ---
+-rw-r--r-- 1 root root 425196 Oct  7 11:22 /src/data/draft_vocab.bin
+-rw-r--r-- 1 root root 196632 Oct  7 11:22 /src/data/expert-profile.bin
+--- python 依赖 ---
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+ModuleNotFoundError: No module named 'pillow'
+--- serve 入口 ---
+-rw-r--r-- 1 root root 330579 Oct  7 11:22 /src/serve/server.py
+
+===== [3] 引擎 --help（看是否可执行）=====
+strata generate --pack DIR --tokens "1,2,3" [options]
+
+  --pack DIR           the pack directory (default pack/full)
+  --tokens LIST        the prompt as comma-separated token IDS (required)
+  --tokens-file PATH   pretokenized prompt, commas or whitespace (alternative to --tokens)
+  --gpu LIST           run on these GPUs, comma-separated nvidia-smi/PCI indices (default: every
+
+===== [4] 磁盘 =====
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          44        10        65.83GB   46.65GB (70%)
+Containers      45        6         7.735GB   7.54GB (97%)
+Local Volumes   9         7         4.436GB   70.05kB (0%)
+Build Cache     298       0         153.9MB   153.9MB
+/dev/mapper/ubuntu--vg-lv--0  935G  682G  253G  73% /
+

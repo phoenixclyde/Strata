@@ -1,0 +1,24 @@
+# 生产基线指纹（落产比对的唯一参照；**语义 = 上一轮已汇报的状态**；汇报完再把这里推进到当前值）
+# 2026-11-01 16:2x 推进：本轮落产 = 引擎 0.1.55g -> 0.1.55h（W863 R 表实测版 + STRATA_MMVQ_WAVE_ROWS 真读），同镜像 A/B +4.0%；镜像未变（/data 是 bind mount，镜像不带运行中的引擎）；config 只改 exe 一个字段
+# 建立 2026-10-31 17:52 CST，值来自当时 166 的实取（state_q + docker inspect + md5sum）
+commit	f8bfcd6d0a90abe80627fdf774548877c7e9b653
+branch	gfx906/mi50 (tip df326f9e; 唯一差别是 docs/DOWNSTREAM.md)
+tree	79ab5c0c
+upstream	c62d5e3a15 (v0.2.9)
+exe	/data/bin/strata-0.1.55h
+exe_md5	9a2ff8742f9918f657a468a7baeb177c
+cfg_md5	2fd30a353dd4b728d1a949bedc3a91eb
+image	strata-gfx906:0.2.9-101
+image_id	sha256:d4afd5f52a250a9057ab153ca9ab45b053831f8977927eb3bd96ec4cb1d1ecbe
+started	2026-11-01T07:40:37.460756158Z
+container_id	538c722f0057 (started 19:31:51Z = W859 R4 短档 A/B 后恢复；该窗口堵住机主约 10 分钟)
+serve_md5	b1aa1d367e84ac4188f80b2c1b17b32c
+serve_src	image /src/serve (0.2.9, = gfx029/serve)
+src_files	8185
+component	0.1.55-linux-x86_64-hip-gfx906 (--verify 234 files / find 235, manifest 02166a3d)
+rocm	10.1.0 / rocblas 5.7 / HIP 7.16.26323
+rocblas_table	/data/gfx906-rocblas-5.7.0.txt (84 rows, md5 4389d919)
+terminal	0.2.9 build 0.1.55 (tar sha256 0c5dd7a1, seed 29M, wrapper PORT=8090)
+args	33
+env	6
+recorded	2026-11-01T04:05:00+08:00
