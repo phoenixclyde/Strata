@@ -1116,6 +1116,18 @@ void launch_chunks_batch(const float* q, const QsaAttnPools& pools, const int32_
     }
 #endif
 #define STRATA_ATTN_LC(M) attn_chunk_kernel<M, true><<<grid, THREADS, 0, st>>>(q, pools, ids, steps, (int) s.n_head_kv, (int) s.page_size, scale, part_acc, part_m, part_l, n_chunks, (int) cap, stride)
+#if defined(STRATA_HIP_GFX906)
+    // W1037: the gfx906 OPT switches (DPP / DP4A / LDS pad) were wired into qsa_decode_attn_batch_rows and
+    // qsa_decode_attn_slots only.  Prefill attention calls qsa_decode_attn_batch -> launch_chunks_batch ->
+    // attn_chunk_kernel<M> (the plain instantiation), so on the production path they were dead code: with all
+    // four switches on, the measured `qsa attn` phase did not move (578.3 -> 577.3 ms at 2.5K).
+    if (const int opt = gfx906_attn_opt();
+        opt != 0 && !lane_cell && !use_query_swizzle && (kv_mode == 3 || kv_mode == 1)) {
+        if (kv_mode == 3) STRATA_ATTN_OPT_DISPATCH(STRATA_ATTN_OPT_BATCH, 3)
+        else STRATA_ATTN_OPT_DISPATCH(STRATA_ATTN_OPT_BATCH, 1)
+        return;   // the caller runs the merge pass
+    }
+#endif
     if (lane_cell) {
         if (kv_mode == 3) STRATA_ATTN_LC(3);
         else if (kv_mode == 2) STRATA_ATTN_LC(2);
