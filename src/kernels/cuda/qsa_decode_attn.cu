@@ -5,6 +5,7 @@
 #include "strata/core/geometry.hpp"
 #include "strata/kernels/kv_q8.hpp"
 #include "strata/kernels/kv_q4.hpp"
+#include "strata/kernels/dp4a.hpp"
 #if defined(STRATA_HIP_GFX906)
 #include "strata/kernels/gfx_arch.hpp"
 #endif
@@ -28,15 +29,65 @@ constexpr int CHUNK = 64;        // cells per block
 constexpr int THREADS = 256;
 constexpr int WARPS = THREADS / 32;
 
-__device__ __forceinline__ float warp_sum(float v) {
-#pragma unroll
-    for (int o = 16; o > 0; o >>= 1) v += __shfl_xor_sync(0xffffffffu, v, o);
+// W1036/A3: DPP instead of ds_bpermute for the 32-lane reductions.  DPP permutes inside a 16-lane row, so xor1/2/4/8
+// are pure lane permutations; xor16 stays a shuffle (on a 64-lane wavefront its scope is not the 32-lane hierarchy's).
+// Same operand pairs, same order (16, 8, 4, 2, 1) => bit-identical sums and maxima.
+template <typename T>
+__device__ __forceinline__ T dpp_xor1(T v) {
+    static_assert(sizeof(T) == 4, "32-bit lanes only");
+    int src = *reinterpret_cast<int*>(&v), dst;
+    asm volatile("s_nop 4\n\tv_mov_b32_dpp %0, %1 quad_perm:[1,0,3,2] row_mask:0xf bank_mask:0xf"
+                 : "=v"(dst) : "v"(src) : "memory");
+    return *reinterpret_cast<T*>(&dst);
+}
+template <typename T>
+__device__ __forceinline__ T dpp_xor2(T v) {
+    static_assert(sizeof(T) == 4, "32-bit lanes only");
+    int src = *reinterpret_cast<int*>(&v), dst;
+    asm volatile("s_nop 1\n\tv_mov_b32_dpp %0, %1 quad_perm:[2,3,0,1] row_mask:0xf bank_mask:0xf"
+                 : "=v"(dst) : "v"(src) : "memory");
+    return *reinterpret_cast<T*>(&dst);
+}
+template <typename T>
+__device__ __forceinline__ T dpp_xor4(T v) {
+    static_assert(sizeof(T) == 4, "32-bit lanes only");
+    int src = *reinterpret_cast<int*>(&v), dst;
+    asm volatile("v_mov_b32 %0, %1\n\ts_nop 1\n\t"
+                 "v_mov_b32_dpp %0, %1 row_shl:4 row_mask:0xf bank_mask:0x5\n\t"
+                 "v_mov_b32_dpp %0, %1 row_shr:4 row_mask:0xf bank_mask:0xa"
+                 : "=v"(dst) : "v"(src) : "memory");
+    return *reinterpret_cast<T*>(&dst);
+}
+template <typename T>
+__device__ __forceinline__ T dpp_xor8(T v) {
+    static_assert(sizeof(T) == 4, "32-bit lanes only");
+    int src = *reinterpret_cast<int*>(&v), dst;
+    asm volatile("s_nop 1\n\tv_mov_b32_dpp %0, %1 row_ror:8 row_mask:0xf bank_mask:0xf"
+                 : "=v"(dst) : "v"(src) : "memory");
+    return *reinterpret_cast<T*>(&dst);
+}
+__device__ __forceinline__ float warp_sum(float v, bool dpp = false) {
+    v += __shfl_xor_sync(0xffffffffu, v, 16);
+    if (dpp) { v += dpp_xor8(v); v += dpp_xor4(v); v += dpp_xor2(v); v += dpp_xor1(v); }
+    else { v += __shfl_xor_sync(0xffffffffu, v, 8); v += __shfl_xor_sync(0xffffffffu, v, 4);
+           v += __shfl_xor_sync(0xffffffffu, v, 2); v += __shfl_xor_sync(0xffffffffu, v, 1); }
     return v;
 }
-__device__ __forceinline__ float warp_max(float v) {
-#pragma unroll
-    for (int o = 16; o > 0; o >>= 1) v = fmaxf(v, __shfl_xor_sync(0xffffffffu, v, o));
+__device__ __forceinline__ float warp_max(float v, bool dpp = false) {
+    v = fmaxf(v, __shfl_xor_sync(0xffffffffu, v, 16));
+    if (dpp) { v = fmaxf(v, dpp_xor8(v)); v = fmaxf(v, dpp_xor4(v)); v = fmaxf(v, dpp_xor2(v)); v = fmaxf(v, dpp_xor1(v)); }
+    else { v = fmaxf(v, __shfl_xor_sync(0xffffffffu, v, 8)); v = fmaxf(v, __shfl_xor_sync(0xffffffffu, v, 4));
+           v = fmaxf(v, __shfl_xor_sync(0xffffffffu, v, 2)); v = fmaxf(v, __shfl_xor_sync(0xffffffffu, v, 1)); }
     return v;
+}
+constexpr int NSC = HD / KV_Q8_GROUP;   // scales per row (4)
+// W1036/B1+B2: one lane's 8 dimensions - two v_dot4 against the int8 query, then the (query group scale * K group
+// scale) product.  The 8 dimensions of a lane are inside one 64-value group (8 | 64), so the int32 partial is exact
+// and the single float multiply is the only rounding step; the surrounding reduction tree is untouched.
+__device__ __forceinline__ float dot8_dp4a(int kb0, int kb1, const int8_t* q8p, float qs, float ks) {
+    int acc = STRATA_DP4A(kb0, *reinterpret_cast<const int*>(q8p), 0);
+    acc = STRATA_DP4A(kb1, *reinterpret_cast<const int*>(q8p + 4), acc);
+    return (float) acc * (qs * ks);
 }
 
 // 8 consecutive values of one cell's key or value row for KV head `kvh`, dimensions [d0, d0+8).
@@ -163,7 +214,11 @@ __device__ __forceinline__ int reduce12_head_of_lane(int lane) {
 // The chunk kernel's body; `p` is the query's KV pools (the call's one set, or blockIdx.z's slot's set).
 // (the body is a device function so the batch window's rows kernel below can run it over each query's own pools without
 // the default kernel's signature, or the function-pointer types the pre-sm_75 / HIP selections build, changing)
-template <int KV_MODE, bool LANE_CELL, bool QUERY_SWIZZLE, bool REDUCE12>
+// W1036: OPT is a bit mask of independent, runtime-selected gfx906 ports - one build, each A/B-able on its own:
+//   bit 0 (1) A3  the 32-lane reductions (score sum, chunk softmax) run on DPP instead of ds_bpermute
+//   bit 1 (2) B1/B2 the score dot product runs on v_dot4_i32_i8 with a per-64-group int8 query (k8v4 and int8)
+//   bit 2 (4) A2  the sq / sp LDS tiles take a pad so column-wise reads stop landing on one bank group
+template <int KV_MODE, bool LANE_CELL, bool QUERY_SWIZZLE, bool REDUCE12, int OPT>
 __device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, QsaAttnPools p,
                                                 const int32_t* __restrict__ ids, const int32_t* __restrict__ step,
                                                 int n_kv_heads, int page_size, float scale,
@@ -177,9 +232,14 @@ __device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, Qsa
     part_acc += (size_t) blockIdx.z * (size_t) scratch_stride;
     part_m += (size_t) blockIdx.z * (size_t) scratch_stride;
     part_l += (size_t) blockIdx.z * (size_t) scratch_stride;
-    __shared__ __align__(16) float sq[G][HD];     // 12 KB: this KV head's query heads
-    __shared__ float sp[G][CHUNK];                // scores, then probabilities
+    constexpr int SQ_PAD = (OPT & 4) ? 4 : 0;     // A2: 16 bytes per head row (keeps the float4 reads aligned)
+    constexpr int SP_PAD = (OPT & 4) ? 1 : 0;
+    constexpr int SQ_HEADS = (OPT & 2) ? 1 : G;   // B1/B2 keep the query as int8 below; the fp32 tile is unused
+    __shared__ __align__(16) float sq[SQ_HEADS][HD + SQ_PAD];   // 12 KB: this KV head's query heads
+    __shared__ float sp[G][CHUNK + SP_PAD];       // scores, then probabilities
     __shared__ long long srow[CHUNK];             // pool row of each cell (page, kv head, slot)
+    __shared__ __align__(16) int8_t sq8[(OPT & 2) ? G : 1][HD];  // B1/B2: the quantized query
+    __shared__ float sq8s[(OPT & 2) ? G : 1][NSC];               // one scale per (head, 64-value group)
     const int n_ids = __ldg(step + kStepWidth);
     const int chunk = blockIdx.x, kvh = blockIdx.y;
     const int t = threadIdx.x, lane = t & 31, warp = t >> 5;
@@ -194,10 +254,13 @@ __device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, Qsa
     // float4 halves of lanes whose bit 2 is set, retaining 16-byte alignment and the 12 KB tile.
     // The scoring reads undo this permutation; FP operands and operation order are unchanged.
     static_assert(!QUERY_SWIZZLE || !LANE_CELL, "query swizzle is for warp scoring only");
-    for (int i = t; i < G * HD; i += THREADS) {
-        const int d = i % HD;
-        const int sd = QUERY_SWIZZLE ? (d ^ ((d >> 3) & 4)) : d;
-        sq[i / HD][sd] = q[(size_t) (kvh * G) * HD + i];
+    static_assert(!(OPT & 2) || !LANE_CELL, "the dp4a score keeps the warp-scoring path");
+    if constexpr (!(OPT & 2)) {
+        for (int i = t; i < G * HD; i += THREADS) {
+            const int d = i % HD;
+            const int sd = QUERY_SWIZZLE ? (d ^ ((d >> 3) & 4)) : d;
+            sq[i / HD][sd] = q[(size_t) (kvh * G) * HD + i];
+        }
     }
     if (t < CHUNK) {
         long long r = -1;
@@ -209,6 +272,34 @@ __device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, Qsa
             if (page >= 0) r = (page * n_kv_heads + kvh) * page_size + (cell % page_size);
         }
         srow[t] = r;
+    }
+    if constexpr (OPT & 2) {
+        // B1/B2: the query is quantized the way KV_Q8's K rows are: q_int8 = round(q / d), d = amax / 127.
+        // W1041: one WARP per (head, 64-value group) instead of one thread.  The old mapping used 48 of the 256
+        // threads, each running a serial 64-element scan twice (~448 instructions) while the other 208 waited at
+        // __syncthreads -- and that happened again in every one of the 64 blocks of a query, which is why the
+        // dp4a path measured +6.8% instead of -35% (P447/P449).  Now: 48 groups over 8 warps, 2 values per lane,
+        // amax by a butterfly.  max is order-independent, so d and every code are bit-identical to the scan.
+        // Pattern copied from llama.cpp's quantize_q8_1 (one warp per block, each lane own element).
+        constexpr int QPG = KV_Q8_GROUP / 32;   // 64-value group == 2 values per lane
+        for (int grp = warp; grp < G * NSC; grp += WARPS) {
+            const int h = grp / NSC, g = grp - h * NSC;
+            const float* src = q + (size_t) (kvh * G + h) * HD + g * KV_Q8_GROUP + lane * QPG;
+            float v[QPG];
+#pragma unroll
+            for (int j = 0; j < QPG; ++j) v[j] = src[j];
+            float amax = 0.0f;
+#pragma unroll
+            for (int j = 0; j < QPG; ++j) amax = fmaxf(amax, fabsf(v[j]));
+#pragma unroll
+            for (int off = 16; off > 0; off >>= 1) amax = fmaxf(amax, __shfl_xor(amax, off));
+            const float d = amax > 0.0f ? amax / 127.0f : 1.0f;
+            if (lane == 0) sq8s[h][g] = d;
+#pragma unroll
+            for (int j = 0; j < QPG; ++j)
+                sq8[h][g * KV_Q8_GROUP + lane * QPG + j] = (int8_t) __float2int_rn(v[j] / d);
+        }
+        __syncthreads();
     }
     __syncthreads();
     if constexpr (LANE_CELL) {
@@ -253,23 +344,13 @@ __device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, Qsa
             continue;
         }
         if constexpr (REDUCE12) {
-        float k8[8];
-        load8<KV_MODE>(p, false, srow[c], lane * 8, k8);
         float part[16];
+        if constexpr (OPT & 2) {
+            const uint2 kraw = *reinterpret_cast<const uint2*>(p.k_q + srow[c] * HD + lane * 8);
+            const float ks = __half2float(__ushort_as_half(p.k_scale[srow[c] * NSC + (lane * 8) / KV_Q8_GROUP]));
 #pragma unroll
-        for (int h = 0; h < G; ++h) {
-            const int qflip = QUERY_SWIZZLE ? (lane & 4) : 0;
-            const float4 qa = *reinterpret_cast<const float4*>(&sq[h][lane * 8 + qflip]);
-            const float4 qb = *reinterpret_cast<const float4*>(&sq[h][lane * 8 + (qflip ^ 4)]);
-            float s = k8[0] * qa.x + k8[1] * qa.y + k8[2] * qa.z + k8[3] * qa.w +
-                      k8[4] * qb.x + k8[5] * qb.y + k8[6] * qb.z + k8[7] * qb.w;
-            part[h] = s;
-        }
-#pragma unroll
-        for (int h = G; h < 16; ++h) part[h] = 0.0f;
-        const float score = reduce12_gfx906(part, lane);
-        const int head = reduce12_head_of_lane(lane);
-        if ((lane & 1) == 0 && head < G) sp[head][c] = score * scale;
+            for (int h = 0; h < G; ++h)
+                part[h] = dot8_dp4a((int) kraw.x, (int) kraw.y, &sq8[h][lane * 8], sq8s[h][lane >> 3], ks);
         } else {
         float k8[8];
         load8<KV_MODE>(p, false, srow[c], lane * 8, k8);
@@ -280,8 +361,37 @@ __device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, Qsa
             const float4 qb = *reinterpret_cast<const float4*>(&sq[h][lane * 8 + (qflip ^ 4)]);
             float s = k8[0] * qa.x + k8[1] * qa.y + k8[2] * qa.z + k8[3] * qa.w +
                       k8[4] * qb.x + k8[5] * qb.y + k8[6] * qb.z + k8[7] * qb.w;
-            s = warp_sum(s);
+            part[h] = s;
+        }
+        }
+#pragma unroll
+        for (int h = G; h < 16; ++h) part[h] = 0.0f;
+        const float score = reduce12_gfx906(part, lane);
+        const int head = reduce12_head_of_lane(lane);
+        if ((lane & 1) == 0 && head < G) sp[head][c] = score * scale;
+        } else {
+        if constexpr (OPT & 2) {
+            const uint2 kraw = *reinterpret_cast<const uint2*>(p.k_q + srow[c] * HD + lane * 8);
+            const float ks = __half2float(__ushort_as_half(p.k_scale[srow[c] * NSC + (lane * 8) / KV_Q8_GROUP]));
+#pragma unroll
+            for (int h = 0; h < G; ++h) {
+                float s = dot8_dp4a((int) kraw.x, (int) kraw.y, &sq8[h][lane * 8], sq8s[h][lane >> 3], ks);
+                s = warp_sum(s, (OPT & 1) != 0);
+                if (lane == 0) sp[h][c] = s * scale;
+            }
+        } else {
+        float k8[8];
+        load8<KV_MODE>(p, false, srow[c], lane * 8, k8);
+#pragma unroll
+        for (int h = 0; h < G; ++h) {
+            const int qflip = QUERY_SWIZZLE ? (lane & 4) : 0;
+            const float4 qa = *reinterpret_cast<const float4*>(&sq[h][lane * 8 + qflip]);
+            const float4 qb = *reinterpret_cast<const float4*>(&sq[h][lane * 8 + (qflip ^ 4)]);
+            float s = k8[0] * qa.x + k8[1] * qa.y + k8[2] * qa.z + k8[3] * qa.w +
+                      k8[4] * qb.x + k8[5] * qb.y + k8[6] * qb.z + k8[7] * qb.w;
+            s = warp_sum(s, (OPT & 1) != 0);
             if (lane == 0) sp[h][c] = s * scale;
+        }
         }
         }
     }
@@ -289,12 +399,12 @@ __device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, Qsa
     // per-head chunk max and exp-sum: warp w handles heads w and w+8.
     for (int h = warp; h < G; h += WARPS) {
         const float a = sp[h][lane], b = sp[h][lane + 32];
-        const float m = warp_max(fmaxf(a, b));
+        const float m = warp_max(fmaxf(a, b), (OPT & 1) != 0);
         const float ea = (lane < n_here && srow[lane] >= 0) ? __expf(a - m) : 0.0f;
         const float eb = (lane + 32 < n_here && srow[lane + 32] >= 0) ? __expf(b - m) : 0.0f;
         sp[h][lane] = ea;
         sp[h][lane + 32] = eb;
-        const float l = warp_sum(ea + eb);
+        const float l = warp_sum(ea + eb, (OPT & 1) != 0);
         if (lane == 0) { part_m[slot * G + h] = m; part_l[slot * G + h] = l; }
     }
     __syncthreads();
@@ -328,14 +438,14 @@ __device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, Qsa
     for (int h = 0; h < G; ++h) part_acc[((size_t) slot * G + h) * HD + t] = acc[h];
 }
 
-template <int KV_MODE, bool LANE_CELL = false, bool QUERY_SWIZZLE = false, bool REDUCE12 = false>
+template <int KV_MODE, bool LANE_CELL = false, bool QUERY_SWIZZLE = false, bool REDUCE12 = false, int OPT = 0>
 __global__ void __launch_bounds__(THREADS) attn_chunk_kernel(const float* __restrict__ q, QsaAttnPools p,
                                                              const int32_t* __restrict__ ids,
                                                              const int32_t* __restrict__ step, int n_kv_heads,
                                                              int page_size, float scale, float* __restrict__ part_acc,
                                                              float* __restrict__ part_m, float* __restrict__ part_l,
                                                              int n_chunks, int cap = 0, long long scratch_stride = 0) {
-    attn_chunk_body<KV_MODE, LANE_CELL, QUERY_SWIZZLE, REDUCE12>(q, p, ids, step, n_kv_heads, page_size, scale,
+    attn_chunk_body<KV_MODE, LANE_CELL, QUERY_SWIZZLE, REDUCE12, OPT>(q, p, ids, step, n_kv_heads, page_size, scale,
                                                                  part_acc, part_m, part_l, n_chunks, cap,
                                                                  scratch_stride);
 }
@@ -351,7 +461,7 @@ __global__ void __launch_bounds__(THREADS) attn_chunk_slots_kernel(const float* 
                                                                    float* __restrict__ part_m,
                                                                    float* __restrict__ part_l, int n_chunks, int cap,
                                                                    long long scratch_stride) {
-    attn_chunk_body<KV_MODE, LANE_CELL, false, false>(q, ps.p[blockIdx.z], ids, step, n_kv_heads, page_size, scale,
+    attn_chunk_body<KV_MODE, LANE_CELL, false, false, 0>(q, ps.p[blockIdx.z], ids, step, n_kv_heads, page_size, scale,
                                                       part_acc, part_m, part_l, n_chunks, cap, scratch_stride);
 }
 
@@ -365,7 +475,7 @@ __global__ void __launch_bounds__(THREADS) attn_chunk_rows_kernel(const float* _
                                                                   float* __restrict__ part_m,
                                                                   float* __restrict__ part_l, int n_chunks, int cap,
                                                                   long long scratch_stride) {
-    attn_chunk_body<KV_MODE, false, false, false>(q, rows.p[blockIdx.z], ids, step, n_kv_heads, page_size, scale,
+    attn_chunk_body<KV_MODE, false, false, false, 0>(q, rows.p[blockIdx.z], ids, step, n_kv_heads, page_size, scale,
                                                   part_acc, part_m, part_l, n_chunks, cap, scratch_stride);
 }
 
@@ -975,6 +1085,67 @@ void launch_merge(int v2, const float* part_acc, const float* part_m, const floa
 // qsa_decode_attn_batch's chunk pass: `n_q` queries' partials into `scratch` (one stride each).  `kernel` < 0 is the
 // environment's choice (lane cell, gfx906 swizzle, STRATA_ATTN_DAILY / PR #540); 0 is attn_chunk_kernel and 1 PR #540's
 // kernel where it is built (the parity harness: never the environment).
+namespace {
+// W1036: one binary, one switch per port, so the ports are measured one at a time against the SAME plain kernel.
+// Any bit selects attn_chunk_kernel<M, false, false, false, OPT> (no query swizzle, no reduce12), i.e. the plain
+// baseline is STRATA_GFX906_ATTN_{QUERY_SWIZZLE,REDUCE12}=0 with every OPT switch off.
+int gfx906_attn_opt() {
+#if defined(STRATA_HIP_GFX906)
+    static const int v = [] {
+        int o = 0;
+        const char* a = std::getenv("STRATA_GFX906_ATTN_DPP");
+        const char* b = std::getenv("STRATA_GFX906_ATTN_DP4A");
+        const char* c = std::getenv("STRATA_GFX906_ATTN_LDS_PAD");
+        if (a && a[0] == '1') o |= 1;
+        if (b && b[0] == '1') o |= 2;
+        if (c && c[0] == '1') o |= 4;
+        return o;
+    }();
+    return v;
+#else
+    return 0;
+#endif
+}
+}
+#define STRATA_ATTN_OPT_STEP(M, O)                                                                       \
+    attn_chunk_kernel<M, false, false, false, O><<<grid, THREADS, 0, st>>>(                               \
+        q, pools, ids, step, (int) s.n_head_kv, (int) s.page_size, scale, part_acc, part_m, part_l,       \
+        n_chunks, 0, 0)
+#define STRATA_ATTN_OPT_BATCH(M, O)                                                                      \
+    attn_chunk_kernel<M, false, false, false, O><<<grid, THREADS, 0, st>>>(                               \
+        q, pools, ids, steps, (int) s.n_head_kv, (int) s.page_size, scale, part_acc, part_m, part_l,      \
+        n_chunks, (int) cap, stride)
+#define STRATA_ATTN_OPT_DISPATCH(LAUNCH, M)                                                              \
+    switch (opt) {                                                                                        \
+        case 1: LAUNCH(M, 1); break;                                                                      \
+        case 2: LAUNCH(M, 2); break;                                                                      \
+        case 3: LAUNCH(M, 3); break;                                                                      \
+        case 4: LAUNCH(M, 4); break;                                                                      \
+        case 5: LAUNCH(M, 5); break;                                                                      \
+        case 6: LAUNCH(M, 6); break;                                                                      \
+        case 7: LAUNCH(M, 7); break;                                                                      \
+        default: break;                                                                                   \
+    }
+
+// W1039: the same dispatch for the query-swizzle path -- the production recipe keeps GFX906_ATTN_QUERY_SWIZZLE on,
+// so the switches above were still unreachable.  Swizzle and reduce12 stay what production uses; only OPT differs.
+#define STRATA_ATTN_OPT_SWZ(M, O)                                                                         \
+    attn_chunk_kernel<M, false, true, true, O><<<grid, THREADS, 0, st>>>(                                 \
+        q, pools, ids, steps, (int) s.n_head_kv, (int) s.page_size, scale, part_acc, part_m, part_l,       \
+        n_chunks, (int) cap, stride)
+
+#define STRATA_ATTN_OPT_DISPATCH_SWZ(LAUNCH, M)                                                           \
+    switch (opt_sw) {                                                                                     \
+        case 1: LAUNCH(M, 1); break;                                                                      \
+        case 2: LAUNCH(M, 2); break;                                                                      \
+        case 3: LAUNCH(M, 3); break;                                                                      \
+        case 4: LAUNCH(M, 4); break;                                                                      \
+        case 5: LAUNCH(M, 5); break;                                                                      \
+        case 6: LAUNCH(M, 6); break;                                                                      \
+        case 7: LAUNCH(M, 7); break;                                                                      \
+        default: break;                                                                                   \
+    }
+
 void launch_chunks_batch(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps,
                          int64_t cap, const QsaShapes& s, float* scratch, int64_t n_q, cudaStream_t st, int kernel) {
     const int kv_mode = pools.k_q4 != nullptr ? 2 : (pools.k_q != nullptr && pools.v_q4 != nullptr ? 3
@@ -1009,6 +1180,18 @@ void launch_chunks_batch(const float* q, const QsaAttnPools& pools, const int32_
     }
 #endif
 #define STRATA_ATTN_LC(M) attn_chunk_kernel<M, true><<<grid, THREADS, 0, st>>>(q, pools, ids, steps, (int) s.n_head_kv, (int) s.page_size, scale, part_acc, part_m, part_l, n_chunks, (int) cap, stride)
+#if defined(STRATA_HIP_GFX906)
+    // W1037: the gfx906 OPT switches (DPP / DP4A / LDS pad) were wired into qsa_decode_attn_batch_rows and
+    // qsa_decode_attn_slots only.  Prefill attention calls qsa_decode_attn_batch -> launch_chunks_batch ->
+    // attn_chunk_kernel<M> (the plain instantiation), so on the production path they were dead code: with all
+    // four switches on, the measured `qsa attn` phase did not move (578.3 -> 577.3 ms at 2.5K).
+    if (const int opt = gfx906_attn_opt();
+        opt != 0 && !lane_cell && !use_query_swizzle && (kv_mode == 3 || kv_mode == 1)) {
+        if (kv_mode == 3) STRATA_ATTN_OPT_DISPATCH(STRATA_ATTN_OPT_BATCH, 3)
+        else STRATA_ATTN_OPT_DISPATCH(STRATA_ATTN_OPT_BATCH, 1)
+        return;   // the caller runs the merge pass
+    }
+#endif
     if (lane_cell) {
         if (kv_mode == 3) STRATA_ATTN_LC(3);
         else if (kv_mode == 2) STRATA_ATTN_LC(2);
@@ -1027,6 +1210,13 @@ void launch_chunks_batch(const float* q, const QsaAttnPools& pools, const int32_
             const char* v = std::getenv("STRATA_GFX906_ATTN_REDUCE12");
             return v && v[0] == '1' && v[1] == '\0';
         }();
+        // W1039: this is the instantiation production actually runs (swizzle + reduce12), so the OPT switch has to
+        // be applied here, not only on the plain <M> path above.
+        if (const int opt_sw = gfx906_attn_opt(); opt_sw != 0) {
+            if (kv_mode == 3) STRATA_ATTN_OPT_DISPATCH_SWZ(STRATA_ATTN_OPT_SWZ, 3)
+            else              STRATA_ATTN_OPT_DISPATCH_SWZ(STRATA_ATTN_OPT_SWZ, 1)
+            return;
+        }
         if (reduce12) {
             if (kv_mode == 3)
                 attn_chunk_kernel<3, false, true, true><<<grid, THREADS, 0, st>>>(q, pools, ids, steps,
@@ -1060,7 +1250,10 @@ void launch_chunks_batch(const float* q, const QsaAttnPools& pools, const int32_
                                                           scale, part_acc, part_m, part_l, n_chunks, (int) cap, stride);
     else
 #endif
-    if (kv_mode == 3)
+    if (const int opt = (kernel < 0 ? gfx906_attn_opt() : 0); opt != 0 && !lane_cell && (kv_mode == 3 || kv_mode == 1)) {
+        if (kv_mode == 3) STRATA_ATTN_OPT_DISPATCH(STRATA_ATTN_OPT_BATCH, 3)
+        else STRATA_ATTN_OPT_DISPATCH(STRATA_ATTN_OPT_BATCH, 1)
+    } else if (kv_mode == 3)
         STRATA_ATTN_CHUNK_SEL(3, pre)<<<grid, THREADS, 0, st>>>(q, pools, ids, steps, (int) s.n_head_kv,
                                                                 (int) s.page_size, scale, part_acc, part_m, part_l,
                                                                 n_chunks, (int) cap, stride);
@@ -1252,7 +1445,10 @@ void qsa_decode_attn_step(const float* q, const QsaAttnPools& pools, const int32
                                                           scale, part_acc, part_m, part_l, n_chunks, 0, 0);
     else
 #endif
-    if (kv_mode == 3)
+    if (const int opt = gfx906_attn_opt(); opt != 0 && (kv_mode == 3 || kv_mode == 1)) {
+        if (kv_mode == 3) STRATA_ATTN_OPT_DISPATCH(STRATA_ATTN_OPT_STEP, 3)
+        else STRATA_ATTN_OPT_DISPATCH(STRATA_ATTN_OPT_STEP, 1)
+    } else if (kv_mode == 3)
         STRATA_ATTN_CHUNK(3)<<<grid, THREADS, 0, st>>>(q, pools, ids, step, (int) s.n_head_kv, (int) s.page_size,
                                                         scale, part_acc, part_m, part_l, n_chunks, 0, 0);
     else if (kv_mode == 2)
