@@ -232,19 +232,30 @@ __device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, Qsa
         srow[t] = r;
     }
     if constexpr (OPT & 2) {
-        // B1/B2: one thread per (head, 64-value group) quantizes the query the way KV_Q8's K rows are quantized:
-        // q_int8 = round(q / d) with d = amax / 127.  The query is read from global, not from the (unused) fp32 tile.
-        if (t < G * NSC) {
-            const int h = t / NSC, g = t - h * NSC;
-            const float* src = q + (size_t) (kvh * G + h) * HD + g * KV_Q8_GROUP;
+        // B1/B2: the query is quantized the way KV_Q8's K rows are: q_int8 = round(q / d), d = amax / 127.
+        // W1041: one WARP per (head, 64-value group) instead of one thread.  The old mapping used 48 of the 256
+        // threads, each running a serial 64-element scan twice (~448 instructions) while the other 208 waited at
+        // __syncthreads -- and that happened again in every one of the 64 blocks of a query, which is why the
+        // dp4a path measured +6.8% instead of -35% (P447/P449).  Now: 48 groups over 8 warps, 2 values per lane,
+        // amax by a butterfly.  max is order-independent, so d and every code are bit-identical to the scan.
+        // Pattern copied from llama.cpp's quantize_q8_1 (one warp per block, each lane own element).
+        constexpr int QPG = KV_Q8_GROUP / 32;   // 64-value group == 2 values per lane
+        for (int grp = warp; grp < G * NSC; grp += WARPS) {
+            const int h = grp / NSC, g = grp - h * NSC;
+            const float* src = q + (size_t) (kvh * G + h) * HD + g * KV_Q8_GROUP + lane * QPG;
+            float v[QPG];
+#pragma unroll
+            for (int j = 0; j < QPG; ++j) v[j] = src[j];
             float amax = 0.0f;
 #pragma unroll
-            for (int j = 0; j < KV_Q8_GROUP; ++j) amax = fmaxf(amax, fabsf(src[j]));
-            const float d = amax > 0.0f ? amax / 127.0f : 1.0f;
-            sq8s[h][g] = d;
+            for (int j = 0; j < QPG; ++j) amax = fmaxf(amax, fabsf(v[j]));
 #pragma unroll
-            for (int j = 0; j < KV_Q8_GROUP; ++j)
-                sq8[h][g * KV_Q8_GROUP + j] = (int8_t) __float2int_rn(src[j] / d);
+            for (int off = 16; off > 0; off >>= 1) amax = fmaxf(amax, __shfl_xor(amax, off));
+            const float d = amax > 0.0f ? amax / 127.0f : 1.0f;
+            if (lane == 0) sq8s[h][g] = d;
+#pragma unroll
+            for (int j = 0; j < QPG; ++j)
+                sq8[h][g * KV_Q8_GROUP + lane * QPG + j] = (int8_t) __float2int_rn(v[j] / d);
         }
         __syncthreads();
     }
@@ -1078,7 +1089,30 @@ int gfx906_attn_opt() {
     switch (opt) {                                                                                        \
         case 1: LAUNCH(M, 1); break;                                                                      \
         case 2: LAUNCH(M, 2); break;                                                                      \
+        case 3: LAUNCH(M, 3); break;                                                                      \
         case 4: LAUNCH(M, 4); break;                                                                      \
+        case 5: LAUNCH(M, 5); break;                                                                      \
+        case 6: LAUNCH(M, 6); break;                                                                      \
+        case 7: LAUNCH(M, 7); break;                                                                      \
+        default: break;                                                                                   \
+    }
+
+// W1039: the same dispatch for the query-swizzle path -- the production recipe keeps GFX906_ATTN_QUERY_SWIZZLE on,
+// so the switches above were still unreachable.  Swizzle and reduce12 stay what production uses; only OPT differs.
+#define STRATA_ATTN_OPT_SWZ(M, O)                                                                         \
+    attn_chunk_kernel<M, false, true, true, O><<<grid, THREADS, 0, st>>>(                                 \
+        q, pools, ids, steps, (int) s.n_head_kv, (int) s.page_size, scale, part_acc, part_m, part_l,       \
+        n_chunks, (int) cap, stride)
+
+#define STRATA_ATTN_OPT_DISPATCH_SWZ(LAUNCH, M)                                                           \
+    switch (opt_sw) {                                                                                     \
+        case 1: LAUNCH(M, 1); break;                                                                      \
+        case 2: LAUNCH(M, 2); break;                                                                      \
+        case 3: LAUNCH(M, 3); break;                                                                      \
+        case 4: LAUNCH(M, 4); break;                                                                      \
+        case 5: LAUNCH(M, 5); break;                                                                      \
+        case 6: LAUNCH(M, 6); break;                                                                      \
+        case 7: LAUNCH(M, 7); break;                                                                      \
         default: break;                                                                                   \
     }
 
@@ -1146,6 +1180,13 @@ void launch_chunks_batch(const float* q, const QsaAttnPools& pools, const int32_
             const char* v = std::getenv("STRATA_GFX906_ATTN_REDUCE12");
             return v && v[0] == '1' && v[1] == '\0';
         }();
+        // W1039: this is the instantiation production actually runs (swizzle + reduce12), so the OPT switch has to
+        // be applied here, not only on the plain <M> path above.
+        if (const int opt_sw = gfx906_attn_opt(); opt_sw != 0) {
+            if (kv_mode == 3) STRATA_ATTN_OPT_DISPATCH_SWZ(STRATA_ATTN_OPT_SWZ, 3)
+            else              STRATA_ATTN_OPT_DISPATCH_SWZ(STRATA_ATTN_OPT_SWZ, 1)
+            return;
+        }
         if (reduce12) {
             if (kv_mode == 3)
                 attn_chunk_kernel<3, false, true, true><<<grid, THREADS, 0, st>>>(q, pools, ids, steps,
