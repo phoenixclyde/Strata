@@ -6,6 +6,7 @@
 #include "strata/kernels/kv_q8.hpp"
 #include "strata/kernels/kv_q4.hpp"
 #include "strata/kernels/dp4a.hpp"
+#include <hip/hip_fp16.h>   // W1039: __half2 for the v_dot2_f32_f16 score path
 #if defined(STRATA_HIP_GFX906)
 #include "strata/kernels/gfx_arch.hpp"
 #endif
@@ -198,6 +199,9 @@ __device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, Qsa
     __shared__ long long srow[CHUNK];             // pool row of each cell (page, kv head, slot)
     __shared__ __align__(16) int8_t sq8[(OPT & 2) ? G : 1][HD];  // B1/B2: the quantized query
     __shared__ float sq8s[(OPT & 2) ? G : 1][NSC];               // one scale per (head, 64-value group)
+    constexpr bool F16D = (OPT & 8) != 0;                        // W1039: fp16 query, v_dot2_f32_f16 scores
+    constexpr bool QH16 = F16D || (OPT & 32) != 0;              // W1039: the fp16 query tile, also feeds the P457 fp32-fma arm
+    __shared__ __align__(16) __half sqh[QH16 ? G : 1][HD];       // 6 KB: the query as fp16 (k stays int8)
     const int n_ids = __ldg(step + kStepWidth);
     const int chunk = blockIdx.x, kvh = blockIdx.y;
     const int t = threadIdx.x, lane = t & 31, warp = t >> 5;
@@ -259,6 +263,11 @@ __device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, Qsa
         }
         __syncthreads();
     }
+    if constexpr (QH16) {
+        // W1039: the query as fp16.  No scale, no per-group amax -- one convert per element, all threads.
+        for (int i = t; i < G * HD; i += THREADS)
+            sqh[i / HD][i % HD] = __float2half(q[(size_t) (kvh * G) * HD + i]);
+    }
     __syncthreads();
     if constexpr (LANE_CELL) {
         // S25 (STRATA_ATTN_LANECELL=1): thread t scores cell t % 64 for heads 3 (t / 64) .. +2 by itself - the same
@@ -309,6 +318,54 @@ __device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, Qsa
 #pragma unroll
             for (int h = 0; h < G; ++h)
                 part[h] = dot8_dp4a((int) kraw.x, (int) kraw.y, &sq8[h][lane * 8], sq8s[h][lane >> 3], ks);
+        } else if constexpr (F16D) {
+            const uint2 kraw = *reinterpret_cast<const uint2*>(p.k_q + srow[c] * HD + lane * 8);
+            const float ks = __half2float(__ushort_as_half(p.k_scale[srow[c] * NSC + (lane * 8) / KV_Q8_GROUP]));
+            const int8_t* kb = reinterpret_cast<const int8_t*>(&kraw);
+            __half2 kh[4];
+#pragma unroll
+            for (int j = 0; j < 4; ++j) kh[j] = __floats2half2_rn((float) kb[2 * j], (float) kb[2 * j + 1]);
+#pragma unroll
+            for (int h = 0; h < G; ++h) {
+                float acc = 0.0f;
+#pragma unroll
+                for (int j = 0; j < 4; ++j)
+                    acc = __builtin_amdgcn_fdot2(*reinterpret_cast<const __half2*>(&sqh[h][lane * 8 + 2 * j]), kh[j], acc, false);
+                part[h] = acc * ks;
+            }
+        } else if constexpr (OPT & 16) {
+            // P457 arm C: the BASELINE's arithmetic, reached through the OPT path's manual K read.
+            // load8_q8 bakes the 64-group scale into k8 and multiplies per element; here the scale is
+            // applied once per lane at the end.  Same expression, same fp32 fma, no dot instruction.
+            const uint2 kraw = *reinterpret_cast<const uint2*>(p.k_q + srow[c] * HD + lane * 8);
+            const float ks = __half2float(__ushort_as_half(p.k_scale[srow[c] * NSC + (lane * 8) / KV_Q8_GROUP]));
+            const int8_t* kb = reinterpret_cast<const int8_t*>(&kraw);
+            const int qflip = QUERY_SWIZZLE ? (lane & 4) : 0;
+#pragma unroll
+            for (int h = 0; h < G; ++h) {
+                const float4 qa = *reinterpret_cast<const float4*>(&sq[h][lane * 8 + qflip]);
+                const float4 qb = *reinterpret_cast<const float4*>(&sq[h][lane * 8 + (qflip ^ 4)]);
+                const float pp = (float) kb[0] * qa.x + (float) kb[1] * qa.y + (float) kb[2] * qa.z +
+                                 (float) kb[3] * qa.w + (float) kb[4] * qb.x + (float) kb[5] * qb.y +
+                                 (float) kb[6] * qb.z + (float) kb[7] * qb.w;
+                part[h] = pp * ks;
+            }
+        } else if constexpr (OPT & 32) {
+            // P457 arm D: the query rounded to fp16 and back to float, then the same fp32 fma.
+            // Only the input is rounded -- no dot2, no scale change -- so it isolates q precision.
+            const uint2 kraw = *reinterpret_cast<const uint2*>(p.k_q + srow[c] * HD + lane * 8);
+            const float ks = __half2float(__ushort_as_half(p.k_scale[srow[c] * NSC + (lane * 8) / KV_Q8_GROUP]));
+            const int8_t* kb = reinterpret_cast<const int8_t*>(&kraw);
+            float kf[8];
+#pragma unroll
+            for (int j = 0; j < 8; ++j) kf[j] = (float) kb[j] * ks;
+#pragma unroll
+            for (int h = 0; h < G; ++h) {
+                float pp = 0.0f;
+#pragma unroll
+                for (int j = 0; j < 8; ++j) pp += __half2float(sqh[h][lane * 8 + j]) * kf[j];
+                part[h] = pp;
+            }
         } else {
         float k8[8];
         load8<KV_MODE>(p, false, srow[c], lane * 8, k8);
@@ -334,6 +391,23 @@ __device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, Qsa
 #pragma unroll
             for (int h = 0; h < G; ++h) {
                 float s = dot8_dp4a((int) kraw.x, (int) kraw.y, &sq8[h][lane * 8], sq8s[h][lane >> 3], ks);
+                s = warp_sum(s, (OPT & 1) != 0);
+                if (lane == 0) sp[h][c] = s * scale;
+            }
+        } else if constexpr (F16D) {
+            const uint2 kraw = *reinterpret_cast<const uint2*>(p.k_q + srow[c] * HD + lane * 8);
+            const float ks = __half2float(__ushort_as_half(p.k_scale[srow[c] * NSC + (lane * 8) / KV_Q8_GROUP]));
+            const int8_t* kb = reinterpret_cast<const int8_t*>(&kraw);
+            __half2 kh[4];
+#pragma unroll
+            for (int j = 0; j < 4; ++j) kh[j] = __floats2half2_rn((float) kb[2 * j], (float) kb[2 * j + 1]);
+#pragma unroll
+            for (int h = 0; h < G; ++h) {
+                float acc = 0.0f;
+#pragma unroll
+                for (int j = 0; j < 4; ++j)
+                    acc = __builtin_amdgcn_fdot2(*reinterpret_cast<const __half2*>(&sqh[h][lane * 8 + 2 * j]), kh[j], acc, false);
+                float s = acc * ks;
                 s = warp_sum(s, (OPT & 1) != 0);
                 if (lane == 0) sp[h][c] = s * scale;
             }
@@ -1066,9 +1140,15 @@ int gfx906_attn_opt() {
         const char* a = std::getenv("STRATA_GFX906_ATTN_DPP");
         const char* b = std::getenv("STRATA_GFX906_ATTN_DP4A");
         const char* c = std::getenv("STRATA_GFX906_ATTN_LDS_PAD");
+        const char* d = std::getenv("STRATA_GFX906_ATTN_F16D");   // W1039: bit 3, fp16 query + v_dot2_f32_f16
+        const char* e = std::getenv("STRATA_GFX906_ATTN_CTLREAD");  // W1039/P457: bit 4, baseline arithmetic
+        const char* f = std::getenv("STRATA_GFX906_ATTN_F16Q");     // W1039/P457: bit 5, fp16 query + fp32 fma
         if (a && a[0] == '1') o |= 1;
         if (b && b[0] == '1') o |= 2;
         if (c && c[0] == '1') o |= 4;
+        if (d && d[0] == '1') o |= 8;
+        if (e && e[0] == '1') o |= 16;
+        if (f && f[0] == '1') o |= 32;
         return o;
     }();
     return v;
@@ -1094,6 +1174,8 @@ int gfx906_attn_opt() {
         case 5: LAUNCH(M, 5); break;                                                                      \
         case 6: LAUNCH(M, 6); break;                                                                      \
         case 7: LAUNCH(M, 7); break;                                                                      \
+        case 8: LAUNCH(M, 8); break;                                                                      \
+        case 9: LAUNCH(M, 9); break;                                                                      \
         default: break;                                                                                   \
     }
 
@@ -1113,6 +1195,10 @@ int gfx906_attn_opt() {
         case 5: LAUNCH(M, 5); break;                                                                      \
         case 6: LAUNCH(M, 6); break;                                                                      \
         case 7: LAUNCH(M, 7); break;                                                                      \
+        case 8: LAUNCH(M, 8); break;                                                                      \
+        case 9: LAUNCH(M, 9); break;                                                                      \
+        case 16: LAUNCH(M, 16); break;                                                                    \
+        case 32: LAUNCH(M, 32); break;                                                                    \
         default: break;                                                                                   \
     }
 
@@ -1155,8 +1241,15 @@ void launch_chunks_batch(const float* q, const QsaAttnPools& pools, const int32_
     // qsa_decode_attn_slots only.  Prefill attention calls qsa_decode_attn_batch -> launch_chunks_batch ->
     // attn_chunk_kernel<M> (the plain instantiation), so on the production path they were dead code: with all
     // four switches on, the measured `qsa attn` phase did not move (578.3 -> 577.3 ms at 2.5K).
+#if defined(STRATA_HIP_GFX906)
+    if ((gfx906_attn_opt() & 48) != 0 && !use_query_swizzle) {   // P457: bits 16/32 live on the swizzle path
+        static thread_local bool said = false;
+        if (!said) { said = true;
+            std::fprintf(stderr, "strata attn-opt: bits 16/32 need the query-swizzle path; running the baseline\n"); }
+    }
+#endif
     if (const int opt = gfx906_attn_opt();
-        opt != 0 && !lane_cell && !use_query_swizzle && (kv_mode == 3 || kv_mode == 1)) {
+        opt != 0 && (opt & 48) == 0 && !lane_cell && !use_query_swizzle && (kv_mode == 3 || kv_mode == 1)) {
         if (kv_mode == 3) STRATA_ATTN_OPT_DISPATCH(STRATA_ATTN_OPT_BATCH, 3)
         else STRATA_ATTN_OPT_DISPATCH(STRATA_ATTN_OPT_BATCH, 1)
         return;   // the caller runs the merge pass
@@ -1220,7 +1313,8 @@ void launch_chunks_batch(const float* q, const QsaAttnPools& pools, const int32_
                                                           scale, part_acc, part_m, part_l, n_chunks, (int) cap, stride);
     else
 #endif
-    if (const int opt = (kernel < 0 ? gfx906_attn_opt() : 0); opt != 0 && !lane_cell && (kv_mode == 3 || kv_mode == 1)) {
+    if (const int opt = (kernel < 0 ? gfx906_attn_opt() : 0);
+        opt != 0 && (opt & 48) == 0 && !lane_cell && (kv_mode == 3 || kv_mode == 1)) {
         if (kv_mode == 3) STRATA_ATTN_OPT_DISPATCH(STRATA_ATTN_OPT_BATCH, 3)
         else STRATA_ATTN_OPT_DISPATCH(STRATA_ATTN_OPT_BATCH, 1)
     } else if (kv_mode == 3)

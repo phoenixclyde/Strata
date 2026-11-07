@@ -26,24 +26,101 @@
 #include <cfloat>
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <stdexcept>
 
 namespace strata::kernels {
 namespace {
 std::atomic<bool> enabled{false};
-__device__ __forceinline__ float warp_sum(float value) {
+// W1036/A1: the router's exchanges on gfx906 move to DPP (VALU) instead of ds_bpermute (LDS).  DPP permutes inside
+// a 16-lane row, so xor1/2/4/8 are pure lane permutations and give the same operand every lane's `__shfl_xor_sync`
+// gives; xor16 stays a shuffle (its scope on a 64-lane wavefront is not what the 32-lane hierarchy needs, and the
+// last level is not where the cost is).  v_mov_b32_dpp's encodings are the ones gfx906 has: quad_perm for xor1/xor2,
+// two half-row moves with complementary bank masks for xor4, row_ror:8 for xor8.  s_nop is the DPP hazard delay.
+template <typename T>
+__device__ __forceinline__ T dpp_xor1(T v) {
+    static_assert(sizeof(T) == 4, "32-bit lanes only");
+    int src = *reinterpret_cast<int*>(&v), dst;
+    asm volatile("s_nop 4\n\tv_mov_b32_dpp %0, %1 quad_perm:[1,0,3,2] row_mask:0xf bank_mask:0xf"
+                 : "=v"(dst) : "v"(src) : "memory");
+    return *reinterpret_cast<T*>(&dst);
+}
+template <typename T>
+__device__ __forceinline__ T dpp_xor2(T v) {
+    static_assert(sizeof(T) == 4, "32-bit lanes only");
+    int src = *reinterpret_cast<int*>(&v), dst;
+    asm volatile("s_nop 1\n\tv_mov_b32_dpp %0, %1 quad_perm:[2,3,0,1] row_mask:0xf bank_mask:0xf"
+                 : "=v"(dst) : "v"(src) : "memory");
+    return *reinterpret_cast<T*>(&dst);
+}
+template <typename T>
+__device__ __forceinline__ T dpp_xor4(T v) {
+    static_assert(sizeof(T) == 4, "32-bit lanes only");
+    int src = *reinterpret_cast<int*>(&v), dst;
+    asm volatile("v_mov_b32 %0, %1\n\ts_nop 1\n\t"
+                 "v_mov_b32_dpp %0, %1 row_shl:4 row_mask:0xf bank_mask:0x5\n\t"
+                 "v_mov_b32_dpp %0, %1 row_shr:4 row_mask:0xf bank_mask:0xa"
+                 : "=v"(dst) : "v"(src) : "memory");
+    return *reinterpret_cast<T*>(&dst);
+}
+template <typename T>
+__device__ __forceinline__ T dpp_xor8(T v) {
+    static_assert(sizeof(T) == 4, "32-bit lanes only");
+    int src = *reinterpret_cast<int*>(&v), dst;
+    asm volatile("s_nop 1\n\tv_mov_b32_dpp %0, %1 row_ror:8 row_mask:0xf bank_mask:0xf"
+                 : "=v"(dst) : "v"(src) : "memory");
+    return *reinterpret_cast<T*>(&dst);
+}
+template <typename T>
+__device__ __forceinline__ T dpp_xor(T v, int mask) {
+    switch (mask) {
+        case 1: return dpp_xor1(v);
+        case 2: return dpp_xor2(v);
+        case 4: return dpp_xor4(v);
+        case 8: return dpp_xor8(v);
+        default: return v;
+    }
+}
+// Same operand pairs and the same order as the shuffle loop it replaces (16, 8, 4, 2, 1), so the sums are bit-identical.
+__device__ __forceinline__ float warp_sum_sel(float value, bool dpp) {
+    value += __shfl_xor_sync(0xffffffffu, value, 16, 32);
+    if (dpp) {
+        value += dpp_xor8(value); value += dpp_xor4(value); value += dpp_xor2(value); value += dpp_xor1(value);
+    } else {
 #pragma unroll
-    for (int mask = 16; mask; mask >>= 1) value += __shfl_xor_sync(0xffffffffu, value, mask, 32);
+        for (int mask = 8; mask; mask >>= 1) value += __shfl_xor_sync(0xffffffffu, value, mask, 32);
+    }
     return value;
 }
-__device__ __forceinline__ float warp_max(float value) {
+__device__ __forceinline__ float warp_max_sel(float value, bool dpp) {
+    value = fmaxf(value, __shfl_xor_sync(0xffffffffu, value, 16, 32));
+    if (dpp) {
+        value = fmaxf(value, dpp_xor8(value)); value = fmaxf(value, dpp_xor4(value));
+        value = fmaxf(value, dpp_xor2(value)); value = fmaxf(value, dpp_xor1(value));
+    } else {
 #pragma unroll
-    for (int mask = 16; mask; mask >>= 1) value = fmaxf(value, __shfl_xor_sync(0xffffffffu, value, mask, 32));
+        for (int mask = 8; mask; mask >>= 1) value = fmaxf(value, __shfl_xor_sync(0xffffffffu, value, mask, 32));
+    }
     return value;
+}
+__device__ __forceinline__ float warp_sum(float value, bool dpp = false) { return warp_sum_sel(value, dpp); }
+__device__ __forceinline__ float warp_max(float value, bool dpp = false) { return warp_max_sel(value, dpp); }
+// one level of the top-k selection's (value, expert) exchange
+__device__ __forceinline__ void argmax_xchg(float& best, int& expert, int mask, bool dpp) {
+    float oth;
+    int oid;
+    if (dpp && mask < 16) {
+        oth = dpp_xor(best, mask);
+        oid = dpp_xor(expert, mask);
+    } else {
+        oth = __shfl_xor_sync(0xffffffffu, best, mask, 32);
+        oid = __shfl_xor_sync(0xffffffffu, expert, mask, 32);
+    }
+    if (oth > best || (oth == best && oid < expert)) { best = oth; expert = oid; }
 }
 __launch_bounds__(256, 1)
 __global__ void route(const float* __restrict__ logits, int32_t* __restrict__ ids,
-                      float* __restrict__ weights) {
+                      float* __restrict__ weights, int dpp) {
     // Preserve the pinned 32x8 block geometry; only row zero is active here.
     // blockIdx.x = the token (a multi-token launch; 0 for the single one)
     logits += (size_t) blockIdx.x * 512; ids += (size_t) blockIdx.x * 10; weights += (size_t) blockIdx.x * 10;
@@ -56,14 +133,14 @@ __global__ void route(const float* __restrict__ logits, int32_t* __restrict__ id
     float maximum = -INFINITY;
 #pragma unroll
     for (int i = 0; i < 16; ++i) maximum = max(maximum, values[i]);
-    maximum = warp_max(maximum);
+    maximum = warp_max(maximum, dpp != 0);
     float sum = 0.0f;
 #pragma unroll
     for (int i = 0; i < 16; ++i) {
         values[i] = expf(values[i] - maximum);
         sum += values[i];
     }
-    const float reciprocal = 1.0f / warp_sum(sum);
+    const float reciprocal = 1.0f / warp_sum(sum, dpp != 0);
 #pragma unroll
     for (int i = 0; i < 16; ++i) {
         values[i] *= reciprocal;
@@ -78,11 +155,7 @@ __global__ void route(const float* __restrict__ logits, int32_t* __restrict__ id
             if (values[i] > best) { best = values[i]; expert = lane + i * 32; }
         }
 #pragma unroll
-        for (int mask = 16; mask; mask >>= 1) {
-            const float other = __shfl_xor_sync(0xffffffffu, best, mask, 32);
-            const int other_id = __shfl_xor_sync(0xffffffffu, expert, mask, 32);
-            if (other > best || (other == best && other_id < expert)) { best = other; expert = other_id; }
-        }
+        for (int mask = 16; mask; mask >>= 1) argmax_xchg(best, expert, mask, dpp != 0);
         if ((expert & 31) == lane) {
             values[expert / 32] = -INFINITY;
             ids[rank] = expert;
@@ -92,13 +165,13 @@ __global__ void route(const float* __restrict__ logits, int32_t* __restrict__ id
         }
         if (rank == lane) selected = best;
     }
-    selected_sum = max(warp_sum(selected_sum), 6.103515625e-5f);
+    selected_sum = max(warp_sum(selected_sum, dpp != 0), 6.103515625e-5f);
     const float inverse_selected_sum = 1.0f / selected_sum;
     if (lane < 10) weights[lane] = selected * inverse_selected_sum;
 }
 __launch_bounds__(256, 1)
 __global__ void route_multi(const float* __restrict__ logits, int32_t* __restrict__ ids,
-                            float* __restrict__ weights, int n_tok) {
+                            float* __restrict__ weights, int n_tok, int dpp) {
     const int tk = (int) blockIdx.x * 8 + (int) threadIdx.y;
     if (tk >= n_tok) return;
     logits += (size_t) tk * 512; ids += (size_t) tk * 10; weights += (size_t) tk * 10;
@@ -110,14 +183,14 @@ __global__ void route_multi(const float* __restrict__ logits, int32_t* __restric
     float maximum = -INFINITY;
 #pragma unroll
     for (int i = 0; i < 16; ++i) maximum = max(maximum, values[i]);
-    maximum = warp_max(maximum);
+    maximum = warp_max(maximum, dpp != 0);
     float sum = 0.0f;
 #pragma unroll
     for (int i = 0; i < 16; ++i) {
         values[i] = expf(values[i] - maximum);
         sum += values[i];
     }
-    const float reciprocal = 1.0f / warp_sum(sum);
+    const float reciprocal = 1.0f / warp_sum(sum, dpp != 0);
 #pragma unroll
     for (int i = 0; i < 16; ++i) {
         values[i] *= reciprocal;
@@ -132,11 +205,7 @@ __global__ void route_multi(const float* __restrict__ logits, int32_t* __restric
             if (values[i] > best) { best = values[i]; expert = lane + i * 32; }
         }
 #pragma unroll
-        for (int mask = 16; mask; mask >>= 1) {
-            const float other = __shfl_xor_sync(0xffffffffu, best, mask, 32);
-            const int other_id = __shfl_xor_sync(0xffffffffu, expert, mask, 32);
-            if (other > best || (other == best && other_id < expert)) { best = other; expert = other_id; }
-        }
+        for (int mask = 16; mask; mask >>= 1) argmax_xchg(best, expert, mask, dpp != 0);
         if ((expert & 31) == lane) {
             values[expert / 32] = -INFINITY;
             ids[rank] = expert;
@@ -144,7 +213,7 @@ __global__ void route_multi(const float* __restrict__ logits, int32_t* __restric
         }
         if (rank == lane) selected = best;
     }
-    selected_sum = max(warp_sum(selected_sum), 6.103515625e-5f);
+    selected_sum = max(warp_sum(selected_sum, dpp != 0), 6.103515625e-5f);
     const float inverse_selected_sum = 1.0f / selected_sum;
     if (lane < 10) weights[lane] = selected * inverse_selected_sum;
 }
@@ -154,7 +223,7 @@ __global__ void route_multi(const float* __restrict__ logits, int32_t* __restric
 template <int NE, int K>
 __launch_bounds__(256, 1)
 __global__ void route_topk(const float* __restrict__ logits, int32_t* __restrict__ ids, float* __restrict__ weights,
-                           int n_tok) {
+                           int n_tok, int dpp) {
     static_assert(NE % 32 == 0 && K <= 32, "experts in whole warps, at most 32 picks");
     constexpr int V = NE / 32;
     const int tk = (int) blockIdx.x * 8 + (int) threadIdx.y;
@@ -167,14 +236,14 @@ __global__ void route_topk(const float* __restrict__ logits, int32_t* __restrict
     float maximum = -INFINITY;
 #pragma unroll
     for (int i = 0; i < V; ++i) maximum = max(maximum, values[i]);
-    maximum = warp_max(maximum);
+    maximum = warp_max(maximum, dpp != 0);
     float sum = 0.0f;
 #pragma unroll
     for (int i = 0; i < V; ++i) {
         values[i] = expf(values[i] - maximum);
         sum += values[i];
     }
-    const float reciprocal = 1.0f / warp_sum(sum);
+    const float reciprocal = 1.0f / warp_sum(sum, dpp != 0);
 #pragma unroll
     for (int i = 0; i < V; ++i) {
         values[i] *= reciprocal;
@@ -189,11 +258,7 @@ __global__ void route_topk(const float* __restrict__ logits, int32_t* __restrict
             if (values[i] > best) { best = values[i]; expert = lane + i * 32; }
         }
 #pragma unroll
-        for (int mask = 16; mask; mask >>= 1) {
-            const float other = __shfl_xor_sync(0xffffffffu, best, mask, 32);
-            const int other_id = __shfl_xor_sync(0xffffffffu, expert, mask, 32);
-            if (other > best || (other == best && other_id < expert)) { best = other; expert = other_id; }
-        }
+        for (int mask = 16; mask; mask >>= 1) argmax_xchg(best, expert, mask, dpp != 0);
         if ((expert & 31) == lane) {
             values[expert / 32] = -INFINITY;
             ids[rank] = expert;
@@ -201,7 +266,7 @@ __global__ void route_topk(const float* __restrict__ logits, int32_t* __restrict
         }
         if (rank == lane) selected = best;
     }
-    selected_sum = max(warp_sum(selected_sum), 6.103515625e-5f);
+    selected_sum = max(warp_sum(selected_sum, dpp != 0), 6.103515625e-5f);
     const float inverse_selected_sum = 1.0f / selected_sum;
     if (lane < K) weights[lane] = selected * inverse_selected_sum;
 }
@@ -214,6 +279,17 @@ bool overlap(const void* a, size_t an, const void* b, size_t bn) {
     return ap < bp + bn && bp < ap + an;
 }
 }
+namespace {
+// W1036/A1: STRATA_GFX906_ROUTE_DPP=1 moves the router's warp reductions and its top-k exchange onto DPP.
+// Bit-identical by construction (same operand pairs, same order), so the A/B is a speed measurement, not a KL gate.
+bool route_dpp() {
+    static const bool on = [] {
+        const char* v = std::getenv("STRATA_GFX906_ROUTE_DPP");
+        return v != nullptr && v[0] == '1';
+    }();
+    return on;
+}
+}
 void native_router_set_enabled(bool value) { enabled.store(value, std::memory_order_relaxed); }
 bool native_router_enabled() { return enabled.load(std::memory_order_relaxed); }
 void native_router_top10(const float* logits, int32_t* ids, float* weights, void* stream) {
@@ -221,7 +297,7 @@ void native_router_top10(const float* logits, int32_t* ids, float* weights, void
         || overlap(logits, 512 * 4, ids, 10 * 4) || overlap(logits, 512 * 4, weights, 10 * 4)
         || overlap(ids, 10 * 4, weights, 10 * 4))
         throw std::invalid_argument("native router requires a stream, aligned spans, and disjoint outputs");
-    route<<<1, dim3(32, 8), 0, static_cast<cudaStream_t>(stream)>>>(logits, ids, weights);
+    route<<<1, dim3(32, 8), 0, static_cast<cudaStream_t>(stream)>>>(logits, ids, weights, route_dpp() ? 1 : 0);
     const auto error = cudaGetLastError();
     if (error != cudaSuccess) throw std::runtime_error(cudaGetErrorString(error));
 }
@@ -229,7 +305,7 @@ void native_router_top10_multi(const float* logits, int32_t* ids, float* weights
     if (!stream || n_tok < 1 || !valid(logits, (size_t) n_tok * 512 * 4) || !valid(ids, (size_t) n_tok * 10 * 4) ||
         !valid(weights, (size_t) n_tok * 10 * 4))
         throw std::invalid_argument("native router (multi) requires a stream and aligned [n,512]/[n,10] buffers");
-    route_multi<<<(unsigned) ((n_tok + 7) / 8), dim3(32, 8), 0, static_cast<cudaStream_t>(stream)>>>(logits, ids, weights, n_tok);
+    route_multi<<<(unsigned) ((n_tok + 7) / 8), dim3(32, 8), 0, static_cast<cudaStream_t>(stream)>>>(logits, ids, weights, n_tok, route_dpp() ? 1 : 0);
     const auto error = cudaGetLastError();
     if (error != cudaSuccess) throw std::runtime_error(cudaGetErrorString(error));
 }
@@ -245,7 +321,7 @@ void native_router_topk(const float* logits, int32_t* ids, float* weights, int n
         !valid(weights, (size_t) n_tok * k * 4))
         throw std::invalid_argument("native_router_topk: a stream, a supported (experts, k) and aligned buffers");
     route_topk<256, 8><<<(unsigned) ((n_tok + 7) / 8), dim3(32, 8), 0, static_cast<cudaStream_t>(stream)>>>(
-        logits, ids, weights, n_tok);
+        logits, ids, weights, n_tok, route_dpp() ? 1 : 0);
     const auto error = cudaGetLastError();
     if (error != cudaSuccess) throw std::runtime_error(cudaGetErrorString(error));
 }
