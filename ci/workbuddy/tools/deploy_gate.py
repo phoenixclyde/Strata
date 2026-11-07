@@ -6,7 +6,7 @@
 这条工具就是把「事实」写成可执行判据。**任何一条拿不出证据，就 REFUSE**——「没有证据」
 本身就是拒绝理由，不是让人补一句话绕过。
 
-六条判据（全部机械可判）：
+七条判据（全部机械可判）：
   D1 身份      exe 存在，md5/大小记录在案；--live 时与 166 上 `docker exec md5sum` 一致
   D2 回滚件    166 上存在一个 md5 不同的上一版 exe（能回滚才允许前进）
   D3 性能      A/B 证据里每个点 n>=3，且 **|Δ| 与该次 run 自己的 2×CV 比较**（项目规则 B7）
@@ -15,6 +15,8 @@
   D4 数值      bit-identical，或 KL<=0.0139 且 top-1>=99%（R94 预登记标尺）
   D5 配置面    改参唯一道：新 config 相对上一份的**增量**必须逐项由本轮 ADOPTED 的 register 行解释
   D6 证据链    本轮 report + 账本行 + W832 §6.5 回写块（复用 round_ledger 的 E 规则）
+  D7 CI 证据    本 exe 的构建 sha 在 deploy/CI_RUNS.tsv 里有 Downstream gate run=success，
+               或 status=exempt 的显式豁免行（W1048：历史 43 件 UNTRACKED 就是反例）
 
 A/B 证据文件（JSON，最小形状）：
 {
@@ -122,6 +124,41 @@ def numeric_verdict(num):
     return False, "没有数值门结论（bitident / kl / anchor）"
 
 
+def ci_run_ok(exe, runs_path=None, recipe_path=None):
+    """D7: is this exe's build sha covered by a Downstream gate run or an exemption?"""
+    import re
+    runs_path = runs_path or os.path.join(ROOT, "deploy", "CI_RUNS.tsv")
+    recipe_path = recipe_path or os.path.join(ROOT, "deploy", "REBUILD_RECIPE.tsv")
+    if not os.path.isfile(runs_path):
+        return False, "deploy/CI_RUNS.tsv 不存在（无 CI 证据可核）"
+    sha = None
+    if os.path.isfile(recipe_path):
+        for line in io.open(recipe_path, encoding="utf-8-sig", errors="replace"):
+            f = line.rstrip("\n").split("\t")
+            if f and f[0] == exe and len(f) > 3:
+                m = re.search(r"([0-9a-f]{7,40})", f[3])
+                if m:
+                    sha = m.group(1)
+                break
+    for line in io.open(runs_path, encoding="utf-8", errors="replace"):
+        if not line.strip() or line.startswith("#"):
+            continue
+        f = line.rstrip("\n").split("\t")
+        if len(f) < 4:
+            continue
+        key, ref, rid, status = f[0], f[1], f[2], f[3]
+        hit = key == exe or (sha and (key == sha or
+                (len(key) >= 7 and len(sha) >= 7 and (sha.startswith(key) or key.startswith(sha)))))
+        if not hit:
+            continue
+        if status == "success":
+            return True, "%s -> run %s success（%s）" % (key, rid, ref)
+        if status == "exempt":
+            return True, "%s -> 显式豁免（%s）" % (key, f[4][:60] if len(f) > 4 else "")
+        return False, "%s -> status=%s 不是 success/exempt" % (key, status)
+    return False, "CI_RUNS.tsv 没有 %s / sha=%s 的覆盖行" % (exe, sha)
+
+
 def self_test():
     good = {"mode": "anchor", "build_floor_bitident": True,
             "anchor": [{"length": n, "kl_cand": 0.1, "kl_anchor": 0.2} for n in
@@ -142,6 +179,21 @@ def self_test():
         ("D3c 大幅变快", lambda: guard_ok(-1.72, 0.36), True),
         ("D3c 变慢超带宽", lambda: guard_ok(+1.72, 0.36), False),
         ("D3c 变慢在带内", lambda: guard_ok(+0.10, 0.36), True),
+    ]
+    # W1048 D7: coverage table lookups, including the fail-closed path.
+    import tempfile
+    tmp = tempfile.NamedTemporaryFile("w", suffix=".tsv", delete=False, encoding="utf-8")
+    tmp.write("key\tref\trun\tstatus\tnote\n")
+    tmp.write("strata-x\tci/retro/x\t111\tsuccess\tok\n")
+    tmp.write("deadbeef9999\t(exempt)\t-\texempt\twhy\n")
+    tmp.close()
+    cases += [
+        ("D7 sha 命中 success", lambda: ci_run_ok("strata-x", runs_path=tmp.name,
+          recipe_path=None)[0], True),
+        ("D7 无覆盖行拒绝", lambda: ci_run_ok("strata-nope", runs_path=tmp.name,
+          recipe_path=None)[0], False),
+        ("D7 表缺失拒绝", lambda: ci_run_ok("strata-x", runs_path=tmp.name + ".absent",
+          recipe_path=None)[0], False),
     ]
     bad = 0
     for name, obj, want in cases:
@@ -306,6 +358,12 @@ def main():
     else:
         add(True, "D6 证据链", "SKIP（装机路径没绑定报告；本轮四件套由 round_close 另管）")
 
+    # D7 CI evidence (W1048): the build sha of this exe must be covered by a recorded
+    # Downstream gate run (or an explicit exemption row).  Fail closed: a missing table
+    # or a missing row is a REFUSE, not a SKIP -- "no evidence" is itself the refusal.
+    verdict, detail = ci_run_ok(a.exe)
+    add(verdict, "D7 CI 证据", detail)
+
     print("%-8s %-12s %s" % ("判定", "判据", "证据"))
     for st, tag, d in rows:
         print("%-8s %-12s %s" % (st, tag, d))
@@ -315,7 +373,7 @@ def main():
     skips = [tag for st, tag, d in rows if d.startswith("SKIP")]
     all_ok = ok and not skips
     if all_ok:
-        banner = "PASS — 六条判据全部有证据，可以装"
+        banner = "PASS — 七条判据全部有证据，可以装"
     elif ok:
         banner = "INCOMPLETE — %d 条判据是 SKIP（%s），不能据此装机" % (len(skips), "、".join(skips))
     else:

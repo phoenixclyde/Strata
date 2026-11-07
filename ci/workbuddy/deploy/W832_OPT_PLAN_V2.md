@@ -21,7 +21,7 @@
 | 2K prefill 相位 | GPU **3191 ms**；gu 816、down 510、dequant **161（5.0%）**、wait copy **37（1.2%）**、host grouping **91（2.9%）** | `ci/prefill_phases/PREFILL_PHASES.tsv`（n=3 冷 prompt）+ `phases.py --check` |
 | 2K 相对 16K 的每 token 成本 | 整条 **1.23×**；gate/up **1.57×**、down **1.52×** | 同上（16K = 16375 tok / 20318 ms） |
 | 专家权重类型 | gu = Q4_K/Q5_K @[1280,2560]；down = Q5_1/Q8_0 @[2560,640] | `native_experts.txt`（pack 清单） |
-| 进度分母 | **482 条 / 已结 389 / 80.7%**（W1047；值由 `tools/progress.py` 派生，`tools/audit_scope.py §D` 拦手写） | `deploy/PROGRESS.tsv`（唯一分母） |
+| 进度分母 | **485 条 / 已结 391 / 80.6%**（W1048；值由 `tools/progress.py` 派生，`tools/audit_scope.py §D` 拦手写） | `deploy/PROGRESS.tsv`（唯一分母） |
 | **主线 / 上游基线** | 树 = `mi50-0.2.11-r33-14` @ `6501c28f`（v0.2.11 + API 移植 + 发布门，线性，behind 0 / ahead 78 / merges 0）；**镜像 `strata-gfx906:0.2.11-101`（`/src` = 该 tag 的树）**；引擎 `strata-0.1.57-001`（md5 `5e63174d…`）；容器 `2d765942e041` 跑 `0.2.11-101` | `git describe --tags`；`git rev-list --count upstream/main..HEAD`；`docker images` |
 | **ROCm（容器内）** | `.info/version` = **10.1.0**；HIP 运行时 **7.16.26323-0000000**（`hipconfig`）；clang **24.0.0git**；`ROCM_BUILD=7.14.0-gfx906+20260802001858`；rocprofv3 1.3.5 | `docker exec strata166-407 …`；三套编号互不相等（自建 gfx906 树），写「ROCm 7.x」等于没写 |
 | **依赖 pin（llama.cpp）** | **`b11062` = `3cf03257f219afbe7334045ff7c6a06ac68c627d`**（2026-09-20）；整树 hash `6feee58927d5f1efd38e72bbc1db061d`；镜像 `/src/third_party/llama.cpp`、构建挂载 `ref/llama_3cf0325`、引擎 `/llama.cpp/…`×93 三处同 hash；自 0.2.8p2 起未变；**b12129（最新 tag）已试并回滚（−4.0/−4.6%，`P354`）** | `ci/release_check.py` 三行（pin / tree / build refs）；上游钉法 `.github/workflows/metal-build.yml:29` |
@@ -641,6 +641,7 @@ mega 加的 10 项：`GDN_CONVL2` `GDN_NOY` `CVEC_FUSE` `HCD_EXACT` `TOPK_REG_MI
 | `回写 · W1045（2026-11-07 18:1x–18:5x）五问审计：移植面 / dot4 / dot8 / mmq / CI-CD` | objcopy 事故恢复；R103 只落 B1；dot4 硬件主力；dot8 先过 roofline；mmq 混合树；CI 五缺口 | W1045 |
 | `回写 · W1047（2026-11-07 19:1x–22:3x）CI/CD 全覆盖回溯 + B3 干净门与真实模型门` | hook/worktree 纠错；脚本全量入 CI；B3 hc4b D1–D5 | W1047 |
 | `回写 · W1047 装机补记（2026-11-07 22:3x）hc4b 落生产` | D1–D6 后换件；重启 7 / 停机 1810 s | W1047 |
+| `回写 · W1048（2026-11-07 22:5x–23:5x）复核五条全量入方案 + 历史变更 CI/CD 回溯` | 10 retro run 全绿；pa7 重放==91a7c5a4；D7 硬门 | W1048 |
 | `回写 · W1046（2026-11-07 19:1x–19:3x）R103 后续方案入权威 + B3 候选 + k8v4 dot8 可行性（零停机）` | B2 死路径纠正；hc4 已建未装；R109/R110 预注册；dot8q≠dot8 | W1046 |
 | 回写 · W1039 §十五（`R105`：gfx906 的能力缺口，一半是构建开关） | 全构建只有 dflash2.cpp 定义 STRATA_USE_HIP；七处分类成清单，三处可选开关解开建 hipk（默认不变） |
 | 回写 · W1039 §十六（decode 的账：draft 5.1%，CPU 专家 11.7%） | 400 窗拆完：verify 90.3%、draft 5.1%、host 里 CPU 占 86%（整窗 11.7%，p90 17.1 ms）⇒ MTP_PRIO 不单独开窗，R104 多一条 decode 判据 |
@@ -3166,7 +3167,7 @@ pa7 实测：基线 **886** 条、`<..,16>` **890** 条，`v_fmac_f32` **120 vs 
 - **R103 移植面（`P517`）**：`port-all` 改 10 文件，在产 `attn-opt` 只取 1 个 ⇒ **只落 B1 一条**。A1/A5 未移植、A2/A3 与三个诊断位移植了没开；**B2（`qsa_pattn.cu`）与 B3（`fused_gr.cu`）两棵树都没改**，而 B2 是方案里「最值钱」的一条。可挖排序 B2 > B3 > A1 > A5 > A2/A3 > A4。
 - **dot4（`P518`）**：逐 TU ISA 实测硬件 `v_dot4_i32_i8` 384 / 44,746 / 37,464 条，软件回退只在 `strata_hip.h:246-250` 的 unsigned 重载；**dot8 全树 0 条**；`fused_gr` 0 条 dot4、81,240 条 fp32 FMA = 最明确真空。
 - **dot8（`P519`，机主判断「要试」成立）**：外证 gfx906 `sdot8` 2× `sdot4`（44 vs 22 TOPS），但 `R91`+前置 `R74` 早有、`R108` 重复待合并；先做零停机 roofline + 离线 W4A4 精度门，再谈内核接入。
-- **mmq（`P520`）**：K10 = llama.cpp 升 pin 的 **API 对齐**（#30168 等 25+5+1 处），`mmq*` 来自上游 `4c1004c`(10-19 **#30553**)；主体 b12180(11-06) ⇒ **混合树**，`mmq.cuh` 落后 5 提交（含 #30837 DP4A tile height，wave64 相关）。
+- **mmq（`P520`）**：K10 = llama.cpp 升 pin 的 **API 对齐**（#30168 等 25+5+1 处），`mmq*` 来自上游 `4c1004c`(10-19 **#30553**)；主体 b12180(11-06) ⇒ **混合树**，`mmq.cuh` 落后 5 提交——**W1048 GitHub API 逐条核实**（不凭印象）：`1a24df16`(10-23 **#30837** DP4A MMQ tile height 为 warp 整数倍，wave64/gfx906 直接相关)、`c49edf09`(#29948 FFN gate/up+GLU 融合)、`eb4e244b`(#31373 RDNA4_M，gfx906 无关)、`5ce06fc7`(#31296 NVFP4 融合)、`69ee2ecc`(#31047 MoE 数据布局线性化)；上游 `get_J_best()` 在 `ggml/src/ggml-cuda/mmq.cu`（本树 `moe_mmq.cu:386 pick_J()` 自己遍历）。择机移植立 **`R113`**，重编 + 数值门 + A/B，不盲跟。
 - **CI/CD（`P521`）**：本轮三个装机分支已推 origin 但都不在白名单 ⇒ 今天 CI 零触发；`0/8 gh_gate` 未走；`pr/k10` 无 pre-push；窗口/判据脚本 `git ls-files` 计数为 0；`deploy/`/`albus/`/`tools/` 非 git 仓库。五条缺口 + 事故为第六实证。
 - **边界**：只读审计 + 资产修复，未编译/未提交/未停机；dot8 roofline 与 W4A4 门是建议不是结论；`audit_scope §A` = **14 轮连续未审**，仍 FAIL。
 
@@ -3180,6 +3181,14 @@ pa7 实测：基线 **886** 条、`<..,16>` **890** 条，`v_fmac_f32` **120 vs 
 - **配方门修正（`P526`）**：`attn` 的 note 同时含 W1042「未装机」和 W1044「已装机」，`recipe_check` 按子串把在产件跳过；已去掉历史标记并实测 `[ok] attn md5=3b758f88…`。
 - **审计债**：`audit_scope §A` 已为 **15 轮连续未审**（W1032–W1046），R107 同步；不冒充已解决。
 - **生产零变更**：引擎仍 `attn` / config `3dde8801`；本轮重启 0 / 停机 0 / 装机 0 / 回滚 0。quant_quality 技能的旧三臂设计稿未跑，不冒充实测。
+
+### 回写 · W1048（2026-11-07 22:5x–23:5x）复核五条全量入方案 + 历史变更 CI/CD 回溯
+
+- **复核五条 → 权威落点对照（全部可检索）**：① R103 移植面 → `R109`（B3 已装机 hc4b；A1/A5 待开）+ `P523` B2 死路径纠正；② dot4 硬件主力 → 本文 dot4 段（`strata_hip.h:237` 硬件 / `:246` 软回退，逐 TU 计数，`fused_gr` 真空已由 B3 填）；③ dot8 → `R91`+`R74`+`R110/R112`（k8v4 PV-dot8），预注册三步走不变；④ mmq 升 pin → `P520`+**`R113`**（本轮 API 核实 5 提交清单 + `get_J_best`）；⑤ CI/CD → `P521/P529–P532` + 本轮 `P534/P535`。任何后续调优只认这张对照表，不再另立口径。
+- **历史变更 CI/CD 回溯（`P534`）——不是清单是执行**：14 个项目提交（port-all 7 + lcpp-k10 2 + attn/dot48/hc-dp4a 5）+ 4 个 ci 提交全部有 Downstream gate run=success。缺 run 的 10 个 ref 本轮补 `workflow_dispatch`：`fa8e6761`/`79516b21`/`8b44f3d1`/`806a4b2f`/`3b935ddf`/`8b5e547f`/`62d10e25`/`91a7c5a4`/`064aa6c0` + `pa4-recon`（run 42384609225–42385018433 段全绿）。三个「未提交补丁」的精确处置：**pa4** 用 `pa4_patch.py` 在 `8b5e547f` 上逐字重建（`ci/retro/pa4-recon@e36f0889`）；**pa7** 用 `pa6_patch→wire_f16d→pa7_patch` 在 `62d10e25` 累积重放，**与已提交 `91a7c5a4` 逐字节相同**（「未提交」实为「当时未提交、内容原样落进 91a7c5a4」）；**pa2** 补丁锚点与任何已提交态都对不上，精确树判不可恢复，登记豁免、内容落点=`3b935ddf`（run 42384985902）。UNTRACKED 43 件（0.1.53–0.1.56）与 `010`（0.9.0 树）永久豁免，md5 保留可验尸。
+- **覆盖账与硬门（`P535`）**：`deploy/CI_RUNS.tsv` 为唯一覆盖账（sha→run/exempt）；`deploy_gate` 增 **D7 CI 证据**——装机 exe 的构建 sha 必须有 run=success 或显式豁免行，fail-closed（表缺/行缺 = REFUSE 而非 SKIP），负向自测 14/14。`artifact_ledger` 回填 run 绑定 14 件并修正 pa2/pa5/pa7 装机注记。
+- **复核纠错留痕**：(a)「pa5 提交」就是 `62d10e25`（`commit_pa5.sh` 逐字），旧账写得像无名提交；(b) pa7 不是「62d10e25+单补丁」而是 pa6+wire_f16d+pa7 三连，重放证明即 `91a7c5a4`；(c) 轮询脚本被 GitHub 502 打断不影响已触发 run，补轮询收齐——工具要有断点续收，不算产品缺陷。
+- **边界**：本轮回溯全程零停机、生产零变更（仍 `hc4b`/`9e2df560`）；`R111` GPU runner 仍 0；`R107` audit 欠账仍在。mmq 五提交只入方案不实施，实施属 `R113`。
 
 ### 回写 · W1047（2026-11-07 19:1x–22:3x）CI/CD 全覆盖回溯 + B3 干净门与真实模型门
 
