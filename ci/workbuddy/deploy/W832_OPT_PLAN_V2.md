@@ -21,7 +21,7 @@
 | 2K prefill 相位 | GPU **3191 ms**；gu 816、down 510、dequant **161（5.0%）**、wait copy **37（1.2%）**、host grouping **91（2.9%）** | `ci/prefill_phases/PREFILL_PHASES.tsv`（n=3 冷 prompt）+ `phases.py --check` |
 | 2K 相对 16K 的每 token 成本 | 整条 **1.23×**；gate/up **1.57×**、down **1.52×** | 同上（16K = 16375 tok / 20318 ms） |
 | 专家权重类型 | gu = Q4_K/Q5_K @[1280,2560]；down = Q5_1/Q8_0 @[2560,640] | `native_experts.txt`（pack 清单） |
-| 进度分母 | **485 条 / 已结 391 / 80.6%**（W1048；值由 `tools/progress.py` 派生，`tools/audit_scope.py §D` 拦手写） | `deploy/PROGRESS.tsv`（唯一分母） |
+| 进度分母 | **493 条 / 已结 399 / 80.9%**（W1049；值由 `tools/progress.py` 派生，`tools/audit_scope.py §D` 拦手写） | `deploy/PROGRESS.tsv`（唯一分母） |
 | **主线 / 上游基线** | 树 = `mi50-0.2.11-r33-14` @ `6501c28f`（v0.2.11 + API 移植 + 发布门，线性，behind 0 / ahead 78 / merges 0）；**镜像 `strata-gfx906:0.2.11-101`（`/src` = 该 tag 的树）**；引擎 `strata-0.1.57-001`（md5 `5e63174d…`）；容器 `2d765942e041` 跑 `0.2.11-101` | `git describe --tags`；`git rev-list --count upstream/main..HEAD`；`docker images` |
 | **ROCm（容器内）** | `.info/version` = **10.1.0**；HIP 运行时 **7.16.26323-0000000**（`hipconfig`）；clang **24.0.0git**；`ROCM_BUILD=7.14.0-gfx906+20260802001858`；rocprofv3 1.3.5 | `docker exec strata166-407 …`；三套编号互不相等（自建 gfx906 树），写「ROCm 7.x」等于没写 |
 | **依赖 pin（llama.cpp）** | **`b11062` = `3cf03257f219afbe7334045ff7c6a06ac68c627d`**（2026-09-20）；整树 hash `6feee58927d5f1efd38e72bbc1db061d`；镜像 `/src/third_party/llama.cpp`、构建挂载 `ref/llama_3cf0325`、引擎 `/llama.cpp/…`×93 三处同 hash；自 0.2.8p2 起未变；**b12129（最新 tag）已试并回滚（−4.0/−4.6%，`P354`）** | `ci/release_check.py` 三行（pin / tree / build refs）；上游钉法 `.github/workflows/metal-build.yml:29` |
@@ -642,6 +642,7 @@ mega 加的 10 项：`GDN_CONVL2` `GDN_NOY` `CVEC_FUSE` `HCD_EXACT` `TOPK_REG_MI
 | `回写 · W1047（2026-11-07 19:1x–22:3x）CI/CD 全覆盖回溯 + B3 干净门与真实模型门` | hook/worktree 纠错；脚本全量入 CI；B3 hc4b D1–D5 | W1047 |
 | `回写 · W1047 装机补记（2026-11-07 22:3x）hc4b 落生产` | D1–D6 后换件；重启 7 / 停机 1810 s | W1047 |
 | `回写 · W1048（2026-11-07 22:5x–23:5x）复核五条全量入方案 + 历史变更 CI/CD 回溯` | 10 retro run 全绿；pa7 重放==91a7c5a4；D7 硬门 | W1048 |
+| `回写 · W1049（2026-11-07 23:5x–01:1x）R103 移植面全收口` | B2 闭案；A2 采纳；A1/A3/A4/A5 判否；P457 结案 | W1049 |
 | `回写 · W1046（2026-11-07 19:1x–19:3x）R103 后续方案入权威 + B3 候选 + k8v4 dot8 可行性（零停机）` | B2 死路径纠正；hc4 已建未装；R109/R110 预注册；dot8q≠dot8 | W1046 |
 | 回写 · W1039 §十五（`R105`：gfx906 的能力缺口，一半是构建开关） | 全构建只有 dflash2.cpp 定义 STRATA_USE_HIP；七处分类成清单，三处可选开关解开建 hipk（默认不变） |
 | 回写 · W1039 §十六（decode 的账：draft 5.1%，CPU 专家 11.7%） | 400 窗拆完：verify 90.3%、draft 5.1%、host 里 CPU 占 86%（整窗 11.7%，p90 17.1 ms）⇒ MTP_PRIO 不单独开窗，R104 多一条 decode 判据 |
@@ -3181,6 +3182,16 @@ pa7 实测：基线 **886** 条、`<..,16>` **890** 条，`v_fmac_f32` **120 vs 
 - **配方门修正（`P526`）**：`attn` 的 note 同时含 W1042「未装机」和 W1044「已装机」，`recipe_check` 按子串把在产件跳过；已去掉历史标记并实测 `[ok] attn md5=3b758f88…`。
 - **审计债**：`audit_scope §A` 已为 **15 轮连续未审**（W1032–W1046），R107 同步；不冒充已解决。
 - **生产零变更**：引擎仍 `attn` / config `3dde8801`；本轮重启 0 / 停机 0 / 装机 0 / 回滚 0。quant_quality 技能的旧三臂设计稿未跑，不冒充实测。
+
+### 回写 · W1049（2026-11-07 23:5x–01:1x）R103 移植面全收口：B2 闭案、A2 采纳、A1/A3/A4/A5 判否、P457 结案
+
+- **B2 闭案（`P542`）**：gfx906 预填派发四层全查——① gated 编译排除（`!STRATA_HIP_GFX906`）② `qsa_prompt_attn_batch` 首行 `return false` ③ `STRATA_PATTN_BUILT=0` ④ `qsa_decode_attn_batch` 循环=真热路径。B2 的「prefill 分数 dp4a」与 B1 同模板（`OPT&2`，`qsa_decode_attn.cu:234/306`），W1044 已装且收益兑现（P499 −10.9~−11.3%，W1049 复证 1119 vs 1261.7）。P435 对 gfx906 不成立。**B2 不是丢失项。**
+- **A2 采纳（`P536`）**：LDS +1 pad（`OPT&4`）。G1 双重 bitwise（pad 单独 f≡c、组合 **e≡m** 均 KL 0）；n=3 破缓存：8K qsa attn 组合 **1103.7 vs 1119.0（−1.37%）** vs 地板 1261.7（−12.5%），decode 持平。装机=config 加 `STRATA_GFX906_ATTN_LDS_PAD=1`。
+- **判否四项（全部证据在册、可复测）**：A1 `ROUTE_DPP`（`P537`，bitwise✓ 但 router 相位 271vs271 不可检出）；A5 `Q8_GATHER8`（`P538`，bitwise✓ 但 gather 占 0.3%）；A3 `ATTN_DPP`（`P539`，qsa −0.56% 显著但全条不显著）；A4 逐 TU `max-ilp`（`P540`，bitwise 但 attn **+39.6%** 有害；社区 +10~20% 属 GEMM TU，勿全局抄）。
+- **P457 结案（`P541`）**：REDUCE12 单独 KL=0 ⇒ 归约无辜；CTLREAD KL 0.0948/top-1 75% ⇒ 「手工 K 读+晚 scale 无辜」被证伪（真实差异源）；F16Q KL 0.034。历史 DP4A KL 归因=int8 查询量化（P454），非 REDUCE12。
+- **B4 转正（`R114`）**：PORT_PLAN 的 defer 随 B1–B3 全结到期；GDN fp16 dot2 先过 bf16→fp16 离线 KL 门。
+- **窗口口径**：三窗（主窗 8 计时臂+8 dump+7 pcompare、r103b 破缓存 n=3、r103c/d 组合臂+G1）累计重启 ~24 次、停机 ~2100 s；全部 trap 还原；生产只在本轮末尾装 A2 一处 env。
+- **R103/R109 全收口**：移植面每项「已装或已判」，无悬空。
 
 ### 回写 · W1048（2026-11-07 22:5x–23:5x）复核五条全量入方案 + 历史变更 CI/CD 回溯
 
