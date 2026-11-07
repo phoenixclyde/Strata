@@ -1,6 +1,6 @@
 # W1034 交接件 · Strata（gfx906 / MI50）项目
 
-> SNAPSHOT: round=W1046 date=2026-11-07 prod_exe=strata-0.1.57-attn prod_md5=3b758f88ddad25cdad236be267810a9e config_md5=3dde880125925d785a49da69fa1ebdfb container=2d765942e041 image=strata-gfx906:0.2.11-101 branch=e181bda5 tag=mi50-0.2.11-r33-14 picks=209d3ca2
+> SNAPSHOT: round=W1047 date=2026-11-07 prod_exe=strata-0.1.57-hc4b prod_md5=0533074826258d5f96c4b65bc0ad33df config_md5=9e2df560fdb88f684a3f2fb7b15d9ad5 container=2d765942e041 image=strata-gfx906:0.2.11-101 branch=gfx906/mi50 picks=03509d1b
 >
 > 可粘贴提示词的**唯一副本**：`albus/w1034/HANDOFF_PROMPT.md`（≤3000 字符）。完整交接件是本文件。机器自证门：`tools/handoff_check.py`。
 > 本件**不同步 166**：它描述的是本机文档、门脚本与迁移操作；166 只保存六件权威件的现场副本。

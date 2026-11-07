@@ -1,0 +1,51 @@
+{
+  "target": "hc_down_T4",
+  "target_kind": "latency",
+  "baseline": {
+    "n": 3,
+    "mean": 39.86666666666667,
+    "cv_pct": 0.23649056226975168
+  },
+  "candidate": {
+    "n": 3,
+    "mean": 30.166666666666668,
+    "cv_pct": 0.15626669197492427
+  },
+  "guard": [
+    {
+      "name": "hc_read_T4",
+      "n": 3,
+      "mean_base": 77.9,
+      "mean_cand": 68.13333333333333,
+      "cv_pct": 0.5663325294907189
+    },
+    {
+      "name": "hc_down_T7",
+      "n": 2,
+      "mean_base": 60.15,
+      "mean_cand": 60.4,
+      "cv_pct": 0.4
+    },
+    {
+      "name": "hc_down_T8",
+      "n": 2,
+      "mean_base": 69.1,
+      "mean_cand": 69.2,
+      "cv_pct": 0.3
+    }
+  ],
+  "numeric": {
+    "mode": "kl",
+    "kl": 0.00221,
+    "top1": 100.0,
+    "build_floor_bitident": true,
+    "evidence": "W1047 L3_off/L3_on fp32 full-vocab logits; pcompare prompts=4 top-1 100.00% KL mean 0.00087 median 0.00101 max 0.00221",
+    "task_gate": "needle 16K/32K/64K x depths 0/50/100: off 9/9, on 9/9, cached=0",
+    "task_gate_status": "PASS"
+  },
+  "source": "albus/w1047/window_b3_n3.log + window_b3_numeric.log; branch gfx906/hc-dp4a@03509d1b",
+  "caveats": [
+    "T>=7 falls back by STRATA_HC_DOWN_DP4A_MAX_T=6",
+    "B3 changes HC activation arithmetic; not bitwise"
+  ]
+}
