@@ -1,0 +1,6 @@
+CMP g0 vs g1 reference: /w/L_g0
+CMP g0 vs g1 L_g1                                     prompts   4  top-1 100.00%  KL mean 0.00000  median 0.00000  max 0.00000
+CMP hc vs g0 reference: /w/L_hc
+CMP hc vs g0 L_g0                                     prompts   4  top-1 100.00%  KL mean 0.00000  median 0.00000  max 0.00000
+CMP hc vs g1 reference: /w/L_hc
+CMP hc vs g1 L_g1                                     prompts   4  top-1 100.00%  KL mean 0.00000  median 0.00000  max 0.00000

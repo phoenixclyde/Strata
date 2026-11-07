@@ -1,0 +1,16 @@
+DEC600 a_off p1 strata serve: prompt 2097 tokens = 0 reused + 2097 read in 4263 ms (491.9 tok/s), 600 generated in 12206 ms (49.2 tok/s), drafts accepted 272 of 333, 1 checkpoints
+DEC600 a_off p2 strata serve: prompt 2097 tokens = 0 reused + 2097 read in 3884 ms (540.0 tok/s), 600 generated in 11266 ms (53.3 tok/s), drafts accepted 274 of 320, 1 checkpoints
+DEC600 a_off p3 strata serve: prompt 2097 tokens = 0 reused + 2097 read in 3757 ms (558.1 tok/s), 600 generated in 10931 ms (54.9 tok/s), drafts accepted 278 of 306, 1 checkpoints
+DEC600 a_off p4 strata serve: prompt 2097 tokens = 0 reused + 2097 read in 3799 ms (552.0 tok/s), 600 generated in 11336 ms (52.9 tok/s), drafts accepted 263 of 304, 1 checkpoints
+DEC600 a_off p5 strata serve: prompt 2097 tokens = 0 reused + 2097 read in 3805 ms (551.1 tok/s), 600 generated in 11391 ms (52.7 tok/s), drafts accepted 260 of 302, 1 checkpoints
+DEC600 a_off p6 strata serve: prompt 2097 tokens = 0 reused + 2097 read in 3771 ms (556.1 tok/s), 600 generated in 11040 ms (54.3 tok/s), drafts accepted 279 of 319, 1 checkpoints
+DEC600 a_off p7 strata serve: prompt 2097 tokens = 0 reused + 2097 read in 3820 ms (549.0 tok/s), 600 generated in 11223 ms (53.5 tok/s), drafts accepted 270 of 312, 1 checkpoints
+DEC600 a_off p8 strata serve: prompt 2097 tokens = 0 reused + 2097 read in 3794 ms (552.6 tok/s), 600 generated in 11141 ms (53.9 tok/s), drafts accepted 267 of 295, 1 checkpoints
+DEC600 b_on p1 strata serve: prompt 2097 tokens = 0 reused + 2097 read in 4268 ms (491.3 tok/s), 600 generated in 11634 ms (51.6 tok/s), drafts accepted 284 of 316, 1 checkpoints
+DEC600 b_on p2 strata serve: prompt 2097 tokens = 0 reused + 2097 read in 3785 ms (554.0 tok/s), 600 generated in 11354 ms (52.8 tok/s), drafts accepted 275 of 326, 1 checkpoints
+DEC600 b_on p3 strata serve: prompt 2097 tokens = 0 reused + 2097 read in 3780 ms (554.7 tok/s), 600 generated in 11201 ms (53.6 tok/s), drafts accepted 280 of 331, 1 checkpoints
+DEC600 b_on p4 strata serve: prompt 2097 tokens = 0 reused + 2097 read in 3810 ms (550.4 tok/s), 600 generated in 10999 ms (54.6 tok/s), drafts accepted 282 of 316, 1 checkpoints
+DEC600 b_on p5 strata serve: prompt 2097 tokens = 0 reused + 2097 read in 3790 ms (553.3 tok/s), 600 generated in 10964 ms (54.7 tok/s), drafts accepted 281 of 318, 1 checkpoints
+DEC600 b_on p6 strata serve: prompt 2097 tokens = 0 reused + 2097 read in 3770 ms (556.3 tok/s), 600 generated in 11577 ms (51.8 tok/s), drafts accepted 257 of 303, 1 checkpoints
+DEC600 b_on p7 strata serve: prompt 2097 tokens = 0 reused + 2097 read in 3829 ms (547.7 tok/s), 600 generated in 10994 ms (54.6 tok/s), drafts accepted 281 of 318, 1 checkpoints
+DEC600 b_on p8 strata serve: prompt 2097 tokens = 0 reused + 2097 read in 3794 ms (552.6 tok/s), 600 generated in 11069 ms (54.2 tok/s), drafts accepted 280 of 308, 1 checkpoints
