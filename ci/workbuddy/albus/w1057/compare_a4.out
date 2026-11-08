@@ -1,0 +1,32 @@
+== R74 W4A4 activation precision gate (STRATA_A4_SIM) ==
+PAIR A1a vs A1b : n=6  KL mean 0.000000 max 0.000000 | top1 6/6 = 100.0% | max|dl| mean 0.0000 max 0.0000 | vocab 248320
+   req0 KL 0.000000 top1 1 max|dl| 0.0000
+   req1 KL 0.000000 top1 1 max|dl| 0.0000
+   req2 KL 0.000000 top1 1 max|dl| 0.0000
+   req3 KL 0.000000 top1 1 max|dl| 0.0000
+   req4 KL 0.000000 top1 1 max|dl| 0.0000
+   req5 KL 0.000000 top1 1 max|dl| 0.0000
+PAIR A1a vs A2 : n=6  KL mean 0.000000 max 0.000000 | top1 6/6 = 100.0% | max|dl| mean 0.0000 max 0.0000 | vocab 248320
+   req0 KL 0.000000 top1 1 max|dl| 0.0000
+   req1 KL 0.000000 top1 1 max|dl| 0.0000
+   req2 KL 0.000000 top1 1 max|dl| 0.0000
+   req3 KL 0.000000 top1 1 max|dl| 0.0000
+   req4 KL 0.000000 top1 1 max|dl| 0.0000
+   req5 KL 0.000000 top1 1 max|dl| 0.0000
+PAIR A1a vs B : n=6  KL mean 0.002295 max 0.006704 | top1 6/6 = 100.0% | max|dl| mean 2.0580 max 3.7266 | vocab 248320
+   req0 KL 0.000000 top1 1 max|dl| 0.0000
+   req1 KL 0.000690 top1 1 max|dl| 2.0451
+   req2 KL 0.002106 top1 1 max|dl| 2.9288
+   req3 KL 0.006704 top1 1 max|dl| 2.2687
+   req4 KL 0.002102 top1 1 max|dl| 3.7266
+   req5 KL 0.002170 top1 1 max|dl| 1.3791
+PAIR A2 vs B : n=6  KL mean 0.002295 max 0.006704 | top1 6/6 = 100.0% | max|dl| mean 2.0580 max 3.7266 | vocab 248320
+   req0 KL 0.000000 top1 1 max|dl| 0.0000
+   req1 KL 0.000690 top1 1 max|dl| 2.0451
+   req2 KL 0.002106 top1 1 max|dl| 2.9288
+   req3 KL 0.006704 top1 1 max|dl| 2.2687
+   req4 KL 0.002102 top1 1 max|dl| 3.7266
+   req5 KL 0.002170 top1 1 max|dl| 1.3791
+VERDICT_GATE kl_mean=0.002295 (<=0.005 True) top1=100.0% (>=99% True) => PASS
+FLOOR cross-process kl_mean=0.000000 (resolution ref 0.0032)
+INERT a4probe-noenv vs hc4b kl_mean=0.000000 (patch must be numerically inert)
