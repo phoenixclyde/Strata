@@ -1,4 +1,4 @@
-﻿step	sha	pr	subject	surface	applies_alone	status	evidence
+step	sha	pr	subject	surface	applies_alone	status	evidence
 1	e9f824d	24364	llama_prec_policy + W4A4 路径	ggml-cuda/mmq.cuh	yes	TESTING	ladder-1（plumbing；gfx906 恒 Q8）
 2	748d422	29478	HIP __vsubss4 -> __vsub4	ggml-cuda/mmq-load-tiles.cuh	yes	INERT	二进制与 001 逐字节相同（build-vsub4 / md5 5e63174d）
 3	272aad8	29508	musa 定义 __CUDA_ARCH__	ggml-cuda/common.cuh	no	INERT	musa 后端，HIP 不编
@@ -8,7 +8,7 @@
 7	882d671	30441	死 break 警告	ggml-cuda/mmq.cuh	no	INERT	只消警告
 8	bfe65e1	30443	mmq-load-tiles 警告	ggml-cuda/mmq-load-tiles.cuh	no	INERT	只消警告
 9	9d1878a	29927	Q1_0 用 amdgcn_perm 解包	ggml-cuda/mmq-load-tiles.cuh	yes	INERT	模型里没有 Q1_0
-10	4c1004c	30553	Stream-K 块数封顶	ggml-cuda/mmq.cuh	yes	INERT	mmq-config-gcn.cuh:120-127 全 stream_k=false
+10	4c1004c	30553	Stream-K 块数封顶	ggml-cuda/mmq.cuh	yes	INERT（但进 K10 recipe，见 recipe_k10.sh）	mmq-config-gcn.cuh:120-127 全 stream_k=false；W1061 实测生产构建树 mmq.cuh/mmq-load-tiles.cuh/mmq.cu 三件套 = 4c1004c 版本，而 apply.sh 默认只打 ADOPTED，故补 recipe_k10.sh 复现
 11	1a24df1	30837	DP4A 瓦高须为 warp 倍数（断言）	ggml-cuda/mmq.cuh	no	INERT	I∈{64,128}、gfx906 warp=64 ⇒ 恒过
 12	1ddffe9	30915	perm 不可用时的回退	ggml-cuda/*.cuh	no	INERT	clang 24 有 __builtin_amdgcn_perm
 13	c49edf0	29948	FFN gate/up + GLU 融合（交错行）	ggml-cuda/mmq*.cuh	no	REJECTED	K13 臂（K10 + 本条）= prefill 508.52/684.10，相对 K10 −4.9%/−4.6%（8–19×CV）；融合路径不执行（fusion.gate==nullptr）⇒ 纯 codegen 代价
