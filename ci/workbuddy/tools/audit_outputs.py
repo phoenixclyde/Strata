@@ -11,9 +11,12 @@ names the 39 companion W*_AUDIT/VERDICT/REVIEW files that audit_index.py's
 
 Checks:
   1 every index row's counts == its artefact's VERDICT line
-  2 every audit-ish .md in deploy/ is either a numbered artefact or in COMPANIONS
+  2 every audit-ish .md/.tsv in deploy/ is either a numbered artefact or in COMPANIONS
+    (AUDIT30: the gate used to scan only *.md, so AUDIT24's three TSV shards escaped it)
   3 both ledgers have unique ids and valid statuses
   4 a retracted external-fact claim may only appear inside a marked correction line
+  5 no stray AUDIT*.bak* copies at the deploy/ top level -- they live in deploy/_bak/
+    (AUDIT30: 30 editing backups sat next to the live artefacts, invisible to every gate)
 
   python tools/audit_outputs.py [--self-test]
 """
@@ -55,8 +58,14 @@ def companions(index=IDX):
 
 def audit_ish():
     return {f for f in os.listdir(DEP)
-            if f.endswith(".md") and f != "AUDIT_INDEX.md"
+            if f.endswith((".md", ".tsv")) and f != "AUDIT_INDEX.md"
+            and f not in ("AUDIT_LEDGER.tsv", "AUDIT_LEDGER_A24.tsv")
             and re.search(r"AUDIT|VERDICT|REVIEW", f, re.I)}
+
+
+def stray_baks():
+    """AUDIT*.bak* copies sitting next to the live artefacts (must be in _bak/)"""
+    return {f for f in os.listdir(DEP) if ".bak" in f}
 
 
 def check(quiet=False):
@@ -115,9 +124,14 @@ def check(quiet=False):
                 live.append("%s:%d" % (os.path.basename(p), i))
     if live:
         fails.append("4: retracted claim still written as current: %s" % live[:5])
+    # 5 editing backups must live in _bak/, not next to the live artefacts
+    strays = sorted(stray_baks())
+    if strays:
+        fails.append("5: %d stray backup copies at deploy/ top level (move to deploy/_bak/): %s"
+                     % (len(strays), strays[:4]))
     if not quiet:
-        print("AUDIT_OUTPUTS: index_rows=%d numbered=%d companions=%d ledgers=2 live_bad_claims=%d" %
-              (len(rows), len(named), len(comp), len(live)))
+        print("AUDIT_OUTPUTS: index_rows=%d numbered=%d companions=%d ledgers=2 live_bad_claims=%d strays=%d" %
+              (len(rows), len(named), len(comp), len(live), len(strays)))
         if fails:
             print("AUDIT_OUTPUTS: FAIL (%d)" % len(fails))
             for f in fails:

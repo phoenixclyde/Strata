@@ -17,7 +17,7 @@
 | 9 | ROCm | 打包 .info/version 10.1.0；HIP 7.16.26323；clang 24 · `--offload-arch=gfx906` |
 | 10 | llama.cpp | b12180 = `bcb0152876e8f0b684ba70d3defcab6cdf35adb5` + `mmq*` @ `4c1004c49221b07c3b8108977e3d1991fc9f45cc` |
 
-**二、主线** — `gfx906/mi50` @ e181bda5（`mi50-0.2.11-r33-14-2-ge181bda5`）；生产树 `pr/k10` @ `5fb89860c`，领先 0 / 落后 0 / 脏 0 行，上游本轮未重算。审计件 `deploy/AUDIT29_W1032_W1052.md`；新门 `tools/ci_runs_lint.py`（自测 6/6）、`tools/ledger_lint.py` 重写（自测 8/8）；覆盖基线 `deploy/TABLE_SHAPE_BASELINE.tsv`。
+**二、主线** — `gfx906/mi50` @ e181bda5（`mi50-0.2.11-r33-14-2-ge181bda5`）；生产树 `pr/k10` @ `5fb89860c`，领先 0 / 落后 0 / 脏 0 行，上游本轮未重算。审计件 `deploy/AUDIT29_W1032_W1052.md`；新门 `tools/ci_runs_lint.py`（自测 6/6）、`tools/ledger_lint.py` 重写（自测 8/8）；覆盖基线 `deploy/TABLE_SHAPE_BASELINE.tsv`；provenance commit `5e5d8cf9e`，Downstream gate run **42452911429 success** + GPU gate run **42452911426 success**（pre-push ROUND_GATE PASS + 包内自测 14/14）。
 
 **三、本次落生产** — **零**：装机 0 / **0 分钟停机**；**重启 0 次 / 停机 0 s**（本轮全部是只读取证与本机文件／工具改动，一次容器操作都没有）。窗口取证累计 0；回滚 0。
 

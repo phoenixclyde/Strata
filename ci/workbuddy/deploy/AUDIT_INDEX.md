@@ -1,4 +1,4 @@
-# 审计索引（AUDIT6 → AUDIT29）
+# 审计索引（AUDIT6 → AUDIT30）
 
 > **【AUDIT28 · 2026-11-07】** 上一条 AUDIT27 的更正仍成立，但本表现在**真的**由产物校验：每件编号审计有一条 `> VERDICT:` 机读行，`tools/audit_outputs.py` 逐件比对 P 列；39 件冻结派生产物由 `COMPANIONS:` 点名；合计与边界由 `tools/audit_index.py` 派生。
 
@@ -35,14 +35,15 @@
 | **AUDIT27** | **W1006–W1031（26 轮，全部首次被审）+ W706/W707 历史补审**：1 P0（活流程文档仍命令已废止的逐字节指纹门、且仍写 #29953 REJECTED）、8 P1（分母/队列、AUDIT25 漏分级、4 条陈旧 OPEN、R99 无关闭横幅、lcpp_picks 双副本漂移、W1020 缺报告、mirror_check 写死最新审计件、三位数 R 号门盲区）、5 P2；**逐轮清单 + 外网复核 5 条上游引用** | **1** | **8** | **5** | **0** | `AUDIT27_W1006_W1031.md` |
 | **AUDIT28** | **整改类：22 件编号审计 + 39 件派生产物 + 2 本台账 + 方案本体**；1 P0（AUDIT26 对 #31188 的「PR 内无性能栏」误判，已全链撤回）、4 P1（机读总判 / 派生产物清单 / 方案单源化 / 行号指针）、3 P2（外网补核 / 退役理由 / 冻结件纪律）；**外网复核 5 组** | **1** | **4** | **3** | **0** | `AUDIT28_OUTPUT_REMEDIATION.md` |
 | **AUDIT29** | **W1032–W1052（21 轮，全部首次被审）**：1 P0（方案「唯一队列」与账本冲突且结构损坏）、4 P1（CI_RUNS 生产行 run id 404 而 D7 只读状态列、5 条已结仍挂 OPEN、4 条 OPEN 却 done=1、ledger_lint 209 误报且无退出码）、6 P2（46 行表格损坏、32 份报告副本、R107 行自相矛盾、状态语义漂移、跨分支引用歧义、trap 缺陷复发）；**A 级复跑 3 轮**（W1049 相位 / W1051 配对 decode / W1052 PV 预算）+ **24 条 CI run 逐条 API 核对** + 166 在产与 93 处复核 | **1** | **4** | **6** | **0** | `AUDIT29_W1032_W1052.md` |
-| **合计** | **W706–W1052 + 方案本体**（24 件有 P 分级） | **41** | **152** | **130** | **7** | — |
+| **AUDIT30** | **整改类：24 件编号审计 + 42 件配套 + 2 台账 + 方案本体**；1 P1（`audit_outputs` 只扫 *.md ⇒ 3 份 AUDIT24 TSV 分片逃逸点名门 + deploy/ 顶层 **304 份 `.bak`** 对所有门隐形，已门扩展 + 全部收纳进 `_bak/`）、4 P2（W832 35 行损坏表格全修 → `tables clean`；AUDIT27 行内裸竖线修复；6 个上游 PR 引用 GitHub API 复核全对；AUDIT29 边界闭合标注） | **0** | **1** | **4** | **0** | `AUDIT30_OUTPUT_REMEDIATION.md` |
+| **合计** | **W706–W1052 + 方案本体**（25 件有 P 分级） | **41** | **153** | **134** | **7** | — |
 
 
 ## 审计派生产物清单（AUDIT28，机器可验）
 
 > 39 件 `W*_AUDIT / W*VERDICT / W*REVIEW` 与 `AUDIT17_CLOSURE.md` 是**冻结的历史证据**，逐字保留、不参与整改；但必须被点名，否则「所有审计输出」永远无法回答有多少件。`tools/audit_index.py` 的 `want[n]` 对同号文件只留最后一个，配套件原本会被静默覆盖。
 
-COMPANIONS: AUDIT17_CLOSURE.md W708c_PARAM_AUDIT.md W709_AUDIT.md W713_AUDIT.md W713_AUDIT2.md W716_AUDIT.md W733_TELEMETRY_AUDIT.md W735_AUDIT.md W752_AUDIT.md W763_INVENTORY_AUDIT.md W764_PARAM_LANDING_AUDIT.md W765_PARAM_AUDIT_VERDICT.md W773_AUDIT.md W775_AUDIT.md W775_AUDIT_G.md W775_AUDIT_auditor2.md W775_AUDIT_delta.md W775delta_AUDIT3.md W775delta_AUDIT4.md W775delta_AUDIT5.md W775delta_BUILD_SWITCH_AUDIT.md W775delta_W27_SRC_VERDICT.md W775delta_W6_ATTN_LANECELL_VERDICT.md W775delta_W9_CONCURRENCY_VERDICT.md W787_R1_FAILURE_REVIEW.md W789_R5_TILEV_VERDICT.md W801_AUDIT9_REMEDIATION.md W851_HIPBLASLT_VERDICT.md W886_PARAM_EVIDENCE_AUDIT.md W906_KI_GFX906_KERNELS_VERDICT.md W911_THREE_ROUTES_VERDICT.md W912_KI_PORT_VERDICT.md W914_PARAM_MASKING_AUDIT.md W915_OBSERVATION_ENVS_AUDIT.md W920_PARAM_AUDIT.md W934_R65_REBASE_VERDICT.md W937_CI_BYPASS_AUDIT.md W939_SOURCE_TASK_AUDIT.md W966_CODE_LEVEL_VERDICT.md
+COMPANIONS: AUDIT17_CLOSURE.md W708c_PARAM_AUDIT.md W709_AUDIT.md W713_AUDIT.md W713_AUDIT2.md W716_AUDIT.md W733_TELEMETRY_AUDIT.md W735_AUDIT.md W752_AUDIT.md W763_INVENTORY_AUDIT.md W764_PARAM_LANDING_AUDIT.md W765_PARAM_AUDIT_VERDICT.md W773_AUDIT.md W775_AUDIT.md W775_AUDIT_G.md W775_AUDIT_auditor2.md W775_AUDIT_delta.md W775delta_AUDIT3.md W775delta_AUDIT4.md W775delta_AUDIT5.md W775delta_BUILD_SWITCH_AUDIT.md W775delta_W27_SRC_VERDICT.md W775delta_W6_ATTN_LANECELL_VERDICT.md W775delta_W9_CONCURRENCY_VERDICT.md W787_R1_FAILURE_REVIEW.md W789_R5_TILEV_VERDICT.md W801_AUDIT9_REMEDIATION.md W851_HIPBLASLT_VERDICT.md W886_PARAM_EVIDENCE_AUDIT.md W906_KI_GFX906_KERNELS_VERDICT.md W911_THREE_ROUTES_VERDICT.md W912_KI_PORT_VERDICT.md W914_PARAM_MASKING_AUDIT.md W915_OBSERVATION_ENVS_AUDIT.md W920_PARAM_AUDIT.md W934_R65_REBASE_VERDICT.md W937_CI_BYPASS_AUDIT.md W939_SOURCE_TASK_AUDIT.md W966_CODE_LEVEL_VERDICT.md AUDIT24_GP4_W938_W951.tsv AUDIT24_W905_W917.tsv AUDIT24_W928_W937_GP3.tsv
 
 | 类别 | 数量 | 门的判据 |
 |---|---:|---|
