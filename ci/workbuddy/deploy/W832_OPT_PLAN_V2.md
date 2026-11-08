@@ -21,11 +21,11 @@
 | 2K prefill 相位 | GPU **3191 ms**；gu 816、down 510、dequant **161（5.0%）**、wait copy **37（1.2%）**、host grouping **91（2.9%）** | `ci/prefill_phases/PREFILL_PHASES.tsv`（n=3 冷 prompt）+ `phases.py --check` |
 | 2K 相对 16K 的每 token 成本 | 整条 **1.23×**；gate/up **1.57×**、down **1.52×** | 同上（16K = 16375 tok / 20318 ms） |
 | 专家权重类型 | gu = Q4_K/Q5_K @[1280,2560]；down = Q5_1/Q8_0 @[2560,640] | `native_experts.txt`（pack 清单） |
-| 进度分母 | **532 条 / 已结 445 / 83.6%**（W1057；值由 `tools/progress.py` 派生，`tools/audit_scope.py §D` 拦手写） | `deploy/PROGRESS.tsv`（唯一分母） |
+| 进度分母 | **537 条 / 已结 450 / 83.8%**（W1058；值由 `tools/progress.py` 派生，`tools/audit_scope.py §D` 拦手写） | `deploy/PROGRESS.tsv`（唯一分母） |
 | **主线 / 上游基线** | 树 = `mi50-0.2.11-r33-14` @ `6501c28f`（v0.2.11 + API 移植 + 发布门，线性，behind 0 / ahead 78 / merges 0）；**镜像 `strata-gfx906:0.2.11-101`（`/src` = 该 tag 的树）**；引擎 `strata-0.1.57-001`（md5 `5e63174d…`）；容器 `2d765942e041` 跑 `0.2.11-101` | `git describe --tags`；`git rev-list --count upstream/main..HEAD`；`docker images` |
 | **ROCm（容器内）** | `.info/version` = **10.1.0**；HIP 运行时 **7.16.26323-0000000**（`hipconfig`）；clang **24.0.0git**；`ROCM_BUILD=7.14.0-gfx906+20260802001858`；rocprofv3 1.3.5 | `docker exec strata166-407 …`；三套编号互不相等（自建 gfx906 树），写「ROCm 7.x」等于没写 |
 | **依赖 pin（llama.cpp）** | **`b11062` = `3cf03257f219afbe7334045ff7c6a06ac68c627d`**（2026-09-20）；整树 hash `6feee58927d5f1efd38e72bbc1db061d`；镜像 `/src/third_party/llama.cpp`、构建挂载 `ref/llama_3cf0325`、引擎 `/llama.cpp/…`×93 三处同 hash；自 0.2.8p2 起未变；**b12129（最新 tag）已试并回滚（−4.0/−4.6%，`P354`）** | `ci/release_check.py` 三行（pin / tree / build refs）；上游钉法 `.github/workflows/metal-build.yml:29` |
-| **唯一队列** | **第一（代码移植 + 前置门，2026-11-08 机主指令：优先推进代码相关的以及前置项）**：~~R74~~ **已过门（W1057，KL 0.0023/top-1 100%，`P583`）** → **R91**（dot8 接入 P1–P6；P2 前置=dot8 同访问面微基准，P4 复核=max KL 口径 0.0067） → **R101**（#31247 cherry-pick，`quantize.cu` 的 DS4 分支同步改）　**第二（prefill 代码手段；R85 验收随行）**：**R85**（长档 801→850 tok/s 端到端验收口径）→ 手段序 **R46**（attention 效率，上限 3.3×）> **R64**（Q.K int8；**前置**：32K/131K attention 占比实测）> **R60**（stream-k；**前置**：R59 KL≤0.005+top-1≥99%）　**第三**：**R89**（QSA prompt 只读选中 key）→ **R95**（小批 GEMM 残余=host/launch 侧）→ **R86**（Q5_1 down 布局重排；**前置**：R95 之后且 down-only 端到端 ≥5%，默认不开工）　**代码存量候选（队外 OPEN，按需捞入）**：P455（fp16 dot2 救 P454 层）· P481（解开 3 处编译期排除）· P424（MMQ load 管线误配核查）· R63（MLP 权重重排；**前置** R61）· G1–G10 / D28 / M2 / K8 / U2 / U4 / X3–X7 / P1c　**治理（排后）**：**R80**（ci/gate 三项 provenance）→ **R79**（重启后多轮会话完好）→ **R81**（窗口宽度 6→12）　**存量（不排期，随时可捞）**：R72 · R50 · R49 · R42 · R39 · R19 · R45　**W1032–W1052 已结**：R103 R104 R105 R106 R107(R107→AUDIT29 已执行) R108 R109 R111 R113 均为 DONE；R110 R112 R114 R115 为 DONE_NEG（判否，证据见各轮）；R99 R100 R102 亦 DONE_NEG（历史）。**W1055–W1056 追记**：R116 判否（预算 PASS 0.2603% / 微基准门 FAIL 1.264×，`P580`/`P581`），k8v4 V 侧 dot 化整线关闭。**AUDIT29 校正**：本格此前是 append-only 的堆栈（含已判否的 R110/R112 置顶、已结的 R106/R107 仍写作待办、断裂的嵌套 `**` 与 W1037 残段），现按账本重排；任何「重排/第 1 序」的历史文字都不再是现行排期。 | 本节 + `§6.5` 各回写块；**AUDIT27 校正**；**W1056 重排（机主令）** |
+| **唯一队列** | **第一（代码移植 + 前置门，2026-11-08 机主指令：优先推进代码相关的以及前置项）**：~~R74~~ **已过门（W1057，KL 0.0023/top-1 100%，`P583`）** → **R91**（P0–P4 已结 `P585`–`P588`：P1 逐位/P3 等价+ISA/P4 均值口径过门；P2 前置门 1.57× 过但纯指令密度 0.96× 判否；**P2/P5 待 x_qs 流量占比侦察 `P589`**） → **R101**（#31247 cherry-pick，`quantize.cu` 的 DS4 分支同步改）　**第二（prefill 代码手段；R85 验收随行）**：**R85**（长档 801→850 tok/s 端到端验收口径）→ 手段序 **R46**（attention 效率，上限 3.3×）> **R64**（Q.K int8；**前置**：32K/131K attention 占比实测）> **R60**（stream-k；**前置**：R59 KL≤0.005+top-1≥99%）　**第三**：**R89**（QSA prompt 只读选中 key）→ **R95**（小批 GEMM 残余=host/launch 侧）→ **R86**（Q5_1 down 布局重排；**前置**：R95 之后且 down-only 端到端 ≥5%，默认不开工）　**代码存量候选（队外 OPEN，按需捞入）**：P455（fp16 dot2 救 P454 层）· P481（解开 3 处编译期排除）· P424（MMQ load 管线误配核查）· R63（MLP 权重重排；**前置** R61）· G1–G10 / D28 / M2 / K8 / U2 / U4 / X3–X7 / P1c　**治理（排后）**：**R80**（ci/gate 三项 provenance）→ **R79**（重启后多轮会话完好）→ **R81**（窗口宽度 6→12）　**存量（不排期，随时可捞）**：R72 · R50 · R49 · R42 · R39 · R19 · R45　**W1032–W1052 已结**：R103 R104 R105 R106 R107(R107→AUDIT29 已执行) R108 R109 R111 R113 均为 DONE；R110 R112 R114 R115 为 DONE_NEG（判否，证据见各轮）；R99 R100 R102 亦 DONE_NEG（历史）。**W1055–W1056 追记**：R116 判否（预算 PASS 0.2603% / 微基准门 FAIL 1.264×，`P580`/`P581`），k8v4 V 侧 dot 化整线关闭。**AUDIT29 校正**：本格此前是 append-only 的堆栈（含已判否的 R110/R112 置顶、已结的 R106/R107 仍写作待办、断裂的嵌套 `**` 与 W1037 残段），现按账本重排；任何「重排/第 1 序」的历史文字都不再是现行排期。 | 本节 + `§6.5` 各回写块；**AUDIT27 校正**；**W1056 重排（机主令）** |
 | **采纳判据（prefill）** | **组合门**：一个 bundle 的和 ≤ −5%（2K）即采纳；每条各自 ≥2×CV；改舍入的条目一份 `Q:` 质量门覆盖整包；`estimate` 不计入和 | `ci/bundle_budget/bundle.py --check`（份额由 `PREFILL_PHASES.tsv` 反算，负向 4/4） |
 | 权威件（六件） | `W832`(本件) · `PROGRESS.tsv` · `params/PARAM_REGISTER.tsv` · `ID_MAP.tsv` · `AUDIT_INDEX.md` · 最新审计件 | `albus/w1003/mirror_check.py` 逐字节 |
 | 已退役数字 | 见 **附录 A** | `tools/plan_retired.py` 拦「以现行事实出现」 |
@@ -655,11 +655,12 @@ mega 加的 10 项：`GDN_CONVL2` `GDN_NOY` `CVEC_FUSE` `HCD_EXACT` `TOPK_REG_MI
 | `回写 · W1055（2026-11-08 14:5x–15:3x）dot4 软路径探针 + wave64 盘点 + R116 预算` | marker=0 证伪软路径；R52 前提证伪；R116 预算 0.26% | W1055 |
 | `回写 · W1056（2026-11-08 15:5x–16:4x）R116 微基准判否 + 唯一队列按代码优先重排` | 同访问面三臂全 <1.3x（上界 1.264x）；PV fold=访存瓶颈；队列重排（机主令） | W1056 |
 | `回写 · W1057（2026-11-08 17:2x–17:5x）R74 W4A4 精度门过门 + CPU-share 假阴性复盘` | KL mean 0.0023/top-1 100% 过门，R91 放行；CPU-share 旁路量化器教训入技能 | W1057 |
+| `回写 · W1058（2026-11-08 18:2x–19:0x）R91 P0–P4 全过门 + dot8 收益定位在布局侧` | P1/P3/P4 过门；ISA 5184→0/2528；纯密度 0.96× 判否、布局 1.57× 过门；P2 待占比侦察 | W1058 |
 | `回写 · W1046（2026-11-07 19:1x–19:3x）R103 后续方案入权威 + B3 候选 + k8v4 dot8 可行性（零停机）` | B2 死路径纠正；hc4 已建未装；R109/R110 预注册；dot8q≠dot8 | W1046 |
 | 回写 · W1039 §十五（`R105`：gfx906 的能力缺口，一半是构建开关） | 全构建只有 dflash2.cpp 定义 STRATA_USE_HIP；七处分类成清单，三处可选开关解开建 hipk（默认不变） | — |
 | 回写 · W1039 §十六（decode 的账：draft 5.1%，CPU 专家 11.7%） | 400 窗拆完：verify 90.3%、draft 5.1%、host 里 CPU 占 86%（整窗 11.7%，p90 17.1 ms）⇒ MTP_PRIO 不单独开窗，R104 多一条 decode 判据 | — |
 
-共 **54** 块（含 `回写 · AUDIT27` 这类非 W 编号块）；新增回写块时，`tools/plan_single_source.py` 会要求目录同步。
+共 **55** 块（含 `回写 · AUDIT27` 这类非 W 编号块）；新增回写块时，`tools/plan_single_source.py` 会要求目录同步。
 
 
 > **【AUDIT27 更正 2026-11-07】** 下面这行「R100-S5 插到最前」是 W1031 当时的排期，**S5 已完成、R100 已判 DONE_NEG**（H1 `P382` 排除 #31247、H2 `P383` 把 3.8% 归到 MMQ kernel 重写、K10/K13 `P390`/`P391` 锁到 #29948）；现行队列**只认 §0.1 那一行**。本节余下文字是历史决策记录，不再作为执行顺序。
@@ -3194,6 +3195,15 @@ pa7 实测：基线 **886** 条、`<..,16>` **890** 条，`v_fmac_f32` **120 vs 
 - **配方门修正（`P526`）**：`attn` 的 note 同时含 W1042「未装机」和 W1044「已装机」，`recipe_check` 按子串把在产件跳过；已去掉历史标记并实测 `[ok] attn md5=3b758f88…`。
 - **审计债**：`audit_scope §A` 已为 **15 轮连续未审**（W1032–W1046），R107 同步；不冒充已解决。
 - **生产零变更**：引擎仍 `attn` / config `3dde8801`；本轮重启 0 / 停机 0 / 装机 0 / 回滚 0。quant_quality 技能的旧三臂设计稿未跑，不冒充实测。
+
+### 回写 · W1058（2026-11-08 18:2x–19:0x）R91 P0–P4 全过门 + dot8 收益定位在布局侧
+
+- **P1 量化器（`P585`）**：BlockA4 = {half d; int16 sa; uint8 qs[16]}——scale=amax/7、roundf、clamp [−8,7]、**裸整数 Σa 进块头**（区别于 Q8_1 的 d·Σq fp16：sdot8 重定心 +8·Σa 需 int32 域裸整数）；公式逐字对齐 a4sim（R74 门测式）。CPU/GPU 逐位一致 4096/4096 块（含 tie/饱和边角），mismatch=0。
+- **P3 vec_dot + ISA（`P586`）**：`vec_dot_q4_K_q4_impl_mmq` = `sdot8(q^0x88888888, a) + 8·Σa`（min 项乘 Σa）——三臂 GEMM 81920/81920 逐位等价。真 Q4_K 实例 ISA A/B（编译命令逐字抄 ninja）：**v_dot4 5184→0、v_dot8 0→2528**（2.05:1，判据「减半且 >0」超预期）；fatbin 管道复现 P519 外证。**接线陷阱**：mmq-instance 相对 include `../mmq.cuh` 直读 llama-master 树，overlay 头对实例 TU 是 no-op（W1057 的 a4sim 有效只因 quantize.cu 是直接 TU）——改内核头必须打 llama-master 树副本。
+- **P2 前置微基准（`P587`）**：同访问面三臂（权重行 LDS 缓存，3 run×5 trial，CV 6–7%）：A_dp4a 0.83 TMAC/s、B_repack **0.962×**、C_packed **1.570×**。**纯指令密度 ≈0 转化（B 臂），收益全部来自布局流量减半**——「换更强指令不改布局=白干」的第二例证（第一例=R116）。P2 前置门过。
+- **P4 精度门（`P588`）**：均值口径 **PASS**（组合链：R74 logits KL mean 0.002295 / top-1 100% + P1↔a4sim 公式同一 + P3 整数逐位等价 ⇒ 真 W4A4+dot8 数值 = 门测仿真数值）；max 0.006704 复核按 W913/R59 注册口径（mean 门、max 记档；R59 自身 max 0.011209 过门）记档不判死——**W951「P4 大概率是终点」的预判被实测推翻**。
+- **P2/P5 立项分析（`P589`）**：W943 的 −2.05% 上限是指令口径，其密度转化假设被 B 臂证伪；真候选收益=布局/流量侧（C 臂 1.57×），真核 x_qs 流量占比未量；P5 门（2×CV=3.2%）对 1.5–2% 效应不可检（W914 纪律③记「未测出」）。**预注册下一步**：先做 x_qs 流量占比侦察（PMC/LDS 计数）再裁 P2；若要 P5 可检须 CV≤0.75%（重复 ×4–5）或改层级指标验收。tile 手术暂不开工。
+- **生产**：零变更（scratch 容器/单 TU 编译，overlay 与 llama-master 双份 md5 还原 9e0da3cb）；无重启无停机。进度 537 条 / 已结 450 / 83.8%。
 
 ### 回写 · W1057（2026-11-08 17:2x–17:5x）R74 W4A4 精度门过门 + CPU-share 假阴性复盘
 
