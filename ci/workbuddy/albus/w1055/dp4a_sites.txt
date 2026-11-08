@@ -1,0 +1,55 @@
+=== all raw __dp4a( call sites (tree-wide) ===
+/home/albus/strata166/pr/k10/src/dsv41/ds4_gguf.cu:362:    sum = __dp4a(v.x, xa.x, sum);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_gguf.cu:363:    sum = __dp4a(v.y, xb.x, sum);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_gguf.cu:365:    sum = __dp4a(v.x, xa.y, sum);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_gguf.cu:366:    sum = __dp4a(v.y, xb.y, sum);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_gguf.cu:368:    sum = __dp4a(v.x, xa.z, sum);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_gguf.cu:369:    sum = __dp4a(v.y, xb.z, sum);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_gguf.cu:371:    sum = __dp4a(v.x, xa.w, sum);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_gguf.cu:372:    sum = __dp4a(v.y, xb.w, sum);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_gguf.cu:483:                int sum = __dp4a(v[0], xa.x, 0);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_gguf.cu:484:                sum = __dp4a(v[1], xa.y, sum);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_gguf.cu:485:                sum = __dp4a(v[2], xa.z, sum);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_gguf.cu:486:                sum = __dp4a(v[3], xa.w, sum);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_gguf.cu:487:                sum = __dp4a(v[4], xb.x, sum);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_gguf.cu:488:                sum = __dp4a(v[5], xb.y, sum);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_gguf.cu:489:                sum = __dp4a(v[6], xb.z, sum);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_gguf.cu:490:                sum = __dp4a(v[7], xb.w, sum);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_iq.cu:359:    int lo = __dp4a(s.q[0], xa.x, 0);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_iq.cu:360:    lo = __dp4a(s.q[1], xa.y, lo);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_iq.cu:361:    lo = __dp4a(s.q[2], xa.z, lo);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_iq.cu:362:    lo = __dp4a(s.q[3], xa.w, lo);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_iq.cu:363:    int hi = __dp4a(s.q[4], xb.x, 0);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_iq.cu:364:    hi = __dp4a(s.q[5], xb.y, hi);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_iq.cu:365:    hi = __dp4a(s.q[6], xb.z, hi);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_iq.cu:366:    hi = __dp4a(s.q[7], xb.w, hi);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_iq.cu:369:        int sl = __dp4a(0x01010101, xa.x, 0);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_iq.cu:370:        sl = __dp4a(0x01010101, xa.y, sl);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_iq.cu:371:        sl = __dp4a(0x01010101, xa.z, sl);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_iq.cu:372:        sl = __dp4a(0x01010101, xa.w, sl);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_iq.cu:373:        int sh = __dp4a(0x01010101, xb.x, 0);
+/home/albus/strata166/pr/k10/src/dsv41/ds4_iq.cu:374:        sh = __dp4a(0x01010101, xb.y, sh);
+=== ggml_cuda_dp4a def and sites ===
+/home/albus/strata166/pr/k10/src/kernels/cuda/iq_kernels.cu:84:#define ggml_cuda_dp4a(a, b, c) STRATA_DP4A((a), (b), (c))
+/home/albus/strata166/pr/k10/src/kernels/cuda/iq_kernels.cu:272:        sumy = ggml_cuda_dp4a(u0, 0x01010101, sumy);
+/home/albus/strata166/pr/k10/src/kernels/cuda/iq_kernels.cu:273:        sumy = ggml_cuda_dp4a(u1, 0x01010101, sumy);
+/home/albus/strata166/pr/k10/src/kernels/cuda/iq_kernels.cu:465:        sumu = ggml_cuda_dp4a(0x01010101, u1, ggml_cuda_dp4a(0x01010101, u0, sumu));
+/home/albus/strata166/pr/k10/src/kernels/cuda/iq_kernels.cu:507:        sumu = ggml_cuda_dp4a(0x01010101, u1, ggml_cuda_dp4a(0x01010101, u0, sumu));
+/home/albus/strata166/pr/k10/src/kernels/cuda/iq_kernels.cu:534:        sumu = ggml_cuda_dp4a(0x01010101, u1, ggml_cuda_dp4a(0x01010101, u0, sumu));
+/home/albus/strata166/pr/k10/src/kernels/cuda/iq_kernels.cu:1191:            sumy = ggml_cuda_dp4a(u0, 0x01010101, sumy);
+/home/albus/strata166/pr/k10/src/kernels/cuda/iq_kernels.cu:1192:            sumy = ggml_cuda_dp4a(u1, 0x01010101, sumy);
+=== what does fused_gr include (dot4=720 source) ===
+1:// src/kernels/cuda/fused_gr.cu - see include/strata/kernels/fused_gr.hpp.
+2:#include "strata/core/emulate.hpp"
+3:#include "strata/core/sm75_series.hpp"
+4:#include "strata/core/sm120_series.hpp"
+5:#include "strata/core/dispatch_stats.hpp"
+6:#include "strata/core/defaults_026.hpp"
+8:#include "strata/kernels/q8_1_finite.hpp"   // #606: q8_1_ds
+9:#include "strata/core/geometry.hpp"
+=== gr kernels dot4 usage ===
+=== unsigned-typed args check: dp4a.hpp callers in native_gu_lds (iq_kernels.cu) ===
+4
+/home/albus/strata166/pr/k10/src/kernels/cuda/iq_kernels.cu:5898:__global__ void __launch_bounds__(256) native_gu_lds_kernel(const unsigned long long* __restrict__ grp_ptr,
+/home/albus/strata166/pr/k10/src/kernels/cuda/iq_kernels.cu:6414:            case 16: if (em0 >= 7) native_gu_lds_kernel<16, 1, true><<<gl, 256, sh, s>>>(grp_ptr, grp_start, n_groups, ent_tok, X, L, gate, up); else if (em0 == 6) native_gu_lds_kernel<16, 1><<<gl, 256, sh, s>>>(grp_ptr, grp_start, n_groups, ent_tok, X, L, gate, up); else native_gu_lds_kernel<16, 0><<<gl, 256, sh, s>>>(grp_ptr, grp_start, n_groups, ent_tok, X, L, gate, up); break;
+/home/albus/strata166/pr/k10/src/kernels/cuda/iq_kernels.cu:6415:            case 18: if (em0 >= 7) native_gu_lds_kernel<18, 1, true><<<gl, 256, sh, s>>>(grp_ptr, grp_start, n_groups, ent_tok, X, L, gate, up); else if (em0 == 6) native_gu_lds_kernel<18, 1><<<gl, 256, sh, s>>>(grp_ptr, grp_start, n_groups, ent_tok, X, L, gate, up); else native_gu_lds_kernel<18, 0><<<gl, 256, sh, s>>>(grp_ptr, grp_start, n_groups, ent_tok, X, L, gate, up); break;

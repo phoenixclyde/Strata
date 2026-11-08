@@ -21,7 +21,7 @@
 | 2K prefill 相位 | GPU **3191 ms**；gu 816、down 510、dequant **161（5.0%）**、wait copy **37（1.2%）**、host grouping **91（2.9%）** | `ci/prefill_phases/PREFILL_PHASES.tsv`（n=3 冷 prompt）+ `phases.py --check` |
 | 2K 相对 16K 的每 token 成本 | 整条 **1.23×**；gate/up **1.57×**、down **1.52×** | 同上（16K = 16375 tok / 20318 ms） |
 | 专家权重类型 | gu = Q4_K/Q5_K @[1280,2560]；down = Q5_1/Q8_0 @[2560,640] | `native_experts.txt`（pack 清单） |
-| 进度分母 | **525 条 / 已结 436 / 83.0%**（W1054；值由 `tools/progress.py` 派生，`tools/audit_scope.py §D` 拦手写） | `deploy/PROGRESS.tsv`（唯一分母） |
+| 进度分母 | **528 条 / 已结 439 / 83.1%**（W1055；值由 `tools/progress.py` 派生，`tools/audit_scope.py §D` 拦手写） | `deploy/PROGRESS.tsv`（唯一分母） |
 | **主线 / 上游基线** | 树 = `mi50-0.2.11-r33-14` @ `6501c28f`（v0.2.11 + API 移植 + 发布门，线性，behind 0 / ahead 78 / merges 0）；**镜像 `strata-gfx906:0.2.11-101`（`/src` = 该 tag 的树）**；引擎 `strata-0.1.57-001`（md5 `5e63174d…`）；容器 `2d765942e041` 跑 `0.2.11-101` | `git describe --tags`；`git rev-list --count upstream/main..HEAD`；`docker images` |
 | **ROCm（容器内）** | `.info/version` = **10.1.0**；HIP 运行时 **7.16.26323-0000000**（`hipconfig`）；clang **24.0.0git**；`ROCM_BUILD=7.14.0-gfx906+20260802001858`；rocprofv3 1.3.5 | `docker exec strata166-407 …`；三套编号互不相等（自建 gfx906 树），写「ROCm 7.x」等于没写 |
 | **依赖 pin（llama.cpp）** | **`b11062` = `3cf03257f219afbe7334045ff7c6a06ac68c627d`**（2026-09-20）；整树 hash `6feee58927d5f1efd38e72bbc1db061d`；镜像 `/src/third_party/llama.cpp`、构建挂载 `ref/llama_3cf0325`、引擎 `/llama.cpp/…`×93 三处同 hash；自 0.2.8p2 起未变；**b12129（最新 tag）已试并回滚（−4.0/−4.6%，`P354`）** | `ci/release_check.py` 三行（pin / tree / build refs）；上游钉法 `.github/workflows/metal-build.yml:29` |
@@ -652,6 +652,7 @@ mega 加的 10 项：`GDN_CONVL2` `GDN_NOY` `CVEC_FUSE` `HCD_EXACT` `TOPK_REG_MI
 | `回写 · W1052（2026-11-08 12:3x–13:3x）队列推完：R105/R110/R111/R112/R115 五关 + R116 立项` | PV 预算 4.60% 判否；runner 上线；93 处总账 | W1052 |
 | `回写 · W1053（2026-11-08 13:4x–15:0x）AUDIT29：W1032–W1052 补审 + 三道门复明` | 1 P0 / 4 P1 / 6 P2；审计债 21→0；`ci_runs_lint` 新增、`ledger_lint` 重写 | W1053 |
 | `回写 · W1054（2026-11-08 14:1x–15:1x）AUDIT30：审计输出全整改 + 方案表格清零` | 门只扫 *.md 的洞补上；304 份备份收纳；35 行表格全修 | W1054 |
+| `回写 · W1055（2026-11-08 14:5x–15:3x）dot4 软路径探针 + wave64 盘点 + R116 预算` | marker=0 证伪软路径；R52 前提证伪；R116 预算 0.26% | W1055 |
 | `回写 · W1046（2026-11-07 19:1x–19:3x）R103 后续方案入权威 + B3 候选 + k8v4 dot8 可行性（零停机）` | B2 死路径纠正；hc4 已建未装；R109/R110 预注册；dot8q≠dot8 | W1046 |
 | 回写 · W1039 §十五（`R105`：gfx906 的能力缺口，一半是构建开关） | 全构建只有 dflash2.cpp 定义 STRATA_USE_HIP；七处分类成清单，三处可选开关解开建 hipk（默认不变） | — |
 | 回写 · W1039 §十六（decode 的账：draft 5.1%，CPU 专家 11.7%） | 400 窗拆完：verify 90.3%、draft 5.1%、host 里 CPU 占 86%（整窗 11.7%，p90 17.1 ms）⇒ MTP_PRIO 不单独开窗，R104 多一条 decode 判据 | — |
@@ -3191,6 +3192,13 @@ pa7 实测：基线 **886** 条、`<..,16>` **890** 条，`v_fmac_f32` **120 vs 
 - **配方门修正（`P526`）**：`attn` 的 note 同时含 W1042「未装机」和 W1044「已装机」，`recipe_check` 按子串把在产件跳过；已去掉历史标记并实测 `[ok] attn md5=3b758f88…`。
 - **审计债**：`audit_scope §A` 已为 **15 轮连续未审**（W1032–W1046），R107 同步；不冒充已解决。
 - **生产零变更**：引擎仍 `attn` / config `3dde8801`；本轮重启 0 / 停机 0 / 装机 0 / 回滚 0。quant_quality 技能的旧三臂设计稿未跑，不冒充实测。
+
+### 回写 · W1055（2026-11-08 14:5x–15:3x）dot4 软路径毒化探针 + wave64 盘点 + R116 预算
+
+- **dot4 软路径闭案（`P578`）**：毒化探针（unsigned `strata_dp4a` 重载插 `0xdeadbeef` ISA 标记）重建 28 TU 逐个反汇编 ⇒ **marker=0 全绿**——生产不存在任何软 dp4a 编译路径，dot4 100% 硬件；`v_mad_u32_u24`/`v_mad_i32_i24` 分别为 unsigned 下标乘法与 IQ4XS dequant 合法乘，非 dot4。机主前提在二进制层面证伪，无需改码。
+- **wave64 盘点（`P579`）**：4 组 wave64 硬件级专属内核在册（native_mmvq_wave/router_top10_wave/iq row_dot64/fused_gr down-split）；**R52 的 wave32 假设证伪**（55 处 `THREADS/32` 全在逻辑半波契约内）；唯二 `__match_any_sync` 64 位掩码点在 split/ 子树，gfx906 引擎不构建 ⇒ 不可达。R52 收窄为剩运行期实测（③④）。
+- **R116 预算 PASS（`P580`）**：P(int8)×V(int8-exact) rel_rms **0.2603%**（int4 1/17.7），远低于历史采纳线；下一道门=微基准（同访问面 >1.3×，V 流量 2× 成本入账）。
+- 分母 **528/439**（+3 全为本轮行）。**生产零改动**（探针构建在 scratch，头文件已还原 md5 一致）。
 
 ### 回写 · W1054（2026-11-08 14:1x–15:1x）AUDIT30：审计输出全整改 + 方案表格清零
 
