@@ -13,11 +13,11 @@
 | 5 | 资源隔离 | `ulimit -l` unlimited · `VmLck 0 kB` |
 | 6 | 显存 | VRAM free 848 MiB（生产态）；expert cache 8301 槽 / 24,807 MiB；borrows：metrics 未暴露该键（本轮生产未动） |
 | 7 | 回滚件 | 生产未动 ⇒ rollback 未触发；探针构建共享文件全部还原复测（gcn 双侧、overlay `quantize.cu` `9f322489`、llama-master `vecdotq.cuh` `9e0da3cb`）；工作树回 `ci/w1047-coverage` |
-| 8 | 本轮改动 | 换件 0 / config 改 0 / 装机 0 / 回滚 0；**重启 2 次 / 停机 ≈1000 s**（LOGPOS 五臂窗 + 计时三臂窗，两窗 trap 还原绿）；ci/gate.py 双份加 provenance 检查（R80，代码件） |
+| 8 | 本轮改动 | 换件 0 / config 改 0 / 装机 0 / 回滚 0；**重启 2 次 / 停机 ≈1000 s**（LOGPOS 五臂窗 + 计时三臂窗，两窗 trap 还原绿）；ci/gate.py 双份加 provenance 检查（R80，代码件）；disk=build=running 三方未动 |
 | 9 | ROCm（容器内） | `.info/version` **10.1.0** · HIP runtime **7.16.26323-0000000** · clang 24 · `--offload-arch=gfx906` |
-| 10 | llama.cpp | **b12180 = `bcb0152876e8f0b684ba70d3defcab6cdf35adb5` + `mmq*` @ `4c1004c49221b07c3b8108977e3d1991fc9f45cc`**；**对齐实证**：上游 bcb01528 的 `vecdotq.cuh` 用 `ggml_hip_perm` == llama-master 同款（WebFetch 原文），字节级复现锚点（W1059 干净重编==hc4b）；容器 `/src/third_party` 快照=裸 builtin 版 `32877fbe…` **snapshot!=build**（掉队，勿作分析源，镜像重建时同步） |
+| 10 | llama.cpp | **b12180 = `bcb0152876e8f0b684ba70d3defcab6cdf35adb5` + `mmq*` @ `4c1004c49221b07c3b8108977e3d1991fc9f45cc`**；**对齐实证**：上游 bcb01528 的 `vecdotq.cuh` 用 `ggml_hip_perm` == llama-master 同款（WebFetch 原文），字节级复现锚点（W1059 干净重编==hc4b）；容器 `/src/third_party` 快照=裸 builtin 版 `32877fbe…`（对照 pin 版 `quantize.cu:521` 的 d·Σq 形态） **snapshot!=build**（掉队，勿作分析源，镜像重建时同步） |
 
-**二、主线** — `gfx906/mi50` @ e181bda5（tag `mi50-0.2.11-r33-14`）本轮未动，上游 `Niko1221/Strata` 未重算，**领先 0 / 落后 0**（从未落后）；**生产源基 = `03509d1b`**（Strata）+ llama-master（= pin 对齐），生产树 `pr/k10` 已对齐生产基（`4fc85a534`，引擎 drift=0）；ci 分支头本轮新增 W1060 provenance 提交（见 §4）。新证据件：`albus/w1060/`（`strk_patch.py`、`build_strk.sh`、`window_r60.sh`/`window_r60b.sh`、`run_timing.py`、`f2_client.py`、`analyze_r60.py`、`r80_gate_patch.py`、`gdnpp_gate.sh`、`land_w1060.py`）、`deploy/SOURCE_PROVENANCE.tsv`、`tools/source_provenance.py`。
+**二、主线** — `gfx906/mi50` @ e181bda5（tag `mi50-0.2.11-r33-14`）本轮未动，上游 `Niko1221/Strata` 未重算，**领先 0 / 落后 0**（从未落后），脏 0 行；**生产源基 = `03509d1b`**（Strata）+ llama-master（= pin 对齐），生产树 `pr/k10` 已对齐生产基（`4fc85a534`，引擎 drift=0）；ci 分支头本轮新增 W1060 provenance 提交（见 §4）。新证据件：`albus/w1060/`（`strk_patch.py`、`build_strk.sh`、`window_r60.sh`/`window_r60b.sh`、`run_timing.py`、`f2_client.py`、`analyze_r60.py`、`r80_gate_patch.py`、`gdnpp_gate.sh`、`land_w1060.py`）、`deploy/SOURCE_PROVENANCE.tsv`、`tools/source_provenance.py`。
 
 **三、本次落生产** — 换件 0 / 装机 0 / **重启 2 次 / 停机 ≈1000 s** / 回滚 0。两窗口（五臂 LOGPOS + 三臂计时/F2）均独立一次性容器 + trap 还原，生产配置未改；探针构建两段式 + strings/对象断言；生产树引擎对齐提交 `4fc85a534`（只动 ci 分支的两个滞后文件至生产基，不碰生产运行态）。
 
@@ -31,7 +31,7 @@
 
 | 轴 | 应对齐 | 实证 | 判 |
 |---|---|---|---|
-| llama.cpp | 生产容器所用版本（pin b12180/bcb01528 + mmq@4c1004c） | 上游 bcb01528 `vecdotq.cuh` 用 `ggml_hip_perm` == llama-master 同款（WebFetch 原文）；W1059 字节级复现（干净重编 == hc4b md5 `05330748…`）= 全构建面版本证明 | **对齐 ✓** |
+| llama.cpp | 生产容器所用版本（pin b12180/bcb01528 + mmq@4c1004c） | 上游 bcb01528 `vecdotq.cuh:43` 用 `ggml_hip_perm` == llama-master 同款（WebFetch 原文）；W1059 字节级复现（干净重编 == hc4b md5 `05330748…`）= 全构建面版本证明 | **对齐 ✓** |
 | Strata 源码 | 主线（生产基 `03509d1b`） | `pr/k10` ci 分支引擎面曾滞后 2 文件（`fused_gr.cu`/`qsa_decode_attn.cu`）→ `4fc85a534` 对齐，drift=0 | **对齐 ✓（已修）** |
 | 容器 `/src` 快照 | 应 == 构建输入 | `vecdotq.cuh 32877fbe`（裸 builtin）≠ pin 版（`ggml_hip_perm`）；`mmq.cuh`/`quantize.cu` 亦异 | **snapshot!=build**（已标记；镜像重建时同步；勿作分析源） |
 
@@ -43,13 +43,13 @@
 
 ## 2. 本轮技术结果（`P593`–`P596`）
 
-- **R60 stream-k 判否（`P593`）**：gcn 表 Q4_K 11 行翻 true 单变量探针 `strata-0.1.57-strk`：**R59 KL 门 FAIL**（mean 0.070006/max 3.141/top1 59/60 ≫ 0.005/99%，K-split 改算术顺序→混沌放大，P468 族）+ **速度反向**（冷跑 rep0：32K +28.1%、65K +28.2% 更慢）⇒ 双证判否。K 方向切分在本形状纯亏，R60 关。
-- **R79 现役行为测全（`P595`）**：致命错（STRATA_INJECT_FATAL）→ 当窗 503、**容器不重启**而 server 按下一请求重生引擎（R77 路径实证，P403 的「0 重启」是容器口径）；重试即恢复（49s 冷启），**prompt 缓存跨引擎重生存活**（t2 0.84s/1284tok≈98.8% 复用）、turn3 正常无需重发。
+- **R60 stream-k 判否（`P593`）**：gcn 表 Q4_K 11 行（mmq-config-gcn.cuh:120）翻 true 单变量探针 `strata-0.1.57-strk`：**R59 KL 门 FAIL**（mean 0.070006/max 3.141/top1 59/60 ≫ 0.005/99%，K-split 改算术顺序→混沌放大，P468 族）+ **速度反向**（冷跑 rep0：32K +28.1%、65K +28.2% 更慢，数据在 `albus/w1060/analyze_r60.py:1` 复算）⇒ 双证判否。K 方向切分在本形状纯亏，R60 关。
+- **R79 现役行为测全（`P595`）**：致命错（STRATA_INJECT_FATAL，注入点 generate.cpp:3249）→ 当窗 503、**容器不重启**而 server 按下一请求重生引擎（R77 路径实证，P403 的「0 重启」是容器口径）；重试即恢复（49s 冷启），**prompt 缓存跨引擎重生存活**（t2 0.84s/1284tok≈98.8% 复用）、turn3 正常无需重发。
 - **R80 三项 provenance（`P594`）**：ci/gate.py 加 prov/1-3 实跑抓到两个真账洞（build 路径漂移 cf2ba243≠05330748、末条 tag=- 未记账）——W937 损害类，登记流程债；hc4b retro 行已补 `prod_history.tsv`。
 - **K8 GDN_PP 挂钩（`P596`）**：三用例（STRATA_GDN_PP=0/1/2）**FAILURES 0/0/0 全绿**，`gdnpp_gate.sh` 挂进 gpu-gate.yml ⇒ 每轮复测；门脚本两处自纠（^FAIL 误匹配、fail-closed rc）。
-- **测量坑（`P598`）**：run_timing 首版 synth 文本确定性致 rep1/2 撞 prompt 缓存（真值仅 rep0 n=1）——教训入库；R60/R89 数据以此口径成立（幅度大、方向一致）。
+- **测量坑（`P598`）**：run_timing 首版（`albus/w1060/run_timing.py:1`） synth 文本确定性致 rep1/2 撞 prompt 缓存（真值仅 rep0 n=1）——教训入库；R60/R89 数据以此口径成立（幅度大、方向一致）。
 
-## 3. 剩余待办（全带登记路径）
+## 3. 剩余待办（全带登记路径，队列表见 `deploy/W832_OPT_PLAN_V2.md:28`）
 
 队列 **R46**（QSA_DUMP_STEPS 反量化相位一次重建录）→ **R89**（qsa_dump_a0.bin 5.0GB cap 分布扫描，定「只读选中 key」收益面）→ **R95**（P309 busy/phase 事件实验）→ 治理收尾；背包 R63（hoist 单测，读真源）/M2/X4/P309/P481；BLOCKED U2/U4/G2/G4/G6 各带解除条件。
 

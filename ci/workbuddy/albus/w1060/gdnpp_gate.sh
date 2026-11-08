@@ -6,7 +6,7 @@
 set -u
 BUILD=${BUILD:-/home/albus/strata166/build-masterp}
 IMG=${IMG:-strata-gfx906:0.2.11-101}
-if docker info >/dev/null 2>&1; then DOCK=docker; else DOCK="sudo /usr/bin/docker"; fi
+if [ "$(id -u)" = 0 ]; then DOCK=docker; elif docker info >/dev/null 2>&1; then DOCK=docker; else DOCK="sudo /usr/bin/docker"; fi
 echo "GDNPP_GATE: build=$BUILD img=$IMG dock=$DOCK"
 $DOCK run --rm --device /dev/kfd --device=/dev/dri --group-add video \
   -v "$BUILD":/out -v /home/albus/strata166/pr/k10:/src -v /home/albus/strata166/tmp/w1037/llama-master:/llama.cpp -w /out "$IMG" bash -lc '
