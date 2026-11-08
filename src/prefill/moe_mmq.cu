@@ -387,7 +387,7 @@ int pick_J(int t, int64_t ncols, bool fallback) {
     const size_t smpbo = info.devices[id].smpbo;
     int best = 0, ntiles_best = INT_MAX;
     for (int J = 8; J <= 128 && ntiles_best > 1; J += 8) {
-        const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, fallback, cc);
+        const ggml_cuda_mmq_config c = ggml_cuda_mmq_get_config((ggml_type) t, J, fallback, cc, GGML_PREC_Q8);
         if (c.type == GGML_TYPE_COUNT) continue;
         if (mmq_get_nbytes_shared(c, cc) > smpbo) continue;
         const int ntiles = (int) ((ncols + c.J - 1) / c.J);
@@ -542,26 +542,26 @@ void Context::run(const Product& p, void* stream) {
     }
     switch (t) {
 #ifdef STRATA_ORCA_Q4KS_MMQ
-        case GGML_TYPE_Q5_0: mul_mat_q_case<GGML_TYPE_Q5_0>(ctx, a, s); break;
+        case GGML_TYPE_Q5_0: mul_mat_q_case<GGML_TYPE_Q5_0, GGML_PREC_Q8>(ctx, a, s); break;
 #endif
-        case GGML_TYPE_Q2_0: mul_mat_q_case<GGML_TYPE_Q2_0>(ctx, a, s); break;
-        case GGML_TYPE_IQ2_XXS: mul_mat_q_case<GGML_TYPE_IQ2_XXS>(ctx, a, s); break;
-        case GGML_TYPE_IQ2_XS: mul_mat_q_case<GGML_TYPE_IQ2_XS>(ctx, a, s); break;
-        case GGML_TYPE_IQ2_S: mul_mat_q_case<GGML_TYPE_IQ2_S>(ctx, a, s); break;
-        case GGML_TYPE_IQ3_XXS: mul_mat_q_case<GGML_TYPE_IQ3_XXS>(ctx, a, s); break;
-        case GGML_TYPE_IQ3_S: mul_mat_q_case<GGML_TYPE_IQ3_S>(ctx, a, s); break;
-        case GGML_TYPE_IQ4_NL: mul_mat_q_case<GGML_TYPE_IQ4_NL>(ctx, a, s); break;
-        case GGML_TYPE_IQ4_XS: mul_mat_q_case<GGML_TYPE_IQ4_XS>(ctx, a, s); break;
-        case GGML_TYPE_Q8_0: mul_mat_q_case<GGML_TYPE_Q8_0>(ctx, a, s); break;
+        case GGML_TYPE_Q2_0: mul_mat_q_case<GGML_TYPE_Q2_0, GGML_PREC_Q8>(ctx, a, s); break;
+        case GGML_TYPE_IQ2_XXS: mul_mat_q_case<GGML_TYPE_IQ2_XXS, GGML_PREC_Q8>(ctx, a, s); break;
+        case GGML_TYPE_IQ2_XS: mul_mat_q_case<GGML_TYPE_IQ2_XS, GGML_PREC_Q8>(ctx, a, s); break;
+        case GGML_TYPE_IQ2_S: mul_mat_q_case<GGML_TYPE_IQ2_S, GGML_PREC_Q8>(ctx, a, s); break;
+        case GGML_TYPE_IQ3_XXS: mul_mat_q_case<GGML_TYPE_IQ3_XXS, GGML_PREC_Q8>(ctx, a, s); break;
+        case GGML_TYPE_IQ3_S: mul_mat_q_case<GGML_TYPE_IQ3_S, GGML_PREC_Q8>(ctx, a, s); break;
+        case GGML_TYPE_IQ4_NL: mul_mat_q_case<GGML_TYPE_IQ4_NL, GGML_PREC_Q8>(ctx, a, s); break;
+        case GGML_TYPE_IQ4_XS: mul_mat_q_case<GGML_TYPE_IQ4_XS, GGML_PREC_Q8>(ctx, a, s); break;
+        case GGML_TYPE_Q8_0: mul_mat_q_case<GGML_TYPE_Q8_0, GGML_PREC_Q8>(ctx, a, s); break;
 #ifdef STRATA_MMQ_TQ
-        case GGML_TYPE_TQ2_T: mul_mat_q_case<GGML_TYPE_TQ2_T>(ctx, a, s); break;
-        case GGML_TYPE_TQK6: mul_mat_q_case<GGML_TYPE_TQK6>(ctx, a, s); break;
-        case GGML_TYPE_TQK7: mul_mat_q_case<GGML_TYPE_TQK7>(ctx, a, s); break;
+        case GGML_TYPE_TQ2_T: mul_mat_q_case<GGML_TYPE_TQ2_T, GGML_PREC_Q8>(ctx, a, s); break;
+        case GGML_TYPE_TQK6: mul_mat_q_case<GGML_TYPE_TQK6, GGML_PREC_Q8>(ctx, a, s); break;
+        case GGML_TYPE_TQK7: mul_mat_q_case<GGML_TYPE_TQK7, GGML_PREC_Q8>(ctx, a, s); break;
 #endif
 #ifdef STRATA_MMQ_TQP
-        case GGML_TYPE_TQP5: mul_mat_q_case<GGML_TYPE_TQP5>(ctx, a, s); break;
-        case GGML_TYPE_TQP6: mul_mat_q_case<GGML_TYPE_TQP6>(ctx, a, s); break;
-        case GGML_TYPE_TQP7: mul_mat_q_case<GGML_TYPE_TQP7>(ctx, a, s); break;
+        case GGML_TYPE_TQP5: mul_mat_q_case<GGML_TYPE_TQP5, GGML_PREC_Q8>(ctx, a, s); break;
+        case GGML_TYPE_TQP6: mul_mat_q_case<GGML_TYPE_TQP6, GGML_PREC_Q8>(ctx, a, s); break;
+        case GGML_TYPE_TQP7: mul_mat_q_case<GGML_TYPE_TQP7, GGML_PREC_Q8>(ctx, a, s); break;
 #endif
 #if defined(STRATA_MMQ_KQUANTS) && defined(STRATA_KQ_DSO)
         case GGML_TYPE_Q4_K: case GGML_TYPE_Q5_K: case GGML_TYPE_Q6_K: case GGML_TYPE_Q5_1: {
@@ -573,10 +573,10 @@ void Context::run(const Product& p, void* stream) {
             break;
         }
 #elif defined(STRATA_MMQ_KQUANTS)
-        case GGML_TYPE_Q4_K: mul_mat_q_case<GGML_TYPE_Q4_K>(ctx, a, s); break;
-        case GGML_TYPE_Q5_K: mul_mat_q_case<GGML_TYPE_Q5_K>(ctx, a, s); break;
-        case GGML_TYPE_Q6_K: mul_mat_q_case<GGML_TYPE_Q6_K>(ctx, a, s); break;
-        case GGML_TYPE_Q5_1: mul_mat_q_case<GGML_TYPE_Q5_1>(ctx, a, s); break;
+        case GGML_TYPE_Q4_K: mul_mat_q_case<GGML_TYPE_Q4_K, GGML_PREC_Q8>(ctx, a, s); break;
+        case GGML_TYPE_Q5_K: mul_mat_q_case<GGML_TYPE_Q5_K, GGML_PREC_Q8>(ctx, a, s); break;
+        case GGML_TYPE_Q6_K: mul_mat_q_case<GGML_TYPE_Q6_K, GGML_PREC_Q8>(ctx, a, s); break;
+        case GGML_TYPE_Q5_1: mul_mat_q_case<GGML_TYPE_Q5_1, GGML_PREC_Q8>(ctx, a, s); break;
 #endif
 #if !defined(GGML_USE_HIP)   // NVFP4: CUDA only (no HIP instance, no W4A8 unit)
         case GGML_TYPE_NVFP4:
