@@ -176,6 +176,50 @@ __device__ __forceinline__ int reduce12_head_of_lane(int lane) {
 //   bit 0 (1) A3  the 32-lane reductions (score sum, chunk softmax) run on DPP instead of ds_bpermute
 //   bit 1 (2) B1/B2 the score dot product runs on v_dot4_i32_i8 with a per-64-group int8 query (k8v4 and int8)
 //   bit 2 (4) A2  the sq / sp LDS tiles take a pad so column-wise reads stop landing on one bank group
+// ---- R112 PV-dump probe (W1052): one-shot capture of the chunk-local probabilities
+// and the raw Q4_0 V blocks for the offline PV-dot8 error budget.  Probe builds only.
+#define PV_DUMP_MAX 32
+#define PV_DUMP_CELLS 64
+struct PvDumpRec {
+    int n_here, slot, chunk, kvh, query_z;
+    long long srow[PV_DUMP_CELLS];
+    float sp[G][PV_DUMP_CELLS];
+    unsigned char vraw[PV_DUMP_CELLS][8][18];
+};
+__device__ PvDumpRec pv_recs[PV_DUMP_MAX];
+__device__ int pv_cnt = 0;
+__device__ int pv_on = 0;
+
+static void pv_dump_arm() {
+    static bool armed = false;
+    if (armed) return;
+    armed = true;
+    if (std::getenv("STRATA_PV_DUMP") == nullptr) return;
+    int one = 1;
+    cudaMemcpyToSymbol(pv_on, &one, sizeof(int));
+    std::fprintf(stderr, "pv_dump: armed\n");
+}
+static void pv_dump_sync_flush() {
+    static int last_written = 0;
+    if (std::getenv("STRATA_PV_DUMP") == nullptr) return;
+    int cnt = 0;
+    cudaMemcpyFromSymbol(&cnt, pv_cnt, sizeof(int));
+    if (cnt <= last_written) return;
+    cudaDeviceSynchronize();
+    cudaMemcpyFromSymbol(&cnt, pv_cnt, sizeof(int));
+    if (cnt > PV_DUMP_MAX) cnt = PV_DUMP_MAX;
+    static PvDumpRec host[PV_DUMP_MAX];
+    cudaMemcpyFromSymbol(host, pv_recs, sizeof(PvDumpRec) * (size_t) cnt);
+    const char* path = std::getenv("STRATA_PV_DUMP");
+    std::FILE* f = std::fopen(path, "wb");
+    if (!f) { std::fprintf(stderr, "pv_dump: cannot write %s\n", path); last_written = cnt; return; }
+    std::fwrite(&cnt, sizeof(int), 1, f);
+    std::fwrite(host, sizeof(PvDumpRec), (size_t) cnt, f);
+    std::fclose(f);
+    std::fprintf(stderr, "pv_dump: wrote %d records to %s\n", cnt, path);
+    last_written = cnt;
+}
+
 template <int KV_MODE, bool LANE_CELL, bool QUERY_SWIZZLE, bool REDUCE12, int OPT>
 __device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, QsaAttnPools p,
                                                 const int32_t* __restrict__ ids, const int32_t* __restrict__ step,
@@ -366,6 +410,33 @@ __device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, Qsa
         if (lane == 0) { part_m[slot * G + h] = m; part_l[slot * G + h] = l; }
     }
     __syncthreads();
+    static_assert(CHUNK <= PV_DUMP_CELLS, "pv_dump record is sized for CHUNK<=64");
+    if (pv_on && KV_MODE == 3 && t == 0 && n_here >= 32 && blockIdx.y == 0 && blockIdx.z == 0) {
+        const int idx = atomicAdd(&pv_cnt, 1);
+        if (idx < PV_DUMP_MAX) {
+            PvDumpRec& r = pv_recs[idx];
+            r.n_here = n_here; r.slot = slot; r.chunk = (int) blockIdx.x;
+            r.kvh = (int) blockIdx.y; r.query_z = (int) blockIdx.z;
+#pragma unroll
+            for (int c = 0; c < PV_DUMP_CELLS; ++c) r.srow[c] = srow[c];
+#pragma unroll
+            for (int h = 0; h < G; ++h) {
+#pragma unroll
+                for (int c = 0; c < PV_DUMP_CELLS; ++c) r.sp[h][c] = sp[h][c];
+            }
+            constexpr int bytes_per_head = (HD / QK4_0) * sizeof(block_q4_0);
+            for (int c = 0; c < PV_DUMP_CELLS; ++c) {
+                const long long row = srow[c];
+                if (row < 0) {
+                    for (int b = 0; b < 8; ++b) for (int k = 0; k < 18; ++k) r.vraw[c][b][k] = 0;
+                    continue;
+                }
+                const unsigned char* src = p.v_q4 + row * bytes_per_head;
+                for (int b = 0; b < 8; ++b)
+                    for (int k = 0; k < 18; ++k) r.vraw[c][b][k] = src[b * 18 + k];
+            }
+        }
+    }
     // values: thread t owns dimension t for all 12 heads.
     float acc[G];
 #pragma unroll
@@ -1045,6 +1116,7 @@ int attn_merge_v2() {
 // the merge of `n_q` queries' partials: v2 = 0 attn_merge_kernel, 1 attn_merge_v2_kernel (bitwise the same output)
 void launch_merge(int v2, const float* part_acc, const float* part_m, const float* part_l, int n_chunks,
                   const int32_t* steps, float* attn, long long stride, unsigned n_head, unsigned n_q, cudaStream_t st) {
+    pv_dump_sync_flush();
     if (v2)
         attn_merge_v2_kernel<kMergeU><<<dim3(n_head, n_q), HD, 0, st>>>(part_acc, part_m, part_l, n_chunks, steps,
                                                                          attn, stride);
@@ -1118,6 +1190,7 @@ int gfx906_attn_opt() {
 
 void launch_chunks_batch(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps,
                          int64_t cap, const QsaShapes& s, float* scratch, int64_t n_q, cudaStream_t st, int kernel) {
+    pv_dump_arm();
     const int kv_mode = pools.k_q4 != nullptr ? 2 : (pools.k_q != nullptr && pools.v_q4 != nullptr ? 3
                         : (pools.k_q != nullptr ? 1 : 0));
     const int n_chunks = (int) ((cap + CHUNK - 1) / CHUNK);
@@ -1389,6 +1462,7 @@ uint64_t qsa_decode_attn_scratch_floats(int64_t cap, const QsaShapes& s) {
 
 void qsa_decode_attn_step(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* step,
                           int64_t cap, const QsaShapes& s, float* scratch, float* attn, void* stream) {
+    pv_dump_arm();
     if (s.head_dim != HD || s.n_head != (int64_t) G * s.n_head_kv || cap <= 0 || !scratch || !ids || !step ||
         !pools.page_table) {
         std::fprintf(stderr, "qsa_decode_attn: unsupported geometry or missing buffers\n");
