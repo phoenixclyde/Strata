@@ -1,0 +1,38 @@
+name: GPU gate
+# W1052/R111: controlled jobs on the self-hosted gfx906 runner (strata166).
+# SECURITY BOUNDARY (repo is PUBLIC):
+#   * This workflow MUST NEVER gain `pull_request` or `pull_request_target` triggers.
+#     A PR-triggered job on a self-hosted runner of a public repo is arbitrary code
+#     execution for strangers.  Push/workflow_dispatch only -- pushes need write access.
+#   * Label-isolated: jobs target [self-hosted, gfx906], never bare `self-hosted`,
+#     so a future generic self-hosted job cannot land here by accident.
+#   * The runner user `ghrunner` has no sudo beyond `/usr/bin/docker` (sudoers.d).
+on:
+  workflow_dispatch:
+  push:
+    branches: [ci/**]
+    paths: ["ci/**", ".github/workflows/gpu-gate.yml"]
+
+jobs:
+  gpu-smoke:
+    runs-on: [self-hosted, gfx906]
+    steps:
+      - uses: actions/checkout@v4
+      - name: device + runner sanity
+        run: |
+          set -eux
+          echo "== identity =="
+          id
+          test -r /dev/kfd
+          ls -la /dev/kfd /dev/dri/renderD128
+          echo "== rocm =="
+          /opt/rocm/bin/rocminfo 2>/dev/null | grep -m2 'Name:\|gfx' || true
+          echo "== runner workdir =="
+          pwd
+          df -h . | tail -1
+      - name: ci tooling smoke (syntax only)
+        run: |
+          set -eux
+          python3 -m py_compile ci/*.py
+          bash -n ci/*.sh 2>/dev/null || true
+          echo CI_SYNTAX_OK

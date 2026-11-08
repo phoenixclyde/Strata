@@ -21,7 +21,7 @@
 | 2K prefill 相位 | GPU **3191 ms**；gu 816、down 510、dequant **161（5.0%）**、wait copy **37（1.2%）**、host grouping **91（2.9%）** | `ci/prefill_phases/PREFILL_PHASES.tsv`（n=3 冷 prompt）+ `phases.py --check` |
 | 2K 相对 16K 的每 token 成本 | 整条 **1.23×**；gate/up **1.57×**、down **1.52×** | 同上（16K = 16375 tok / 20318 ms） |
 | 专家权重类型 | gu = Q4_K/Q5_K @[1280,2560]；down = Q5_1/Q8_0 @[2560,640] | `native_experts.txt`（pack 清单） |
-| 进度分母 | **502 条 / 已结 410 / 81.7%**（W1051；值由 `tools/progress.py` 派生，`tools/audit_scope.py §D` 拦手写） | `deploy/PROGRESS.tsv`（唯一分母） |
+| 进度分母 | **508 条 / 已结 419 / 82.5%**（W1052；值由 `tools/progress.py` 派生，`tools/audit_scope.py §D` 拦手写） | `deploy/PROGRESS.tsv`（唯一分母） |
 | **主线 / 上游基线** | 树 = `mi50-0.2.11-r33-14` @ `6501c28f`（v0.2.11 + API 移植 + 发布门，线性，behind 0 / ahead 78 / merges 0）；**镜像 `strata-gfx906:0.2.11-101`（`/src` = 该 tag 的树）**；引擎 `strata-0.1.57-001`（md5 `5e63174d…`）；容器 `2d765942e041` 跑 `0.2.11-101` | `git describe --tags`；`git rev-list --count upstream/main..HEAD`；`docker images` |
 | **ROCm（容器内）** | `.info/version` = **10.1.0**；HIP 运行时 **7.16.26323-0000000**（`hipconfig`）；clang **24.0.0git**；`ROCM_BUILD=7.14.0-gfx906+20260802001858`；rocprofv3 1.3.5 | `docker exec strata166-407 …`；三套编号互不相等（自建 gfx906 树），写「ROCm 7.x」等于没写 |
 | **依赖 pin（llama.cpp）** | **`b11062` = `3cf03257f219afbe7334045ff7c6a06ac68c627d`**（2026-09-20）；整树 hash `6feee58927d5f1efd38e72bbc1db061d`；镜像 `/src/third_party/llama.cpp`、构建挂载 `ref/llama_3cf0325`、引擎 `/llama.cpp/…`×93 三处同 hash；自 0.2.8p2 起未变；**b12129（最新 tag）已试并回滚（−4.0/−4.6%，`P354`）** | `ci/release_check.py` 三行（pin / tree / build refs）；上游钉法 `.github/workflows/metal-build.yml:29` |
@@ -645,6 +645,7 @@ mega 加的 10 项：`GDN_CONVL2` `GDN_NOY` `CVEC_FUSE` `HCD_EXACT` `TOPK_REG_MI
 | `回写 · W1049（2026-11-07 23:5x–01:1x）R103 移植面全收口` | B2 闭案；A2 采纳；A1/A3/A4/A5 判否；P457 结案 | W1049 |
 | `回写 · W1050（2026-11-08 01:1x–02:5x）R106 结案 + R113 护栏 + R114 三件套` | gen_config 无差异；#30837 不变量成立；dot2 1.33× | W1050 |
 | `回写 · W1051（2026-11-08 03:2x–04:2x）R113 全结 + R114 G2 判否 + 确定性新铁律` | 5 提交判毕；配对 +0.82% 不装机；缓存禁用于数值门 | W1051 |
+| `回写 · W1052（2026-11-08 12:3x–13:3x）队列推完：R105/R110/R111/R112/R115 五关 + R116 立项` | PV 预算 4.60% 判否；runner 上线；93 处总账 | W1052 |
 | `回写 · W1046（2026-11-07 19:1x–19:3x）R103 后续方案入权威 + B3 候选 + k8v4 dot8 可行性（零停机）` | B2 死路径纠正；hc4 已建未装；R109/R110 预注册；dot8q≠dot8 | W1046 |
 | 回写 · W1039 §十五（`R105`：gfx906 的能力缺口，一半是构建开关） | 全构建只有 dflash2.cpp 定义 STRATA_USE_HIP；七处分类成清单，三处可选开关解开建 hipk（默认不变） |
 | 回写 · W1039 §十六（decode 的账：draft 5.1%，CPU 专家 11.7%） | 400 窗拆完：verify 90.3%、draft 5.1%、host 里 CPU 占 86%（整窗 11.7%，p90 17.1 ms）⇒ MTP_PRIO 不单独开窗，R104 多一条 decode 判据 |
@@ -3184,6 +3185,14 @@ pa7 实测：基线 **886** 条、`<..,16>` **890** 条，`v_fmac_f32` **120 vs 
 - **配方门修正（`P526`）**：`attn` 的 note 同时含 W1042「未装机」和 W1044「已装机」，`recipe_check` 按子串把在产件跳过；已去掉历史标记并实测 `[ok] attn md5=3b758f88…`。
 - **审计债**：`audit_scope §A` 已为 **15 轮连续未审**（W1032–W1046），R107 同步；不冒充已解决。
 - **生产零变更**：引擎仍 `attn` / config `3dde8801`；本轮重启 0 / 停机 0 / 装机 0 / 回滚 0。quant_quality 技能的旧三臂设计稿未跑，不冒充实测。
+
+### 回写 · W1052（2026-11-08 12:3x–13:3x）队列推完：R105/R110/R111/R112/R115 五关 + R116 立项
+
+- **R115 更正判否（`P556`）**：独立 swiglu 是 fallback——`fused_swiglu_q81_enabled()` 默认 ON（`shared_expert.cu:207`）+ `native_down` 生产真（down_type ∈ `native_mmvq.cu:3575` 名单）⇒ 走 `native_swiglu_quantize_q8_1` 融合变体。W1051 P555「残余」系没跟到谓词，更正。gemm+swiglu 一体化 <0.3% 记 REF（`P560`）。
+- **R110/R112 判否（`P557`）**：R112 真实 P/V dump 执行——探针（`attn_chunk_body` env 门控捕获 kernel-local P + 原始 Q4_0 块，`strata-0.1.57-pvprobe`）+ **22 记录 / 12,804 P 值 / 67,584 输出**。P 分布长尾实证（中位 8.0e-3、90 分位 0.166、峰值恒 1.0）；**P(int4)×V(int4) rel-rms 4.60%**（合成上界 6.23%）⇒ 误差无预算，PV-dot8 不接 OPT。int4 按组量化的死因=P 长尾被组 scale 置零 → 唯一残路 **R116**（P int8×V nibble→int8 无损，`v_dot4_i32_i8`）。
+- **R111 上线（`P558`）**：self-hosted runner `strata166-gfx906`（v2.338.2，官方 sha256 校验，gh-proxy 拉取）systemd 常驻、API online；`gpu-gate.yml`（`702c6efbf`）label 隔离 + 仅 push/dispatch；**run 42450933745 success 落 runner**。安全边界自定义：公开仓残余风险=写权限账号（PR 向量被无 pull_request 触发封死）、`ghrunner` 专用用户、sudo 仅 docker、本地 git 镜像（`insteadOf`）拆掉 CN→GitHub 慢网。
+- **R105 收口（`P559`）**：93 处五类总账入 `GFX906_GATES.md §5`——真硬件缺口仅 3（permlanex16/wave32/pre75，均无生产损失）+ 可翻案假设 5（已点名）。
+- **队列**：R116（PV dot4 离线预算）→ R107（audit 21 轮，机主自理）。R113/R114 已于 W1051 判毕。**队列主体推完**。
 
 ### 回写 · W1051（2026-11-08 03:2x–04:2x）R113 全结 + R114 G2 判否 + 确定性新铁律
 

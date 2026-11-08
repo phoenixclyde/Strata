@@ -62,3 +62,27 @@ build CMakeFiles/strata_engine.dir/src/core/dflash2.cpp.o: ...
 2. 若 `kvg` 通过，再单测 `STRATA_HIP_QUEUE_PRIME=nn`（它可能顺手解释「重启后首请求慢」）。
 3. 逐个测 `STRATA_MTP_HIP_PRIO` / `STRATA_COPY_HIP_PRIO`（decode 侧判据）。
 4. 任何一条都遵守「改条件 → 二进制变了才算改到」（`P473`），并用 `nm -D` / `strings` 做静态复核。
+
+## 5 九十三处总账（`R105` 收口，W1052 实测枚举）
+
+> `$ grep -rn STRATA_HIP_GFX906 src include third_party | wc -l` = **93**（原始出现行数）。
+> 分类判据沿用 §1 的三问：① 排除的是硬件能力还是 API/工具链不存在？② 有无运行时判据可替代？
+> ③ 缺的功能对生产参数面是否可达？**结论先行：93 处里真正的「硬件能力缺口」只有 3 处，
+> 且 3 处都不损失生产功能**；可翻案的假设 8 处（其中 5 处已点名处理）；其余是 API/平台分工/构建开关/无关。
+
+| 类 | 处数 | 判定 | 代表位置 |
+|---|---|---|---|
+| **A. 正向门（为 gfx906 写的优化）** | 60 | 维护过，不是缺口 | `qsa_decode_attn.cu`（DPP/swizzle/OPT 位）、`iq_kernels.cu`、`fused_gr.cu`、`router_top10.cu`、`generate.cpp`（`USE_HIP \|\| GFX906` 合流）等 |
+| **B. 硬件事实（真排除）** | 3 | ①硬件：gfx906 无 `permlanex16`/DPP row_xmask（gfx10+）；wave64≠wave32 | `s26_tsum.cuh:14`（permlanex16）、`verify_kernels.cu:832`（wave32 族）、`qsa_decode_attn.cu:466`（pre75/DPP 变体不建） |
+| **C. 撰写时假设 / 可选开关被编译掉** | 8 | ②可翻案（运行时判据或 env 已存在）；③默认不损失 | 已点名 5：`mtp.cpp:486`（MTP 高优先队列）、`verify.cpp:1213`（copy 高优先队列）、`generate.cpp:3078/3371`（prime_hw_queues）、`expert_cache.cpp:101`（cudaDevAttrIntegrated，注释自证"该卡恒 discrete"）；另 3：`prefill.cpp:2863/2871`（CPU share 默认值，**不是缺口**——我们显式设 env）、`qsa_prompt_attn.cu:2458`（prompt 侧 gated 变体；B2/P435 已证 gfx906 预填走 `qsa_decode_attn_batch`，此路径不可达） |
+| **D. API/工具链不存在（非硬件）** | 16 | ①是 CUDA/HIP API 面差异或版本绑定，不是 MI50 少能力 | `vmm.cpp:3`（CUDA 头选择）、`mtp.cpp:479`、`verify.cpp:4/239/1178/1190/2763/2878/4409/4425/4444`（CUDA graph 优先级族）、`generate.cpp:2060`（PCI 总线/进程查询）、`generate.cpp:7421`（CUDART 版本检查）、`dma_batch.hpp:68`（CUDA13 批量拷贝 API）、`mmvq_il_parity.cpp:88/493`（L2 accessPolicyWindow，parity 工具） |
+| **E. 构建开关 / 其它无关** | 6 | 实验特性或专用卡路径 | `iq_kernels.cu:4326`（SM60 实验 down-WS）、`expert_nibble.hpp:33`（SM60 实验）、`iq_kernels.cu:6151/6313`（gfx1151/V2K 检测）、`gr_parity.cpp:461`（wave32 测试覆盖）、`verify.hpp:511`（graph prio 成员） |
+
+**处置**（§2 的三个 opt-in 开关仍按原计划，收益面不变）：
+1. C 类中 `mtp.cpp:486` / `verify.cpp:1213` / `generate.cpp:3078+3371` 三组可零风险解开（默认行为不变，见 §2）；
+2. C 类的 `expert_cache.cpp:101`：注释已自证（gfx906 恒 discrete），解开只影响混插 APU 场景——**不动**；
+3. `prefill.cpp:2863/2871` 与 `qsa_prompt_attn.cu:2458` 生产不可达，**不动**；
+4. B 类 3 处是真硬件事实，**不动**；
+5. D/E 类与生产参数面无关，**不动**。
+
+⇒ **R105 收口：「gfx906 少掉的能力」清单 = B 类 3 处（均无生产损失）+ C 类 5 处（可翻案、已点名、默认关）。**
