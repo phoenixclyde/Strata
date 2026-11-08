@@ -107,7 +107,7 @@ __global__ void kv_gather_q8_kernel(const int8_t* __restrict__ k_q, const int8_t
     reinterpret_cast<ushort4*>(v_scratch)[dst] = vo;
 }
 
-#if defined(STRATA_EXPERIMENTAL_SM60)
+#if defined(STRATA_EXPERIMENTAL_SM60) || defined(STRATA_HIP_GFX906)
 // One thread = 8 consecutive values of one cell and head: an 8-byte `uint2` load of codes and a 16-byte `uint4`
 // store of the dequantized fp16.  The 8 values share one 64-value group, so one scale is loaded per thread and
 // the arithmetic stays `(float) code * scale -> f16_from_f32`, i.e. bitwise the same as the previous 4-wide
