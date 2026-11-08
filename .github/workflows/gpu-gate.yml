@@ -36,3 +36,8 @@ jobs:
           python3 -m py_compile ci/*.py
           bash -n ci/*.sh 2>/dev/null || true
           echo CI_SYNTAX_OK
+      - name: GDN_PP 3-case gate (K8 debt)
+        run: |
+          set -eux
+          bash ci/workbuddy/gdnpp_gate.sh
+          echo GDNPP_GATE_OK
