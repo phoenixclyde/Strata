@@ -1,6 +1,6 @@
 # W1034 交接件 · Strata（gfx906 / MI50）项目
 
-> SNAPSHOT: round=W1052 date=2026-11-08 prod_exe=strata-0.1.57-hc4b prod_md5=0533074826258d5f96c4b65bc0ad33df config_md5=8d234fa38261abbee0328c80416d6835 container=2d765942e041 image=strata-gfx906:0.2.11-101 branch=gfx906/mi50 picks=03509d1b
+> SNAPSHOT: round=W1053 date=2026-11-08 prod_exe=strata-0.1.57-hc4b prod_md5=0533074826258d5f96c4b65bc0ad33df config_md5=8d234fa38261abbee0328c80416d6835 container=2d765942e041 image=strata-gfx906:0.2.11-101 branch=gfx906/mi50 picks=03509d1b
 >
 > 可粘贴提示词的**唯一副本**：`albus/w1034/HANDOFF_PROMPT.md`（≤3000 字符）。完整交接件是本文件。机器自证门：`tools/handoff_check.py`。
 > 本件**不同步 166**：它描述的是本机文档、门脚本与迁移操作；166 只保存六件权威件的现场副本。
@@ -131,11 +131,13 @@
 
 ## 6 门清单（收工必须全绿）
 
-`albus/w1002/round_close.py` 的 HARD（11 道）：`report_lint` · `report_depth` · `plan_lint` · `audit_index` · `plan_retired` · `pointer_lint` · `audit_scope` · `audit_outputs` · `plan_single_source` · `handoff_check` · `round_ledger`。
+`albus/w1002/round_close.py` 的 HARD（13 道，AUDIT29 起把 `ledger_lint` 从 SOFT 移入、并新增 `ci_runs_lint`）：`report_lint` · `report_depth` · `plan_lint` · `audit_index` · `plan_retired` · `pointer_lint` · `audit_scope` · `audit_outputs` · `plan_single_source` · `handoff_check` · `round_ledger`。
 
 另有：`ci/prefill_phases/kernel_curve.py --check`、`ci/bundle_budget/bundle.py --check`、`albus/w1003/mirror_check.py --sync`、`tools/audit_closure.py`、以及 `round_close.py --post` 生成 POST 校验头。
 
 - `audit_scope.py`：审计债 >8 轮 / 废止门以现行指令出现 / 缺报告 / 分母与队列漂移 → FAIL。
+- `ledger_lint.py`（AUDIT29 修）：列数 10/11、`KW:` 起头、闭合行须有证据、表格 cell 数超基线 → FAIL（此前 209 误报且无退出码）。
+- `ci_runs_lint.py`（AUDIT29 新增）：`CI_RUNS.tsv` 的 run id 必须 11 位、状态合法、(key,ref) 不重复；`--live` 逐条查 GitHub（存在性 + conclusion + head_sha）。起因：生产 exe 的覆盖行曾指向 404 而 D7 判 PASS。
 - `audit_outputs.py`：23 件编号审计的 `> VERDICT:` 与索引 P 列逐件比对，39 件派生产物必须在 `COMPANIONS:` 里。
 - `plan_single_source.py`：唯一队列恰 1 行、§6.5.0 目录覆盖全部回写块、行号指针清零、分母自洽。
 - `handoff_check.py`（新）：交接三件齐全、提示词 ≤3000 字符且含全部锚点、SNAPSHOT 可解析、门脚本齐全且自身在 HARD 里、最新报告存在；`--live` 只读核 166；`--self-test` 负向。

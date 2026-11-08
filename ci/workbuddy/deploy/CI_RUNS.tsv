@@ -3,6 +3,7 @@
 # 规则：任何产生过二进制/曾装机的变更 sha，必须有一条 Downstream gate run（status=success），
 # 或一条 status=exempt 的豁免行并写明补偿证据。deploy_gate D7 装机前机械核对本表。
 # 回溯执行记录：W1048 对 10 个历史 ref 打 workflow_dispatch，全部 success（retro_* run）。
+# 表尾自身的后续 provenance 提交由 push 触发器自带 run，不回写自身（避免自指）；D7 的义务只落在引擎构建 sha 上。
 # 豁免不豁免事实：UNTRACKED 制品的 md5 全在 artifact_ledger，永远可验尸，只是不能再造。
 #
 # sha	ref	run_id	status	artifacts/note	来源
@@ -21,11 +22,15 @@ af797b900a0b9728a517fa503eed76758eb3543c	gfx906/lcpp-k10	42377965459	success	str
 deb41e126cb3d07c24c5d305b42c551b4922ea92	gfx906/attn-opt	42377970764	success	strata-0.1.57-attn (W1044 install)	W1047 retro
 e0ce7c96ae367f19098c3458deea3a10567b60e5	gfx906/dot48	42377975182	success	strata-0.1.57-dot48	W1047 retro
 179bd6b59730e6278f2d0cd44f12604aae504aec	gfx906/hc-dp4a	42377792780	success	strata-0.1.57-hc4	W1047 retro
-03509d1b6895b4015f03a3aa416c962e5bf56d3d	gfx906/hc-dp4a	4238161670	success	strata-0.1.57-hc4b (W1047 install, live)	W1047 retro
+03509d1b6895b4015f03a3aa416c962e5bf56d3d	gfx906/hc-dp4a	42378161670	success	strata-0.1.57-hc4b (W1047 install, live)	W1047 retro
 eb5bfbb8e9a420e93659dd862d6ccd21d679211c	ci/w1046-gates	42377983949	success	ci tooling	W1047 retro
 b2c82ff05101300881ce3165f1d3a69feb89fef6	ci/w1046-hooks	42377987566	success	ci tooling (worktree-safe hooks)	W1047 retro
 9e780f58128a818fe844837be98d7ac759b3ee0d	ci/w1047-coverage	42378063380	success	ci/workbuddy provenance bundle	W1047 retro
 6213fcb870275b6be444c7556ce44ced9acd476d	ci/w1047-coverage	42382825186	success	final provenance sync (post-install)	W1047 retro
+46f579a10	ci/w1047-coverage	42386181301	success	W1048 evidence: CI_RUNS + D7 + retro runs + round report	W1048
+e397cdd55	ci/w1047-coverage	42410962707	success	W1051 evidence: R113 verdicts, R114 G2 reject, determinism control	W1051
+5fb89860c	ci/w1047-coverage	42451315742	success	W1052 evidence: queue close-outs, PV probe, gpu-gate	W1052
+5fb89860c	gpu-gate	42451453279	success	W1052 GPU runner job (strata166-gfx906) on runner	W1052
 # ---- exemptions (never silent; md5 preserved in artifact_ledger) ----
 strata-0.1.57-pa2	(exempt)	-	exempt	exact W1037 worktree unrecoverable; content landing 3b935ddf covered by 42384985902	W1048
 strata-0.1.57-010	(exempt)	-	exempt	0.9.0 tree, source sha unrecorded (P390 counterexample; recipe P433)	W1047/W1048

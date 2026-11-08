@@ -1,0 +1,6 @@
+# AUDIT29 baseline: legacy markdown-table damage registered, not pretended away.
+# gate fails when a file EXCEEDS its count (new damage); fix a file and lower the number.
+# AUDIT29 repaired the joined W1040/W1039-十四 row in W832: 46 -> 35 rows.
+# file	broken_rows	registered_at
+AUDIT27_W1006_W1031.md	1	AUDIT29/W1053
+W832_OPT_PLAN_V2.md	35	AUDIT29/W1053

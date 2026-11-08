@@ -25,12 +25,14 @@ HARD = ["report_lint.py", "report_depth.py", "plan_lint.py", "audit_index.py", "
         "handoff_check.py",  # W1034: the handoff must stay complete on every round close
         "round_ledger.py",   # W1035: a report is not enough -- the round must also reach the ledger and the daily memory
         "claim_homes.py",   # W1035: every ledger row must declare its own search keys (KW:) and actually contain them
-        "report_consistency.py"]  # W1037: the report's "三、本次落生产" must match the round's ledger rows (restarts / downtime)
+        "report_consistency.py",  # W1037: the report's "三、本次落生产" must match the round's ledger rows (restarts / downtime)
+        "ledger_lint.py",   # AUDIT29: it had no exit code and a stale 10-column rule -- 209 problems, zero blocks
+        "ci_runs_lint.py"]  # AUDIT29: CI_RUNS held a 404 run id for the production exe; D7 only read the status column
 # AUDIT27: audit debt / retired gate / single source; AUDIT28: verdicts / companions / plan navigation
 # 仓库里的门（不在 tools/ 下）：(脚本, 参数, 期望输出末行关键词)
 SCRIPT_HARD = [(ROOT / "ci/prefill_phases/kernel_curve.py", ["--check"], "KERNEL_CURVE: PASS"),
                (ROOT / "ci/bundle_budget/bundle.py", ["--check"], "BUNDLE: PASS")]
-SOFT = ["ledger_lint.py", "param_pair_lint.py"]
+SOFT = ["param_pair_lint.py"]
 
 
 def run_lint(name, extra=()):
