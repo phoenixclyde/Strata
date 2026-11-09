@@ -1,0 +1,34 @@
+文档	关键结论（<=40字）	依据类型	实际跑过什么	判定	文件:行号
+W905_PRECISION_LEDGER.md	轴选错：decode 69.9% 等 GPU，专家读 11.78ms 最大块；R51/R54/R55 同因	实测+推算	有（生产窗口统计，零停服）	P1-数字不自洽｜复算：33.42+5.00+1.91+0.12+0.05=40.50≠47.83，缺 7.33 ms=15.3% 未列项；11.78/47.83=24.63%≠24.9%，按 24.9% 反推总数 47.31 ms（出自 W863_R32 的 123 表中位），与本节 42 窗不同源；应按"部分分解 + 余量单列"改写	W905:56-63
+W905_PRECISION_LEDGER.md	R51 落 30% 小块实测 0/负，R55 ±0.4%，R54 只对 T≥4	实测	有（三条均为真跑：A/B prefill −6~10%、探针三档、T 分档微基准）	OK｜判否有臂，符合纪律⑱；所引 −6~10% 与 W914:50 的记载一致	W905:13-16
+W905_PRECISION_LEDGER.md	R51 即使 hoist 完全成功也只值 ~3% prefill	推算	无（未给推导）	需复核｜复算：34.6%×x=3% ⇒ 隐含 hoist 省 8.7%，文中无来源；后续 W925 按 ISA 得"解包占总指令 14.8%→TTFT 上限 4.15%"，量级相符但当时无依据	W905:64
+W905_PRECISION_LEDGER.md	42 窗、avg T 3.74、47.83 ms/window	实测	有（生产窗口）	需复核｜复算：3.74/0.04783=78.2 tok/s，与 W911/W916 的生产 decode 70.7 tok/s 差 10.6%；须说明 47.83 是中位还是均值、是否同一窗口集	W905:56
+W905_PRECISION_LEDGER.md	A 臂跑通但 logits 文件 0 字节，本件不编 KL	实测（失败）	有（1080.5 ms prefill，文件 0B）	OK｜正面样本：如实记失败、不伪造数字，并定位到 dump 判定；后由 W913 的 STRATA_DUMP_FIRST_LOGITS 接上	W905:81-83
+W907_KERNEL_CORRESPONDENCE.md	ki 共 12 个 gfx906 内核 / 5,220 行，我方 7 对等 2 缺 2 换算法	源码	无（只读 grep，未给原始输出）	P1-数字不自洽｜复算：W912 对同一 fork 计 19 个 __global__、5703 行（1431+910+1281+776+917+215+173=5703）；本件漏 gather(4)+quant(2)=6 个，12+6=18≠19 仍差 1；5220 行与 5703 均不吻合，须以 W912 逐文件清单为准并重算比分	W907:10-11,44,53
+W907_KERNEL_CORRESPONDENCE.md	ki 的 FA 归"算法不同（QSA vs dense）"即收口	源码	无	P1-撤回未回写｜W912:81-82 明确"W907 把 FA 归到 2 不同算法就收口，没单独看它内部用 sdot4"；W907 §A #11/#12 至今无横幅或收窄标记	W907:41
+W907_KERNEL_CORRESPONDENCE.md	我方 364 个 __global__、9 个 gfx906 开关、6 种量化格式 MMVQ	源码	无（只给结果数）	P2｜按纪律④静态计数应可复现：需补 grep 原样输出与 commit d963c791 的核对记录，否则"我们更全"的比分不可复核	W907:50-52
+W907_KERNEL_CORRESPONDENCE.md	R60 已做、已编译通过（借 stream-k 机制）	编译	有（仅编译）	P2｜"已做"实为编译未运行；PROGRESS 中 R60 仍 OPEN，W916:56 又判"不该做"，三处口径不一	W907:64
+W910_VERSION_AND_QUANT.md	ROCm 内容 10.1.0、包名 7.14；量化主体 K-quant 非 iq4	实测	有（git describe/cat .info/hipconfig/dpkg/gguf 解析）	OK｜复算：GiB 合计 103.68，41.31/103.68=39.8%✓、26.82/103.68=25.9%✓、25.20/103.68=24.3%✓、8.95/103.68=8.6%✓；张量 94+1+43+503+2+557+24=1224✓；专家 77,017,907,200 B=71.73 GiB✓；48=43+4+1✓、d_type 7(43层)/8(5层)✓	W910:13-15,68-93
+W910_VERSION_AND_QUANT.md	类型号即 ggml_type：12=Q4_K、13=Q5_K、7=Q5_1、8=Q8_0	源码+外证	有（读 native_experts.txt 头 + 解析 GGUF 张量表）	OK｜复算：与 ggml 官方枚举一致；file_type=15=MOSTLY_Q4_K_M 亦正确，"两套枚举撞号、从 2 往上全错"之说成立	W910:71-98
+W910_VERSION_AND_QUANT.md	自否上轮"Q4_K 退回 FP16"怀疑，KQ 库为可选拆分	源码	无（读 CMakeLists:2192 与 mmq_kq_lib.cu 头注释）	OK｜纪律③正面样本：本文件表格内标"我的怀疑作废"并给四条反证；但被撤回的上一轮 W909 是否加了横幅 → 需复核 W909 头部	W910:116-124
+W911_THREE_ROUTES_VERDICT.md	我方没有 third_party/llama.cpp，.gitmodules 为空，只取 ggml 子库	源码	有（cat/ls/VERSION.txt）	OK｜.gitmodules 空、third_party 只有 ggml/ggml-tq/libstrix/project-maya、pin=3cf03257，与 CMakeLists:1918 行号自洽	W911:12,29-45
+W911_THREE_ROUTES_VERDICT.md	iacop 改动全集中 Q4_0/Q4_1/Q8_0/MXFP4，无 K-quant MMQ	外证	无（仅转述 release README）	需复核｜纪律④：fork"有什么/没什么"必须给 grep 计数；需在该仓 mmq.cu/vecdotq.cuh 上 grep GGML_TYPE_Q4_K/Q5_K/Q6_K 分支并附 commit	W911:49-66
+W911_THREE_ROUTES_VERDICT.md	Q5_K 仅差一行且只用 1 层 ⇒ 端到端上限远低于 1%	推算	无	OK｜复算：34.6%（MMQ 占 prefill）×1/48（层）×15~35% ≈ 0.11~0.25% ⇒ "远低于 1%" 成立	W911:224
+W911_THREE_ROUTES_VERDICT.md	MMQ 只影响 prefill：720 tok/s vs decode 70.7，1.57× 与 decode 无关	实测（引用他文）	有（W897 A/B 两臂）	OK｜复算：6440/8.936=720.7✓；8.975→14.079=1.568×✓；"45 是另一条路线口径"为使然推断但已显式声明	W911:80-84
+W912_KI_PORT_VERDICT.md	整包不移植，19 个 __global__ 里仅 fattn-q8 的 sdot4 是候选	源码+外证	无（只读文件计数）	P2｜"不做"的结构性理由（W4A16 需重打包 77 GB、算法不同）成立，但"算术密度只有一半"是峰值推算，未含实测供给率；建议标注"结构性排除，非收益实测"	W912:15-23
+W912_KI_PORT_VERDICT.md	相对 upstream/main 领先 37 / 落后 0，tag mi50-0.2.9-r27	未校验 ref	无	P1-撤回未回写｜W917:50-51 实测 708/37（ref ffa80d73、v0.2.10），并自述"连续多轮把假数据写进汇报"；W912:121 仍为"落后 0"且无横幅，须加作废横幅并改指 W917	W912:121
+W912_KI_PORT_VERDICT.md	fdot2 13.25 TMAC/s vs dot4 26.5，实测 4.55=21%，差距在供给率	推算	无（算术推导，含实测 21.52 上限）	OK｜复算：60×64×2×1.725e9=13.25e12✓、×4=26.50e12✓、4.8/13.25=36.2%✓、4.55/21.52=21.1%✓；注意本件用 21.52 作分母（21%），W916 用 26.5（17.2%），两套口径须在同一处标明	W912:31-49
+W912_KI_PORT_VERDICT.md	外部旁证：63k prompt 6.5min=160 tok/s，vLLM 路线 decode 更低	外证	无（README/Docker Hub 转述）	需复核｜复算：63k/390 s=161.5 tok/s 与自述 160 自洽；但属外部 README，需附该仓 benchmark 原始输出与卡型/量化设定	W912:60-64
+W913_R59_PRECISION_LEDGER.md	效应 0.0020 < 跨进程噪声底 0.0032 ⇒ 精度代价测不出来	实测	有（6 次重启、48 个 .bin、12 提示全词表 logits）	OK｜门（KL≤0.005、argmax 12/12）均过；但 n=12×首位置，DONE 的强度仅限"未超门"，文中已自认"不能宣称代价很小"；TTFT 复核项已由 W916 关闭	W913:15-19,84-90
+W913_R59_PRECISION_LEDGER.md	逐开关 KL 0.0004–0.0171，与整包实测 0.0020 并列	源码表+实测	部分（整包实测，逐项未跑）	P1-数字不自洽｜复算：0.0011+0.0004+0.0008+0.0026+0.0171=0.0220，是整包 0.002005 的 11.0×；含 MMQ_KQ 的整包不可能比其单项小 8.5×（KL 非负、无相消机制）⇒ 表中数要么非同一 KL 口径/单位，要么整包实测被噪声吞掉；须按 arch_defaults.cpp:195-214 原文核对（本机无源码树，无法离线验）	W913:130-133
+W913_R59_PRECISION_LEDGER.md	--dump-logits 在 native pack 下永不写出，改用 DUMP_FIRST_LOGITS	源码+实测	有（A 臂 0 字节 + 源码双证）	OK｜:18784 与 :8041 注释互为印证；这是 W905 §5 阻塞的正确解法	W913:41-56
+W914_PARAM_MASKING_AUDIT.md	参数没有遮蔽任何分支；R54 是形状不匹配，R53/R55 是分辨率不足	源码	无（源码判否，零停服）	P2｜判否来自源码阅读（纪律⑱：源码阅读=证据不足）；结论属"代码路径"类命题尚可接受，但必须标"源码级"并补一条执行证明（R51 已靠 −6~10% 自证，其余无）	W914:14-17
+W914_PARAM_MASKING_AUDIT.md	R54 在 T≥4 快 11–16.6%，生产 avg T 3.63–3.7 落在 T≤3	实测	有（T 分档微基准 + 端到端 B 臂）	P2｜复算：L16 写 11–16.6%、L51 写 T=4 +12.7%/T≥5 +15%，两组不自洽；L51"51.1→49.6/52.5 ms"方向含混（49.6 更省、52.5 更贵），须统一并给样本与 CV	W914:16,51
+W914_PARAM_MASKING_AUDIT.md	R55 只有独立探针 ±0.4%，生产内效应从未测，按探针级记	实测	有（探针三档）	OK｜符合纪律⑱：没有把"探针级"冒充"生产级"，并明确列出补测条件（生产内 top-k 耗时占比）	W914:52,83
+W915_OBSERVATION_ENVS_AUDIT.md	VERIFY_NODES 输出 65 行全 type0，已从 config 撤除并验证为 0 行	实测	有（1 次重启 + 日志计数 65→0）	OK｜复现命令 awk NR>108911 计数可核；判决→执行闭环缺口（P252 判了没做）也已如实披露	W915:14,62-74
+W915_OBSERVATION_ENVS_AUDIT.md	DECODE_TIMING/SPEC_DEPTH 计数无条件，撤了不省；VERIFY_NODES 撤掉真省	推算	无（未做开关 A/B 计时）	P2｜复算：4×20~25 ns=80~100 ns，/48 ms=1.7e-6~2.1e-6=0.00017~0.00021% ✓；但"撤了不省"与"撤掉真省"两端都只有源码/算术，未计时	W915:43,63
+W916_TTFT_RECHECK_AND_R61_PREDICTION.md	新件 715.2 tok/s vs 旧件 720.7，−0.3~−0.8% < 1×CV，无回退	实测	有（4 rep 新随机 prompt，服务端 read in 口径）	OK｜复算：逐条 6290/9.003=698.6、6385/8.904=717.1、6279/8.788=714.5、6318/8.827=715.8；中位 715.15；715.2/720.7−1=−0.76%、/717.7−1=−0.35% ✓；CV 用样本 sd=1.21%（文中 1.1% 为总体 sd，可接受）	W916:16-27
+W916_TTFT_RECHECK_AND_R61_PREDICTION.md	R61 预判 VALUBusy≈52% ⇒ 已过 40% 门 ⇒ R60 不该做	推算	无（自认"预判不是结论"，PMC 未采）	P1-证据不足｜复算：4.55/26.5=17.2%✓、×0.75=51.5%✓、4.55/0.346=13.15→/26.5=49.6%✓；但 0.75 instr/MAC 来自微基准，后续 W924 实测 0.41（5184 dp4a/8509 条）⇒ 占用 81%，文中区间 50–65% 错；"R60 不该做"在无 PMC 时属推算判否，PROGRESS 据此类结论记"R60 确认不做"违反纪律⑱（R60 目前仍 OPEN，尚未成事故）	W916:39-57
+W917_THREE_CORRECTIONS.md	上游落后 708、领先 37，上游已 v0.2.10；根因是 SSH remote 未更新 ref	实测	有（git rev-list --left-right --count = 708/37）	OK｜给出 ref ffa80d73 与 tag，符合本件自己立的纪律"必须写 ref commit"；属对 W912/W912 系列假数的正确回写	W917:50-58
+W917_THREE_CORRECTIONS.md	708 条按路径分布：src/include 100、program 99、core 88、kernels 77、prefill 38、ggml 0	实测	有（git log 统计）	P2｜复算：100+99+88+77+38=402≠708，跨路径提交会重复计，且表头"这 708 条落在哪"暗示完整分布 ⇒ 应标"部分口径，未覆盖 306 条"	W917:77-84
+W917_THREE_CORRECTIONS.md	ROCm 口径定稿：内容 10.1.0（TheRock；HIP 7.16.26323；clang 24），包名 7.14	实测+外证	有（四层命令 + 官方 release notes 引用）	OK｜三层实证可复现；release notes 引文属外部事实，建议保留 URL 与抓取日期以便日后复核	W917:20-41
