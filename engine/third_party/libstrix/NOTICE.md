@@ -5,3 +5,5 @@ and the wording of `barrier()` from libstrix by asf0 (https://github.com/asf0/li
 
 Copyright (c) asf0 and the libstrix contributors. The MIT licence text is in the upstream repository; this notice stays with the code
 that uses it.
+
+Compliance note (W1080): the full MIT licence text is now in `LICENSE` beside this file, as required for vendored code.
