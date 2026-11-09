@@ -29,6 +29,10 @@
 | P594-2 末条 tag=- | DONE | mi50-0.2.11-r33-15 追溯标注于 03509d1b + retro 行补记（W1074） |
 | G15 EXPECTED_FAIL 机制 | DONE | deploy/EXPECTED_FAIL.tsv + round_close 豁免（登记 EXP-0001 source_provenance:checkD）+ 双负向自测 |
 | G5 备份重建五步 | DONE | 当日 bundle + gate 裸库 fetch + 离机副本（D:/strata-backup）+ cron 23:3 + 首次演练回执 DRILL_RECEIPTS.log |
+| M5 gpu-gate.yml 迁主线（branches 改 mi50、GDN_PP 删步、checkout SHA pin） | DONE(迁移) | W1075 commit；SECURITY BOUNDARY 保留；runner 实测转绿挂运行验证 |
+| GDN_PP 3-case gate 重设计 | OPEN | 原脚本只在冻结件 ci/workbuddy/albus/w1060/，挂载指向待删树（pr/k10）；解除条件=P604 后从冻结件提取+参数化+跑绿再回插 |
+| M9 bench 结果 6 文件回 docs/benchmarks/ | DONE | W1075 commit（BUILD/README/engine-timing/needles/speed.json/speed.py） |
+| ghrunner 镜像同步源改主线（前置③） | DONE | 同步源 pr/k10 → pr/strata-fork（W1075 命令实测）；技能坑 5 同步更新 |
 
 ## 锚点（历史快照：2026-11-01 v0.2.9 时点，逐字保留）
 
