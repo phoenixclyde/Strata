@@ -40,6 +40,7 @@
 | G5 离机腿勘误（W1076） | DONE | 「离机副本（D:/strata-backup）」实测=166 同机 `/home/albus/D:/strata-backup`（shim 路径病形状），**非真离机**；修复=脚本腿改名 nearcopy（同机近拷，诚实命名）+ 本机 `D:/strata-backup` 每日拉取自动化（真离机，两机分离）；M7 制品三份 md5 已验 |
 | M1 引擎批 hunk 复核（4 提交全裁定，零合并窗口） | DONE | W1077：①R90-S3（0307837be/999b91214→**bfaf7aa6d** 直系祖先，patch-id ef259c9d 同对）**COVERED**，J_best/new_pool_for_device/GGML_PREC_Q8 语义主线存活（5+8+1+26 处）；②get_config 8 sites（537200312）**N/A pin 族适配**——主线签名带 `prec_src1`（8a1a9b5.patch 定义面）、生产基 03509d1b 编译运行实证，删参合入必炸；③pin→b12110+mmq@4c1004c（fa8e67618→**82f1e5257** 直系祖先）**COVERED**；④align 生产基（4fc85a534）**ARCHIVE-ONLY**——fused_gr.cu/qsa_decode_attn.cu blob 逐字节=03509d1b（864400ac/738d14fb） |
 | M1 源→新 sha 映射 | DONE | 0307837be→bfaf7aa6d（999b91214 同 patch-id ef259c9d）；fa8e67618→82f1e5257；537200312→无对应（API 代际不同，主线以 1dd96bfd4 unify the API generation 固化其代际）；4fc85a534→无（即生产基 03509d1b，归档）。复写链 patch-id 三型漂移实测（ef259c9d/b0a90081/7a1a0e3c），认件以血缘+符号为准（W1063 A31-26 同则） |
+| M1 交叉对账（m1-hunk-review 子代理报告并入，W1077） | DONE | 判定同向（2 COVERED/2 ARCHIVE-ONLY/0 合并）；语义行 sorted +/- md5 48f94da8 证复写链内容逐字同（patch-id 漂移纯上下文：主线循环 kMmqTileColsMax vs 分支 128/8）；「8 sites」口径更正=5 hunks+3 未动调用点；条目 4 三方 blob 全等=合并空操作（承接件 101ad1494/5c1b3fe6d）；M1 清单外引擎件 5 件登记：30e42ca81（dropped mul_mat_q_case prec，方向与主线相反，建议归档）/af797b900/c39e85ea7/0e7a549d8/d9c305b0e，处置随批 5 |
 
 
 
