@@ -14,3 +14,8 @@ mkdir -p "$common/hooks"
 install -m 755 ci/hooks/pre-commit "$common/hooks/pre-commit"
 install -m 755 ci/hooks/pre-push   "$common/hooks/pre-push"
 echo "installed $common/hooks/{pre-commit,pre-push} (shared across worktrees)"
+
+# W1074 (G3b): hooks live in-repo at .githooks/ (versioned, auditable).
+# New clone bootstrap is one command; this script now also points hooksPath there.
+git config core.hooksPath .githooks
+echo 'hooksPath=.githooks (hooks are tracked; nothing to copy)'
