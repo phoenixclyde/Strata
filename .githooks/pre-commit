@@ -1,0 +1,22 @@
+#!/bin/bash
+# pre-commit: source gate AND round gate must pass before anything is committed.
+# Installed by ci/install-hooks.sh (git hooks are not versioned themselves).
+#
+# W1002: the round gate was added because "the tools exist" was never the problem.
+# report_lint.py, the experiment artifacts and the workflows all existed while
+# rounds kept ending without a four-section report and with evidence only in /tmp.
+set -e
+cd "$(git rev-parse --show-toplevel)"
+
+python3 ci/gate.py --source-only --quiet >/tmp/precommit_gate.log 2>&1 || {
+  echo "pre-commit: gate failed -- see /tmp/precommit_gate.log"
+  grep -E "^FAIL" /tmp/precommit_gate.log || true
+  exit 1
+}
+
+python3 ci/round_gate.py --ci >/tmp/precommit_round.log 2>&1 || {
+  echo "pre-commit: round gate failed -- see /tmp/precommit_round.log"
+  cat /tmp/precommit_round.log
+  exit 1
+}
+exit 0
