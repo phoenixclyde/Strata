@@ -4,7 +4,27 @@
 我们跟随上游，但**不向上游提交 commit、不提 PR**。上游对本仓是只读的
 （`remote.upstream.pushurl = DISABLED-no-push-to-upstream`）。
 
-## 锚点
+## 当前锚点（W1073，2026-11-09 更新；下方旧表为 2026-11-01 v0.2.9 时点快照，数字不再维护）
+
+| 轴 | 锚点 |
+|---|---|
+| Niko 轴（git rebase） | 上游 main = `146df3c46873`（`git rev-list --left-right --count upstream/main...gfx906/mi50` = 0/92）；机制 rebase 禁 merge；remote 单一真值 = `upstream`（`ghup` 为同 URL 重复 remote，W1073 起移除） |
+| llama.cpp 轴（pin + 补丁梯子） | 默认 pin `3cf03257`（b11062）；生产复合 pin **b12180 = bcb01528 + mmq\* @ 4c1004c**；单一来源 `ci/lcpp_picks/PIN.toml`（W1073/A1）；上游最新 tag b12213 只追踪不跟装 |
+
+### 编码契约（W1073/A5；Chromium/Vivaldi 惯例，降 rebase 冲突面）
+
+1. 新 include 放在上游声明之后，不插队；2. 新成员函数 append 到类末尾；3. 本仓补丁的起点/终点用空行标记；4. 保留上游原有缩进与风格；5. 不碰上游的翻译/本地化文件。
+
+### 治理台账（W1073/A2；CAR 纪律：ID / 状态 / 证据，关闭须客观证据）
+
+| ID | 状态 | 证据 |
+|---|---|---|
+| A33-1 / M2 / M10 | DONE | gate.py R80 参数化 + 提交（W1073 commits；exe 映射由 repo 路径派生 + STRATA_DATA_BIN 覆盖；--source-only 显式注记 deploy-time-only） |
+| M3 / M4 | DONE | round_gate worktree-safe hooks + README W1046 节合回（W1073 commit） |
+| P594 账洞 x2（build 路径漂移、末条 tag=-） | OPEN（批 2 补账） | prod_history.tsv retro 行自述 "tag unrecorded, not fabricated" |
+| G12 remote 统一 | DONE | 移除重复 remote ghup（同 URL），留 upstream |
+
+## 锚点（历史快照：2026-11-01 v0.2.9 时点，逐字保留）
 
 | 项 | 值 |
 |---|---|
