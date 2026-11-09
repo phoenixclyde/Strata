@@ -96,3 +96,12 @@ node_modules/
 /build-vision-spark/
 /.venv-build/
 ci/state/
+
+# W1074 (G13): secrets never enter the tree -- fail-closed patterns.
+*.token
+*_tok.txt
+*.pem
+*.key
+.env
+.env.*
+credentials.json
