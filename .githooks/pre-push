@@ -1,0 +1,28 @@
+#!/bin/sh
+# W838 (2026-10-31): this tree may only push to our own fork.
+# Niko1221/Strata is FETCH-ONLY: we track it, we never write to it.
+# W1002: also run the round gate, so a push cannot carry missing evidence.
+#
+# git passes: $1 = remote NAME, $2 = remote URL. The URL is what matters:
+# a remote can be renamed.
+name="$1"
+url="$2"
+case "$url" in
+  *phoenixclyde/Strata*|*phoenixclyde/strata*) ;;
+  # W1028: the local gate repo is the enforcement point -- its pre-receive hook runs
+  # ci/round_gate.py on the tree that actually arrives.  It is a path on this box, not a
+  # forge, so nothing leaves the machine; allowing it does not widen the fork-only policy.
+  */gate/strata-gate.git|*/gate/strata-gate.git/) ;;
+  *)
+    echo "pre-push: REFUSED. This repo pushes only to phoenixclyde/Strata." >&2
+    echo "pre-push: remote '$name' -> $url" >&2
+    echo "pre-push: upstream is fetch-only by policy (deploy/W838_REMOTE_POLICY.md)." >&2
+    exit 1 ;;
+esac
+
+cd "$(git rev-parse --show-toplevel)" || exit 1
+python3 ci/round_gate.py --ci || {
+  echo "pre-push: round gate failed, refusing to publish this state" >&2
+  exit 1
+}
+exit 0
