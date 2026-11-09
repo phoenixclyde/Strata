@@ -38,6 +38,9 @@
 | M7 冻结归档（provenance 5 件 + workbuddy 4552 冻结镜像 + 账本快照 + 报告 47 件） | DONE | W1076：`docs/audits/2026-11-10-m7-freeze/` 58 条 manifest sha256 全验 PASS；workbuddy tar 24,079,509B 入制品库 `/home/albus/strata166/archive/m7-20261110/` + 本机 + `D:/strata-backup` 三份 md5 一致 |
 | M11 收尾修正（W1075 追加） | DONE | 合并后补 reg_allowed 缺表守卫（显式覆盖 fail-closed、缺表回空名单）+ `_state()` D7 数据主页 `deploy/` 候选；md5 双边 `8c54a4d3…`、自测 15/15（第 15 用例=D5 缺表守卫）；commit 68cdefbcf |
 | G5 离机腿勘误（W1076） | DONE | 「离机副本（D:/strata-backup）」实测=166 同机 `/home/albus/D:/strata-backup`（shim 路径病形状），**非真离机**；修复=脚本腿改名 nearcopy（同机近拷，诚实命名）+ 本机 `D:/strata-backup` 每日拉取自动化（真离机，两机分离）；M7 制品三份 md5 已验 |
+| M1 引擎批 hunk 复核（4 提交全裁定，零合并窗口） | DONE | W1077：①R90-S3（0307837be/999b91214→**bfaf7aa6d** 直系祖先，patch-id ef259c9d 同对）**COVERED**，J_best/new_pool_for_device/GGML_PREC_Q8 语义主线存活（5+8+1+26 处）；②get_config 8 sites（537200312）**N/A pin 族适配**——主线签名带 `prec_src1`（8a1a9b5.patch 定义面）、生产基 03509d1b 编译运行实证，删参合入必炸；③pin→b12110+mmq@4c1004c（fa8e67618→**82f1e5257** 直系祖先）**COVERED**；④align 生产基（4fc85a534）**ARCHIVE-ONLY**——fused_gr.cu/qsa_decode_attn.cu blob 逐字节=03509d1b（864400ac/738d14fb） |
+| M1 源→新 sha 映射 | DONE | 0307837be→bfaf7aa6d（999b91214 同 patch-id ef259c9d）；fa8e67618→82f1e5257；537200312→无对应（API 代际不同，主线以 1dd96bfd4 unify the API generation 固化其代际）；4fc85a534→无（即生产基 03509d1b，归档）。复写链 patch-id 三型漂移实测（ef259c9d/b0a90081/7a1a0e3c），认件以血缘+符号为准（W1063 A31-26 同则） |
+
 
 
 ## 锚点（历史快照：2026-11-01 v0.2.9 时点，逐字保留）
