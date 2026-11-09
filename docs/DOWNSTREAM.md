@@ -33,6 +33,8 @@
 | GDN_PP 3-case gate 重设计 | OPEN | 原脚本只在冻结件 ci/workbuddy/albus/w1060/，挂载指向待删树（pr/k10）；解除条件=P604 后从冻结件提取+参数化+跑绿再回插 |
 | M9 bench 结果 6 文件回 docs/benchmarks/ | DONE | W1075 commit（BUILD/README/engine-timing/needles/speed.json/speed.py） |
 | ghrunner 镜像同步源改主线（前置③） | DONE | 同步源 pr/k10 → pr/strata-fork（W1075 命令实测）；技能坑 5 同步更新 |
+| M11 / G10 deploy_gate 双实现收敛（D1-D7 单实现，tools/=ci/ 同字节） | DONE | W1075：md5 双边 441e5019…；自测 14/14（含 D7 负向）；负向 REFUSE + 正向 D1/D2/D7 绿实测；166 两数据源 CI_RUNS/REBUILD_RECIPE/SOURCE_PROVENANCE 补齐 |
+| M5 GPU gate runner 实测转绿 | DONE | run #16 success（a43e26b21，自托管 gfx906）；历史 #12/13 绿、#14/15 GDN_PP 红、#16 迁移后绿 |
 
 ## 锚点（历史快照：2026-11-01 v0.2.9 时点，逐字保留）
 
