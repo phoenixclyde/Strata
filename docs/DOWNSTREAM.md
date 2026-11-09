@@ -23,6 +23,12 @@
 | M3 / M4 | DONE | round_gate worktree-safe hooks + README W1046 节合回（W1073 commit） |
 | P594 账洞 x2（build 路径漂移、末条 tag=-） | OPEN（批 2 补账） | prod_history.tsv retro 行自述 "tag unrecorded, not fabricated" |
 | G12 remote 统一 | DONE | 移除重复 remote ghup（同 URL），留 upstream |
+| A6 / G11 workflow SHA pin（19 uses 全 pin + 0 浮动 ref 核验） | DONE | W1074 commits（5 条映射 SHA 经双接口交叉验证）；sha_pinning_required 开关待 CI 绿后置 |
+| A7 / G3b hooks 入 git + hooksPath | DONE | .githooks/ 入库（W838 护栏原样）、core.hooksPath=.githooks、install-hooks.sh 瘦身引导 |
+| P594-1 build 路径漂移（cf2ba243 != 05330748） | OPEN | hc4b 构建树全盘扫描 0 命中（probe-flow 产物已失），prov/2 fail-closed 生效；解除条件=P604 重建后装机、ledger 新行齐 |
+| P594-2 末条 tag=- | DONE | mi50-0.2.11-r33-15 追溯标注于 03509d1b + retro 行补记（W1074） |
+| G15 EXPECTED_FAIL 机制 | DONE | deploy/EXPECTED_FAIL.tsv + round_close 豁免（登记 EXP-0001 source_provenance:checkD）+ 双负向自测 |
+| G5 备份重建五步 | DONE | 当日 bundle + gate 裸库 fetch + 离机副本（D:/strata-backup）+ cron 23:3 + 首次演练回执 DRILL_RECEIPTS.log |
 
 ## 锚点（历史快照：2026-11-01 v0.2.9 时点，逐字保留）
 
