@@ -5,6 +5,11 @@
 These rules apply to issues, pull requests, benchmark reports, and the agents helping prepare them.
 You should be able to explain every changed line and answer review questions about it.
 
+## Source branch policy（源码分支纪律，W1079/B1 前置 7）
+
+- **唯一源码分支 = `gfx906/mi50`**；`ci/**` 只作证据与短命实验，**不得作为构建/装机来源**。
+- `ci/build.sh` / `ci/deploy.sh` 已加分支断言：非主线即拒；确需构建显式传 `--allow-non-mainline` 并在 `deploy/PROGRESS.tsv` 登记。
+
 ## Before starting
 
 1. Search [issues](https://github.com/Niko1221/Strata/issues) and
