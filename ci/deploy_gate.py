@@ -146,7 +146,8 @@ def ci_run_ok(exe, runs_path=None, recipe_path=None):
     """D7: is this exe's build sha covered by a Downstream gate run or an exemption?"""
     import re
     def _state(fn):
-        for c in (os.path.join(STATE, fn), os.path.join(ROOT, "deploy", fn)):
+        for c in (os.path.join(STATE, fn), "/home/albus/strata166/deploy/" + fn,
+                  os.path.join(ROOT, "deploy", fn)):
             if os.path.isfile(c):
                 return c
         return os.path.join(STATE, fn)
@@ -218,6 +219,18 @@ def self_test():
         ("D7 表缺失拒绝", lambda: ci_run_ok("strata-x", runs_path=tmp.name + ".absent",
           recipe_path=None)[0], False),
     ]
+    # W1075 spec§四-4: register 缺表必须走空名单 REFUSE 而不是 traceback。
+    def _reg_guard():
+        old = os.environ.get("STRATA_REGISTER")
+        os.environ["STRATA_REGISTER"] = "/nonexistent/PARAM_REGISTER.tsv"
+        try:
+            return reg_allowed("P000") == (set(), set(), [])
+        finally:
+            if old is None:
+                os.environ.pop("STRATA_REGISTER", None)
+            else:
+                os.environ["STRATA_REGISTER"] = old
+    cases += [("D5 缺表守卫空名单", _reg_guard, True)]
     bad = 0
     for name, obj, want in cases:
         got = numeric_verdict(obj)[0] if isinstance(obj, dict) else obj()
@@ -233,15 +246,15 @@ def reg_allowed(ids):
     if not ids:
         return set(), set(), []
     want = [x.strip() for x in ids.split(",") if x.strip()]
-    path = None
-    for c in (os.environ.get("STRATA_REGISTER"),
-              os.path.join(ROOT, "deploy", "params", "PARAM_REGISTER.tsv"),
-              "/home/albus/strata166/deploy/params/PARAM_REGISTER.tsv"):
-        if c and os.path.isfile(c):
-            path = c
-            break
+    env = os.environ.get("STRATA_REGISTER")
+    if env is not None:
+        cands = (env,)  # 显式覆盖只认它自己：指向坏路径就当缺表，不静默回落（fail-closed）
+    else:
+        cands = (os.path.join(ROOT, "deploy", "params", "PARAM_REGISTER.tsv"),
+                 "/home/albus/strata166/deploy/params/PARAM_REGISTER.tsv")
+    path = next((c for c in cands if c and os.path.isfile(c)), None)
     if path is None:
-        raise FileNotFoundError("PARAM_REGISTER.tsv not found (STRATA_REGISTER overrides)")
+        return set(), set(), []  # 缺表 -> 空名单：D5 对任何增量 REFUSE，不 traceback
     t = io.open(path, encoding="utf-8-sig").read().splitlines()
     hdr = t[0].split("\t")
     flags, envs, hit = set(), set(), []
