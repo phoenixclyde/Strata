@@ -102,8 +102,12 @@ def status():
     fails = ci()
     # A gate that exists but is never called is the exact bug this file fixes.
     # Only checked on the 166 host: GitHub runners do not have our hooks installed.
+    hooks_resolved = run(["git", "rev-parse", "--git-path", "hooks"], cwd=ROOT)
+    hook_dir = pathlib.Path(hooks_resolved.stdout.strip() or ".git/hooks")
+    if not hook_dir.is_absolute():
+        hook_dir = ROOT / hook_dir
     for hook_name in ("pre-commit", "pre-push"):
-        hook = ROOT / ".git" / "hooks" / hook_name
+        hook = hook_dir / hook_name
         if not hook.is_file():
             fails.append("%s hook is not installed (run ci/install-hooks.sh)" % hook_name)
         elif "round_gate" not in hook.read_text(encoding="utf-8", errors="replace"):
