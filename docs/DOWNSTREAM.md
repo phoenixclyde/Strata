@@ -35,6 +35,10 @@
 | ghrunner 镜像同步源改主线（前置③） | DONE | 同步源 pr/k10 → pr/strata-fork（W1075 命令实测）；技能坑 5 同步更新 |
 | M11 / G10 deploy_gate 双实现收敛（D1-D7 单实现，tools/=ci/ 同字节） | DONE | W1075：md5 双边 441e5019…；自测 14/14（含 D7 负向）；负向 REFUSE + 正向 D1/D2/D7 绿实测；166 两数据源 CI_RUNS/REBUILD_RECIPE/SOURCE_PROVENANCE 补齐 |
 | M5 GPU gate runner 实测转绿 | DONE | run #16 success（a43e26b21，自托管 gfx906）；历史 #12/13 绿、#14/15 GDN_PP 红、#16 迁移后绿 |
+| M7 冻结归档（provenance 5 件 + workbuddy 4552 冻结镜像 + 账本快照 + 报告 47 件） | DONE | W1076：`docs/audits/2026-11-10-m7-freeze/` 58 条 manifest sha256 全验 PASS；workbuddy tar 24,079,509B 入制品库 `/home/albus/strata166/archive/m7-20261110/` + 本机 + `D:/strata-backup` 三份 md5 一致 |
+| M11 收尾修正（W1075 追加） | DONE | 合并后补 reg_allowed 缺表守卫（显式覆盖 fail-closed、缺表回空名单）+ `_state()` D7 数据主页 `deploy/` 候选；md5 双边 `8c54a4d3…`、自测 15/15（第 15 用例=D5 缺表守卫）；commit 68cdefbcf |
+| G5 离机腿勘误（W1076） | DONE | 「离机副本（D:/strata-backup）」实测=166 同机 `/home/albus/D:/strata-backup`（shim 路径病形状），**非真离机**；修复=脚本腿改名 nearcopy（同机近拷，诚实命名）+ 本机 `D:/strata-backup` 每日拉取自动化（真离机，两机分离）；M7 制品三份 md5 已验 |
+
 
 ## 锚点（历史快照：2026-11-01 v0.2.9 时点，逐字保留）
 
