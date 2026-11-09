@@ -1,4 +1,17 @@
 #!/bin/bash
+# W1079 (B1 前置 7): 唯一源码分支 = gfx906/mi50 -- 非主线拒绝构建/装机。
+# ci/** 只作证据与短命实验，不得作为构建来源；确需构建传 --allow-non-mainline
+# 并在 deploy/PROGRESS.tsv 登记（GOVERNANCE_PLAN P0 项落地）。
+_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo DETACHED)
+if [ "$_BRANCH" != "gfx906/mi50" ]; then
+  _allow=0
+  for _a in "$@"; do [ "$_a" = "--allow-non-mainline" ] && _allow=1; done
+  if [ "$_allow" != "1" ]; then
+    echo "REFUSE: 唯一源码分支=gfx906/mi50，当前=$_BRANCH。ci/** 只作证据不得构建；确需构建请显式传 --allow-non-mainline 并在 PROGRESS.tsv 登记。" >&2
+    exit 1
+  fi
+  echo "WARN: --allow-non-mainline 已声明（branch=$_BRANCH），须在 PROGRESS.tsv 登记。" >&2
+fi
 # strata-ci deploy -- put a built engine into production, or explain exactly what it would do.
 #
 # Default is a DRY RUN.  Nothing is copied, no service is restarted, until --apply.
