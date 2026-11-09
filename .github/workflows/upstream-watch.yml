@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
           # schedule and workflow_dispatch only run a workflow that exists on the DEFAULT
           # branch, so a copy of this file also lives on `main`.  The ref here is explicit
@@ -67,7 +67,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Open, update or close the reminder
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b  # v7
         env:
           BEHIND: ${{ steps.gap.outputs.behind }}
           BASE: ${{ steps.gap.outputs.base }}
