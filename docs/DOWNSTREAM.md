@@ -1,4 +1,5 @@
 # Downstream: gfx906 / MI50 维护说明
+> **源码分支纪律（W1079/B1 前置 7）**：唯一源码分支 = `gfx906/mi50`；`ci/**` 只作证据，不得构建。`ci/build.sh`/`ci/deploy.sh` 分支断言非主线即拒（`--allow-non-mainline` 显式豁免并登记）。
 
 本仓是 [Niko1221/Strata](https://github.com/Niko1221/Strata) 的**下游厂商分支**：
 我们跟随上游，但**不向上游提交 commit、不提 PR**。上游对本仓是只读的
