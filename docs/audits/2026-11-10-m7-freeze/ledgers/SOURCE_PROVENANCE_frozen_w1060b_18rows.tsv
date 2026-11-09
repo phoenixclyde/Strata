@@ -1,0 +1,18 @@
+# SOURCE_PROVENANCE.tsv -- build-input manifest (W1060/R-prov 立).
+# 规则：F10 类「pin」字段必须引本清单的构建输入，不是容器 /src 快照。
+# 引擎真源基线 = Strata 03509d1b6895b4015f03a3aa416c962e5bf56d3d + llama-master 树（无 .git，以内容清单为准）。
+# 关键内容指纹（2026-11-08 W1060 实测）：
+#   llama-master/ggml/src/ggml-cuda/vecdotq.cuh   md5 9e0da3cbbcd71988f2ead7aa4f353438（ggml_hip_perm 版）
+#   llama-master/ggml/src/ggml-cuda/mmq.cuh       md5 627c4c621084c5d8847ee099a2003376
+#   llama-master/ggml/src/ggml-cuda/quantize.cu   md5 9f322489fdb2338463fb11b985a20813（含 #31247 d·Σq 形态）
+#   build overlay（CMake configure 由 pinned 树生成）：quantize.cu 与 llama-master 同 md5。
+# 复现锚点：W1059 干净重编（pr/k10@03509d1b + 本清单输入）== hc4b 字节级同 md5（0533074826258d5f96c4b65bc0ad33df）。
+# 对齐验证（W1060 晚间）：上游 bcb01528 的 vecdotq.cuh 用 ggml_hip_perm == llama-master 同款 ⇒ llama-master 与 pin b12180/bcb01528 **对齐**（WebFetch 上游原文实证）。
+# 容器 /src/third_party/llama.cpp 快照：snapshot!=build（vecdotq.cuh 32877fbe=裸 builtin 版，掉队于 pin；勿作分析源，镜像重建时同步）。
+# 引擎面（W1060 晚间）：pr/k10 ci 分支已对齐生产基 03509d1b（commit 4fc85a534，drift=0）。
+binary	exe_md5	strata_base	llama_input	snapshot_status	repro_note
+strata-0.1.57-hc4b	0533074826258d5f96c4b65bc0ad33df	03509d1b6895b4015f03a3aa416c962e5bf56d3d	llama-master@w1037(vecdotq=9e0da3cb,mmq=627c4c62,quantize=9f322489)	snapshot!=build	byte-identical repro W1059
+strata-0.1.57-a4probe	e4c4669a59f19b7ca66be1832db27424	03509d1b6895b4015f03a3aa416c962e5bf56d3d	same as hc4b + a4sim patch on overlay quantize.cu	snapshot!=build	W1057 probe, never installed
+strata-0.1.57-sumx	35d20db7ab8cd5b92ab5c65f2e7e1324	03509d1b6895b4015f03a3aa416c962e5bf56d3d	same as hc4b + sumx env-gated patch (overlay quantize.cu)	snapshot!=build	W1059 probe
+strata-0.1.57-strk	6cece64815418ba5e3644924a54d99e6	03509d1b6895b4015f03a3aa416c962e5bf56d3d	same as hc4b + 11 Q4_K rows stream_k=true (llama-master mmq-config-gcn.cuh)	snapshot!=build	W1060 probe
+# engine_drift=
