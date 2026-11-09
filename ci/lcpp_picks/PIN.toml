@@ -1,0 +1,39 @@
+# ci/lcpp_picks/PIN.toml -- single source of truth for the llama.cpp pins (W1073/A1).
+# The four pins below are read by recipe_k10.sh --verify; update HERE first, then CMake/VERSION.
+# status: ADOPTED=tree carries it | INERT=perf verdict only (not "unused") | DECLARED=build default
+# k10_production: true = the gfx906 production composite pin (b12180) carries it even if INERT.
+
+[[pin]]
+role = "cmake_gittag"
+sha = "3cf03257f219afbe7334045ff7c6a06ac68c627d"
+alias = "b11062"
+where = "CMakeLists.txt FetchContent GIT_TAG + third_party/ggml/VERSION.txt"
+status = "DECLARED"
+k10_production = false
+
+[[pin]]
+role = "composite_base"
+sha = "bcb0152876e8f0b684ba70d3defcab6cdf35adb5"
+pr = 31779
+alias = "b12180-base"
+where = "recipe_k10.sh base tree"
+status = "ADOPTED"
+k10_production = true
+
+[[pin]]
+role = "mmq_overlay"
+sha = "4c1004c49221b07c3b8108977e3d1991fc9f45cc"
+pr = 30553
+alias = "mmq@4c1004c"
+files = "ggml/src/ggml-cuda/mmq.cuh,mmq-load-tiles.cuh,mmq.cu"
+status = "INERT"
+k10_production = true
+note = "INERT is a performance verdict, not \"unused\": K10 carries it (J_best / out-of-bounds read refactor). apply.sh skips INERT; recipe_k10.sh applies it. blob-verified: mmq.cuh e008a34c / mmq-load-tiles.cuh b37d88c1 / mmq.cu 46efdfe0"
+
+[[pin]]
+role = "upstream_latest_tag"
+sha = "53eb66943217eb32fb2b3b6240d0320d320c1768"
+alias = "b12213"
+where = "tracking only (as of 2026-11-09)"
+status = "TRACKED"
+k10_production = false
