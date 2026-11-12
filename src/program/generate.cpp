@@ -19959,7 +19959,7 @@ int main(int argc, char** argv) {
             {   // AMD on Linux: the time the driver kept the GPU paused inside this request, when it is worth a line
                 const std::string pause_line = strata::core::gpu_pause_request_line(g_req_gpu_pause_ms.load(), gpu_pause_now());
                 if (!pause_line.empty()) std::fprintf(stderr, "%s\n", pause_line.c_str());
-            if (trace) {   // STRATA_TRACE: the same split the batch admission prints, for a solo request
+            }
             // `trace` is resolved once, before the serve loop, so a marker file created on a live
             // service would never be seen: re-check here (one stat per request).
             std::error_code ec_now;
