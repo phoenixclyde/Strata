@@ -147,8 +147,12 @@ def ci_run_ok(exe, runs_path=None, recipe_path=None):
     """D7: is this exe's build sha covered by a Downstream gate run or an exemption?"""
     import re
     def _state(fn):
-        for c in (os.path.join(STATE, fn), "/home/albus/strata166/deploy/" + fn,
-                  os.path.join(ROOT, "deploy", fn)):
+        # W1097 D14: two ledgers existed (STATE=/home/albus/strata166/ci/state held stale copies that won
+        # the lookup, while mirror_check synced /home/albus/strata166/deploy) -> D7 reported sha=None for a
+        # brand-new exe that was in fact covered.  The mirrored deploy/ copy is the single authority now;
+        # STATE stays for run-time artefacts (ab/, cfg/) only.
+        for c in ("/home/albus/strata166/deploy/" + fn, os.path.join(ROOT, "deploy", fn),
+                  os.path.join(STATE, fn)):
             if os.path.isfile(c):
                 return c
         return os.path.join(STATE, fn)
