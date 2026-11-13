@@ -1,0 +1,188 @@
+# ci/pipeline.yml — 常设 CI/CD 流水线定义（唯一主链路）
+# 立：2026-11-14，机主总纲令（流程定案 + 首轮执行授权）
+# 语义：本文件是流水线的机器可读定义；门禁 = 放行条件，不是禁止墙。
+#       门禁全绿即自动进入下一 Stage（含 Stage 4 部署），不再逐段请示。
+# 唯一需要人拍板：新目标 / 边界变更。
+version: 1
+semantics:
+  gate_pass: "auto_advance_next_stage_including_deploy"
+  human_approval_required_for: ["new_goal", "boundary_change"]
+  stage_fail: "stop_at_stage_auto_restore_previous_stable_production_open_defect_ticket"
+
+topology:
+  windows_workbuddy:
+    role: local_dev
+    workspace_root: "D:/workbuddy_space/strata_ws"          # 源码主线 clone（非治理仓）
+    origin: "https://github.com/phoenixclyde/Strata.git"
+    branch_tracks: "origin/gfx906/mi50"
+  github:
+    role: single_source_of_truth
+    repo: "phoenixclyde/Strata"
+    default_branch: "gfx906/mi50"
+    protected: true
+    allow_force_pushes: false
+    no_history_rewrite: true
+  builder_166:
+    role: build_debug_test_deploy
+    host: "albus@192.168.50.166"
+    repo: "/home/albus/strata166/pr/strata-fork"
+    origin: "https://github.com/phoenixclyde/Strata.git"
+    must_fetch_to_same_sha_before_build: true
+  production:
+    role: final_sink
+    container: "strata166-407"
+    image: "strata-gfx906:0.2.11-101"
+    port: 8090
+    gpu: "gfx906 / MI50 32GB"
+  governance:
+    role: audit_plane
+    path: "D:/workbuddy_space/archive/gfx906-mi50-governance"
+    remote: "local bare only (D:/workbuddy_space/strata_governance.git); no GitHub remote"
+    per_stage_evidence_archival: true
+    historical_rounds_frozen: "W#### ledger frozen, do not delete or rewrite"
+    new_records_naming: "pipeline build_id / release_id (no hand-written memory headings)"
+
+stages:
+  - id: 0
+    name: commit
+    where: windows_workbuddy
+    actions:
+      - "git commit (normal commit; never force push)"
+      - "git push origin gfx906/mi50"
+      - "optional: git push gate gfx906/mi50 (bare gate on 166, pre-receive runs ci/round_gate.py --ci)"
+    gates:
+      - "git status clean or dev-only changes"
+      - "branch tracks origin/gfx906/mi50"
+    on_fail: stop
+
+  - id: 1
+    name: ci_static
+    where: github_actions_and_local
+    actions:
+      - "Downstream gate workflow (push) + local ci/round_gate.py --ci"
+      - "lint, build-config validation, static gates"
+      - "source_provenance dual-value check"
+    gates:
+      - "Downstream gate conclusion == success for the pushed sha"
+      - "round_gate --ci green"
+      - "EXP-0001 must carry next_review/TTL; no unconditional allowance"
+    on_fail: stop
+
+  - id: 2
+    name: build_166
+    where: builder_166
+    actions:
+      - "git fetch to the same sha; assert HEAD == GitHub sha"
+      - "clean full build in isolated container (not incremental-only)"
+      - "CPU smoke; /dev/kfd GPU kernel smoke"
+      - "archive artifact: size + md5 + build id"
+    gates:
+      - "NINJA_RC=0"
+      - "ldd: 0 not-found"
+      - "--help rc=0"
+      - "error_lines=0"
+      - "binary md5 recorded; artifact archived"
+    on_fail: stop
+
+  - id: 3
+    name: acceptance
+    where: builder_166_with_exclusive_gpu
+    planned_downtime: true
+    actions:
+      - "stop production container to free VRAM (planned window; standard stage)"
+      - "assert engines=0 and VRAM used < 2GB before starting arms"
+      - "new binary vs previous stable engine: same input, same seed, greedy + --dump-logits"
+      - "model-level A/B + KL gate"
+      - "include generate.cpp AMD GPU pause + STRATA_TRACE; telemetry _bw_thread/close() join"
+    gates:
+      - "n>=3 per point, compared against that run's own 2xCV"
+      - "max|Δlogit| = 0 OR (KL <= 0.0139 AND top-1 >= 99%)"
+      - "no cross-round absolute comparison; only within-run 2xCV"
+    forbidden_shortcuts:
+      - "shrink weights"
+      - "change arena size"
+      - "offload to CPU"
+      - "CPU-only comparison"
+      - "reduce batch"
+      - "change seed"
+      - "compare only pre-wall behaviour"
+      - "present kernel us or static gates as engine-level equivalence"
+    on_fail: "stop + auto rollback to previous stable"
+
+  - id: 4
+    name: deploy
+    where: builder_166
+    actions:
+      - "ci/deploy_gate.py --exe <candidate> --live ; require overall PASS"
+      - "blue/green or canary switch; never overwrite in place"
+      - "ci/deploy.sh --src <build> --exe <name> --apply (requires mi50-* tag on HEAD)"
+    gates:
+      - "deploy_gate D1/D2/D3/D4/D7 all PASS"
+      - "no SKIP allowed (W1043: any SKIP => not deployable)"
+      - "rollback pieces >= 67"
+      - "new image declaration == actual build"
+    on_fail: "auto rollback via ci/rollback.sh --exe <old> --apply"
+
+  - id: 5
+    name: settle
+    where: builder_166_and_governance
+    actions:
+      - "refresh production 10-field baseline immediately (no waiting)"
+      - "archive old engine / old container / old image as rollback anchors (no longer permanent baseline)"
+      - "align image declaration (ENV + /src/BUILD-IMAGE.json) and SOURCE_PROVENANCE.tsv to the new actual build"
+      - "dual-value version converges to single value once declaration == actual"
+    gates:
+      - "health ok / restarts=0 / args 38 / env 13 / StartedAt"
+      - "disk == build == running md5 (all three)"
+      - "release_check.py PASS (10 rows)"
+      - "AUDIT31 47-day discrepancy closed"
+    on_fail: "treat as deploy regression; rollback"
+
+quality_gates_always:
+  - "20 gates ROUND_CLOSE"
+  - "mirror_check --sync (712 files byte-identical)"
+  - "five copies aligned by target branch ref"
+  - "--is-ancestor 13eedf55 HEAD rc=0"
+  - "allow_force_pushes=false (protection rules untouched)"
+  - "audit_scope tail_debt=0"
+  - "governance_remote_guard"
+  - "three report gates: report_lint / report_depth / report_consistency"
+
+forbidden_fake_green:
+  - id: FG-1
+    text: "casting int32 expert_bounds pointer to ggml_cuda_mm_id_tile_spec*"
+  - id: FG-2
+    text: "constructing fake tile_spec arrays"
+  - id: FG-3
+    text: "deliberately invalidating overlay anchors so it degrades to FP16 and passes"
+  enforcement: "ci/pipeline_lint.py (see ci/pipeline.yml:forbidden_fake_green) + manual gate review"
+
+failure_path:
+  rule: "any stage red -> stop at that stage -> auto restore previous stable production -> open defect ticket"
+  never:
+    - "skip a stage"
+    - "deploy older binary 631b5c97 as a downgrade"
+    - "rename image tag to fake progress"
+    - "report green without raw output"
+
+evidence:
+  per_stage_report:
+    template: "albus/branch_recon/closeout_20261114/FOUR_ITEM_TEMPLATE.md"
+    required_labels: ["本轮实测", "沿用快照", "推导值", "声明面", "外部页面"]
+    recheck_list: "N independent checks must each cite its own raw output; otherwise write 无法确认"
+  authoritative_paths:
+    originals: "albus/branch_recon/"
+    retrieval_copies: ["rootcause_20261114/", "closeout_20261114/"]
+    rule: "index registered; never pick one of two copies at citation time"
+  archived_commits:
+    - "af7aa42318845739163eca058861fa8447fd28bf (governance archive, 312 files)"
+
+inventory:
+  architecture_tables:
+    - "deploy/ARCH_GFX906_BASELINE_SUPPORT.tsv      # 基础支持面证据"
+    - "deploy/ARCH_GFX906_CUSTOM_GAPS.tsv           # 专属代码缺口清单"
+    - "deploy/ARCH_GFX906_MACRO_CONFLICTS.tsv       # 宏开关冲突矩阵"
+    recheck_on_upstream_advance: true
+  l3_custom_assets: "deploy/L3_CUSTOM_ASSET_LEDGER.tsv"
+  replay_sop: "deploy/REPLAY_SOP.md"
+  defect_register: "deploy/PIPELINE_DEFECTS.tsv"
