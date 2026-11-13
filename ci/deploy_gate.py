@@ -95,10 +95,11 @@ def live(cmd):
 
 
 def latency_target_ok(delta, band):
-    """D3b: for a LATENCY target, only a significant SPEED-UP is a gain.
+    """D3b: no significant regression (机主 2026-11-14). In-band equivalence is a pass.
     The old `abs(delta) >= band` accepted a significant SLOWDOWN as a win.
     """
-    return delta <= -band
+    # 机主 2026-11-14: 无显著负面即通过（带内等价=一致）；超带变慢才 FAIL
+    return delta <= band
 
 
 def guard_ok(gd, gb):
@@ -199,7 +200,9 @@ def self_test():
     cases += [
         ("D3b 显著变快", lambda: latency_target_ok(-2.72, 1.34), True),
         ("D3b 显著变慢", lambda: latency_target_ok(+2.72, 1.34), False),
-        ("D3b 变化不显著", lambda: latency_target_ok(-0.50, 1.34), False),
+        ("D3b 带内等价(略快)", lambda: latency_target_ok(-0.50, 1.34), True),
+        ("D3b 带内等价(略慢)", lambda: latency_target_ok(+0.50, 1.34), True),
+        ("D3b 超带变慢", lambda: latency_target_ok(+1.50, 1.34), False),
         ("D3c 大幅变快", lambda: guard_ok(-1.72, 0.36), True),
         ("D3c 变慢超带宽", lambda: guard_ok(+1.72, 0.36), False),
         ("D3c 变慢在带内", lambda: guard_ok(+0.10, 0.36), True),
