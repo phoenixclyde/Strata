@@ -110,7 +110,23 @@ TARGET=$BIN/$EXENAME
 # W1035: 装机必须带 A/B 与数值证据。没有证据 => 不装（判据，不是判断）。
 say "3.5/8 evidence gate (A/B + numeric)"
 EVID=${EVIDENCE:-$REPO/ci/state/ab/latest.json}
+# W1097 D12: this call site passed only 4 arguments, so deploy_gate's D5 (config face) and D6 (evidence
+# chain) were both SKIP -- and W1043 makes ANY skip an INCOMPLETE (exit 1), which made every install through
+# deploy.sh impossible.  Supply both their evidence instead of relaxing the gate:
+#   D5 = the exe-only config delta (base = live config, new = same config pointing at the new exe)
+#   D6 = this round's report file, staged by the pipeline as $REPORT before deploy
+CFGW=$STATE/cfg_next.json
+python3 - "$CFG" "$CFGW" "$EXENAME" <<'PY'
+import json, sys
+p, q, name = sys.argv[1], sys.argv[2], sys.argv[3]
+d = json.load(open(p))
+d["exe"] = "/data/bin/" + name
+json.dump(d, open(q, "w"), indent=1, ensure_ascii=False)
+print("cfg_next exe:", d["exe"])
+PY
+REPORT_FILE=${REPORT:-$STATE/last_report.md}
 python3 "$HERE/deploy_gate.py" --path "$NEW" --exe "$EXENAME" --ab "$EVID" --live \
+  --cfg-base "$CFG" --cfg-new "$CFGW" --reg-ids "" --report "$REPORT_FILE" \
   || fail "deploy gate REFUSE for $EXENAME: no A/B or numeric evidence (see above); expected at $EVID"
 say "4/7 install -> $TARGET"
 echo "from: $NEW"
