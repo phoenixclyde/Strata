@@ -2,16 +2,17 @@
 #
 #   ctx=/path/to/build-ctx
 #   git -C <repo> archive --format=tar.gz -o $ctx/strata-src-0.2.11.tar.gz HEAD
-#   cp <llama.cpp pinned tree>.tar.gz $ctx/llama.cpp-3cf0325.tar.gz
+#   cp <llama.cpp pinned tree>.tar.gz $ctx/llama.cpp-951d465.tar.gz
 #   docker build -t strata-gfx906:0.2.11-101 \
 #     --build-arg COMMITS_ON_TOP=$(git -C <repo> rev-list --count upstream/main..HEAD) \
 #     --build-arg STRATA_TAG=$(git -C <repo> describe --tags) \
 #     -f ci/docker/Dockerfile-gfx906-0.2.11 $ctx
 #
 # The llama.cpp tarball is `git archive` of ggml-org/llama.cpp at
-# 3cf03257f219afbe7334045ff7c6a06ac68c627d (tag b11062, 2026-09-20), which is the same
-# commit the fork's own CI pins in .github/workflows/metal-build.yml:29.  Its tree hash is
-# asserted below, so a swapped tarball fails the build instead of shipping quietly.
+# 951d465f5c7c16fb486ff45bb14d99984e68c6db (tag b12361, 2026-11-13), the L2 fork this release
+# builds the engine's ggml from (the vendored third_party/strata-ggml stays frozen at 3cf03257 and
+# is not what this image's engine was built from).  Its tree hash is asserted below, so a swapped
+# tarball fails the build instead of shipping quietly.
 #
 # COMMITS_ON_TOP and STRATA_TAG are build args on purpose: a literal in this file went
 # stale twice already, and a number nobody re-derives is how this project has lied to
@@ -33,21 +34,21 @@ ARG STRATA_TAG=unknown
 # nobody re-derives is how this project has lied to itself before.
 ARG ENGINE_VERSION=unknown
 ARG SOURCE_SHA=unknown
-ENV LLAMA_CPP_SHA=3cf03257f219afbe7334045ff7c6a06ac68c627d \
-    LLAMA_CPP_BUILD=b11062 \
-    LLAMA_CPP_TREE=6feee58927d5f1efd38e72bbc1db061d
+ENV LLAMA_CPP_SHA=951d465f5c7c16fb486ff45bb14d99984e68c6db \
+    LLAMA_CPP_BUILD=b12361 \
+    LLAMA_CPP_TREE=b93f55bce101ea8bfa35f2c347f4722e
 
 COPY strata-src-0.2.11.tar.gz /tmp/
-COPY llama.cpp-3cf0325.tar.gz /tmp/
+COPY llama.cpp-951d465.tar.gz /tmp/
 
 RUN set -eux; \
     rm -rf /src/* /src/.[!.]* 2>/dev/null || true; \
     tar xzf /tmp/strata-src-0.2.11.tar.gz -C /src; \
     mkdir -p /src/third_party; \
-    tar xzf /tmp/llama.cpp-3cf0325.tar.gz -C /src/third_party; \
+    mkdir -p /src/third_party/llama.cpp; tar xzf /tmp/llama.cpp-951d465.tar.gz -C /src/third_party/llama.cpp; \
     inner=$(find /src/third_party -maxdepth 1 -mindepth 1 -type d -name 'llama.cpp*' | head -1); \
     if [ "$inner" != "/src/third_party/llama.cpp" ]; then mv "$inner" /src/third_party/llama.cpp; fi; \
-    rm -f /tmp/strata-src-0.2.11.tar.gz /tmp/llama.cpp-3cf0325.tar.gz; \
+    rm -f /tmp/strata-src-0.2.11.tar.gz /tmp/llama.cpp-951d465.tar.gz; \
     test -f /src/CMakeLists.txt; \
     test -f /src/serve/server.py; \
     test -f /src/third_party/llama.cpp/ggml/src/ggml-cpu/iqp.cpp; \
