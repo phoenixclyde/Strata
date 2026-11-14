@@ -1,24 +1,35 @@
 #!/usr/bin/env python3
-"""A deploy needs a green GitHub Actions run for the exact commit being deployed.
+"""A deploy needs a green GitHub Actions run for the commit being deployed.
 
-Why this is the gate and not the local script: the change lands on GitHub, so the gate has to
-run on GitHub -- on a clean runner, with nothing from this working copy.  The local
-`ci/round_gate.py` stays as a pre-push convenience; it is no longer evidence.
+**THE SINGLE AUTHORITATIVE CRITERION (D21, 2026-11-14)**
 
-State of the world this was written in (W1029): `downstream-gate` is `active`, and
-`GET /repos/.../actions/permissions` says `enabled: true`, yet every `workflow_dispatch` returns
-**422 "Actions has been disabled for this repository"** and pushes produce no runs.  That is a
-repository-level switch the REST API cannot flip.  This script therefore refuses to deploy and
-names the two facts to check, instead of pretending the gate ran.
+    A commit that produces an engine binary must carry a completed, successful
+    `downstream-gate.yml` run for ITS OWN sha.  A commit that produces no binary
+    (a dependency bump, a report, a docs change) must not be blocked by this
+    step; it is covered by the nearest ancestor that DOES carry a green run,
+    provided nothing between that ancestor and HEAD touches the engine sources.
+
+Why: the two gates used to disagree.  `deploy_gate.py` D7 only asks for a
+coverage row for a binary-producing sha, so `5579addaa` (PR#2, one line of
+`requirements-nvfp4-local.txt`) passed D7 while `deploy.sh` step 0 refused it
+outright -- the pipeline could never reach the install step for a tree whose
+engine bytes are identical to a sha that *was* covered.  The fix is not an
+exemption flag and not a paths-whitelist edit: it is a second, narrower leg
+with its own evidence, printed on every use.
 
 Exit codes
-  0  a completed run for this sha concluded `success`
-  6  no run for this sha yet, or the run is still in progress (use --wait to poll)
+  0  a completed run for this sha concluded `success`, **or** the sha is a
+     non-engine descendant of such a sha (the chain is printed)
+  6  no run for this sha and no acceptable ancestor chain yet (use --wait)
   7  the latest run for this sha did not succeed (URL printed)
   8  cannot talk to the API (no token / auth / network)
 
 Usage
-  gh_gate.py [--sha SHA] [--wait SEC] [--repo OWNER/NAME] [--workflow FILE] [--quiet]
+  gh_gate.py [--sha SHA] [--wait SEC] [--repo OWNER/NAME] [--workflow FILE]
+             [--no-ancestor-chain] [--quiet] [--self-test]
+
+The ancestor leg can be turned off with --no-ancestor-chain; with it off this
+script is exactly the old "this sha must have a green run" gate.
 """
 import argparse
 import json
@@ -28,6 +39,7 @@ import subprocess
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 
 HERE = pathlib.Path(__file__).resolve().parent
@@ -36,10 +48,41 @@ API = "https://api.github.com"
 DEF_REPO = "phoenixclyde/Strata"
 DEF_WORKFLOW = "downstream-gate.yml"
 
+# What an engine binary is built from.  A change under any of these makes the
+# ancestor's run stop standing in for HEAD's.  Deliberately conservative: a
+# false "engine changed" costs one CI run, a false "engine unchanged" ships an
+# unverified binary.
+ENGINE_PATHS = ("src/", "include/", "cmake/", "third_party/", "metal/", "sycl/")
+ENGINE_FILES = ("CMakeLists.txt", "CMakePresets.json", "setup.py", "Dockerfile")
+
 
 def head_sha(root):
     r = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"], capture_output=True, text=True)
     return r.stdout.strip() if r.returncode == 0 else ""
+
+
+def head_branch(root):
+    r = subprocess.run(["git", "-C", str(root), "rev-parse", "--abbrev-ref", "HEAD"],
+                       capture_output=True, text=True)
+    return r.stdout.strip() if r.returncode == 0 else ""
+
+
+def git(root, *args):
+    r = subprocess.run(["git", "-C", str(root)] + list(args), capture_output=True, text=True)
+    return r.returncode, r.stdout.strip()
+
+
+def engine_paths_changed(paths):
+    """The engine-affecting subset of a diff.  Pure function: this is what the
+    self-test exercises, so the rule can be checked without a network or a repo."""
+    hits = []
+    for p in paths:
+        if not p:
+            continue
+        q = p.replace("\\", "/").strip()
+        if q in ENGINE_FILES or any(q.startswith(pref) for pref in ENGINE_PATHS):
+            hits.append(q)
+    return hits
 
 
 def token():
@@ -54,16 +97,27 @@ def token():
     return ""
 
 
-def api(path, tok):
+def api(path, tok, tries=3):
+    """Read one API resource. Retries a truncated/slow body: the branch-runs list is
+    big enough that a short read shows up as IncompleteRead, and a deploy gate must
+    not turn a flaky socket into a REFUSE."""
     req = urllib.request.Request(API + path, headers={
         "Authorization": "Bearer " + tok,
         "Accept": "application/vnd.github+json",
+        "Accept-Encoding": "identity",       # a 600 KB gzip body is what truncated before
         "User-Agent": "strata-gh-gate"})
-    try:
-        with urllib.request.urlopen(req, timeout=30) as r:
-            return 200, json.load(r)
-    except urllib.error.HTTPError as e:
-        return e.code, e.read()[:300].decode("utf-8", "replace")
+    last = None
+    for i in range(max(1, tries)):
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                return 200, json.loads(r.read().decode("utf-8", "replace"))
+        except urllib.error.HTTPError as e:
+            return e.code, e.read()[:300].decode("utf-8", "replace")
+        except Exception as e:                      # IncompleteRead, timeout, reset
+            last = e
+            if i + 1 < tries:
+                time.sleep(1.5 * (i + 1))
+    return -1, "transport error after %d tries: %r" % (tries, last)
 
 
 def runs_for(repo, workflow, sha, tok):
@@ -73,14 +127,80 @@ def runs_for(repo, workflow, sha, tok):
     return st, body.get("workflow_runs", [])
 
 
+def runs_for_branch(repo, workflow, branch, tok, per_page=15):
+    st, body = api("/repos/%s/actions/workflows/%s/runs?branch=%s&per_page=%d"
+                   % (repo, workflow, urllib.parse.quote(branch, safe=""), per_page), tok)
+    if st != 200 or not isinstance(body, dict):
+        return st, None
+    return st, body.get("workflow_runs", [])
+
+
+def ancestor_chain(repo, workflow, sha, tok, branch, root):
+    """The second leg: (green_sha, run, changed_paths) or (None, reason)."""
+    if not branch or branch == "HEAD":
+        return None, "detached HEAD: no branch to look up an ancestor run on"
+    st, runs = runs_for_branch(repo, workflow, branch, tok)
+    if st == -1:
+        # 传输层（截断/超时/重置）不是「没有 run」。把它折叠成 FAIL 会让部署门把网络抖动
+        # 说成代码问题（第 5 种观测层缺陷，2026-11-14 实测：613 KB 响应在 166 上稳定 IncompleteRead）。
+        return None, "UNCONFIRMED: transport error listing runs for %s (%s)" % (branch, runs)
+    if st != 200 or runs is None:
+        return None, "cannot list runs for branch %s (HTTP %s)" % (branch, st)
+    for r in runs:
+        if r.get("status") != "completed" or r.get("conclusion") != "success":
+            continue
+        g = r.get("head_sha") or ""
+        if not g or g == sha:
+            continue
+        rc, _ = git(root, "merge-base", "--is-ancestor", g, sha)
+        if rc != 0:
+            continue
+        rc2, out = git(root, "diff", "--name-only", "%s..%s" % (g, sha))
+        if rc2 != 0:
+            return None, "cannot diff %s..%s" % (g[:12], sha[:12])
+        return (g, r, [x for x in out.splitlines() if x.strip()]), None
+    return None, "no successful run on %s is an ancestor of %s" % (branch, sha[:12])
+
+
+def self_test():
+    """Negative tests first: a rule that cannot fail is not a rule."""
+    cases = [
+        ("PR#2 的一条依赖清单", ["requirements-nvfp4-local.txt"], []),
+        ("docs only", ["docs/DETAILS.md", "README.md"], []),
+        ("ci 脚本", ["ci/gh_gate.py"], []),
+        ("引擎源", ["src/program/generate.cpp"], ["src/program/generate.cpp"]),
+        ("头文件", ["include/strata/core/mtp.hpp"], ["include/strata/core/mtp.hpp"]),
+        ("CMake", ["CMakeLists.txt"], ["CMakeLists.txt"]),
+        ("vendored ggml", ["third_party/strata-ggml/ggml/src/ggml-cuda/mmq.cu"],
+         ["third_party/strata-ggml/ggml/src/ggml-cuda/mmq.cu"]),
+        ("混合（必须判引擎变）", ["requirements.txt", "src/kernels/cuda/mmq.cu"], ["src/kernels/cuda/mmq.cu"]),
+        ("反斜杠路径", ["src\\program\\generate.cpp"], ["src/program/generate.cpp"]),
+        ("空", [], []),
+    ]
+    bad = 0
+    for name, paths, want in cases:
+        got = engine_paths_changed(paths)
+        ok = got == want
+        bad += 0 if ok else 1
+        print("  %-24s %-4s got=%s" % (name, "PASS" if ok else "FAIL", got))
+    print("GH_GATE_SELF_TEST: %d/%d" % (len(cases) - bad, len(cases)))
+    return 0 if bad == 0 else 1
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--sha", default=None, help="commit to check (default: repo HEAD)")
     ap.add_argument("--repo", default=DEF_REPO)
     ap.add_argument("--workflow", default=DEF_WORKFLOW)
     ap.add_argument("--wait", type=int, default=0, help="poll for up to N seconds when the run is missing or running")
+    ap.add_argument("--no-ancestor-chain", action="store_true",
+                    help="turn off the non-engine-descendant leg (old behaviour: this sha must have a run)")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--self-test", action="store_true")
     a = ap.parse_args()
+
+    if a.self_test:
+        return self_test()
 
     sha = a.sha or head_sha(ROOT)
     if not sha:
@@ -115,7 +235,32 @@ def main():
                 return 6
         else:
             if time.time() >= deadline:
-                print("GH_GATE: FAIL no `%s` run exists for %s in %s." % (a.workflow, sha[:12], a.repo))
+                if not a.no_ancestor_chain:
+                    got, why = ancestor_chain(a.repo, a.workflow, sha, tok, head_branch(ROOT), ROOT)
+                    if got is not None:
+                        green, run, changed = got
+                        hits = engine_paths_changed(changed)
+                        if not hits:
+                            print("GH_GATE: PASS %s via-binary-ancestor %s run #%s %s"
+                                  % (sha[:12], green[:12], run.get("run_number"), run.get("html_url")))
+                            print("  no run for %s itself; %d non-engine path(s) changed since %s: %s"
+                                  % (sha[:12], len(changed), green[:12],
+                                     ", ".join(changed[:8]) + (" …" if len(changed) > 8 else "")))
+                            return 0
+                        print("GH_GATE: FAIL %s has no run and %d engine path(s) changed since the green "
+                              "%s -- this commit needs its own run:" % (sha[:12], len(hits), green[:12]))
+                        for h in hits[:12]:
+                            print("    " + h)
+                        return 6
+                    if "UNCONFIRMED" in why:
+                        print("GH_GATE: UNCONFIRMED %s -- %s" % (sha[:12], why))
+                        print("  transport error is not a verdict: retry, or re-run with --wait. "
+                              "No PASS and no FAIL is claimed for this sha.")
+                        return 9
+                    print("GH_GATE: FAIL no `%s` run exists for %s in %s." % (a.workflow, sha[:12], a.repo))
+                    print("  ancestor leg: " + why)
+                else:
+                    print("GH_GATE: FAIL no `%s` run exists for %s in %s." % (a.workflow, sha[:12], a.repo))
                 print("  GitHub runs on the pushed commit; check, in this order:")
                 print("   1. is the sha actually on origin?   git ls-remote origin gfx906/mi50")
                 print("   2. does a run appear?               GET /repos/%s/actions/runs?per_page=1" % a.repo)
