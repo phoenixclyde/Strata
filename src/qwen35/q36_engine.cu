@@ -65,6 +65,7 @@
 #include <tuple>
 #include <type_traits>
 #include <vector>
+#include "strata/prefill/nan_probe.cuh"
 
 namespace {
 
@@ -2112,6 +2113,8 @@ struct Engine {
         }
         add_rms_post(L, T);
         // routed experts (one token: the router and the shared expert's gate in one product, the gate its last row)
+        strata::prefill::mmq::nprobe::set_layer((int) li);
+        strata::prefill::mmq::nprobe::scan(h, (long long) T * N, "h_in", st);
         const bool one = T == 1;
         // a decode batch of up to 8 rows takes the router and the shared expert's gate in one product too (rows of 257) when the fused
         // router follows; the prompt chunks and the checks keep the separate products
@@ -2223,6 +2226,9 @@ struct Engine {
         if (hy_rows) moe_hybrid_cpu(li, T);   // the CPU pool's experts (while the GPU runs the rest), merged
         // the combine, the shared expert's gate, the residual add and the next norm in one launch
         moe_end(T, prow, sy, ext ? logits_r + g.n_expert : sgate, wn, hout, ext ? (int) g.n_expert + 1 : 1);
+        strata::prefill::mmq::nprobe::scan(shh, (long long) T * FS, "shh", st);
+        strata::prefill::mmq::nprobe::scan(sy, (long long) T * N, "sy", st);
+        strata::prefill::mmq::nprobe::scan(hout, (long long) T * N, "hout", st);
     }
 
     /// The main model over T rows (device `tok`, positions p0 .. p0 + T - 1, also at *pos0): hmain gets every row's
@@ -2251,6 +2257,7 @@ struct Engine {
     void head_rows(const float* hn, int n, float* lg, int32_t* pk) {
         const auto& g = m->g;
         mm(m->head, hn, lg, n);
+        strata::prefill::mmq::nprobe::scan(lg, (long long) n * g.n_vocab, "logits", st);
         k_argmax<<<dim3(kArgBlocks, n), kThreads, 0, st>>>(lg, (int) g.n_vocab, pk, amv, ami, false);
         k_argmax<<<dim3(1, n), kThreads, 0, st>>>(lg, kArgBlocks, pk, amv, ami, true);
     }

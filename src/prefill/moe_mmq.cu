@@ -11,6 +11,7 @@
 #endif
 #include "strata/prefill/moe_fused.hpp"   // kMoeEmbd, kMoeFF: the compiled geometry's widths
 #include "strata/prefill/moe_iq4_w4a8.hpp"
+#include "strata/prefill/nan_probe.cuh"
 
 #include "strata/prefill/mmq_kq_abi.hpp"
 
@@ -18,6 +19,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string>
+#include <vector>
 
 namespace strata::prefill::mmq {
 namespace {
@@ -412,19 +415,185 @@ __global__ void tile_spec_from_bounds_kernel(const int32_t* __restrict__ bounds,
     const int base   = bounds[0];
     const int total  = bounds[n] - base;
     const int ntiles = min((total + J - 1) / J, cap_tiles);
-    int col_low  = 0;
-    int col_high = min(J, bounds[e + 1] - base);
+    const int a      = bounds[e] - base;
+    const int b      = bounds[e + 1] - base;
+    int col_low  = a;
+    int col_high = min(a + J, b);
     while (col_high > ((col_low + J - 1) / J) * J) {
         const int t = (col_low + J - 1) / J;
         if (t >= cap_tiles) break;                     // never index past the allocation
         spec[t] = {e, col_low + base, col_high + base, 0};
         col_low  = col_high;
-        col_high = min(col_high + J, bounds[e + 1] - base);
+        col_high = min(col_high + J, b);
     }
     // at most one extra tile per expert, between the seams (mmid.cu:137-139)
     if (ntiles + e < cap_tiles + n) spec[ntiles + e] = {e, col_low + base, col_high + base, 0};
 }
 
+// ---- r25 numeric probe (D45 bisection; STRATA_NP=1 enables it) -------------------------------
+// A negative result is only evidence if the scan ran: every tag prints NPSCAN once, and
+// spec_check prints its span/rows_dst pair for the first few launches (D48).
+namespace nprobe {
+namespace {
+int g_on = -1;
+int g_layer = -1;
+int g_budget = 400;
+const char* const kTags[] = {"GU", "H", "Dm", "h_in", "shh", "sy", "hout", "logits"};
+bool g_seen[8] = {false, false, false, false, false, false, false, false};
+int g_spec_shown = 0;
+int g_gaps_shown = 0;
+
+__global__ void k_nonfinite(const float* __restrict__ p, long long n, unsigned long long* __restrict__ cnt,
+                            unsigned long long* __restrict__ first) {
+    const long long stride = (long long) gridDim.x * blockDim.x;
+    for (long long i = (long long) blockIdx.x * blockDim.x + threadIdx.x; i < n; i += stride) {
+        const float v = p[i];
+        if (!(v == v) || v > 3.4028235e38f || v < -3.4028235e38f) {
+            atomicAdd(cnt, 1ull);
+            atomicMin(first, (unsigned long long) i);
+        }
+    }
+}
+
+// One entry per tile: {expert, col_low, col_high, padding}.  A zeroed entry is inactive (col_high == col_low).
+// The span sum must equal the product's own row count, and no entry may be inverted or empty-but-offset.
+__global__ void k_spec(const ggml_cuda_mm_id_tile_spec* __restrict__ s, int n, unsigned long long* __restrict__ bad,
+                       unsigned long long* __restrict__ span, unsigned long long* __restrict__ first,
+                       unsigned long long* __restrict__ active) {
+    const int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= n) return;
+    const ggml_cuda_mm_id_tile_spec e = s[i];
+    if (e.col_high > e.col_low) {
+        atomicAdd(span, (unsigned long long) (e.col_high - e.col_low));
+        atomicAdd(active, 1ull);
+    }
+    if (e.col_high < e.col_low) { atomicAdd(bad, 1ull); atomicMin(first, (unsigned long long) i); }
+}
+}  // namespace
+
+bool on() {
+    if (g_on < 0) {
+        const char* e = std::getenv("STRATA_NP");
+        g_on = (e != nullptr && std::atoi(e) != 0) ? 1 : 0;
+        if (g_on != 0) {
+            const char* b = std::getenv("STRATA_NP_BUDGET");
+            if (b != nullptr) g_budget = std::atoi(b);
+            std::fprintf(stderr, "NPROBE on: budget=%d tags=GU H Dm h_in shh sy hout logits spec\n", g_budget);
+        }
+    }
+    return g_on != 0;
+}
+
+void set_layer(int l) { g_layer = l; }
+int  layer() { return g_layer; }
+
+void scan(const void* ptr, long long n, const char* tag, void* stream) {
+    if (!on() || ptr == nullptr || n <= 0) return;
+    for (int i = 0; i < 8; ++i) {
+        if (!g_seen[i] && std::strcmp(tag, kTags[i]) == 0) {
+            g_seen[i] = true;
+            std::fprintf(stderr, "NPSCAN tag=%s n=%lld layer=%d first_use\n", tag, n, g_layer);
+        }
+    }
+    if (g_budget <= 0) return;
+    static unsigned long long* dcnt = nullptr;
+    static unsigned long long* dfirst = nullptr;
+    if (dcnt == nullptr) {
+        cudaMalloc(&dcnt, sizeof(unsigned long long));
+        cudaMalloc(&dfirst, sizeof(unsigned long long));
+    }
+    cudaStream_t s = (cudaStream_t) stream;
+    cudaMemsetAsync(dcnt, 0, sizeof(unsigned long long), s);
+    cudaMemsetAsync(dfirst, 0xff, sizeof(unsigned long long), s);
+    const int blocks = (int) (n < 262144 ? (n + 255) / 256 : 1024);
+    k_nonfinite<<<blocks, 256, 0, s>>>((const float*) ptr, n, dcnt, dfirst);
+    unsigned long long hc = 0, hf = 0;
+    cudaMemcpyAsync(&hc, dcnt, sizeof(hc), cudaMemcpyDeviceToHost, s);
+    cudaMemcpyAsync(&hf, dfirst, sizeof(hf), cudaMemcpyDeviceToHost, s);
+    cudaStreamSynchronize(s);
+    if (hc != 0) {
+        float v = 0.0f;
+        cudaMemcpy(&v, (const float*) ptr + hf, sizeof(float), cudaMemcpyDeviceToHost);
+        std::fprintf(stderr, "NONFINITE layer=%d tag=%s count=%llu first=%llu val=%g n=%lld\n", g_layer, tag, hc, hf,
+                     (double) v, n);
+        --g_budget;
+    }
+}
+
+void spec_check(const void* spec, int n, long long rows_expect, const int* bounds, void* stream) {
+    if (!on() || spec == nullptr || n <= 0) return;
+    static unsigned long long* dbad = nullptr;
+    static unsigned long long* dspan = nullptr;
+    static unsigned long long* dfirst = nullptr;
+    static unsigned long long* dact = nullptr;
+    if (dbad == nullptr) {
+        cudaMalloc(&dbad, sizeof(unsigned long long));
+        cudaMalloc(&dspan, sizeof(unsigned long long));
+        cudaMalloc(&dfirst, sizeof(unsigned long long));
+        cudaMalloc(&dact, sizeof(unsigned long long));
+    }
+    cudaStream_t s = (cudaStream_t) stream;
+    int hb0 = 0, hbn = 0;
+    if (bounds != nullptr) {
+        cudaMemcpyAsync(&hb0, bounds, sizeof(int), cudaMemcpyDeviceToHost, s);
+        cudaMemcpyAsync(&hbn, bounds + n, sizeof(int), cudaMemcpyDeviceToHost, s);
+        cudaStreamSynchronize(s);
+    }
+    cudaMemsetAsync(dbad, 0, 8, s);
+    cudaMemsetAsync(dspan, 0, 8, s);
+    cudaMemsetAsync(dfirst, 0xff, 8, s);
+    cudaMemsetAsync(dact, 0, 8, s);
+    k_spec<<<(n + 127) / 128, 128, 0, s>>>((const ggml_cuda_mm_id_tile_spec*) spec, n, dbad, dspan, dfirst, dact);
+    unsigned long long hb = 0, hs = 0, hf = 0, ha = 0;
+    cudaMemcpyAsync(&hb, dbad, 8, cudaMemcpyDeviceToHost, s);
+    cudaMemcpyAsync(&hs, dspan, 8, cudaMemcpyDeviceToHost, s);
+    cudaMemcpyAsync(&hf, dfirst, 8, cudaMemcpyDeviceToHost, s);
+    cudaMemcpyAsync(&ha, dact, 8, cudaMemcpyDeviceToHost, s);
+    cudaStreamSynchronize(s);
+    const long long dev_total = (long long) hbn - hb0;
+    const bool bad = hb != 0 || (long long) hs != rows_expect || dev_total != rows_expect;
+    if (bad || g_spec_shown < 6) {
+        std::fprintf(stderr,
+                     "SPECCHK layer=%d n=%d span=%llu rows_dst=%lld active=%llu inverted=%llu first=%llu "
+                     "dev_first=%d dev_last=%d dev_total=%lld %s\n",
+                     g_layer, n, hs, rows_expect, ha, hb, hf, hb0, hbn, dev_total, bad ? "MISMATCH" : "ok");
+        ++g_spec_shown;
+        if (bad) --g_budget;
+    }
+    if (bad && g_gaps_shown < 4) {
+        ++g_gaps_shown;
+        std::vector<ggml_cuda_mm_id_tile_spec> h((size_t) n);
+        cudaMemcpy(h.data(), spec, (size_t) n * sizeof(ggml_cuda_mm_id_tile_spec), cudaMemcpyDeviceToHost);
+        const long long rows = rows_expect;
+        std::vector<unsigned char> cov((size_t) rows, 0);
+        long long outside = 0, active = 0;
+        for (int i = 0; i < n; ++i) {
+            if (h[(size_t) i].col_high <= h[(size_t) i].col_low) continue;
+            ++active;
+            for (long long r = (long long) h[(size_t) i].col_low - hb0; r < (long long) h[(size_t) i].col_high - hb0; ++r) {
+                if (r < 0 || r >= rows) { ++outside; continue; }
+                cov[(size_t) r] = 1;
+            }
+        }
+        long long missing = 0;
+        std::string gaps;
+        for (long long r = 0; r < rows;) {
+            if (cov[(size_t) r] != 0) { ++r; continue; }
+            long long e = r;
+            while (e < rows && cov[(size_t) e] == 0) ++e;
+            missing += e - r;
+            if (gaps.size() < 220) {
+                char buf[48];
+                std::snprintf(buf, sizeof(buf), " [%lld,%lld)", r, e);
+                gaps += buf;
+            }
+            r = e;
+        }
+        std::fprintf(stderr, "SPECGAP layer=%d rows=%lld entries=%d active=%lld missing=%lld outside=%lld%s\n",
+                     g_layer, rows, n, active, missing, outside, gaps.c_str());
+    }
+}
+}  // namespace nprobe
 Context::Context() {
     int dev = 0;
     cudaGetDevice(&dev);
@@ -466,10 +635,11 @@ void Context::run(const Product& p, void* stream) {
     tile_spec_from_bounds_kernel<<<(unsigned) p.n, 32, 0, s>>>(p.bounds, p.n, J_best, ntj - p.n,
                                                                tile_spec.get());
     ck(cudaGetLastError(), "tile_spec");
+    nprobe::spec_check(tile_spec.get(), ntj, rows_dst, p.bounds, s);
 
     const mmq_args a = {(const char*) p.w, t, (const int*) p.xq, p.ids, tile_spec.get(), p.dst, p.y_scale,
                         p.w_cols, p.w_rows, rows_dst, bpr, p.total_rows, p.ld_dst,
-                        p.n, p.n, p.tab ? 0 : (int64_t) (p.expert_bytes / type_bytes((int) t)), 0, 0,
+                        p.n, 1, p.tab ? 0 : (int64_t) (p.expert_bytes / type_bytes((int) t)), 0, 0,
                         1, 1, 0, 0, 0,
                         ntj, (int) J_best};
     if (p.tab) {
