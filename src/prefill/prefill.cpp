@@ -57,6 +57,7 @@
 #include "strata/prefill/moe_ws.hpp"
 #include "strata/prefill/moe_fused_iq.hpp"
 #include "strata/prefill/moe_mmq.hpp"
+#include "strata/prefill/nan_probe.cuh"
 #include "strata/prefill/routed_stream.hpp"
 #include "strata/core/peer_experts.hpp"
 #include "strata/core/expert_nibble.hpp"
@@ -5973,6 +5974,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                 gu.y_scale = mmq::fp4_activations(mmq_gt) ? m.Xscale : nullptr;
                                 if (direct) gu.tab = &tgu;
                                 m.mmq_ctx->run(gu, m.cs);
+                                mmq::nprobe::scan(m.GU + r0 * kFF2, (long long) nr * kFF2, "GU", m.cs);
                                 if (lay.native && lay.fmt[(size_t) l].tail_off)   // gate/up scales applied as read
                                     mmq::swiglu_scaled(m.GU + r0 * kFF2, m.H + r0 * kFF, nr, kFF, m.bounds_dev + j0, ngx,
                                                        m.grp_tail, r0, m.cs);
@@ -5981,6 +5983,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                 if (had_d)
                                     strata::kernels::hadamard_rows(m.H + r0 * kFF, m.H + r0 * kFF, nr, kFF, had_block, had_sh, m.cs);
                                 pt.mark(kPfGemmD, cs);
+                                mmq::nprobe::scan(m.H + r0 * kFF, (long long) nr * kFF, "H", m.cs);
                                 mmq::quantize(m.H + r0 * kFF, nullptr, m.Hq, mmq_dt, kFF, kFF, nr, m.cs, m.Hscale);
                                 mmq::Product dn;
                                 dn.w = m.grp_d; dn.type = mmq_dt; dn.w_rows = N; dn.w_cols = kFF; dn.expert_bytes = mmq_db;
@@ -5990,6 +5993,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                 dn.y_scale = mmq::fp4_activations(mmq_dt) ? m.Hscale : nullptr;
                                 if (direct) dn.tab = &td;
                                 m.mmq_ctx->run(dn, m.cs);
+                                mmq::nprobe::scan(m.Dm + r0 * N, (long long) nr * N, "Dm", m.cs);
                                 if (lay.native && lay.fmt[(size_t) l].tail_off)   // s_down: applied by the combine
                                     mmq::down_row_scales(m.row_sd + r0, dn.bounds, ngx, m.grp_tail, nr, m.cs);
                                 if (direct) {
