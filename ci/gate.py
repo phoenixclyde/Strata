@@ -347,6 +347,68 @@ def md5_file(p):
     return h.hexdigest()
 
 
+def read_tsv_kv(path):
+    """key<TAB>value 的注释型 TSV；读不到返回 {}。"""
+    d = {}
+    try:
+        for ln in io.open(path, encoding="utf-8-sig"):
+            if not ln.strip() or ln.lstrip().startswith("#"):
+                continue
+            f = ln.rstrip("\n").split("\t")
+            if len(f) >= 2:
+                d[f[0].strip()] = f[1].strip()
+    except OSError:
+        return {}
+    return d
+
+
+def read_tag_ledger(path):
+    """tag -> (sha, purpose)。purpose 枚举 deploy / marking。"""
+    d = {}
+    try:
+        lines = [l for l in io.open(path, encoding="utf-8-sig").read().splitlines()
+                 if l.strip() and not l.startswith("#")]
+    except OSError:
+        return d
+    for ln in lines[1:]:
+        f = ln.split("\t")
+        if len(f) >= 3:
+            d[f[0].strip()] = (f[1].strip(), f[2].strip())
+    return d
+
+
+def tag_triplet(repo, tag):
+    """tag -> (object_sha, object_type, commit_sha).
+
+    An annotated tag is its own object: `git rev-parse <tag>` returns the TAG object,
+    never the commit.  Every prov/3 comparison must use the dereferenced commit
+    (`<tag>^{commit}`); comparing the tag object to HEAD is a guaranteed false red.
+    """
+    def g(*args):
+        return subprocess.run(["git", "-C", repo] + list(args), capture_output=True,
+                              text=True, check=True).stdout.strip()
+    return g("rev-parse", tag), g("cat-file", "-t", tag), g("rev-parse", tag + "^{commit}")
+
+
+def check_tag_cli(repo, tag):
+    """--check-tag: print the triplet and the verdict, with the naive comparison as a control."""
+    obj, typ, com = tag_triplet(repo, tag)
+    head = subprocess.run(["git", "-C", repo, "rev-parse", "HEAD"], capture_output=True,
+                          text=True, check=True).stdout.strip()
+    naive = (obj == head)
+    deref = (com == head)
+    print("tag          = %s" % tag)
+    print("object_type  = %s" % typ)
+    print("object_sha   = %s" % obj)
+    print("deref_commit = %s   (rev-parse %s^{commit})" % (com, tag))
+    print("HEAD         = %s" % head)
+    print("naive obj==HEAD   -> %s   [负向样例：必须为 False，否则说明比较对象取错]"
+          % ("MATCH" if naive else "MISMATCH"))
+    print("deref commit==HEAD-> %s" % ("MATCH" if deref else "MISMATCH"))
+    print("TAG_PROV: %s" % ("PASS" if deref and typ == "tag" else "FAIL"))
+    return 0 if (deref and typ == "tag") else 1
+
+
 def check_provenance(cfg_path, build_strata, ledger, repo):
     """[R80/W1060] 3 provenance checks (fail-closed):
     1) config exe md5 == ledger-last exe_md5
@@ -386,18 +448,45 @@ def check_provenance(cfg_path, build_strata, ledger, repo):
             add(FAIL, "prov/1 config-exe==ledger",
                 "config exe md5 %s != ledger-last %s (%s) -- deploy not logged?" % (cfg_md5[:12], l_md5[:12], l_exe))
 
-    # --- 2) that md5 == build/strata md5
-    try:
-        b_md5 = md5_file(build_strata)
-    except Exception as e:
-        add(FAIL, "prov/2 exe==build/strata", "cannot md5 %s: %s" % (build_strata, e))
-        b_md5 = None
-    if b_md5 is not None and cfg_md5 is not None:
-        if b_md5 == cfg_md5:
-            add(OK, "prov/2 exe==build/strata", "build md5 %s == config exe md5" % b_md5[:12])
-        else:
-            add(FAIL, "prov/2 exe==build/strata",
-                "build/strata %s != config exe %s -- deploy drifted from build?" % (b_md5[:12], cfg_md5[:12]))
+    # --- 2) 候选制品 == 它的构建产物（D21/D12 同类：唯一权威 = deploy/CANDIDATE_POINTER.tsv）
+    # 原判据拿"生产 exe"比 build/strata：生产一落后候选就必然红，那不是漂移而是设计。
+    # 判据本身不变（装机前候选必须与构建产物逐字节一致），只把比对对象换成候选指针。
+    root166 = os.path.dirname(os.path.dirname(os.path.abspath(build_strata)))
+    pointer = os.environ.get("DEPLOY_POINTER") or os.path.join(root166, "deploy", "CANDIDATE_POINTER.tsv")
+    ptr = read_tsv_kv(pointer)
+    if ptr.get("md5") and ptr.get("build_dir"):
+        art = os.path.join(root166, ptr["build_dir"], "strata")
+        try:
+            a_md5 = md5_file(art)
+        except Exception as e:
+            add(FAIL, "prov/2 候选==构建产物", "cannot md5 %s: %s" % (art, e))
+            a_md5 = None
+        if a_md5 is not None:
+            if a_md5 == ptr["md5"]:
+                add(OK, "prov/2 候选==构建产物",
+                    "指针 %s md5 %s == %s/strata（%s B）"
+                    % (ptr.get("exe", "?"), a_md5[:12], ptr["build_dir"], ptr.get("size", "?")))
+            else:
+                add(FAIL, "prov/2 候选==构建产物",
+                    "指针 md5 %s != %s/strata %s -- 候选被换过或构建目录不是它"
+                    % (ptr["md5"][:12], ptr["build_dir"], a_md5[:12]))
+        if cfg_md5 is not None and cfg_md5 != ptr["md5"]:
+            add(OK, "prov/2b 生产 vs 候选",
+                "生产在跑 %s（%s），候选 %s 未部署 -- 预期（未进 Stage 4）"
+                % (exe, cfg_md5[:12], ptr.get("exe", "?")))
+    else:
+        try:
+            b_md5 = md5_file(build_strata)
+        except Exception as e:
+            add(FAIL, "prov/2 exe==build/strata", "cannot md5 %s: %s" % (build_strata, e))
+            b_md5 = None
+        if b_md5 is not None and cfg_md5 is not None:
+            if b_md5 == cfg_md5:
+                add(OK, "prov/2 exe==build/strata", "build md5 %s == config exe md5" % b_md5[:12])
+            else:
+                add(FAIL, "prov/2 exe==build/strata",
+                    "build/strata %s != config exe %s -- deploy drifted from build?"
+                    % (b_md5[:12], cfg_md5[:12]))
 
     # --- 3) ledger tag != "-" and equals HEAD tag
     try:
@@ -413,8 +502,46 @@ def check_provenance(cfg_path, build_strata, ledger, repo):
         add(FAIL, "prov/3 tag==HEAD", "HEAD has no mi50-* tag but ledger says %s" % l_tag)
     elif l_tag in head_tags:
         add(OK, "prov/3 tag==HEAD", "ledger tag %s == HEAD tag(s) %s" % (l_tag, head_tags))
+        try:
+            _obj, _typ, _com = tag_triplet(repo, l_tag)
+            _head = subprocess.run(["git", "-C", repo, "rev-parse", "HEAD"],
+                                   capture_output=True, text=True, check=True).stdout.strip()
+            if _com == _head:
+                add(OK, "prov/3 tag^{commit}", "%s object %s(%s) -> commit %s == HEAD"
+                    % (l_tag, _obj[:12], _typ, _com[:12]))
+            else:
+                add(FAIL, "prov/3 tag^{commit}",
+                    "%s deref %s != HEAD %s（tag 不在 HEAD 上）" % (l_tag, _com[:12], _head[:12]))
+        except Exception as e:
+            add(FAIL, "prov/3 tag^{commit}", "cannot dereference %s: %s" % (l_tag, e))
     else:
-        add(FAIL, "prov/3 tag==HEAD", "ledger tag %s not in HEAD tags %s" % (l_tag, head_tags))
+        # 登记标记型 tag（purpose=marking）：不产二进制、不进 deploy 台账，但必须是 HEAD 上的 tag
+        tled = read_tag_ledger(os.environ.get("TAG_LEDGER") or
+                               os.path.join(root166, "deploy", "TAG_LEDGER.tsv"))
+        try:
+            head_sha = subprocess.run(["git", "-C", repo, "rev-parse", "HEAD"],
+                                      capture_output=True, text=True, check=True).stdout.strip()
+        except Exception:
+            head_sha = ""
+        marks = [t for t in head_tags if t in tled and tled[t][1] == "marking"
+                 and head_sha and tled[t][0] == head_sha]
+        if marks:
+            add(OK, "prov/3b marking tag",
+                "HEAD 带登记型 tag %s（不产二进制）；deploy 台账仍停在 %s" % (marks, l_tag))
+            # 解引用判据对 marking tag 同样成立：比的是 commit，不是 tag object
+            for _m in marks:
+                try:
+                    _obj, _typ, _com = tag_triplet(repo, _m)
+                    if _com == head_sha:
+                        add(OK, "prov/3b tag^{commit}", "%s object %s(%s) -> commit %s == HEAD"
+                            % (_m, _obj[:12], _typ, _com[:12]))
+                    else:
+                        add(FAIL, "prov/3b tag^{commit}",
+                            "%s deref %s != HEAD %s" % (_m, _com[:12], (head_sha or "")[:12]))
+                except Exception as e:
+                    add(FAIL, "prov/3b tag^{commit}", "cannot dereference %s: %s" % (_m, e))
+        else:
+            add(FAIL, "prov/3 tag==HEAD", "ledger tag %s not in HEAD tags %s" % (l_tag, head_tags))
 
 
 def main():
@@ -428,7 +555,11 @@ def main():
     ap.add_argument("--health", default=os.environ.get("HEALTH", "http://127.0.0.1:8090/health"))
     ap.add_argument("--source-only", action="store_true")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--check-tag", default=None,
+                    help="打印 tag 三值（object / type / ^{commit}）并判定 tag==HEAD；不跑其余门")
     a = ap.parse_args()
+    if a.check_tag:
+        return check_tag_cli(a.repo, a.check_tag)
 
     check_source(a.repo)
     if a.source_only:
