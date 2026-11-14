@@ -29,8 +29,32 @@ import subprocess
 import sys
 
 DEF_REPO = "/home/albus/strata166/pr/strata-fork"
-DEF_BUILD = "/home/albus/strata166/build-r28"
 DEF_CONT = "strata166-407"
+
+
+def _pointer_build():
+    """Resolve the candidate artifact from the single authoritative pointer.
+
+    The old default was build-r28, whose `strata` is 5e63174d -- a 2026-10 build kept only as
+    history.  Every release row that read it compared today's binary against a stale one
+    (same class as D21/D12: two sources of truth).  Pointer wins; the literal is the fallback
+    for a box that has no pointer yet.
+    """
+    ptr = os.environ.get("DEPLOY_POINTER") or "/home/albus/strata166/deploy/CANDIDATE_POINTER.tsv"
+    try:
+        import io as _io
+        for ln in _io.open(ptr, encoding="utf-8-sig"):
+            if ln.lstrip().startswith("#") or not ln.strip():
+                continue
+            f = ln.rstrip("\n").split("\t")
+            if len(f) >= 2 and f[0].strip() == "build_dir":
+                return f[1].strip()
+    except OSError:
+        pass
+    return "/home/albus/strata166/build-pipeline-r34-2"      # 升级轮约定目录，不再回退 build-r28
+
+
+DEF_BUILD = _pointer_build()
 
 
 def sh(cmd, **kw):
