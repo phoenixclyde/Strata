@@ -518,21 +518,24 @@ __global__ void tile_spec_from_bounds_kernel(const int32_t* __restrict__ bounds,
                                              ggml_cuda_mm_id_tile_spec* __restrict__ spec) {
     const int e = blockIdx.x;
     if (e >= n || threadIdx.x != 0) return;
-    // the group's own last row: Product::total_rows is the global compact space for gate/up
-    // (tokens x k_used over all experts), so it cannot size this table
-    const int total  = bounds[n];
+    // The table index is group-relative while the payload keeps absolute compact rows: `ntj`
+    // is sized from this product's own row count, and a Strata group starts at bounds[0] != 0,
+    // so indexing by the absolute row would push whole experts past cap_tiles (llama.cpp can
+    // index absolutely only because its compact space starts at row 0).
+    const int base   = bounds[0];
+    const int total  = bounds[n] - base;
     const int ntiles = min((total + J - 1) / J, cap_tiles);
-    int col_low  = bounds[e];
-    int col_high = min(col_low + J, bounds[e + 1]);
+    int col_low  = 0;
+    int col_high = min(J, bounds[e + 1] - base);
     while (col_high > ((col_low + J - 1) / J) * J) {
         const int t = (col_low + J - 1) / J;
         if (t >= cap_tiles) break;                     // never index past the allocation
-        spec[t] = {e, col_low, col_high, 0};
+        spec[t] = {e, col_low + base, col_high + base, 0};
         col_low  = col_high;
-        col_high = min(col_high + J, bounds[e + 1]);
+        col_high = min(col_high + J, bounds[e + 1] - base);
     }
     // at most one extra tile per expert, between the seams (mmid.cu:137-139)
-    if (ntiles + e < cap_tiles + n) spec[ntiles + e] = {e, col_low, col_high, 0};
+    if (ntiles + e < cap_tiles + n) spec[ntiles + e] = {e, col_low + base, col_high + base, 0};
 }
 
 Context::Context() {
@@ -569,7 +572,8 @@ void Context::run(const Product& p, void* stream) {
     // the product's own rows: Product::total_rows is bounds[n] (the caller passes the group's row count),
     // which is upstream's ncols_dst in the ids path.  The table is zeroed first, so any entry the fill
     // kernel does not write reads as {0, 0, 0} - col_low == col_high, and the block returns immediately.
-    const int ntj = (int) ((p.total_rows + J_best - 1) / J_best + p.n);
+    const int64_t rows_dst = p.rows_dst > 0 ? p.rows_dst : p.total_rows;
+    const int ntj = (int) ((rows_dst + J_best - 1) / J_best + p.n);
     ggml_cuda_pool_alloc<ggml_cuda_mm_id_tile_spec> tile_spec(ctx.pool(), ntj);
     ck(cudaMemsetAsync(tile_spec.get(), 0, (size_t) ntj * sizeof(ggml_cuda_mm_id_tile_spec), s), "tile_spec zero");
     tile_spec_from_bounds_kernel<<<(unsigned) p.n, 32, 0, s>>>(p.bounds, p.n, J_best, ntj - p.n,
@@ -577,7 +581,7 @@ void Context::run(const Product& p, void* stream) {
     ck(cudaGetLastError(), "tile_spec");
 
     const mmq_args a = {(const char*) p.w, t, (const int*) p.xq, p.ids, tile_spec.get(), p.dst, p.y_scale,
-                        p.w_cols, p.w_rows, p.total_rows, bpr, p.total_rows, p.ld_dst,
+                        p.w_cols, p.w_rows, rows_dst, bpr, p.total_rows, p.ld_dst,
                         p.n, p.n, p.tab ? 0 : (int64_t) (p.expert_bytes / type_bytes((int) t)), 0, 0,
                         1, 1, 0, 0, 0,
                         ntj, (int) J_best};
