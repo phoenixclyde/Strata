@@ -2984,7 +2984,7 @@ bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t
         mmq::quantize(x, nullptr, xq, kQ8_0, k, k, rows, m.cs);
         mmq::Product p;
         p.w = w; p.type = kQ8_0; p.w_rows = n_out; p.w_cols = k; p.expert_bytes = mmq::matrix_bytes(kQ8_0, n_out, k);
-        p.n = 1; p.xq = xq; p.bounds = bnd + 2 * slot; p.ids = ident; p.total_rows = rows; p.max_rows = rows;
+        p.n = 1; p.xq = xq; p.bounds = bnd + 2 * slot; p.ids = ident; p.total_rows = rows; p.rows_dst = rows; p.max_rows = rows;
         p.dst = y; p.ld_dst = n_out;
         m.mmq_ctx->run(p, m.cs);
     };
@@ -6369,7 +6369,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                     mmq::Product gu;
                                     gu.w = P.grp_gu; gu.type = mmq_gt; gu.w_rows = kFF2; gu.w_cols = N; gu.expert_bytes = mmq_gub;
                                     gu.n = ngx; gu.xq = P.Xq_g; gu.bounds = rel; gu.ids = P.ident;
-                                    gu.total_rows = nr; gu.max_rows = maxr; gu.dst = P.GU_g; gu.ld_dst = kFF2;
+                                    gu.total_rows = nr; gu.rows_dst = nr; gu.max_rows = maxr; gu.dst = P.GU_g; gu.ld_dst = kFF2;
                                     P.run_ctx->run(gu, ps);
                                     mmq::swiglu(P.GU_g, P.H_g, nr, kFF, !lay.native, ps);
                                     if (had_d)   // APR: folded down weights take H (s * h), on this card as on the primary
@@ -6380,7 +6380,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                     mmq::Product dn;
                                     dn.w = P.grp_d; dn.type = mmq_dt; dn.w_rows = N; dn.w_cols = kFF; dn.expert_bytes = mmq_db;
                                     dn.n = ngx; dn.xq = P.Hq_g; dn.bounds = rel;
-                                    dn.ids = P.ident; dn.total_rows = nr; dn.max_rows = maxr; dn.dst = P.Dm_b[b];
+                                    dn.ids = P.ident; dn.total_rows = nr; dn.rows_dst = nr; dn.max_rows = maxr; dn.dst = P.Dm_b[b];
                                     dn.ld_dst = N;
                                     P.run_ctx->run(dn, ps);
                                     if (P.sums && P.gather) {   // into the per-token sums, one launch for the group
@@ -6448,7 +6448,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                     mmq::Product gu;
                                     gu.w = P.grp_gu; gu.type = mmq_gt; gu.w_rows = kFF2; gu.w_cols = N; gu.expert_bytes = mmq_gub;
                                     gu.n = ngx; gu.xq = P.Xq; gu.bounds = P.bounds + j0; gu.ids = P.ident;
-                                    gu.total_rows = rows_peer; gu.max_rows = maxr; gu.dst = P.GU; gu.ld_dst = kFF2;
+                                    gu.total_rows = rows_peer; gu.rows_dst = rows_peer; gu.max_rows = maxr; gu.dst = P.GU; gu.ld_dst = kFF2;
                                     P.run_ctx->run(gu, ps);
                                     mmq::swiglu(P.GU + r0 * kFF2, P.H + r0 * kFF, nr, kFF, !lay.native, ps);
                                     if (had_d)   // APR: as above
@@ -6458,7 +6458,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                     mmq::Product dn;
                                     dn.w = P.grp_d; dn.type = mmq_dt; dn.w_rows = N; dn.w_cols = kFF; dn.expert_bytes = mmq_db;
                                     dn.n = ngx; dn.xq = P.Hq; dn.bounds = P.bounds + n + 1 + g2 * (MMQ_GROUP + 1);
-                                    dn.ids = P.ident; dn.total_rows = nr; dn.max_rows = maxr; dn.dst = P.Dm + r0 * N;
+                                    dn.ids = P.ident; dn.total_rows = nr; dn.rows_dst = nr; dn.max_rows = maxr; dn.dst = P.Dm + r0 * N;
                                     dn.ld_dst = N;
                                     P.run_ctx->run(dn, ps);
                                     if (P.out_pipe && nr > 0) {   // this group's rows go back while the next group computes
@@ -6823,7 +6823,10 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                         mmq::Product gu;
                                         gu.w = m.grp_gu + eo * mmq_gub; gu.type = mmq_gt; gu.w_rows = kFF2; gu.w_cols = N; gu.expert_bytes = mmq_gub;
                                         gu.n = nx; gu.xq = m.Xq; gu.bounds = m.bounds_dev + rg.a; gu.ids = m.ids_identity;
-                                        gu.total_rows = nra; gu.max_rows = maxr;   // the product's own rows (bounds[n]), not the global T*K: b12361 sizes the tile table from it gu.dst = m.GU - ra * kFF2; gu.ld_dst = kFF2;
+                                        // the product's own rows for the tile table; total_rows stays T*K
+                                        // because that is the row count of Xq (the activation stride)
+                                        gu.total_rows = T * K; gu.rows_dst = nra; gu.max_rows = maxr;
+                                        gu.dst = m.GU - ra * kFF2; gu.ld_dst = kFF2;
                                         gu.y_scale = mmq::fp4_activations(mmq_gt) ? m.Xscale : nullptr;
                                         m.mmq_ctx->run(gu, m.cs);
                                         if (lay.native && lay.fmt[(size_t) l].tail_off)
@@ -6837,7 +6840,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                         mmq::Product dn;
                                         dn.w = m.grp_d + eo * mmq_db; dn.type = mmq_dt; dn.w_rows = N; dn.w_cols = kFF; dn.expert_bytes = mmq_db;
                                         dn.n = nx; dn.xq = m.Hq; dn.bounds = m.bounds_dev + rg.rel;
-                                        dn.ids = m.ids_identity; dn.total_rows = nra; dn.max_rows = maxr; dn.dst = m.Dm + ra * N;
+                                        dn.ids = m.ids_identity; dn.total_rows = nra; dn.rows_dst = nra; dn.max_rows = maxr; dn.dst = m.Dm + ra * N;
                                         dn.ld_dst = N;
                                         dn.y_scale = mmq::fp4_activations(mmq_dt) ? m.Hscale : nullptr;
                                         m.mmq_ctx->run(dn, m.cs);
@@ -6875,7 +6878,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                 mmq::Product gu;
                                 gu.w = m.grp_gu; gu.type = mmq_gt; gu.w_rows = kFF2; gu.w_cols = N; gu.expert_bytes = mmq_gub;
                                 gu.n = ngx; gu.xq = m.Xq; gu.bounds = m.bounds_dev + j0; gu.ids = m.ids_identity;
-                                gu.total_rows = nr; gu.max_rows = maxr; gu.dst = m.GU; gu.ld_dst = kFF2;
+                                gu.total_rows = T * K; gu.rows_dst = nr; gu.max_rows = maxr; gu.dst = m.GU; gu.ld_dst = kFF2;
                                 gu.y_scale = mmq::fp4_activations(mmq_gt) ? m.Xscale : nullptr;
                                 if (direct) gu.tab = &tgu;
                                 m.mmq_ctx->run(gu, m.cs);
@@ -6891,7 +6894,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                 mmq::Product dn;
                                 dn.w = m.grp_d; dn.type = mmq_dt; dn.w_rows = N; dn.w_cols = kFF; dn.expert_bytes = mmq_db;
                                 dn.n = ngx; dn.xq = m.Hq; dn.bounds = m.bounds_dev + n + 1 + g * (MMQ_GROUP + 1);
-                                dn.ids = m.ids_identity; dn.total_rows = nr; dn.max_rows = maxr; dn.dst = m.Dm + r0 * N;
+                                dn.ids = m.ids_identity; dn.total_rows = nr; dn.rows_dst = nr; dn.max_rows = maxr; dn.dst = m.Dm + r0 * N;
                                 dn.ld_dst = N;
                                 dn.y_scale = mmq::fp4_activations(mmq_dt) ? m.Hscale : nullptr;
                                 if (direct) dn.tab = &td;
@@ -8340,7 +8343,7 @@ bool Prefill::lm_run(const std::vector<Seg>& segs, int depth, const std::vector<
             mmq::Product gu;
             gu.w = m.grp_gu; gu.type = mmq_gt; gu.w_rows = kFF2; gu.w_cols = N; gu.expert_bytes = mmq_gub;
             gu.n = ngx; gu.xq = m.Xq; gu.bounds = d_bounds + gp.b_at; gu.ids = m.ids_identity;
-            gu.total_rows = gp.nr; gu.max_rows = gp.maxr; gu.dst = m.GU; gu.ld_dst = kFF2;
+            gu.total_rows = gp.nr; gu.rows_dst = gp.nr; gu.max_rows = gp.maxr; gu.dst = m.GU; gu.ld_dst = kFF2;
             m.mmq_ctx->run(gu, cs);
             mmq::swiglu(m.GU, m.H, gp.nr, kFF, !lay.native, cs);
             pt.mark(kPfGemmD, cs);
@@ -8348,7 +8351,7 @@ bool Prefill::lm_run(const std::vector<Seg>& segs, int depth, const std::vector<
             mmq::Product dn;
             dn.w = m.grp_d; dn.type = mmq_dt; dn.w_rows = N; dn.w_cols = kFF; dn.expert_bytes = mmq_db;
             dn.n = ngx; dn.xq = m.Hq; dn.bounds = d_bounds + gp.b_at; dn.ids = m.ids_identity;
-            dn.total_rows = gp.nr; dn.max_rows = gp.maxr; dn.dst = m.Dm; dn.ld_dst = N;
+            dn.total_rows = gp.nr; dn.rows_dst = gp.nr; dn.max_rows = gp.maxr; dn.dst = m.Dm; dn.ld_dst = N;
             m.mmq_ctx->run(dn, cs);
             pt.mark(kPfCombine, cs);
             moe_scatter_add(m.Dm, d_u_tok + gp.u_at, d_u_off + gp.uo_at, d_u_rows + gp.r0,
