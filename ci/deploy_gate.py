@@ -140,7 +140,111 @@ def numeric_verdict(num):
                                                 p.get("kl_anchor", -1)) for p in pts),
                      num.get("build_floor_bitident"), len(bad), num.get("task_gate")))
         return ok, detail
+    if num.get("mode") == "contract":
+        return contract_verdict(num)
     return False, "没有数值门结论（bitident / kl / anchor）"
+
+
+
+CONTRACT_DECL = "not-applicable:cross-tree"
+CONTRACT_FORBID = ("kl", "top1", "kl_max", "top1_min", "threshold")
+
+
+def sha256_file(path):
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for b in iter(lambda: f.read(1 << 20), b""):
+            h.update(b)
+    return h.hexdigest()
+
+
+def resolve_gate_file(name, root=None):
+    """Locate a file named in the contract block. Fail closed: no hit -> None."""
+    st = root or STATE
+    cands = []
+    env = os.environ.get("STRATA_GATE_DIR")
+    if env:
+        cands.append(os.path.join(env, name))
+    cands += [os.path.join(st, name),
+              os.path.join(ROOT, "deploy", name),
+              os.path.join(ROOT, "tools", name),
+              os.path.join(os.path.dirname(os.path.abspath(ROOT)), "deploy", name)]
+    if ON166:
+        cands += ["/home/albus/strata166/deploy/" + name, "/home/albus/strata166/tools/" + name]
+    for c in cands:
+        if c and os.path.isfile(c):
+            return c
+    return None
+
+
+def contract_verdict(num, root=None):
+    """D4 mode=contract: a *different question*, authorised as a boundary change.
+
+    Basis (pinned by sha256, not by trust): albus/branch_recon/pipeline_r10/D4_FRAMEWORK.md
+    -- leg A (max|dlogit| == 0) is structurally unreachable for any code change, and leg B
+    (KL <= 0.0139) only ever measured "are these two binaries the same fast path", not
+    "is the new code right".
+
+    What this function refuses to do:
+      * it never reads kl / top1 -- carrying either of them here is a FAIL, so a failing
+        KL number cannot be laundered by switching modes;
+      * it never accepts a threshold override (kl_max / top1_min / threshold) -- 0.0139
+        and 99.0 stay exactly where they are, in the branch above, unread by this one;
+      * it never trusts a declared verdict: G1/G2/G3 are recomputed by the pinned
+        compensation gate at call time.
+    """
+    iss = []
+    for k in CONTRACT_FORBID:
+        if k in num:
+            iss.append("contract 模式不接受 %s 字段 —— 那会把「换问题」变成「悄悄跳过 KL 门」" % k)
+    c = num.get("contract")
+    if not isinstance(c, dict):
+        return False, "mode=contract 但缺 contract 块（没有判据，等于静默放行）"
+    if c.get("kl_gate_applicability") != CONTRACT_DECL:
+        return False, ("mode=contract 必须显式声明 kl_gate_applicability=%s（当前 %r）——"
+                       "不声明就是静默跳过 KL 门" % (CONTRACT_DECL, c.get("kl_gate_applicability")))
+    fw_name = c.get("framework") or "D4_FRAMEWORK.md"
+    fw = resolve_gate_file(fw_name, root)
+    if not fw:
+        iss.append("找不到裁决依据 %r（无法复核边界变更的来源）" % fw_name)
+    elif c.get("framework_sha256") != sha256_file(fw):
+        iss.append("裁决依据 sha256 不符：声明 %s 实际 %s"
+                   % (str(c.get("framework_sha256"))[:12], sha256_file(fw)[:12]))
+    gp_name = c.get("gate") or "compensation_gate.py"
+    gp = resolve_gate_file(gp_name, root)
+    if not gp:
+        iss.append("找不到补偿门实现 %r" % gp_name)
+    elif c.get("gate_sha256") != sha256_file(gp):
+        iss.append("补偿门实现 sha256 不符（实现被换过，判据不可复核）")
+    else:
+        r = None
+        try:
+            r = subprocess.run([sys.executable, gp, "--json-only"],
+                               capture_output=True, text=True, timeout=1800)
+        except (OSError, subprocess.SubprocessError) as e:
+            iss.append("补偿门无法执行：%r" % e)
+        if r is not None:
+            j = None
+            try:
+                j = json.loads(r.stdout)
+            except ValueError:
+                iss.append("补偿门输出不是 JSON（rc=%d）：%s"
+                           % (r.returncode, (r.stdout or r.stderr or "")[:120].replace("\n", " ")))
+            if isinstance(j, dict):
+                for g in ("G1", "G2", "G3"):
+                    blk = j.get(g) or {}
+                    if blk.get("verdict") != "PASS":
+                        iss.append("%s=%s（%s）" % (g, blk.get("verdict"),
+                                                   "；".join(blk.get("issues") or [])[:160]))
+    ok = not iss
+    detail = ("mode=contract（原 KL 门未适用：跨树 KL 对任何代码变更结构性不可达，"
+              "依据 D4_FRAMEWORK.md §1 腿 A / §2 腿 B 只反映两条快路径不同；"
+              "本模式改用 G1 provenance + S1 同模式自洽 + S2 任务级门槛 + S5 服务契约；"
+              "阈值 0.0139/99.0 逐字未动、且本分支不读取）｜G1/G2/S1-S2/S5=%s%s"
+              % ("全 PASS" if ok else "未全 PASS",
+                 ("；" + "；".join(iss[:4])) if iss else ""))
+    return ok, detail
 
 
 def ci_run_ok(exe, runs_path=None, recipe_path=None):
@@ -238,6 +342,52 @@ def self_test():
             else:
                 os.environ["STRATA_REGISTER"] = old
     cases += [("D5 缺表守卫空名单", _reg_guard, True)]
+
+    # D4 mode=contract: 9 positives/negatives + 2 boundary probes that prove the ORIGINAL
+    # kl branch still cuts at 0.0139 exactly (a shifted threshold would flip these two).
+    import tempfile as _tf
+    cd_ = _tf.mkdtemp(prefix="contract_")
+    _fw = os.path.join(cd_, "D4_FRAMEWORK.md")
+    io.open(_fw, "w", encoding="utf-8").write("# framework\nleg A unreachable\n")
+    _gate = os.path.join(cd_, "compensation_gate.py")
+    io.open(_gate, "w", encoding="utf-8").write(
+        "import json,os\n"
+        "v=os.environ.get('CG_FAKE','PASS')\n"
+        "print(json.dumps({g:{'verdict':v,'issues':([] if v=='PASS' else ['forced'])}"
+        " for g in ('G1','G2','G3')}))\n")
+    _fwsha, _gsha = sha256_file(_fw), sha256_file(_gate)
+
+    def _blk(**kw):
+        b = {"framework": "D4_FRAMEWORK.md", "framework_sha256": _fwsha,
+             "kl_gate_applicability": CONTRACT_DECL, "gate": "compensation_gate.py",
+             "gate_sha256": _gsha}
+        b.update(kw)
+        return {"mode": "contract", "contract": b}
+
+    def _cv(num, fake="PASS"):
+        old = os.environ.get("CG_FAKE")
+        os.environ["CG_FAKE"] = fake
+        try:
+            return contract_verdict(num, root=cd_)[0]
+        finally:
+            if old is None:
+                os.environ.pop("CG_FAKE", None)
+            else:
+                os.environ["CG_FAKE"] = old
+
+    cases += [
+        ("D4c 正常 -> PASS", lambda: _cv(_blk()), True),
+        ("D4c 夹带 kl -> FAIL", lambda: _cv(dict(_blk(), kl=0.299)), False),
+        ("D4c 夹带 top1 -> FAIL", lambda: _cv(dict(_blk(), top1=100.0)), False),
+        ("D4c 覆盖阈值 -> FAIL", lambda: _cv(dict(_blk(), kl_max=0.5)), False),
+        ("D4c 未声明不适用 -> FAIL", lambda: _cv(_blk(kl_gate_applicability="applicable")), False),
+        ("D4c 缺 contract 块 -> FAIL", lambda: _cv({"mode": "contract"}), False),
+        ("D4c 依据 sha 不符 -> FAIL", lambda: _cv(_blk(framework_sha256="0" * 64)), False),
+        ("D4c 实现 sha 不符 -> FAIL", lambda: _cv(_blk(gate_sha256="0" * 64)), False),
+        ("D4c 补偿门 REFUSE -> FAIL", lambda: _cv(_blk(), fake="REFUSE"), False),
+        ("D4c 原门 kl=0.0139 仍过", lambda: numeric_verdict({"mode": "kl", "kl": 0.0139, "top1": 99.0})[0], True),
+        ("D4c 原门 kl=0.0140 仍拒", lambda: numeric_verdict({"mode": "kl", "kl": 0.0140, "top1": 99.0})[0], False),
+    ]
     bad = 0
     for name, obj, want in cases:
         got = numeric_verdict(obj)[0] if isinstance(obj, dict) else obj()
