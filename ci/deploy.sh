@@ -66,8 +66,39 @@ python3 "$HERE/gate.py" --repo "$REPO" --build "$BUILD" --config "$CFG" || fail 
 # ---------------------------------------------------------------- 2 tag
 say "2/7 release tag"
 HEAD_SHA=$(git -C "$REPO" rev-parse HEAD)
-TAG=$(git -C "$REPO" describe --exact-match --match "${TAG_PREFIX}*" HEAD 2>/dev/null || true)
+# W1116: anchor the release tag on the sha the binary was built from, not on HEAD.
+# `describe --exact-match HEAD` made every CI-only commit look like a provenance failure.
+BASELINE=$(python3 - "$REPO" <<'PYEOF'
+import io, os, sys
+repo = os.path.abspath(sys.argv[1])
+cands = [os.environ.get("DEPLOY_POINTER")]
+d = repo
+for _ in range(4):
+    cands.append(os.path.join(d, "deploy", "CANDIDATE_POINTER.tsv"))
+    nd = os.path.dirname(d)
+    if nd == d:
+        break
+    d = nd
+for c in cands:
+    if c and os.path.isfile(c):
+        for line in io.open(c, encoding="utf-8-sig"):
+            f = line.rstrip("\n").split("\t")
+            if len(f) >= 2 and f[0] == "built_from":
+                print(f[1].strip())
+                raise SystemExit
+print("")
+PYEOF
+)
+[ -n "$BASELINE" ] || fail "no RELEASE_BASELINE_SHA: deploy/CANDIDATE_POINTER.tsv 缺 built_from"
+git -C "$REPO" merge-base --is-ancestor "$BASELINE" "$HEAD_SHA" \
+  || fail "release baseline ${BASELINE:0:10} is not an ancestor of HEAD ${HEAD_SHA:0:10}"
+ENGINE_HITS=$(git -C "$REPO" diff --name-only "$BASELINE..$HEAD_SHA" \
+  | grep -vE '^(ci/|docs/|serve/|tools/|tests/|bench/|history/|albus/|\.workbuddy/|\.github/|assets/)' \
+  | grep -vE '^[^/]+\.(md|txt|bat|gitignore|gitattributes)$' || true)
+[ -z "$ENGINE_HITS" ] || fail "engine paths changed between release baseline and HEAD: $ENGINE_HITS"
+TAG=$(git -C "$REPO" describe --exact-match --match "${TAG_PREFIX}*" "$BASELINE" 2>/dev/null || true)
 echo "HEAD    = ${HEAD_SHA:0:10}"
+echo "baseline= ${BASELINE:0:10}  (RELEASE_BASELINE_SHA)"
 echo "tag     = ${TAG:-<none>}"
 BRANCH=$(git -C "$REPO" rev-parse --abbrev-ref HEAD)
 echo "branch  = $BRANCH"
@@ -76,7 +107,7 @@ if [ -n "$(git -C "$REPO" status --porcelain --untracked-files=no)" ]; then
   git -C "$REPO" status --porcelain --untracked-files=no | head -5
 fi
 if [ -z "$TAG" ] && [ "$ALLOW_UNTAGGED" != "1" ]; then
-  fail "HEAD carries no ${TAG_PREFIX}* tag (pass --allow-untagged to override)"
+  fail "release baseline ${BASELINE:0:10} carries no ${TAG_PREFIX}* tag (pass --allow-untagged to override)"
 fi
 
 # ---------------------------------------------------------------- 3 identity
