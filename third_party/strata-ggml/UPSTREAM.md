@@ -46,9 +46,14 @@ folder (an override kept for two releases, then removed).
      `ggml_cuda_mmq_load_tiles_tq` loader entry, six `extern DECL_MMQ_CASE` lines), `mmq-load-tiles.cuh` (`#include "tq-mmq-tiles.cuh"` at the end),
      `mmq-config-{ampere,cdna,gcn,pascal-dp4a,pascal-older,rdna2,rdna3-5,rdna3,rdna4}.cuh` (every `CASE(GGML_TYPE_IQ2_XS, ...)` line gets a copy per trellis type;
      `mmq-config-blackwell.cuh` has no IQ2_XS case and is not copied).
-   - `copy` (verbatim): `quantize.cu`, `quantize.cuh`, `mmq-vec-dot.cuh` (they include `mmq.cuh` by name) and, in `include/`, `ggml-alloc.h`, `ggml-backend.h`, `ggml-cpp.h`,
+   - `copy` (verbatim): `quantize.cuh`, `mmq-vec-dot.cuh` (they include `mmq.cuh` by name) and, in `include/`, `ggml-alloc.h`, `ggml-backend.h`, `ggml-cpp.h`,
      `ggml-cpu.h`, `ggml-cuda.h`, `ggml-opt.h`, `gguf.h` (they include `ggml.h` by name). A quoted include resolves next to the including file first, so each of them
      has to sit beside the patched header it includes, or the pristine one comes in a second time; the overlay copied the whole header set for the same reason.
+   - `edited`: `quantize.cu` -- upstream commit 8fc0376721e9662d498a5706d7ee8e7574ce99f4
+     (`cuda: potential fix for Q8_1 correction sum (#31247)`, 2026-11-03) is ported into this copy: the Q8_1 correction
+     sum becomes `d * sum(q)` with an integer accumulation of the quants, in both `quantize_q8_1` and `quantize_mmq_q8_1`;
+     the block layout, the rounding and every other line are unchanged. The upstream file itself (ggml/src/ggml-cuda/quantize.cu)
+     is NOT edited -- this folder is the copy the trellis build compiles.
    - `added`: `tq.cuh` and `tq-mmq-tiles.cuh` (from the agentionai fork, MIT, as `third_party/ggml-tq/` was; `tq.cuh` includes `third_party/ggml/ggml-common-tq.h` and
      `src/kernels/cuda/tq_lut_i8.cuh` by relative path) and `template-instances/mmq-instance-{tq2_t,tqk6,tqk7,tqp5,tqp6,tqp7}.cu`.
    The scheduler region of the pristine `mmq.cuh` (`mul_mat_q_process_tile` to `DECL_MMQ_CASE`) is what `src/prefill/moe_mmq_tab.cuh` mirrors; it is unedited, so
@@ -145,7 +150,7 @@ patched 7b4c9f77993100968543353b1421d62d2e992cd0789508844075501420725de6 e40c9c5
 patched 6a63ae04f6ca11e81be323ae3e7c94e5cbc84ce4a4cbb1933b1a20af3d279a94 f1adb201fa40087e294c40887e62f583f6a7adf40ddca542a735774742e0ae2c ggml/src/ggml-cuda-tq/mmq-load-tiles.cuh
 copy 58e87f162ec6e4bd5d23e99aeac76f3dd0e13a6cdfe01165cae806b51fe9ae65 58e87f162ec6e4bd5d23e99aeac76f3dd0e13a6cdfe01165cae806b51fe9ae65 ggml/src/ggml-cuda-tq/mmq-vec-dot.cuh
 patched 50e8bb69b1317a5131ae1df3ef22c7ae4587330855e0f09d7194a97913013899 50db23f5055af6e28c142fcb4c7fb16c51f7137184ebf8c0ca113ed88906851b ggml/src/ggml-cuda-tq/mmq.cuh
-copy 71cd7baab62ee1f457d23ae648c381d18b9b1327ec34832f31463b14b81895b3 71cd7baab62ee1f457d23ae648c381d18b9b1327ec34832f31463b14b81895b3 ggml/src/ggml-cuda-tq/quantize.cu
+edited 19fa79eefa75fe057eba6fae4da2ff616adb880507066ba04fd8368ea916c322 71cd7baab62ee1f457d23ae648c381d18b9b1327ec34832f31463b14b81895b3 ggml/src/ggml-cuda-tq/quantize.cu
 copy 112e190a096e1fa68d4c72ca2a450cb202586e3f2919c884f3e3316a8d5c57cd 112e190a096e1fa68d4c72ca2a450cb202586e3f2919c884f3e3316a8d5c57cd ggml/src/ggml-cuda-tq/quantize.cuh
 added 1a851ed61d5e619420666ee5ef5c32e447695dff8b3c30aa05393631680eb61f - ggml/src/ggml-cuda-tq/template-instances/mmq-instance-tq2_t.cu
 added da4d342b1b6fa65e0a3d685f90dc875dfdf5ca798572b43b8e6da306a54f1bcf - ggml/src/ggml-cuda-tq/template-instances/mmq-instance-tqk6.cu
