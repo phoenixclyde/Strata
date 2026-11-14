@@ -343,8 +343,10 @@ def main():
                 "容量型必须严格变大（%s > %s）" % (cs, bs))
         else:
             add(min(ns) >= 3, "D3a 样本量", "%s n_base=%s n_cand=%s（每点至少 3）" % (t, ns[0], ns[1]))
-            add(latency_target_ok(delta, band), "D3b 目标",
-                "%s Δ=%+.2f%% vs -2×CV=%.2f%%（要显著变快，变慢再多也不算收益）" % (t, delta, band))
+            # 没有样本就没有「收益方向」可言。旧写法在 n=0 时 Δ=+0.00% 落进 -2×CV=0.00% 的带内，
+            # 打印 PASS —— 那是把「没测」显示成「达标」（SKIP 伪装 PASS）。
+            add(min(ns) >= 3 and latency_target_ok(delta, band), "D3b 目标",
+                "%s Δ=%+.2f%% vs -2×CV=%.2f%%（要显著变快；n<3 时不判）" % (t, delta, band))
         for g in ab.get("guard", []):
             gd = (g["mean_cand"] / g["mean_base"] - 1) * 100 if g.get("mean_base") else 0
             gb = 2 * g.get("cv_pct", 0)
@@ -399,7 +401,8 @@ def main():
             else:
                 add(True, "D5 配置面", "%s（其余键逐项相同）" % detail)
     else:
-        add(True, "D5 配置面", "SKIP（没给 --cfg-new：本机装机不带参数面变更）")
+        # W1043: 任一 SKIP 即不可装。SKIP 必须显示成 SKIP/REFUSE，不能显示 PASS。
+        add(False, "D5 配置面", "SKIP 不是 PASS：没给 --cfg-new，无法证明参数面只有声明增量")
 
     # D6 evidence chain
     if a.report and os.path.isfile(a.report):
@@ -409,9 +412,9 @@ def main():
                                 cwd=ROOT, capture_output=True, text=True).returncode
             add(rc == 0, "D6 证据链", "report 在 + 账本行 + 当日记忆 + §6.5 回写块" if rc == 0 else "round_ledger FAIL")
         else:
-            add(True, "D6 证据链", "report 在（166 部署面无 round_ledger，四件套由本机 round_close 另管）")
+            add(True, "D6 证据链", "report 在（166 部署面无 round_ledger；四件套由本机 round_close 判）")
     else:
-        add(True, "D6 证据链", "SKIP（装机路径没绑定报告；本轮四件套由 round_close 另管）")
+        add(False, "D6 证据链", "SKIP 不是 PASS：装机必须绑定本轮 report（--report 指向的文件不存在）")
 
     # D7 CI evidence (W1048): the build sha of this exe must be covered by a recorded
     # Downstream gate run (or an explicit exemption row).  Fail closed: a missing table

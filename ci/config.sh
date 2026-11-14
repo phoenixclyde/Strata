@@ -4,7 +4,10 @@
 
 # --- repo / build ---------------------------------------------------------------
 REPO=/home/albus/strata166/pr/strata-fork
-BUILD=/home/albus/strata166/build-r28            # cmake build dir (container sees it as /out)
+BUILD=/home/albus/strata166/build-pipeline-r34-2  # cmake build dir (container sees it as /out)
+# 2026-11-14: 必须等于 deploy/CANDIDATE_POINTER.tsv 的 build_dir —— 否则 deploy.sh 会把
+# 陈旧 build-r28 的 5e63174d 当成 "new binary"，与候选指针 631b5c97 不一致（D21/D12 同类）。
+# build-r28 只作历史归档。
 SRC_MOUNT=/src                                    # container path of $REPO
 
 # --- runtime / production ------------------------------------------------------
