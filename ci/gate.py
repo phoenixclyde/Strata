@@ -390,6 +390,133 @@ def tag_triplet(repo, tag):
     return g("rev-parse", tag), g("cat-file", "-t", tag), g("rev-parse", tag + "^{commit}")
 
 
+def _pointer_paths(repo):
+    """Every place CANDIDATE_POINTER.tsv may legitimately live: env first, then up to 4 parents."""
+    out = []
+    if os.environ.get("DEPLOY_POINTER"):
+        out.append(os.environ["DEPLOY_POINTER"])
+    d = os.path.abspath(repo)
+    for _ in range(4):
+        out.append(os.path.join(d, "deploy", "CANDIDATE_POINTER.tsv"))
+        nd = os.path.dirname(d)
+        if nd == d:
+            break
+        d = nd
+    return out
+
+
+def release_baseline(repo):
+    """RELEASE_BASELINE_SHA = the sha the binary was built from (single authority).
+
+    Not HEAD (a CI-only commit on top must not turn provenance red) and not the tag
+    object (see tag_triplet).
+    """
+    for c in _pointer_paths(repo):
+        if c and os.path.isfile(c):
+            for line in io.open(c, encoding="utf-8-sig"):
+                f = line.rstrip("\n").split("\t")
+                if len(f) >= 2 and f[0] == "built_from":
+                    return f[1].strip()
+    return ""
+
+
+NON_ENGINE_PREFIXES = ("ci/", "docs/", "serve/", "tools/", "tests/", "bench/",
+                       "history/", "albus/", ".workbuddy/", ".github/", "assets/")
+NON_ENGINE_ROOT_SUFFIX = (".md", ".txt", ".bat", ".gitignore", ".gitattributes")
+ENGINE_FILES = ("CMakeLists.txt", "CMakePresets.json", "Makefile", "Dockerfile")
+
+
+def is_engine_path(p):
+    """Fail-closed: anything not explicitly non-engine counts as an engine path."""
+    if p in ENGINE_FILES:
+        return True
+    if p.startswith(NON_ENGINE_PREFIXES):
+        return False
+    if "/" not in p:
+        return not p.endswith(NON_ENGINE_ROOT_SUFFIX)
+    return True
+
+
+def _git_out(repo, *args):
+    return subprocess.run(["git", "-C", repo] + list(args),
+                          capture_output=True, text=True, check=True).stdout.strip()
+
+
+def _is_ancestor(repo, sha, head):
+    if not sha or not head:
+        return False
+    return subprocess.run(["git", "-C", repo, "merge-base", "--is-ancestor", sha, head],
+                          capture_output=True).returncode == 0
+
+
+def prov3_verdict(repo, tag, baseline=None, head=None, basename="prov/3"):
+    """T1 tag^{commit} == RELEASE_BASELINE_SHA / T2 baseline is HEAD's ancestor /
+    T3 baseline..HEAD has no engine path.  Returns [(state, name, detail)]."""
+    out = []
+    baseline = baseline if baseline is not None else release_baseline(repo)
+    head = head if head is not None else _git_out(repo, "rev-parse", "HEAD")
+    if not baseline:
+        return [(FAIL, basename + " tag==release",
+                 "no RELEASE_BASELINE_SHA (CANDIDATE_POINTER.tsv 的 built_from 缺失)")]
+    # 哪个 tag？部署台账记的是**上一代**（生产在跑的那份），装机前它不可能等于候选的
+    # 构建 sha。所以先认「指向 release baseline 的 mi50-* tag」，台账 tag 只在它确实
+    # 解引用到 baseline 时才优先 —— 否则拿台账 tag 比候选，等于要求候选已经被装过。
+    try:
+        tags_at = [t for t in _git_out(repo, "tag", "--points-at", baseline).split()
+                   if t.startswith("mi50-")]
+    except Exception as e:
+        return [(FAIL, basename + " tag^{commit}", "cannot list tags at baseline: %s" % e)]
+    chosen, source = "", ""
+    if tag and tag != "-":
+        try:
+            if tag_triplet(repo, tag)[2] == baseline:
+                chosen, source = tag, "deploy 台账"
+        except Exception:
+            pass
+    if not chosen:
+        if len(tags_at) == 1:
+            chosen, source = tags_at[0], "tag --points-at release baseline（台账尚未记它）"
+        elif len(tags_at) > 1:
+            return [(FAIL, basename + " tag==release",
+                     "release baseline %s 上有多个 mi50-* tag，无法唯一确定：%s"
+                     % (baseline[:12], tags_at))]
+        else:
+            return [(FAIL, basename + " tag==release",
+                     "release baseline %s 没有任何 mi50-* tag（也无台账 tag 指向它）" % baseline[:12])]
+    try:
+        obj, typ, com = tag_triplet(repo, chosen)
+    except Exception as e:
+        return [(FAIL, basename + " tag^{commit}", "cannot dereference %s: %s" % (chosen, e))]
+    if com != baseline:
+        return [(FAIL, basename + " tag^{commit}",
+                 "%s deref %s != release baseline %s（tag 没打在产二进制的构建 sha 上）"
+                 % (chosen, com[:12], baseline[:12]))]
+    _extra = []
+    if tag and tag != "-" and tag != chosen:
+        _extra.append((OK, basename + " 台账",
+                       "deploy 台账末行仍是 %s（上一代在跑的），候选 tag 是 %s —— 装机前这是预期" % (tag, chosen)))
+    if not _is_ancestor(repo, baseline, head):
+        return [(FAIL, basename + " T2 祖先",
+                 "release baseline %s 不是 HEAD %s 的祖先（HEAD 被回退或换了分支）"
+                 % (baseline[:12], (head or "?")[:12]))]
+    files = []
+    if head and head != baseline:
+        files = [x for x in _git_out(repo, "diff", "--name-only", "%s..%s" % (baseline, head)).splitlines()
+                 if x.strip()]
+    eng = [f for f in files if is_engine_path(f)]
+    if eng:
+        return [(FAIL, basename + " T3 引擎路径",
+                 "baseline..HEAD 有 %d 处引擎路径改动（例：%s）⇒ 二进制不再代表 HEAD"
+                 % (len(eng), eng[:3]))]
+    if head == baseline:
+        return [(OK, basename + " tag^{commit}",
+                 "%s object %s(%s) -> commit %s == HEAD（exact）" % (chosen, obj[:12], typ, com[:12]))]
+    return _extra + [(OK, basename + " tag^{commit}",
+             "%s object %s(%s) -> commit %s == release baseline；HEAD %s 领先 %d 文件（全非引擎）"
+             % (chosen, obj[:12], typ, com[:12], head[:12], len(files))),
+            (OK, basename + " 口径", "via-release-baseline（HEAD 是发布点的 CI-only 后置提交）")]
+
+
 def check_tag_cli(repo, tag):
     """--check-tag: print the triplet and the verdict, with the naive comparison as a control."""
     obj, typ, com = tag_triplet(repo, tag)
@@ -405,7 +532,14 @@ def check_tag_cli(repo, tag):
     print("naive obj==HEAD   -> %s   [负向样例：必须为 False，否则说明比较对象取错]"
           % ("MATCH" if naive else "MISMATCH"))
     print("deref commit==HEAD-> %s" % ("MATCH" if deref else "MISMATCH"))
-    print("TAG_PROV: %s" % ("PASS" if deref and typ == "tag" else "FAIL"))
+    _b = release_baseline(repo)
+    print("release baseline   = %s   (CANDIDATE_POINTER.built_from)" % (_b or "<absent>"))
+    print("deref commit==baseline-> %s" % ("MATCH" if _b and com == _b else "MISMATCH"))
+    print("TAG_PROV(HEAD)   : %s" % ("PASS" if deref else "FAIL"))
+    _v = prov3_verdict(repo, tag)
+    print("TAG_PROV(release): %s" % ("PASS" if all(x[0] != FAIL for x in _v) else "FAIL"))
+    for _st, _nm, _dt in _v:
+        print("   %-4s %-22s %s" % ("PASS" if _st == OK else "FAIL", _nm, _dt))
     return 0 if (deref and typ == "tag") else 1
 
 
@@ -488,60 +622,15 @@ def check_provenance(cfg_path, build_strata, ledger, repo):
                     "build/strata %s != config exe %s -- deploy drifted from build?"
                     % (b_md5[:12], cfg_md5[:12]))
 
-    # --- 3) ledger tag != "-" and equals HEAD tag
-    try:
-        out = subprocess.run(["git", "-C", repo, "tag", "--points-at", "HEAD"],
-                             capture_output=True, text=True, check=True).stdout.split()
-        head_tags = [t for t in out if t.startswith("mi50-")]
-    except Exception as e:
-        add(FAIL, "prov/3 tag==HEAD", "cannot read HEAD tags: %s" % e)
-        head_tags = []
-    if l_tag == "-" or not l_tag:
-        add(FAIL, "prov/3 tag==HEAD", "ledger-last tag is %r (unlogged deploy?)" % l_tag)
-    elif not head_tags:
-        add(FAIL, "prov/3 tag==HEAD", "HEAD has no mi50-* tag but ledger says %s" % l_tag)
-    elif l_tag in head_tags:
-        add(OK, "prov/3 tag==HEAD", "ledger tag %s == HEAD tag(s) %s" % (l_tag, head_tags))
-        try:
-            _obj, _typ, _com = tag_triplet(repo, l_tag)
-            _head = subprocess.run(["git", "-C", repo, "rev-parse", "HEAD"],
-                                   capture_output=True, text=True, check=True).stdout.strip()
-            if _com == _head:
-                add(OK, "prov/3 tag^{commit}", "%s object %s(%s) -> commit %s == HEAD"
-                    % (l_tag, _obj[:12], _typ, _com[:12]))
-            else:
-                add(FAIL, "prov/3 tag^{commit}",
-                    "%s deref %s != HEAD %s（tag 不在 HEAD 上）" % (l_tag, _com[:12], _head[:12]))
-        except Exception as e:
-            add(FAIL, "prov/3 tag^{commit}", "cannot dereference %s: %s" % (l_tag, e))
-    else:
-        # 登记标记型 tag（purpose=marking）：不产二进制、不进 deploy 台账，但必须是 HEAD 上的 tag
-        tled = read_tag_ledger(os.environ.get("TAG_LEDGER") or
-                               os.path.join(root166, "deploy", "TAG_LEDGER.tsv"))
-        try:
-            head_sha = subprocess.run(["git", "-C", repo, "rev-parse", "HEAD"],
-                                      capture_output=True, text=True, check=True).stdout.strip()
-        except Exception:
-            head_sha = ""
-        marks = [t for t in head_tags if t in tled and tled[t][1] == "marking"
-                 and head_sha and tled[t][0] == head_sha]
-        if marks:
-            add(OK, "prov/3b marking tag",
-                "HEAD 带登记型 tag %s（不产二进制）；deploy 台账仍停在 %s" % (marks, l_tag))
-            # 解引用判据对 marking tag 同样成立：比的是 commit，不是 tag object
-            for _m in marks:
-                try:
-                    _obj, _typ, _com = tag_triplet(repo, _m)
-                    if _com == head_sha:
-                        add(OK, "prov/3b tag^{commit}", "%s object %s(%s) -> commit %s == HEAD"
-                            % (_m, _obj[:12], _typ, _com[:12]))
-                    else:
-                        add(FAIL, "prov/3b tag^{commit}",
-                            "%s deref %s != HEAD %s" % (_m, _com[:12], (head_sha or "")[:12]))
-                except Exception as e:
-                    add(FAIL, "prov/3b tag^{commit}", "cannot dereference %s: %s" % (_m, e))
-        else:
-            add(FAIL, "prov/3 tag==HEAD", "ledger tag %s not in HEAD tags %s" % (l_tag, head_tags))
+    # --- 3) release-point tag, anchored on the binary's build sha (r15)
+    # The old check asked `git tag --points-at HEAD`, i.e. it assumed HEAD *is* the release
+    # point; one CI-only commit on top then turns provenance red for a reason that has nothing
+    # to do with the artifact.  The anchor is now RELEASE_BASELINE_SHA, and the tag must still
+    # dereference to *that* sha -- HEAD and the tag object remain invalid answers.
+    for _st, _nm, _dt in prov3_verdict(repo, l_tag, basename="prov/3"):
+        add(_st, _nm, _dt)
+
+
 
 
 def main():
