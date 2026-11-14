@@ -26,7 +26,7 @@ jobs:
     timeout-minutes: 45
     env:
       # setup.py's LLAMA_CPP_COMMIT and metal/setup_mac.py's metal-cpp pin
-      LLAMA_CPP_COMMIT: 3cf03257f219afbe7334045ff7c6a06ac68c627d
+      LLAMA_CPP_COMMIT: 951d465f5c7c16fb486ff45bb14d99984e68c6db
       METAL_CPP_URL: https://developer.apple.com/metal/cpp/files/metal-cpp_26.zip
       METAL_CPP_SHA256: 4df3c078b9aadcb516212e9cb03004cbc5ce9a3e9c068fa3144d021db585a3a4
     steps:

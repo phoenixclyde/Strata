@@ -209,3 +209,16 @@ added fd25540d3f889d3de1a604c9dd230147eb441bd89aca7d838fe14bde91ce3422 - ggml/sr
 added 2ff9918120a6e5a349e3737157fdde46e97b482e05010911dbfd597ce69fdaca - strata-quant-common.h
 ```
 <!-- vendored-files:end -->
+
+## 2026-11-15 · banner (append-only; the text above is history and is not rewritten)
+
+This vendored tree is **frozen at 3cf03257** and is **no longer the tree the release engine is built from**.
+The L2 fork to llama.cpp **b12361 (951d465f5c7c16fb486ff45bb14d99984e68c6db)** builds with
+`-DSTRATA_GGML_DIR=<llama.cpp checkout>` against that checkout, and `src/prefill/*` no longer compiles
+against this frozen tree (defect D40 in the governance repo).  Consequences:
+
+- do **not** read this folder as the release tree;
+- `tools/check_vendored.py` returning ok only proves **this folder was not edited** - it is not evidence that
+  the shipped engine was built from it;
+- a build with this tree and no `STRATA_GGML_DIR` override fails at compile time (that failure is expected
+  until the tree is either re-vendored at b12361 or the override is made mandatory).
