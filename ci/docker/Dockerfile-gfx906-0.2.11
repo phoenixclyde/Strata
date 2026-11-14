@@ -28,6 +28,11 @@ FROM strata-gfx906:0.2.10-101
 
 ARG COMMITS_ON_TOP=0
 ARG STRATA_TAG=unknown
+# D27: engine version and the source sha of the *engine binary* are build args now.
+# A literal here went stale three times (0.1.57 vs the installed 0.1.59.1); a value
+# nobody re-derives is how this project has lied to itself before.
+ARG ENGINE_VERSION=unknown
+ARG SOURCE_SHA=unknown
 ENV LLAMA_CPP_SHA=3cf03257f219afbe7334045ff7c6a06ac68c627d \
     LLAMA_CPP_BUILD=b11062 \
     LLAMA_CPP_TREE=6feee58927d5f1efd38e72bbc1db061d
@@ -54,7 +59,8 @@ RUN set -eux; \
       '  "source": "rebase onto upstream v0.2.11 (9f7d977d) from gfx906/mi50",' \
       '  "commits_on_top": '"$COMMITS_ON_TOP"',' \
       '  "tag": "'"$STRATA_TAG"'",' \
-      '  "engine": "0.1.57",' \
+      '  "source_sha": "'"$SOURCE_SHA"'",' \
+      '  "engine": "'"$ENGINE_VERSION"'",' \
       '  "rebase_date": "2026-11-06",' \
       '  "llama_cpp": "'"$LLAMA_CPP_SHA"'",' \
       '  "llama_cpp_build": "'"$LLAMA_CPP_BUILD"'",' \
