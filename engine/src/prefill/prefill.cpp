@@ -7177,7 +7177,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                         mmq::Product gu;
                                         gu.w = m.grp_gu + eo * mmq_gub; gu.type = mmq_gt; gu.w_rows = kFF2; gu.w_cols = N; gu.expert_bytes = mmq_gub;
                                         gu.n = nx; gu.xq = m.Xq; gu.bounds = m.bounds_dev + rg.a; gu.ids = m.ids_identity;
-                                        gu.total_rows = T * K; gu.max_rows = maxr; gu.dst = m.GU - ra * kFF2; gu.ld_dst = kFF2;
+                                        gu.total_rows = nra; gu.max_rows = maxr;   // the product's own rows (bounds[n]), not the global T*K: b12361 sizes the tile table from it gu.dst = m.GU - ra * kFF2; gu.ld_dst = kFF2;
                                         gu.y_scale = mmq::fp4_activations(mmq_gt) ? m.Xscale : nullptr;
                                         m.mmq_ctx->run(gu, m.cs);
                                         if (lay.native && lay.fmt[(size_t) l].tail_off)
@@ -7229,7 +7229,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                 mmq::Product gu;
                                 gu.w = m.grp_gu; gu.type = mmq_gt; gu.w_rows = kFF2; gu.w_cols = N; gu.expert_bytes = mmq_gub;
                                 gu.n = ngx; gu.xq = m.Xq; gu.bounds = m.bounds_dev + j0; gu.ids = m.ids_identity;
-                                gu.total_rows = T * K; gu.max_rows = maxr; gu.dst = m.GU; gu.ld_dst = kFF2;
+                                gu.total_rows = nr; gu.max_rows = maxr; gu.dst = m.GU; gu.ld_dst = kFF2;
                                 gu.y_scale = mmq::fp4_activations(mmq_gt) ? m.Xscale : nullptr;
                                 if (direct) gu.tab = &tgu;
                                 m.mmq_ctx->run(gu, m.cs);
