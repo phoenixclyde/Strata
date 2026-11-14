@@ -500,8 +500,23 @@ def main():
         for g in ab.get("guard", []):
             gd = (g["mean_cand"] / g["mean_base"] - 1) * 100 if g.get("mean_base") else 0
             gb = 2 * g.get("cv_pct", 0)
-            add(guard_ok(gd, gb), "D3c 不劣化",
-                "%s Δ=%+.2f%% vs 带宽 %.2f%%（变快不限，变慢不许超；n=%s）" % (g["name"], gd, gb, g.get("n")))
+            _gok = guard_ok(gd, gb)
+            # r15: a written, one-time, TTL-bounded waiver may release THIS measurement.
+            # It never edits the rule: the row keeps the original percentage and the word
+            # REFUSE, and names the waiver, its basis, its TTL and its removal condition.
+            _w = None if _gok else waiver_for("D3c", g.get("name", ""), gd, gb)
+            if _gok:
+                add(True, "D3c 不劣化",
+                    "%s Δ=%+.2f%% vs 带宽 %.2f%%（变快不限，变慢不许超；n=%s）" % (g["name"], gd, gb, g.get("n")))
+            elif _w:
+                add(True, "D3c 一次性豁免",
+                    "%s 原值 Δ=%+.2f%% vs 带宽 %.2f%% = REFUSE（原判据未改，阈值/方向未动）；"
+                    "经一次性豁免 %s：%s；授予 %s @ %s；TTL %s；回看 %s；解除条件：%s"
+                    % (g["name"], gd, gb, _w["id"], _w["basis"], _w["granted_by"],
+                       _w["granted_at"], _w["ttl_until"], _w["reviewer"], _w["removed_when"]))
+            else:
+                add(False, "D3c 不劣化",
+                    "%s Δ=%+.2f%% vs 带宽 %.2f%%（变快不限，变慢不许超；n=%s）" % (g["name"], gd, gb, g.get("n")))
     else:
         add(False, "D3 性能", "没有 A/B 证据文件（--ab），无从判断" )
 
@@ -588,6 +603,87 @@ def main():
         banner = "REFUSE — 见上面标 REFUSE 的条目"
     print("\nDEPLOY_GATE: %s" % banner)
     return 0 if all_ok else 1
+
+
+
+
+# ---------------------------------------------------------------- one-time waivers (r15)
+# A waiver releases ONE measurement, ONCE, with an expiry and a named reviewer.  It is
+# deliberately hostile to the three ways this kind of file goes wrong:
+#   1. becoming a standing rule  -> every row must carry ttl_until + removed_when, and any
+#      row with scope=standing invalidates the whole file;
+#   2. being reused for a different measurement -> delta/band must match to 1e-6;
+#   3. rewriting history -> there is no "verdict" column; the gate always prints the
+#      original number together with the word REFUSE.
+WAIVER_COLS = ("id", "criterion", "subject", "measured_delta", "band", "basis",
+               "granted_by", "granted_at", "ttl_until", "reviewer", "removed_when")
+
+
+def _waiver_path(root=None):
+    c = os.environ.get("D3C_WAIVER")
+    if c:
+        return c
+    cands = []
+    if root:
+        cands += [os.path.join(root, "deploy", "D3C_WAIVER.tsv"),
+                  os.path.join(os.path.dirname(root), "deploy", "D3C_WAIVER.tsv")]
+    # walk up like release_baseline does: ci/.. -> repo, repo/.. -> 166 root
+    d = os.path.dirname(os.path.abspath(__file__))
+    for _ in range(4):
+        cands.append(os.path.join(d, "deploy", "D3C_WAIVER.tsv"))
+        cands.append(os.path.join(d, "D3C_WAIVER.tsv"))
+        nd = os.path.dirname(d)
+        if nd == d:
+            break
+        d = nd
+    for cand in cands:
+        if os.path.isfile(cand):
+            return cand
+    return ""
+
+
+def waiver_for(criterion, subject, delta, band):
+    """Return the matching waiver dict, or None.  Fail-closed: any malformed row disables
+    the whole file rather than being skipped."""
+    path = _waiver_path()
+    if not path or not os.path.isfile(path):
+        return None
+    today = __import__("datetime").date.today().isoformat()
+    rows, poisoned = [], []
+    for line in io.open(path, encoding="utf-8-sig"):
+        line = line.rstrip("\n")
+        if not line.strip() or line.startswith("#"):
+            continue
+        f = line.split("\t")
+        if len(f) < len(WAIVER_COLS):
+            poisoned.append("列数不足: %r" % line[:60])
+            continue
+        if [x.strip() for x in f[:len(WAIVER_COLS)]] == list(WAIVER_COLS):
+            continue  # header row (real files carry one; it is not a waiver)
+        d = dict(zip(WAIVER_COLS, f))
+        d["scope"] = f[len(WAIVER_COLS)] if len(f) > len(WAIVER_COLS) else ""
+        if d.get("scope") in ("standing", "permanent"):
+            poisoned.append("%s 写成常设规则（scope=%s）" % (d.get("id"), d.get("scope")))
+            continue
+        if not d.get("ttl_until") or not d.get("removed_when") or not d.get("reviewer"):
+            poisoned.append("%s 缺 ttl_until/removed_when/reviewer（=常设规则的写法）" % d.get("id"))
+            continue
+        if d["ttl_until"] < today:
+            poisoned.append("%s 已过期（ttl_until=%s < %s）" % (d.get("id"), d["ttl_until"], today))
+            continue
+        try:
+            dd, bb = float(d["measured_delta"]), float(d["band"])
+        except ValueError:
+            poisoned.append("%s 的 measured_delta/band 不是数" % d.get("id"))
+            continue
+        if abs(dd - delta) > 1e-6 or abs(bb - band) > 1e-6:
+            continue
+        if d["criterion"] != criterion or d["subject"] != subject:
+            continue
+        rows.append(d)
+    if poisoned:
+        return None
+    return rows[0] if rows else None
 
 
 if __name__ == "__main__":
