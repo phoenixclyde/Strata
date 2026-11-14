@@ -2,6 +2,7 @@
 // and quantize code reference, for the MMQ kernels compiled into strata_mmq without the rest of ggml-cuda.cu.
 #include "strata/core/emulate.hpp"
 #include "common.cuh"
+#include "graph.cuh"   // ggml_cuda_stream_context: the context owns one by unique_ptr
 
 #include <cstdio>
 #include <cstdlib>
@@ -140,8 +141,16 @@ struct CachingPool : ggml_cuda_pool {
 };
 }  // namespace
 
-std::unique_ptr<ggml_cuda_pool> ggml_backend_cuda_context::new_pool_for_device(int, int) {
+std::unique_ptr<ggml_cuda_pool> ggml_backend_cuda_context::new_pool_for_device(ggml_backend_cuda_context &, int, int) {
     return std::unique_ptr<ggml_cuda_pool>(new CachingPool());
+}
+
+// b12361 moved this constructor out of common.cuh into ggml-cuda.cu, which strata does not compile: its
+// definition has to live here, next to the destructor that also needs the complete ggml_cuda_stream_context.
+ggml_backend_cuda_context::ggml_backend_cuda_context(int device) :
+    device(device),
+    name(GGML_CUDA_NAME + std::to_string(device)),
+    concurrent_stream_context(std::make_unique<ggml_cuda_stream_context>()) {
 }
 
 ggml_backend_cuda_context::~ggml_backend_cuda_context() {}
