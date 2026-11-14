@@ -50,7 +50,8 @@ RUN set -eux; \
     rm -f /tmp/strata-src-0.2.11.tar.gz /tmp/llama.cpp-3cf0325.tar.gz; \
     test -f /src/CMakeLists.txt; \
     test -f /src/serve/server.py; \
-    test -f /src/third_party/llama.cpp/ggml/src/ggml-cpu/iqp.cpp; \
+    test -f /src/third_party/llama.cpp/ggml/src/ggml-cpu/ggml-cpu.cpp; \
+    test -f /src/third_party/llama.cpp/ggml/src/ggml-cuda/mmq.cu; \
     TH=$(cd /src/third_party/llama.cpp && find . -type f -print0 | LC_ALL=C sort -z | xargs -0 md5sum 2>/dev/null | md5sum | cut -d' ' -f1); \
     echo "llama.cpp tree hash: $TH"; \
     if [ "$TH" != "$LLAMA_CPP_TREE" ]; then echo "TREE HASH MISMATCH: $TH != $LLAMA_CPP_TREE" >&2; exit 1; fi; \
