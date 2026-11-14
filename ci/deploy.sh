@@ -90,6 +90,34 @@ print("")
 PYEOF
 )
 [ -n "$BASELINE" ] || fail "no RELEASE_BASELINE_SHA: deploy/CANDIDATE_POINTER.tsv 缺 built_from"
+# D34: the identity check below hashes $SRCDIR/strata.  If $SRCDIR is not the directory the
+# pointer names, that hash is of a DIFFERENT binary -- and r34-2/r35 are both 44,486,144 B,
+# so size alone cannot tell them apart.  Refuse instead of printing a confident wrong md5.
+PTR_BUILD=$(python3 - "$REPO" <<'PYEOF'
+import io, os, sys
+repo = os.path.abspath(sys.argv[1])
+cands = [os.environ.get("DEPLOY_POINTER")]
+d = repo
+for _ in range(4):
+    cands.append(os.path.join(d, "deploy", "CANDIDATE_POINTER.tsv"))
+    nd = os.path.dirname(d)
+    if nd == d:
+        break
+    d = nd
+for c in cands:
+    if c and os.path.isfile(c):
+        for line in io.open(c, encoding="utf-8-sig"):
+            f = line.rstrip("\n").split("\t")
+            if len(f) >= 2 and f[0] == "build_dir":
+                print(f[1].strip())
+                raise SystemExit
+print("")
+PYEOF
+)
+if [ -n "$PTR_BUILD" ]; then
+  [ "$(basename "$SRCDIR")" = "$PTR_BUILD" ] \
+    || fail "SRCDIR=$(basename "$SRCDIR") 与 CANDIDATE_POINTER.build_dir=$PTR_BUILD 不一致：身份检查会哈希到另一个二进制（D34）"
+fi
 git -C "$REPO" merge-base --is-ancestor "$BASELINE" "$HEAD_SHA" \
   || fail "release baseline ${BASELINE:0:10} is not an ancestor of HEAD ${HEAD_SHA:0:10}"
 ENGINE_HITS=$(git -C "$REPO" diff --name-only "$BASELINE..$HEAD_SHA" \
