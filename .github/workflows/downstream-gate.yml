@@ -18,6 +18,10 @@ on:
       - 'src/**'
       - 'include/**'
       - 'CMakeLists.txt'
+      # vendored engine code (third_party/strata-ggml) is engine code: ci/gh_gate.py's ENGINE_PATHS
+      # already treats it as such, so the trigger has to cover it or a vendored change can never get
+      # the run its own coverage criterion asks for (D25, same class as D21).
+      - 'third_party/**'
       - 'ci/**'
       - '.github/workflows/downstream-gate.yml'
   pull_request:
