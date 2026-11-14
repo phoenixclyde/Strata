@@ -401,20 +401,25 @@ void quantize_scatter(const float* x, const int32_t* slot, const int32_t* src, v
 // upstream derives it from `ids` inside mm_ids_helper.  Strata's compact rows are already sorted by expert
 // and `bounds` holds the same partition (bounds[e] .. bounds[e+1), n + 1 of them), so the table is filled
 // here with upstream's own loop, one thread per expert - same tile width, same array length, same entries.
-__global__ void tile_spec_from_bounds_kernel(const int32_t* __restrict__ bounds, int n, int J, int total,
+__global__ void tile_spec_from_bounds_kernel(const int32_t* __restrict__ bounds, int n, int J, int cap_tiles,
                                              ggml_cuda_mm_id_tile_spec* __restrict__ spec) {
     const int e = blockIdx.x;
     if (e >= n || threadIdx.x != 0) return;
-    const int ntiles = (total + J - 1) / J;
+    // the group's own last row: Product::total_rows is the global compact space for gate/up
+    // (tokens x k_used over all experts), so it cannot size this table
+    const int total  = bounds[n];
+    const int ntiles = min((total + J - 1) / J, cap_tiles);
     int col_low  = bounds[e];
     int col_high = min(col_low + J, bounds[e + 1]);
     while (col_high > ((col_low + J - 1) / J) * J) {
-        spec[(col_low + J - 1) / J] = {e, col_low, col_high, 0};
+        const int t = (col_low + J - 1) / J;
+        if (t >= cap_tiles) break;                     // never index past the allocation
+        spec[t] = {e, col_low, col_high, 0};
         col_low  = col_high;
         col_high = min(col_high + J, bounds[e + 1]);
     }
     // at most one extra tile per expert, between the seams (mmid.cu:137-139)
-    spec[ntiles + e] = {e, col_low, col_high, 0};
+    if (ntiles + e < cap_tiles + n) spec[ntiles + e] = {e, col_low, col_high, 0};
 }
 
 Context::Context() {
@@ -444,14 +449,20 @@ void Context::run(const Product& p, void* stream) {
     const int  J_best = pick_J((int) t, p.max_rows, mmq_fb);
     auto& ctx = *(ggml_backend_cuda_context*) ctx_;
     const cudaStream_t s = (cudaStream_t) stream;
-    // b12361: args.ntj is the tile-table length, ceil(ncols_dst / J) + n_experts, not the widest expert's
-    // row count (`ncols_max` before); the grid is dim3(ntj, ...) and every tile reads tile_spec[blockIdx.x]
-    // (mmq.cuh:1487, :1093).  Upstream sizes it exactly this way (mmq.cu:319-327).
+    // b12361: args.ntj is the tile-table length and grid.x, and every tile reads tile_spec[blockIdx.x]
+    // (mmq.cuh:1487, :1093); upstream sizes it ceil(ncols_dst / J) + n_experts (mmq.cu:319-327).  Here it is
+    // an upper bound: this product's own last row is bounds[n] (<= max_rows * n), and Product::total_rows is
+    // the global compact space for gate/up, which would leave the table's tail unwritten.
+    // the product's own rows: Product::total_rows is bounds[n] (the caller passes the group's row count),
+    // which is upstream's ncols_dst in the ids path.  The table is zeroed first, so any entry the fill
+    // kernel does not write reads as {0, 0, 0} - col_low == col_high, and the block returns immediately.
     const int ntj = (int) ((p.total_rows + J_best - 1) / J_best + p.n);
     ggml_cuda_pool_alloc<ggml_cuda_mm_id_tile_spec> tile_spec(ctx.pool(), ntj);
-    tile_spec_from_bounds_kernel<<<(unsigned) p.n, 32, 0, s>>>(p.bounds, p.n, J_best, (int) p.total_rows,
+    ck(cudaMemsetAsync(tile_spec.get(), 0, (size_t) ntj * sizeof(ggml_cuda_mm_id_tile_spec), s), "tile_spec zero");
+    tile_spec_from_bounds_kernel<<<(unsigned) p.n, 32, 0, s>>>(p.bounds, p.n, J_best, ntj - p.n,
                                                                tile_spec.get());
     ck(cudaGetLastError(), "tile_spec");
+
     const mmq_args a = {(const char*) p.w, t, (const int*) p.xq, p.ids, tile_spec.get(), p.dst, p.y_scale,
                         p.w_cols, p.w_rows, p.total_rows, bpr, p.total_rows, p.ld_dst,
                         p.n, p.n, p.tab ? 0 : (int64_t) (p.expert_bytes / type_bytes((int) t)), 0, 0,
