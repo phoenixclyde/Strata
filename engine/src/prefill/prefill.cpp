@@ -56,6 +56,8 @@
 #include "strata/kernels/qsa.hpp"
 #include "strata/kernels/kv_stream.hpp"
 #include "strata/kernels/cvec.hpp"
+#include "strata/kernels/i8_expert_rule.hpp"
+#include "strata/prefill/i8_group.hpp"
 #include "strata/kernels/kv_q4.hpp"
 #include "strata/core/layer.hpp"
 #include "strata/core/native_dense.hpp"
