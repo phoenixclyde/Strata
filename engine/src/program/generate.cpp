@@ -495,8 +495,8 @@ bool park_move_env() {
     std::error_code ec;
     return std::filesystem::exists("/data/strata-ckpt-move", ec);
 }
-bool ckpt_pool_env() {
-    static const bool on = [] {
+int ckpt_pool_env_state() {
+    static const int state = [] {
         const char* v = std::getenv("STRATA_CKPT_POOL");
         return v ? (v[0] != '0' ? 1 : 0) : -1;
     }();

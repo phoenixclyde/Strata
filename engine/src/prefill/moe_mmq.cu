@@ -310,14 +310,7 @@ int pick_J(int t, int64_t ncols, bool fallback) {
     return best > 0 ? best : 64;
 }
 
-size_t matrix_bytes(int t, int64_t rows, int64_t cols) {
-    return (size_t) rows * (size_t) (cols / type_blck((int) t)) * type_bytes((int) t);
-}
-
-size_t q8_bytes(int64_t rows, int64_t cols) {
-    return (size_t) rows * (size_t) pad512(cols) * sizeof(block_q8_1_mmq) / (4 * QK8_1) + 128 * sizeof(block_q8_1_mmq);
-}
-
+// matrix_bytes/q8_bytes live in moe_helpers.cu since upstream 4cd85d08
 namespace {
 __global__ void scale_gu_rows_kernel(float* __restrict__ gu, int64_t ld, int64_t n_ff, const int32_t* __restrict__ bounds,
                                      int n, const float* __restrict__ tails, int64_t row0) {
