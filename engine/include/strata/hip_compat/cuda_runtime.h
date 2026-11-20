@@ -149,3 +149,7 @@ inline hipError_t cudaGraphInstantiate(hipGraphExec_t* exec, hipGraph_t graph,
 #define cudaMemcpyFromSymbol(dst, symbol, ...) hipMemcpyFromSymbol(dst, HIP_SYMBOL(symbol), __VA_ARGS__)
 
 #include "intrinsics.hpp"
+// r63: stream priority maps (fork strata_hip.h:135-136 parity)
+#define cudaStreamCreateWithPriority hipStreamCreateWithPriority
+#define cudaDeviceGetStreamPriorityRange hipDeviceGetStreamPriorityRange
+#define cudaStreamNonBlocking hipStreamNonBlocking
