@@ -77,6 +77,9 @@ struct Product {
     const int32_t* bounds = nullptr;
     const int32_t* ids = nullptr;
     int64_t total_rows = 0, max_rows = 0;
+    /// the product's own destination rows (tile table length and ncols_dst); 0 = total_rows.
+    /// total_rows stays the row count of the buffer y/xq points to (the activation stride).
+    int64_t rows_dst = 0;
     float* dst = nullptr;
     int64_t ld_dst = 0;
     const float* y_scale = nullptr;     ///< NVFP4 w4a4: the per-row activation scales (fp4_activations)
