@@ -30,9 +30,21 @@ jobs:
               # W1176: the 166 runner has no GitHub egress. A local mirror is allowed
               # only when it already contains the exact commit this run builds; a
               # stale mirror must fail here instead of silently checking out an old sha.
-              mir="$(git -C /home/ghrunner/mirror/Strata.git rev-parse refs/heads/gfx906/mi50 2>/dev/null || true)"
+              # W1179: the mirror is refreshed by hand right after the push, so a job that
+              # starts first sees the previous sha and used to fail a run that was fine.
+              # Wait for it (300 s), then fail -- a mirror that never catches up is still an error.
+              mir=""
+              for i in $(seq 1 60); do
+                mir="$(git -C /home/ghrunner/mirror/Strata.git rev-parse refs/heads/gfx906/mi50 2>/dev/null || true)"
+                if [ "$mir" = "$GITHUB_SHA" ]; then
+                  echo "mirror at $GITHUB_SHA (attempt $i)"
+                  break
+                fi
+                echo "waiting for the mirror: have ${mir:-none}, want $GITHUB_SHA (attempt $i/60)"
+                sleep 5
+              done
               if [ "$mir" != "$GITHUB_SHA" ]; then
-                echo "mirror stale: $mir != $GITHUB_SHA" >&2
+                echo "mirror stale after 300 s: ${mir:-none} != $GITHUB_SHA" >&2
                 exit 1
               fi
               ;;
