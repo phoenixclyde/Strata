@@ -1,0 +1,66 @@
+name: Rebase oracle
+
+# R100/W1181: "did this rebase lose what a clean merge keeps?"
+#
+# W1176 shipped a tree where engine/src/program/generate.cpp and
+# engine/src/prefill/prefill.cpp were the OLD branch copies: 1,973 lines of our own
+# work gone, twelve static checks green, and the old files compile fine.  Neither a
+# static gate nor a compile gate can see that; `git cherry` cannot either (the patch
+# is still "there", it just replaced other text).  This job measures it:
+#
+#   M = git merge-tree --write-tree <A> <U>     what a clean merge produces
+#   lost = lines in M that <B> does not have    what the rebase actually took away
+#
+# plus a conflict-proof second signal: a file whose B copy still matches A (<=5 lines
+# different) while U's copy is >=300 lines bigger was reverted wholesale.
+#
+# Dispatch only, and deliberately so: it takes three arbitrary commits, and this repo
+# is public.  A `pull_request` trigger here would hand a stranger a free git oracle on
+# our history -- and, more importantly, nobody needs it on every push.  Run it after a
+# rebase, or when in doubt about one.
+#
+# Example (the W1176 pair, expected PASS after the fix):
+#   gh workflow run rebase-oracle.yml -f a=24eefda5d -f u=v0.2.18 -f b=HEAD
+on:
+  workflow_dispatch:
+    inputs:
+      a:
+        description: "branch tip before the rebase (A)"
+        required: true
+      u:
+        description: "upstream base the rebase moved onto (U)"
+        required: true
+      b:
+        description: "what the rebase shipped (B)"
+        required: false
+        default: "HEAD"
+      threshold:
+        description: "fail when more than this many lines are missing (default 300)"
+        required: false
+        default: "300"
+
+permissions:
+  contents: read
+
+jobs:
+  oracle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
+        with:
+          fetch-depth: 0          # A, U and B must all be present; tags included
+      - name: make the requested commits and tags visible
+        run: |
+          set -eu
+          git fetch --tags --force origin
+          for r in "${{ inputs.a }}" "${{ inputs.u }}" "${{ inputs.b }}"; do
+            git rev-parse --verify "${r}^{commit}" >/dev/null || {
+              echo "cannot resolve $r" >&2; exit 1; }
+          done
+      - name: rebase oracle
+        run: |
+          set -o pipefail
+          python3 ci/rebase_oracle.py \
+            --a "${{ inputs.a }}" --u "${{ inputs.u }}" --b "${{ inputs.b }}" \
+            --threshold "${{ inputs.threshold }}" --top 20
