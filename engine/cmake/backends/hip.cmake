@@ -30,6 +30,7 @@ endmacro()
 # HIP: Strata's own prompt kernels (strata_pf_own, with mmq_absent.cpp for the MMQ half of moe_mmq.hpp; llama.cpp's MMQ left the tree in 0.2.16).  No ggml: the type ids are Strata's table
 # (strata/quant/types.hpp), the block layouts the quant header in third_party/ggml
 macro(strata_hip_pf_own)
+    strata_ggml_require_mmq_abi()   # b12361+ tile table; fails at configure, not in a template avalanche
     set(_strata_gg "${_strata_ggml_root}/ggml")   # (the tests' include path)
     set(_strata_pf_own_sources
       src/prefill/moe_fused.cu

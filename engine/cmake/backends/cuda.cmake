@@ -89,6 +89,7 @@ endmacro()
 # No ggml: the type ids are Strata's table (strata/quant/types.hpp),
 # the block layouts the quant header in third_party/ggml
 macro(strata_cuda_pf_own)
+    strata_ggml_require_mmq_abi()   # b12361+ tile table; fails at configure, not in a template avalanche
     set(_strata_gg ${_strata_ggml_root}/ggml)   # (the tests' include path)
     add_library(strata_pf_own STATIC src/prefill/moe_fused.cu src/prefill/moe_fused_iq.cu src/prefill/moe_helpers.cu
                 src/prefill/moe_fused_iq_q36.cu)

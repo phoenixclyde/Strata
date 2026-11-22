@@ -56,3 +56,26 @@ macro(strata_ggml_configure_root)
   add_subdirectory(${_strata_ggml_root}/ggml ${CMAKE_BINARY_DIR}/ggml EXCLUDE_FROM_ALL)
 endmacro()
 
+# the CUDA/HIP prompt path compiles llama.cpp's MMQ kernel into the engine
+# (src/prefill/moe_mmq.cu includes mmq.cuh and uses ggml_cuda_mm_id_tile_spec, which b12361
+# introduced when it replaced mmq_args' expert_bounds with a device tile table).  A resolved
+# tree older than that cannot compile the bridge: say so once, at configure time, instead of
+# letting a hundred template errors stand in for "you are building against the wrong ggml".
+# The vendored third_party/strata-ggml is still pinned at b11062, so the default path trips
+# this on purpose -- the message names the override.
+macro(strata_ggml_require_mmq_abi)
+  set(_mmq "${_strata_ggml_root}/ggml/src/ggml-cuda/mmq.cuh")
+  if(NOT EXISTS "${_mmq}")
+    message(FATAL_ERROR
+      "Strata: no MMQ header at ${_mmq}. The CUDA/HIP prompt path builds llama.cpp's MMQ kernel. "
+      "Pass -DSTRATA_GGML_DIR=<llama.cpp checkout at b12361 or newer>.")
+  endif()
+  file(READ "${_mmq}" _mmq_txt LIMIT 262144)
+  if(NOT _mmq_txt MATCHES "ggml_cuda_mm_id_tile_spec")
+    message(FATAL_ERROR
+      "Strata: the resolved ggml tree is older than llama.cpp b12361: ${_mmq} has no "
+      "ggml_cuda_mm_id_tile_spec, and engine/src/prefill/moe_mmq.cu uses it. "
+      "Pass -DSTRATA_GGML_DIR=<llama.cpp checkout at b12361 or newer>. "
+      "(The vendored third_party/strata-ggml is pinned at b11062 and cannot build this bridge.)")
+  endif()
+endmacro()
