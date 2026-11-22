@@ -26,7 +26,16 @@ jobs:
           set -eu
           cfg="$(git config --global --get-regexp insteadof || true)"
           case "$cfg" in
-            *ghrunner/mirror/Strata.git*) echo "local mirror rewrite makes checkout stale; remove it" >&2; exit 1 ;;
+            *ghrunner/mirror/Strata.git*)
+              # W1176: the 166 runner has no GitHub egress. A local mirror is allowed
+              # only when it already contains the exact commit this run builds; a
+              # stale mirror must fail here instead of silently checking out an old sha.
+              mir="$(git -C /home/ghrunner/mirror/Strata.git rev-parse refs/heads/gfx906/mi50 2>/dev/null || true)"
+              if [ "$mir" != "$GITHUB_SHA" ]; then
+                echo "mirror stale: $mir != $GITHUB_SHA" >&2
+                exit 1
+              fi
+              ;;
           esac
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
       - name: device + runner sanity
