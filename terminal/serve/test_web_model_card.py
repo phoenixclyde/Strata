@@ -53,5 +53,15 @@ class ModelCard(unittest.TestCase):
         self.assertIn("-webkit-line-clamp: 2", NARROW.group(1))
 
 
+class GaugeRow(unittest.TestCase):
+    """W1174: a card whose sub text wrapped put its sparkline lower than its neighbours'.  Upstream's
+    own Monitor pins the chart with margin-top:auto (apps/host/src/styles/monitor.css:32); the served
+    page had neither that line nor a .st-metric that fills the card, so the pin had nothing to take."""
+
+    def test_the_charts_share_one_baseline(self):
+        self.assertIn(".st-metric__spark { margin-top: auto; }", CSS)
+        self.assertIn(".metric-card > .st-metric { flex: 1 1 auto;", CSS)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -101,7 +101,10 @@ main { flex: 1; min-height: 0; display: flex; }
 .state-card__row { display: flex; justify-content: space-between; gap: var(--st-s-4); font-size: var(--st-fs-sm);
                    font-weight: var(--st-fw-medium); font-variant-numeric: tabular-nums; }
 .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--st-s-4); }
-.metric-card { padding: var(--st-s-4) var(--st-s-5); }
+.metric-card { padding: var(--st-s-4) var(--st-s-5); display: flex; }
+/* W1174: the card stretched in the grid but .st-metric did not fill it, so margin-top:auto had
+   no free space to take and the sparklines stayed at content height.  Fill the card first. */
+.metric-card > .st-metric { flex: 1 1 auto; min-width: 0; }
 /* W1174: the Model card is information, not a gauge.  Left in the gauge grid it was the NINTH
    card, so it alone wrapped to a second row and left that row empty (the eight gauges used to
    fill one row exactly).  It is a full-width strip now: label, id, context/engine and the five
@@ -126,6 +129,10 @@ main { flex: 1; min-height: 0; display: flex; }
 .st-metric__value small { font-size: var(--st-fs-md); font-weight: var(--st-fw-medium); color: var(--st-ink-muted); margin-left: 4px; }
 .st-metric__sub { font-size: var(--st-fs-xs); color: var(--st-ink-muted); font-variant-numeric: tabular-nums; min-height: 1em; }
 .st-metric__spark { display: block; overflow: visible; }
+/* W1174: upstream's own Monitor (apps/host/src/styles/monitor.css:32) pins its sparkline to
+   the card's bottom with margin-top:auto.  The served page never got that line, so a card whose
+   sub text wrapped put its sparkline lower than its neighbours' -- the charts did not line up. */
+.st-metric__spark { margin-top: auto; }
 .speed-values { display: flex; justify-content: space-between; gap: var(--st-s-3); }
 .speed-values > div { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .speed-values > div:last-child { text-align: right; }
