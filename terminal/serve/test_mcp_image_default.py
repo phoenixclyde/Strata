@@ -4,12 +4,14 @@ keeps them off; true keeps them on. The limits stay as they were (4 per result, 
 from __future__ import annotations
 
 import base64
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from serve.mcp import hub_from_config, resolve_image_results
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # W1176: make `serve` importable from the repo layout
+from serve.mcp import hub_from_config, resolve_image_results  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 PNG = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jB0kAAAAASUVORK5CYII=")
@@ -52,7 +54,7 @@ class Default(unittest.TestCase):
 
     def test_the_server_decides_it_after_the_picture_reader_is_known(self):
         src = (ROOT / "serve" / "server.py").read_text(encoding="utf-8")
-        at = src.index('hub.settings["image_results"] = resolve_image_results(hub.settings, svc.vision is not None)')
+        at = src.index('hub.settings["image_results"] = resolve_image_results(hub.settings, svc.has_vision())')
         self.assertLess(at, src.index('if hub.settings["image_results"]:\n            hub.media_dir'))
         self.assertLess(src.index("svc = Service(engine, tok"), at)
 
