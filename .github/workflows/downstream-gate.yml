@@ -13,8 +13,15 @@ name: Downstream gate
 
 on:
   push:
-    branches: [main, gfx906/mi50, 'ci/**']
+    # W1174: r6*/** is where the engine work actually lands (r67/kva-taps ...).  Without it a
+    # push to an engine branch could not trigger this workflow at all -- W1173 had to dispatch
+    # on a tag ref to get a run.
+    branches: [main, gfx906/mi50, 'ci/**', 'r6*/**']
     paths:
+      # W1174: 0.2.16 moved src/ to engine/src/.  These two lines were missing, so an
+      # engine-only push never entered this workflow (the source-only gate below does look
+      # at engine/ -- it was the trigger, not the gate, that was blind).
+      - 'engine/**'
       - 'src/**'
       - 'include/**'
       - 'CMakeLists.txt'
@@ -23,10 +30,16 @@ on:
       # the run its own coverage criterion asks for (D25, same class as D21).
       - 'third_party/**'
       - 'ci/**'
+      # the served page and the Python server are code too; the card-rule test runs below
+      - 'terminal/**'
       - '.github/workflows/downstream-gate.yml'
   pull_request:
     branches: [main]
     paths:
+      # W1174: 0.2.16 moved src/ to engine/src/.  These two lines were missing, so an
+      # engine-only push never entered this workflow (the source-only gate below does look
+      # at engine/ -- it was the trigger, not the gate, that was blind).
+      - 'engine/**'
       - 'src/**'
       - 'include/**'
       - 'CMakeLists.txt'
@@ -65,6 +78,10 @@ jobs:
           python3 -m py_compile ci/*.py ci/repack_ab/*.py && echo "ok   ci/*.py + ci/repack_ab/*.py"
       - name: Config-face checks
         run: python3 ci/gate.py --repo . --source-only
+      - name: The Monitor page's card rules
+        # W1174: no browser here, so the declarations that keep the Model card from setting
+        # the height of the gauge row are checked instead.  terminal/** above is what lands here.
+        run: python3 terminal/serve/test_web_model_card.py
       - name: Round gate (evidence, report lint, port status)
         # Fails if the A/B artifacts are missing/stale, if report_lint stops rejecting
         # a broken four-section report, or if the CI wiring itself was removed.

@@ -52,7 +52,11 @@ DEF_WORKFLOW = "downstream-gate.yml"
 # ancestor's run stop standing in for HEAD's.  Deliberately conservative: a
 # false "engine changed" costs one CI run, a false "engine unchanged" ships an
 # unverified binary.
-ENGINE_PATHS = ("src/", "include/", "cmake/", "third_party/", "metal/", "sycl/")
+# W1174: the 0.2.16 layout moved the engine to engine/.  The old prefixes still name the
+# pre-move tree (older branches), but without "engine/" every post-move commit looked like a
+# non-engine change here, so D7 could accept an ancestor run for an engine binary.
+ENGINE_PATHS = ("engine/", "src/", "include/", "cmake/", "third_party/", "metal/", "sycl/",
+                "terminal/")
 ENGINE_FILES = ("CMakeLists.txt", "CMakePresets.json", "setup.py", "Dockerfile")
 
 
