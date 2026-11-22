@@ -4164,7 +4164,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
     bool kva_routine = false;
     const char* kva_why_not = kva.decline(kva_eng, pos0, n, LB, LE < 0 ? -1 : LE, (int64_t) g.n_layers,
                                           embd_rows != nullptr, !tap_layers_.empty(), &kva_routine,
-                                          g.n_layers != 48 || g.n_expert != 512);
+                                          g.n_layers != 48 || g.n_expert != 512, tap_first_);
     if (kva_why_not == nullptr && (g.n_layers != 48 || g.n_expert != 512)) {
         // STRATA_KVA_ANY_MODEL=1 (research): allowed on a shape KVA was not measured on, with a warning once
         static std::atomic<bool> warned{false};

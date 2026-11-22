@@ -107,7 +107,7 @@ struct KvaConfig {
     /// everyday one (a continuation, a short prompt) that is not worth a log line.
     const char* decline(const KvaEngine& e, int64_t pos0, int64_t n, int64_t lb, int64_t le, int64_t n_layers,
                         bool pictures = false, bool taps = false, bool* routine = nullptr,
-                        bool unmeasured_shape = false) const {
+                        bool unmeasured_shape = false, int64_t tap_first = -1) const {
         if (routine) *routine = false;
         if (!on) return "off (STRATA_KVA is not 1)";
         if (capture) return "capture mode";
@@ -118,7 +118,15 @@ struct KvaConfig {
         }
         if (lb != 0 || (le >= 0 && le != n_layers)) return "a layer split (not the whole trunk)";
         if (pictures) return "a prompt with pictures";
-        if (taps) return "the DFlash2 drafter reads the late layers' hidden states";
+        if (taps) {
+            // W1172 (P899 route a): the drafter taps only the prompt's LAST window — set_taps() puts tap_first_ at
+            // n_prompt - 2047 with a 2048-row cap, and prefill taps nothing from a chunk that ends below it.  KVA
+            // leaves the final effective_suffix() positions fully computed, so a window that starts inside that
+            // tail reads real hidden states and the drafter's own prompt state is identical to the exact read.
+            // Keep the old blanket refusal for any window that reaches into an approximated chunk (fail closed).
+            const int64_t exact_tail = n - effective_suffix();
+            if (tap_first < exact_tail) return "the DFlash2 drafter reads the late layers' hidden states";
+        }
         if (n < min_prompt) {
             if (routine) *routine = true;
             return "the prompt is shorter than STRATA_KVA_MIN_PROMPT";
