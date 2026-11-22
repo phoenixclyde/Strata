@@ -106,6 +106,7 @@ int main(int argc, char** argv) {
     int device = 0, iters = 100;
     int64_t ctx = 131072, max_ctx = 262144;
     bool rows = false, dense = true;
+    std::string dump;
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--device") == 0 && i + 1 < argc) device = std::atoi(argv[++i]);
         else if (std::strcmp(argv[i], "--iters") == 0 && i + 1 < argc) iters = std::atoi(argv[++i]);
@@ -113,6 +114,7 @@ int main(int argc, char** argv) {
         else if (std::strcmp(argv[i], "--max-context") == 0 && i + 1 < argc) max_ctx = std::atoll(argv[++i]);
         else if (std::strcmp(argv[i], "--rows") == 0) rows = true;
         else if (std::strcmp(argv[i], "--no-dense") == 0) dense = false;
+        else if (std::strcmp(argv[i], "--dump") == 0 && i + 1 < argc) dump = argv[++i];
         else {
             std::fprintf(stderr, "usage: qsa_rows_bench [--device N] [--iters 100] [--ctx 131072] [--max-context 262144] "
                                  "[--rows] [--no-dense]\n");
@@ -283,6 +285,16 @@ int main(int argc, char** argv) {
         const char* fp = std::getenv("STRATA_GFX906_ATTN_F16PV");
         std::printf("-- arm: swizzle=%s dp4a=%s lds_pad=%s f16pv=%s\n", sw ? sw : "-", dp ? dp : "-", lp ? lp : "-",
                     fp ? fp : "-");
+    }
+    if (!dump.empty()) {   // W1194: one T=1 call, raw attn [1, NH, HD] to disk -- lets two OPT arms be compared elementwise
+        k::qsa_decode_attn_batch(q, pools3, ids, steps, cap, s, scratch, attn, 1, st);
+        ck(cudaDeviceSynchronize(), "dump sync");
+        const std::vector<float> h = download(attn, (size_t) (1 * NH * HD));
+        std::FILE* f = std::fopen(dump.c_str(), "wb");
+        if (!f) { std::fprintf(stderr, "qsa_rows_bench: cannot write %s\n", dump.c_str()); return 2; }
+        std::fwrite(h.data(), sizeof(float), h.size(), f);
+        std::fclose(f);
+        std::printf("dumped %zu floats to %s\n", h.size(), dump.c_str());
     }
     std::puts("-- a QSA layer's decode kernels at the verification window's shape (us a call, median of 3 runs)");
     t_scores.print("scores  qsa_block_scores (multi)");

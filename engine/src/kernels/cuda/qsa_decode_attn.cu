@@ -1283,6 +1283,15 @@ int gfx906_attn_opt() {
         if (f && f[0] == '1') o |= 32;
         return o;
     }();
+    // W1195: say the mask once.  Two gate runs were unreadable because the arm's OPT value was
+    // inferred from env overrides on a config that already carried ATTN_* keys; a line in the log
+    // ends that class of doubt.
+    static const bool said = [] {
+        std::fprintf(stderr, "strata attn-opt: 0x%x (dpp=%d dp4a=%d lds_pad=%d f16d=%d ctlread=%d f16q=%d)\n",
+                     v, v & 1, (v >> 1) & 1, (v >> 2) & 1, (v >> 3) & 1, (v >> 4) & 1, (v >> 5) & 1);
+        return true;
+    }();
+    (void) said;
     return v;
 #else
     return 0;
