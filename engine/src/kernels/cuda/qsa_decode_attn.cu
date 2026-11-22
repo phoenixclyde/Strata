@@ -219,7 +219,12 @@ __device__ __forceinline__ int reduce12_head_of_lane(int lane) {
 //   bit 0 (1) A3  the 32-lane reductions (score sum, chunk softmax) run on DPP instead of ds_bpermute
 //   bit 1 (2) B1/B2 the score dot product runs on v_dot4_i32_i8 with a per-64-group int8 query (k8v4 and int8)
 //   bit 2 (4) A2  the sq / sp LDS tiles take a pad so column-wise reads stop landing on one bank group
-template <int KV_MODE, bool LANE_CELL, bool QUERY_SWIZZLE, bool REDUCE12, int OPT>
+// W1186: F16PV is a separate template flag (not an OPT bit) because it adds a second probability tile in LDS and a
+// second summation order; it is instantiated only for the swizzle path this tree runs in production (kv_mode 3,
+// OPT 4 or 6), and switching it on is one env var.  The pair loop's arithmetic is V (f16) x P (f16) -> f32 through
+// v_dot2_f32_f16; V's q4_0 block is still dequantized per element, so the saving is the twelve scalar FMAs and the
+// twelve f32 LDS reads per cell, not the dequantization.
+template <int KV_MODE, bool LANE_CELL, bool QUERY_SWIZZLE, bool REDUCE12, int OPT, bool F16PV = false>
 __device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, QsaAttnPools p,
                                                 const int32_t* __restrict__ ids, const int32_t* __restrict__ step,
                                                 int n_kv_heads, int page_size, float scale,
@@ -238,6 +243,8 @@ __device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, Qsa
     constexpr int SQ_HEADS = (OPT & 2) ? 1 : G;   // B1/B2 keep the query as int8 below; the fp32 tile is unused
     __shared__ __align__(16) float sq[SQ_HEADS][HD + SQ_PAD];   // 12 KB: this KV head's query heads
     __shared__ float sp[G][CHUNK + SP_PAD];       // scores, then probabilities
+    __shared__ __half sp16[(F16PV ? G : 1)][CHUNK];  // W1186: the probabilities as f16 for the P.V dot2 pair
+    static_assert(!F16PV || KV_MODE == 3, "the f16 P.V pair runs on the q4_0 V of KV_MODE 3 only");
     __shared__ long long srow[CHUNK];             // pool row of each cell (page, kv head, slot)
     __shared__ __align__(16) int8_t sq8[(OPT & 2) ? G : 1][HD];  // B1/B2: the quantized query
     __shared__ float sq8s[(OPT & 2) ? G : 1][NSC];               // one scale per (head, 64-value group)
@@ -481,45 +488,91 @@ __device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, Qsa
         const float l = warp_sum(ea + eb, (OPT & 1) != 0);
         if (lane == 0) { part_m[slot * G + h] = m; part_l[slot * G + h] = l; }
     }
+    if constexpr (F16PV) {   // W1186: one f16 copy of the probabilities, read as pairs by the value loop
+        for (int i = t; i < G * CHUNK; i += THREADS)
+            sp16[i / CHUNK][i % CHUNK] = __float2half(sp[i / CHUNK][i % CHUNK]);
+    }
     __syncthreads();
     // values: thread t owns dimension t for all 12 heads.
     float acc[G];
 #pragma unroll
     for (int h = 0; h < G; ++h) acc[h] = 0.0f;
-    for (int c = 0; c < n_here; ++c) {
-        if (srow[c] < 0) continue;   // masked above, weight 0
-        float v;
-        if constexpr (KV_MODE == 0) {
-            v = __half2float(__ushort_as_half(p.v_pool[srow[c] * HD + t]));
-        } else if constexpr (KV_MODE == 1) {
-            const float sc = __half2float(__ushort_as_half(p.v_scale[srow[c] * (HD / KV_Q8_GROUP) + t / KV_Q8_GROUP]));
-            v = (float) p.v_q[srow[c] * HD + t] * sc;
-        } else {   // modes 2 and 3: V is rotated Q4_0 (kv_q4.hpp); the caller rotates the output back
+    if constexpr (F16PV) {
+        // W1186 prototype: two cells at a time.  V is still dequantized per element (the q4_0 block is read the
+        // same way); the saving is the twelve scalar FMAs and the twelve f32 LDS reads per cell, replaced by
+        // twelve f16 LDS reads of a half2 pair and twelve v_dot2_f32_f16 into the same f32 accumulators.
+        // A masked cell carries weight 0, so a pair that straddles one is done scalarly instead of reading a
+        // pool row the KV streaming never made resident.
+        auto v_at = [&](int cell, int dim) -> float {
             constexpr int bytes_per_head = (HD / QK4_0) * sizeof(block_q4_0);
-            const int b = t / QK4_0;
-            const int rem = t % QK4_0;
-            const block_q4_0* blk = reinterpret_cast<const block_q4_0*>(p.v_q4 + srow[c] * bytes_per_head) + b;
-            const float d = __half2float(__ushort_as_half(blk->d));
-            const int j = rem < 16 ? rem : (rem - 16);
-            const uint8_t byte = blk->qs[j];
+            const block_q4_0* blk =
+                reinterpret_cast<const block_q4_0*>(p.v_q4 + srow[cell] * bytes_per_head) + (dim / QK4_0);
+            const int rem = dim % QK4_0;
+            const uint8_t byte = blk->qs[rem < 16 ? rem : (rem - 16)];
             const int nibble = (rem < 16) ? ((byte & 0x0F) - 8) : ((byte >> 4) - 8);
-            v = (float) nibble * d;
-        }
+            return (float) nibble * __half2float(__ushort_as_half(blk->d));
+        };
+        int c = 0;
+        for (; c + 1 < n_here; c += 2) {
+            if (srow[c] < 0 || srow[c + 1] < 0) {
+                for (int k = 0; k < 2; ++k) {
+                    if (srow[c + k] < 0) continue;
+                    const float v = v_at(c + k, t);
 #pragma unroll
-        for (int h = 0; h < G; ++h) acc[h] = fmaf(sp[h][c], v, acc[h]);
+                    for (int h = 0; h < G; ++h) acc[h] = fmaf(sp[h][c + k], v, acc[h]);
+                }
+                continue;
+            }
+            const __half2 v2 = __floats2half2_rn(v_at(c, t), v_at(c + 1, t));
+#pragma unroll
+            for (int h = 0; h < G; ++h) {
+                const __half2 p2 = *reinterpret_cast<const __half2*>(&sp16[h][c]);
+                acc[h] = __builtin_amdgcn_fdot2(p2, v2, acc[h], false);
+            }
+        }
+        for (; c < n_here; ++c) {   // odd tail: the last cell of an odd chunk
+            if (srow[c] < 0) continue;
+            const float v = v_at(c, t);
+#pragma unroll
+            for (int h = 0; h < G; ++h) acc[h] = fmaf(sp[h][c], v, acc[h]);
+        }
+    } else {
+        for (int c = 0; c < n_here; ++c) {
+            if (srow[c] < 0) continue;   // masked above, weight 0
+            float v;
+            if constexpr (KV_MODE == 0) {
+                v = __half2float(__ushort_as_half(p.v_pool[srow[c] * HD + t]));
+            } else if constexpr (KV_MODE == 1) {
+                const float sc = __half2float(__ushort_as_half(p.v_scale[srow[c] * (HD / KV_Q8_GROUP) + t / KV_Q8_GROUP]));
+                v = (float) p.v_q[srow[c] * HD + t] * sc;
+            } else {   // modes 2 and 3: V is rotated Q4_0 (kv_q4.hpp); the caller rotates the output back
+                constexpr int bytes_per_head = (HD / QK4_0) * sizeof(block_q4_0);
+                const int b = t / QK4_0;
+                const int rem = t % QK4_0;
+                const block_q4_0* blk = reinterpret_cast<const block_q4_0*>(p.v_q4 + srow[c] * bytes_per_head) + b;
+                const float d = __half2float(__ushort_as_half(blk->d));
+                const int j = rem < 16 ? rem : (rem - 16);
+                const uint8_t byte = blk->qs[j];
+                const int nibble = (rem < 16) ? ((byte & 0x0F) - 8) : ((byte >> 4) - 8);
+                v = (float) nibble * d;
+            }
+#pragma unroll
+            for (int h = 0; h < G; ++h) acc[h] = fmaf(sp[h][c], v, acc[h]);
+        }
     }
 #pragma unroll
     for (int h = 0; h < G; ++h) part_acc[((size_t) slot * G + h) * HD + t] = acc[h];
 }
 
-template <int KV_MODE, bool LANE_CELL = false, bool QUERY_SWIZZLE = false, bool REDUCE12 = false, int OPT = 0>
+template <int KV_MODE, bool LANE_CELL = false, bool QUERY_SWIZZLE = false, bool REDUCE12 = false, int OPT = 0,
+          bool F16PV = false>
 __global__ void __launch_bounds__(THREADS) attn_chunk_kernel(const float* __restrict__ q, QsaAttnPools p,
                                                              const int32_t* __restrict__ ids,
                                                              const int32_t* __restrict__ step, int n_kv_heads,
                                                              int page_size, float scale, float* __restrict__ part_acc,
                                                              float* __restrict__ part_m, float* __restrict__ part_l,
                                                              int n_chunks, int cap = 0, long long scratch_stride = 0) {
-    attn_chunk_body<KV_MODE, LANE_CELL, QUERY_SWIZZLE, REDUCE12, OPT>(q, p, ids, step, n_kv_heads, page_size, scale,
+    attn_chunk_body<KV_MODE, LANE_CELL, QUERY_SWIZZLE, REDUCE12, OPT, F16PV>(q, p, ids, step, n_kv_heads, page_size, scale,
                                                                  part_acc, part_m, part_l, n_chunks, cap,
                                                                  scratch_stride);
 }
@@ -1351,6 +1404,26 @@ void launch_chunks_batch(const float* q, const QsaAttnPools& pools, const int32_
             const char* v = std::getenv("STRATA_GFX906_ATTN_REDUCE12");
             return v && v[0] == '1' && v[1] == '\0';
         }();
+        // W1186: the f16 P.V pair, opt-in and only where this tree can instantiate it (kv_mode 3, the LDS_PAD
+        // OPT bits 4 or 6); the baseline is the same kernel without it, so an A/B is one env var and one restart.
+        static const bool f16pv = [] {
+            const char* v = std::getenv("STRATA_GFX906_ATTN_F16PV");
+            return v && v[0] == '1' && v[1] == '\0';
+        }();
+        if (f16pv && kv_mode == 3 && (gfx906_attn_opt() == 4 || gfx906_attn_opt() == 6)) {
+            static thread_local bool said = false;
+            if (!said) {
+                said = true;
+                std::fprintf(stderr, "strata attn-f16pv: P.V on v_dot2_f32_f16 (opt %d)\n", gfx906_attn_opt());
+            }
+            if (gfx906_attn_opt() == 6)
+                attn_chunk_kernel<3, false, true, true, 6, true><<<grid, THREADS, 0, st>>>(q, pools, ids, steps,
+                    (int) s.n_head_kv, (int) s.page_size, scale, part_acc, part_m, part_l, n_chunks, (int) cap, stride);
+            else
+                attn_chunk_kernel<3, false, true, true, 4, true><<<grid, THREADS, 0, st>>>(q, pools, ids, steps,
+                    (int) s.n_head_kv, (int) s.page_size, scale, part_acc, part_m, part_l, n_chunks, (int) cap, stride);
+            return;
+        }
         // W1039: this is the instantiation production actually runs (swizzle + reduce12), so the OPT switch has to
         // be applied here, not only on the plain <M> path above.
         if (const int opt_sw = gfx906_attn_opt(); opt_sw != 0) {
