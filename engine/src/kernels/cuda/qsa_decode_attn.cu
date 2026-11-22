@@ -1308,7 +1308,13 @@ int gfx906_attn_opt() {
         case 7: LAUNCH(M, 7); break;                                                                      \
         case 8: LAUNCH(M, 8); break;                                                                      \
         case 9: LAUNCH(M, 9); break;                                                                      \
-        default: break;                                                                                   \
+        /* W1192: LDS_PAD|F16D.  The kernel takes any OPT mask; only the switch was missing this    \
+           pair, so the combination silently ran nothing before the default below existed. */        \
+        case 12: LAUNCH(M, 12); break;                                                                   \
+        /* W1192: an OPT combination outside the cases above (e.g. LDS_PAD|F16D = 12) fell through     \
+           and returned WITHOUT launching, leaving the caller's buffer untouched -- a silent wrong     \
+           answer, not a slow one.  Fall back to the baseline instantiation instead. */               \
+        default: LAUNCH(M, 0); break;                                                                     \
     }
 
 // W1039: the same dispatch for the query-swizzle path -- the production recipe keeps GFX906_ATTN_QUERY_SWIZZLE on,
@@ -1329,9 +1335,15 @@ int gfx906_attn_opt() {
         case 7: LAUNCH(M, 7); break;                                                                      \
         case 8: LAUNCH(M, 8); break;                                                                      \
         case 9: LAUNCH(M, 9); break;                                                                      \
+        /* W1192: LDS_PAD|F16D.  The kernel takes any OPT mask; only the switch was missing this    \
+           pair, so the combination silently ran nothing before the default below existed. */        \
+        case 12: LAUNCH(M, 12); break;                                                                   \
         case 16: LAUNCH(M, 16); break;                                                                    \
         case 32: LAUNCH(M, 32); break;                                                                    \
-        default: break;                                                                                   \
+        /* W1192: an OPT combination outside the cases above (e.g. LDS_PAD|F16D = 12) fell through     \
+           and returned WITHOUT launching, leaving the caller's buffer untouched -- a silent wrong     \
+           answer, not a slow one.  Fall back to the baseline instantiation instead. */               \
+        default: LAUNCH(M, 0); break;                                                                     \
     }
 
 void launch_chunks_batch(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps,
