@@ -11,11 +11,20 @@ name: GPU gate
 #   * Label-isolated: jobs target [self-hosted, gfx906], never bare `self-hosted`,
 #     so a future generic self-hosted job cannot land here by accident.
 #   * The runner user `ghrunner` has no sudo beyond `/usr/bin/docker` (sudoers.d).
+# W1180/R98: the job also compiles the engine for gfx906 (see "engine compiles").
+# 205 s clean, -j 8, from the production image and a frozen llama.cpp tree; it is the
+# only place with a HIP toolchain, so it is the only place that can catch a type/API
+# error in src/prefill/prefill.cpp or src/program/generate.cpp (the two files W1176
+# replaced wholesale).  Moving the production image means updating COMPILE_IMAGE here.
+env:
+  COMPILE_IMAGE: strata-gfx906:mi50-u0.2.17-6ecd25f0-b12567-101
+  COMPILE_GGML: /home/ghrunner/llama-b12567
+
 on:
   workflow_dispatch:
   push:
     branches: [gfx906/mi50]
-    paths: ["ci/**", ".github/workflows/gpu-gate.yml"]
+    paths: ["ci/**", "engine/**", ".github/workflows/gpu-gate.yml"]
 
 jobs:
   gpu-smoke:
@@ -68,3 +77,20 @@ jobs:
           python3 -m py_compile ci/*.py
           bash -n ci/*.sh 2>/dev/null || true
           echo CI_SYNTAX_OK
+      - name: engine compiles (HIP, gfx906)
+        run: |
+          set -o pipefail
+          out="$RUNNER_TEMP/strata-compile"
+          rm -rf "$out"; mkdir -p "$out"
+          sudo -n docker run --rm --name "strata-compile-${GITHUB_RUN_ID}" \
+            --user "$(id -u):$(id -g)" -e HOME=/tmp \
+            -v "$PWD:/src:ro" -v "$out:/out" -v "$COMPILE_GGML:/ggml:ro" -w /out \
+            "$COMPILE_IMAGE" bash -lc '
+              set -o pipefail
+              cmake --fresh -S /src/engine -B /out -G Ninja \
+                -DCMAKE_BUILD_TYPE=Release -DSTRATA_HIP_GFX906=ON -DSTRATA_ENABLE_CUDA=ON \
+                -DSTRATA_NATIVE_EXPERTS=ON -DSTRATA_AMD_COMMUNITY_TUNING=ON \
+                -DSTRATA_BUILD_TESTS=OFF -DSTRATA_GGML_DIR=/ggml
+              cmake --build /out --target strata -j 8
+            '
+          echo "engine binary: $(stat -c %s "$out/strata") bytes"
