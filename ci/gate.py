@@ -637,6 +637,60 @@ def check_provenance(cfg_path, build_strata, ledger, repo):
 
 
 
+def check_invariants(repo):
+    """W1178: the content a rebase must not take away.
+
+    W1176 lost 1,973 lines of our own work to `checkout --theirs` on two files and every
+    static check stayed green, because they all looked at *presence of patterns we chose*,
+    never at "the code that was there yesterday is still there".  Each row of
+    ci/PROD_INVARIANTS.tsv is the regression test for one such loss: a literal that must
+    still be in the file, a line-count floor for a file whose content is mostly upstream's,
+    or a file that must exist.  Aggregated into one line so the gate output stays readable.
+    """
+    man = os.path.join(repo, "ci/PROD_INVARIANTS.tsv")
+    txt = read(man)
+    if txt is None:
+        add(FAIL, "prod invariants", "ci/PROD_INVARIANTS.tsv is missing")
+        return
+    bad, n = [], 0
+    for ln, line in enumerate(txt.splitlines(), 1):
+        line = line.lstrip("\ufeff")          # a manifest saved with a BOM must not fail row 1
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        cols = line.split("\t")
+        if len(cols) < 3:
+            bad.append("row %d: expected >=3 columns" % ln)
+            continue
+        if cols[0].strip() == "path":          # the manifest header
+            continue
+        path, kind, value = cols[0].strip(), cols[1].strip(), cols[2].strip()
+        note = cols[3].strip() if len(cols) > 3 else ""
+        full = os.path.join(repo, path)
+        n += 1
+        if kind == "exists":
+            if not os.path.isfile(full):
+                bad.append("%s: missing (%s)" % (path, note))
+            continue
+        body = read(full)
+        if body is None:
+            bad.append("%s: missing (%s)" % (path, note))
+            continue
+        if kind == "contains":
+            if value not in body:
+                bad.append("%s: no %r (%s)" % (path, value, note))
+        elif kind == "min_lines":
+            got = len(body.splitlines())
+            if got < int(value):
+                bad.append("%s: %d lines < floor %s (%s)" % (path, got, value, note))
+        else:
+            bad.append("row %d: unknown kind %r" % (ln, kind))
+    if bad:
+        add(FAIL, "prod invariants (%d rows)" % n, "; ".join(bad[:6]))
+    else:
+        add(OK, "prod invariants (%d rows)" % n,
+            "the content W1176 lost is asserted by ci/PROD_INVARIANTS.tsv")
+
+
 def main():
     ap = argparse.ArgumentParser()
     _self = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -655,6 +709,7 @@ def main():
         return check_tag_cli(a.repo, a.check_tag)
 
     check_source(a.repo)
+    check_invariants(a.repo)
     if a.source_only:
         add(OK, "prov/deploy-time-only",
             "R80 provenance runs only with --config (deploy.sh step 1); --source-only sees no production files")
