@@ -1,5 +1,12 @@
 # third_party/strata-ggml: the ggml sources Strata's engine builds, frozen
 
+> **W1178 · 这份 pin 不是当前引擎的实建钉。** 本目录冻结在 `b11062` / `3cf03257`（2026-09-20），而引擎的 MMQ 桥
+> （`engine/src/prefill/moe_mmq.cu:401`）用的是 b12361 引入的 `ggml_cuda_mm_id_tile_spec`；生产构建一律传
+> `-DSTRATA_GGML_DIR=<llama.cpp checkout>`（2026-11-22 为 `b12567` / `bed8ec2f`）。不传该变量时
+> `strata_ggml_require_mmq_abi()` 会在配置期直接 FATAL 并给出修法，而不是在模板层炸出上百条错误。
+> 把本目录刷新到 b12361+ 是 R101；在那之前**不要**把这份 pin 当成「引擎编译所用版本」。
+
+
 Strata's engines build **ggml-base** and **ggml-cpu** (CPU expert pool, activation quantizers, start-up checks, the DeepSeek CPU lane) and,
 on CUDA and HIP, **llama.cpp's ggml-cuda MMQ kernels** (the prompt path's expert products: `strata_mmq`, `libstrata_kq`, the split engine's
 dot-product headers). This folder holds exactly those sources, copied from llama.cpp, so an engine build needs no network and no

@@ -1,0 +1,32 @@
+# ci/PROD_INVARIANTS.tsv -- the content a rebase must not quietly take away.
+#
+# Each row is one statement that was TRUE of the tree we built and shipped, and that a
+# correct merge with upstream preserves.  They exist because of W1176: `git rebase --onto`
+# resolved two conflicts with `checkout --theirs`, so engine/src/program/generate.cpp and
+# engine/src/prefill/prefill.cpp became the OLD branch copies -- 1,973 lines of our own
+# work (the CPU-share worker pool, the MMQ tier sort, the P2P peer_i8 staging) vanished
+# while every static check stayed green.  A grep cannot be "resolved" away.
+#
+# kinds
+#   contains   <literal>   the file must contain this literal
+#   min_lines  <n>         the file must still have at least n lines (a floor, not a pin)
+#   exists     -           the file must exist
+#
+# Add a row whenever a rebase is found to have dropped something: the row is the regression
+# test for that loss.  Keep values stable across upstream bumps; use floors, not exact counts.
+path	kind	value	note
+engine/src/prefill/prefill.cpp	contains	STRATA_PREFILL_CPU_SHARE_AUTO	CPU prompt share (W1177 lost it once)
+engine/src/prefill/prefill.cpp	contains	g_sp_pool_workers	the share worker pool itself
+engine/src/prefill/prefill.cpp	contains	peer_i8	P2P staged prefill, int8 peer buffers
+engine/src/prefill/prefill.cpp	contains	STRATA_MMQ_TIER_SORT	MMQ tier sort switch
+engine/src/prefill/prefill.cpp	min_lines	9000	9551 at v0.2.18; a floor catches a wholesale replacement
+engine/src/program/generate.cpp	contains	STRATA_CKPT_MOVE_PARK	the checkpoint-move switch the production env sets
+engine/src/program/generate.cpp	contains	STRATA_PARK_ASYNC	async park behind the marker file
+engine/src/program/generate.cpp	min_lines	23000	24744 at v0.2.18
+engine/include/strata/prefill/kva.hpp	contains	tap_first	the DFlash2 tap-window rule (W1172)
+engine/src/kernels/cuda/fused_gr.cu	contains	sm12x_default	the GB10 GR up/down defaults
+terminal/serve/telemetry.py	contains	gpu_pcie_rx_mb	the AMD PCIe sampler the Monitor reads
+terminal/serve/web/app.css	contains	.model-card	the W1174 full-width Model strip
+terminal/serve/test_web_model_card.py	exists	-	its six assertions
+engine/cmake/strata_ggml.cmake	contains	strata_ggml_require_mmq_abi	the configure-time MMQ ABI gate itself
+engine/src/prefill/moe_mmq.cu	contains	ggml_cuda_mm_id_tile_spec	the b12361 tile table the bridge needs
