@@ -159,9 +159,25 @@ int main(int argc, char** argv) {
     std::vector<int32_t> tab((size_t) pages);
     for (int64_t i = 0; i < pages; ++i) tab[(size_t) i] = (int32_t) i;
     int32_t* table = upload(tab);
-    k::QsaAttnPools pools;
+    k::QsaAttnPools pools, pools3;
     pools.page_table = table;
     pools.k_q = k8; pools.v_q = v8; pools.k_scale = k8s; pools.v_scale = v8s;
+    // W1187: the same cells as q4_0 V rows -- kv_mode 3, the format the production config runs (--kv k8v4).
+    // 8 blocks of 18 bytes a row (half d + 16 packed nibbles); K stays the int8 pool above.
+    {
+        constexpr int QK4 = 32;
+        std::vector<uint8_t> v4raw((size_t) prows * (HD / QK4) * 18);
+        for (size_t i = 0; i < (size_t) prows * (HD / QK4); ++i) {
+            uint8_t* b = &v4raw[i * 18];
+            const uint16_t d = f16_scale_q8(rng());
+            std::memcpy(b, &d, 2);
+            for (int j = 0; j < 16; ++j) b[2 + j] = (uint8_t) (rng() & 0xFFu);
+        }
+        uint8_t* v4 = upload(v4raw);
+        v4raw.clear(); v4raw.shrink_to_fit();
+        pools3 = pools;
+        pools3.v_q = nullptr; pools3.v_scale = nullptr; pools3.v_q4 = v4;
+    }
 
     // ---- the indexer's state: pooled keys (unit-ish rows), the spare, a tail, the block position
     std::vector<float> hp((size_t) (max_blocks * ID));
@@ -236,11 +252,12 @@ int main(int argc, char** argv) {
     }
 
     Timer tm;
-    Table t_scores, t_topk, t_attn, t_append, t_layer, t_dense;
+    Table t_scores, t_topk, t_attn, t_attn3, t_append, t_layer, t_dense;
     for (int T = 1; T <= MAXT; ++T) {
         t_scores.us[T] = tm.us([&] { k::qsa_block_scores(pooled, dead, q_idx, steps, T, max_blocks, s, scores, st); }, iters);
         t_topk.us[T] = tm.us([&] { k::qsa_block_topk(scores, steps, T, max_blocks, cap, s, ids, st); }, iters);
         t_attn.us[T] = tm.us([&] { k::qsa_decode_attn_batch(q, pools, ids, steps, cap, s, scratch, attn, T, st); }, iters);
+        t_attn3.us[T] = tm.us([&] { k::qsa_decode_attn_batch(q, pools3, ids, steps, cap, s, scratch, attn, T, st); }, iters);
         // the append writes the tail / pooled / block_pos the scores read; its own cells (ctx .. ctx + T - 1) land in
         // the tail (ctx % 4 == 0) and, at T == 4, complete block ctx / 4: the same state every call
         t_append.us[T] = tm.us([&] {
@@ -259,10 +276,19 @@ int main(int argc, char** argv) {
                 k::qsa_decode_attn_batch(q, pools, ids_d, steps_d, dense_cap, s, scratch_d, attn_d, T, st);
             }, iters);
     }
+    {
+        const char* sw = std::getenv("STRATA_GFX906_ATTN_QUERY_SWIZZLE");
+        const char* dp = std::getenv("STRATA_GFX906_ATTN_DP4A");
+        const char* lp = std::getenv("STRATA_GFX906_ATTN_LDS_PAD");
+        const char* fp = std::getenv("STRATA_GFX906_ATTN_F16PV");
+        std::printf("-- arm: swizzle=%s dp4a=%s lds_pad=%s f16pv=%s\n", sw ? sw : "-", dp ? dp : "-", lp ? lp : "-",
+                    fp ? fp : "-");
+    }
     std::puts("-- a QSA layer's decode kernels at the verification window's shape (us a call, median of 3 runs)");
     t_scores.print("scores  qsa_block_scores (multi)");
     t_topk.print("topk    qsa_block_topk");
-    t_attn.print("attn    qsa_decode_attn_batch cap 2051");
+    t_attn.print("attn    qsa_decode_attn_batch cap 2051 (V int8, mode 1)");
+    t_attn3.print("attn    qsa_decode_attn_batch cap 2051 (V q4_0, mode 3)");
     t_append.print("append  native_qsa_indexer_append_steps");
     t_layer.print("layer   append + scores + topk + attn");
     if (dense) {
