@@ -44,6 +44,10 @@ def read(path):
 # --------------------------------------------------------------------------- source
 def check_source(repo):
     mmvq = os.path.join(repo, "src/kernels/cuda/native_mmvq.cu")
+    if not os.path.isfile(mmvq):
+        # W1159: v0.2.16 layout keeps kernels under engine/ (upstream moved src/ -> engine/src/).
+        # Same file, same invariants below -- the check's intent is unchanged.
+        mmvq = os.path.join(repo, "engine/src/kernels/cuda/native_mmvq.cu")
     src = read(mmvq)
     if src is None:
         add(FAIL, "native_mmvq.cu present", mmvq)
