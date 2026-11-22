@@ -1687,6 +1687,10 @@ def pcie_bottleneck(reads) -> dict | None:
 
 
 class Telemetry:
+    # W1176: sample() may run on a __new__-built test double that never called
+    # __init__; the PCIe sampler's lock must not be an instance-only attribute.
+    _bw_lock = threading.Lock()
+
     def __init__(self, extra=None, gpu_index=0, gpu_indices=None, amd=False):
         """`extra()` -> dict of more series to record each second (the server's tok/s).  `gpu_index`: the card the
         engine runs on, numbered as nvidia-smi and NVML number them (by PCI bus); `gpu_indices`: all of them when
@@ -1805,9 +1809,10 @@ class Telemetry:
             s["cpu"] = self.fallback.cpu()
             s["ram_used"], s["ram_total"] = self.fallback.ram()
         s["disk_read_mb"], s["disk_write_mb"] = self._disk()
-        with self.lock:                              # [ours] the AMD cards' PCIe bandwidth
-            if self._bw:
-                v = [x for x in self._bw[1] if x is not None]
+        with self._bw_lock:                          # [ours] the AMD cards' PCIe bandwidth
+            bw = getattr(self, "_bw", None)
+            if bw:
+                v = [x for x in bw[1] if x is not None]
                 if v:
                     s["gpu_pcie_rx_mb"] = round(sum(v), 2)
         if self.extra:
