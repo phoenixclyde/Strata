@@ -1,0 +1,12 @@
+# ci/OSV_ALLOW.tsv — deliberate, dated exceptions for ci/osv_scan.py
+#
+# Columns: package <TAB> vuln-id <TAB> YYYY-MM-DD (expiry) <TAB> reason
+# A row matches a finding when the package matches and the row's id is the finding's id or one of its
+# aliases.  WHEN THE DATE PASSES THE SCAN FAILS — that is the point: an exception has to be re-argued,
+# not inherited.  Do not add a row without a reason that a stranger could check.
+#
+# W1183 (2026-11-22) dismissed the glib alert on GitHub with the same argument as below.  W1184 tightened
+# the evidence: `array_iter_str` (the only constructor of VariantStrIter) has ZERO call sites in every
+# crate source this graph downloads, so the unsound code is not merely uncalled by our files — it is never
+# instantiated anywhere in the tree.  The expiry forces a fresh look at gtk-rs 0.20 when the quarter ends.
+glib	GHSA-wrw7-89jp-8q8g	2027-02-28	0.18.5 is the last 0.18.x; fix (gtk-rs-core#1343) only in 0.20.0; tauri 2.12.7 and 3.0.0-alpha.6 both pin gtk ^0.18, so no published combination removes glib 0.18; VariantStrIter has zero construction sites in the whole registry tree
