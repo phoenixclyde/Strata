@@ -24,7 +24,11 @@ on:
   workflow_dispatch:
   push:
     branches: [gfx906/mi50]
-    paths: ["ci/**", "engine/**", ".github/workflows/gpu-gate.yml"]
+    # W1184: `ci/**` was here and did not belong.  A ci-only commit cannot change the bytes this job
+    # compiles, and on this host every run needs the local mirror refreshed by hand within 300 s (no
+    # GitHub egress), so a ci-only push bought a doomed run and a "Run failed" mail.  ci/*.py syntax is
+    # already checked by downstream-gate's "Syntax of the 166 tooling" step on every ci/** push.
+    paths: ["engine/**", "CMakeLists.txt", ".github/workflows/gpu-gate.yml"]
 
 # W1182: a push supersedes the run before it.  Without this, an older run that is
 # still waiting for the mirror reports failure AFTER a newer commit has already gone
