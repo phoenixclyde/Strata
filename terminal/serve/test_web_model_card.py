@@ -17,8 +17,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CSS = open(os.path.join(HERE, "web", "app.css"), encoding="utf-8").read()
 JS = open(os.path.join(HERE, "web", "app.js"), encoding="utf-8").read()
 
-WIDE = re.search(r"@media \(min-width: 1200px\) \{(.*?)\n\}", CSS, re.S)
-NARROW = re.search(r"@media \(max-width: 760px\) \{(.*?)\n\}", CSS, re.S)
+WIDE = re.search(r"@media \(min-width: 900px\) \{(.*?)\n\}", CSS, re.S)
+NARROW = re.search(r"@media \(max-width: 899px\) \{(.*?)\n\}", CSS, re.S)
 
 
 def block(selector):
@@ -32,9 +32,11 @@ class ModelCard(unittest.TestCase):
         self.assertIn('{key: "model", label: "Model"', JS)
         self.assertLess(JS.index('{key: "model"'), JS.index('{key: "speed"'))
 
-    def test_wide_screens_give_it_two_tracks(self):
+    def test_the_card_is_a_full_width_strip(self):
+        """8 gauges used to fill one row; a 9th card wrapped alone onto an empty second row."""
+        self.assertIn(".model-card { grid-column: 1 / -1; }", CSS)
         self.assertTrue(WIDE, "the wide-screen rule is missing")
-        self.assertIn(".model-card { grid-column: span 2; }", WIDE.group(1))
+        self.assertIn("flex-direction: row", WIDE.group(1))
 
     def test_the_name_stays_on_one_line(self):
         b = block(".model-card__name")
@@ -42,15 +44,13 @@ class ModelCard(unittest.TestCase):
         self.assertIn("text-overflow: ellipsis", b)
         self.assertNotIn("overflow-wrap: anywhere", b)
 
-    def test_the_five_averages_fit_two_columns(self):
-        self.assertIn("grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr)", WIDE.group(1))
-        # the fifth pair (Since . N requests) keeps the full width instead of a dangling half row
-        self.assertIn(".model-card__facts > :nth-last-child(-n + 2) { grid-column: span 2; }", WIDE.group(1))
+    def test_the_five_averages_sit_on_the_strip(self):
+        self.assertIn(".model-card__facts { display: flex; flex-wrap: wrap;", WIDE.group(1))
+        self.assertIn("margin: 0 0 0 auto", WIDE.group(1))
 
     def test_narrow_screens_clamp_instead_of_overflowing(self):
         self.assertTrue(NARROW, "the narrow-screen rule is missing")
         self.assertIn("-webkit-line-clamp: 2", NARROW.group(1))
-        self.assertIn("grid-template-columns: auto minmax(0, 1fr)", NARROW.group(1))
 
 
 if __name__ == "__main__":
