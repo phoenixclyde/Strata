@@ -4,12 +4,14 @@ keeps them off; true keeps them on. The limits stay as they were (4 per result, 
 from __future__ import annotations
 
 import base64
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from serve.mcp import hub_from_config, resolve_image_results
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # W1176: make `serve` importable from the repo layout
+from serve.mcp import hub_from_config, resolve_image_results  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 PNG = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jB0kAAAAASUVORK5CYII=")
