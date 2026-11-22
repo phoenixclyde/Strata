@@ -17,6 +17,12 @@
   D6 证据链    本轮 report + 账本行 + W832 §6.5 回写块（复用 round_ledger 的 E 规则）
   D7 CI 证据    本 exe 的构建 sha 在 deploy/CI_RUNS.tsv 里有 Downstream gate run=success，
                或 status=exempt 的显式豁免行（W1048：历史 43 件 UNTRACKED 就是反例）
+  D8 镜像身份  镜像 tag == /src/BUILD-IMAGE.json.image_tag_standard == label strata.image.standard
+               **且 tag 尾段 == 镜像 /opt/rocm/.info/version 去点码（10.1 -> 101）**（W1168 机主：
+               101 是 ROCm 版本号，不是构建序号）。
+               （P873 立：tag 自报与内容不符、CMD 指已删 config 都是这门要拦的）。
+               只在装「镜像」时适用：给了 --image 就必须三方一致，否则 REFUSE；
+               不给 --image（引擎件装机）记 N/A，不算 SKIP、不拦。
 
 A/B 证据文件（JSON，最小形状）：
 {
@@ -52,6 +58,7 @@ import io
 import json
 import os
 import re
+import shlex
 import subprocess
 import sys
 
@@ -87,11 +94,15 @@ def live(cmd):
     """--live checks reach the 166 host. On 166 run locally (no ssh-to-self);
     from the laptop ssh in. Read-only commands only."""
     if ON166:
-        r = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=60)
+        r = subprocess.run(cmd, shell=True, capture_output=True, text=True,
+                           encoding="utf-8", errors="replace", timeout=60)
     else:
         r = subprocess.run(["ssh", "-o", "ConnectTimeout=8", "192.168.50.166", cmd],
-                           capture_output=True, text=True, timeout=60)
-    return r.returncode, (r.stdout + r.stderr).strip()
+                           capture_output=True, text=True,
+                           encoding="utf-8", errors="replace", timeout=60)
+    # W1168: 本机 Windows 上 ssh 回执可能是 None（stderr 未捕获）且控制台编码非 utf-8；
+    # 旧实现 r.stdout + r.stderr 直接 TypeError，读中文表还会 UnicodeDecodeError。
+    return r.returncode, ((r.stdout or "") + (r.stderr or "")).strip()
 
 
 def latency_target_ok(delta, band):
@@ -292,6 +303,41 @@ def ci_run_ok(exe, runs_path=None, recipe_path=None):
     return False, "CI_RUNS.tsv 没有 %s / sha=%s 的覆盖行" % (exe, sha)
 
 
+def rocm_code(version):
+    """W1168（机主定死）：镜像 tag 尾段 = ROCm 版本号去点，不是构建序号。
+    ROCm 10.1.0 -> '101'；7.14.x -> '714'。构建序号式尾段（101->102->103 递增）是违规。
+    """
+    parts = (version or "").strip().split(".")
+    if len(parts) < 2 or not parts[0].isdigit() or not parts[1].isdigit():
+        return None
+    return parts[0] + parts[1]
+
+
+def image_verdict(repo_tags, passed_image, label_std, bi_std):
+    """D8 (P873): the image tag must equal /src/BUILD-IMAGE.json.image_tag_standard
+    and the label strata.image.standard. Fail closed on any missing piece.
+
+    repo_tags   -- list of tags the image carries (docker RepoTags), e.g. ["repo:tag"]
+    passed_image-- the image ref being deployed (may include ":tag")
+    label_std   -- label strata.image.standard (None if absent)
+    bi_std      -- BUILD-IMAGE.json's image_tag_standard (None if absent/unreadable)
+    """
+    tag = passed_image.rsplit(":", 1)[-1] if passed_image else ""
+    if not label_std:
+        return False, "label strata.image.standard 缺失（P873：身份门四件套）"
+    if not bi_std:
+        return False, "BUILD-IMAGE.json.image_tag_standard 缺失或读不出（镜像里必须有 /src/BUILD-IMAGE.json）"
+    if not tag:
+        return False, "--image 没带 tag（无法与 image_tag_standard 对撞）"
+    if repo_tags:
+        rt = [t.rsplit(":", 1)[-1] for t in repo_tags]
+        if tag not in rt:
+            return False, "要装的 tag %s 不在镜像 RepoTags %s 里" % (tag, rt)
+    if not (tag == bi_std == label_std):
+        return False, "三方不一致：tag=%s｜json.image_tag_standard=%s｜label=%s（P873 反例）" % (tag, bi_std, label_std)
+    return True, "tag == image_tag_standard == label = %s" % tag
+
+
 def self_test():
     good = {"mode": "anchor", "build_floor_bitident": True,
             "anchor": [{"length": n, "kl_cand": 0.1, "kl_anchor": 0.2} for n in
@@ -388,6 +434,20 @@ def self_test():
         ("D4c 原门 kl=0.0139 仍过", lambda: numeric_verdict({"mode": "kl", "kl": 0.0139, "top1": 99.0})[0], True),
         ("D4c 原门 kl=0.0140 仍拒", lambda: numeric_verdict({"mode": "kl", "kl": 0.0140, "top1": 99.0})[0], False),
     ]
+    # W1167 P873 D8: image identity (pure verdict; docker I/O lives in main).
+    cases += [
+        ("D8 三方一致", lambda: image_verdict(["img:std-103"], "img:std-103", "std-103", "std-103")[0], True),
+        ("D8 tag 与 json 不符", lambda: image_verdict(["img:std-103"], "img:std-103", "std-103", "std-102")[0], False),
+        ("D8 label 缺失", lambda: image_verdict(["img:std-103"], "img:std-103", None, "std-103")[0], False),
+        ("D8 json 缺失", lambda: image_verdict(["img:std-103"], "img:std-103", "std-103", None)[0], False),
+        ("D8 tag 不在 RepoTags", lambda: image_verdict(["img:std-103"], "img:std-104", "std-104", "std-104")[0], False),
+        ("D8 label 与 tag 不符", lambda: image_verdict(["img:std-103"], "img:std-103", "std-102", "std-103")[0], False),
+        # W1168（机主：101 = ROCm 版本号）：尾段必须是 ROCm 码，不是构建序号
+        ("R 10.1.0 -> 101", lambda: rocm_code("10.1.0"), "101"),
+        ("R 10.2.0 -> 102", lambda: rocm_code("10.2.0"), "102"),
+        ("R 7.14.3 -> 714", lambda: rocm_code("7.14.3"), "714"),
+        ("R 垃圾输入 -> None", lambda: rocm_code("abc"), None),
+    ]
     bad = 0
     for name, obj, want in cases:
         got = numeric_verdict(obj)[0] if isinstance(obj, dict) else obj()
@@ -439,6 +499,7 @@ def main():
     ap.add_argument("--cfg-base", help="上一份（在产）config")
     ap.add_argument("--cfg-new", help="要推上去的 config")
     ap.add_argument("--reg-ids", help="本轮改判/新增的 register 行 ID，逗号分隔（D5 的增量账）")
+    ap.add_argument("--image", help="要装的镜像 ref（含 tag，如 strata-gfx906:mi50-u0.2.17-…-101，尾段 101=ROCm 10.1）；给它就检 D8 镜像身份")
     a = ap.parse_args()
     ok, rows = True, []
 
@@ -446,6 +507,9 @@ def main():
         nonlocal ok
         ok = ok and pass_
         rows.append(("PASS" if pass_ else "REFUSE", tag, detail))
+
+    def add_na(tag, detail):
+        rows.append(("N/A", tag, detail))
 
     # D1 identity
     ex = a.path if (a.path and os.path.isfile(a.path)) else local_bin(a.exe)
@@ -587,6 +651,48 @@ def main():
     verdict, detail = ci_run_ok(a.exe)
     add(verdict, "D7 CI 证据", detail)
 
+    # D8 image identity (W1167 P873): tag == /src/BUILD-IMAGE.json.image_tag_standard
+    # == label strata.image.standard. Only for image installs (--image); otherwise N/A.
+    if a.image:
+        q = shlex.quote(a.image)
+        rc1, labs = live("docker inspect %s --format '{{json .Config.Labels}}'" % q)
+        rc2, tags = live("docker inspect %s --format '{{json .RepoTags}}'" % q)
+        rc3, bi = live("docker run --rm --entrypoint cat %s /src/BUILD-IMAGE.json" % q)
+        rc4, rocmv = live("docker run --rm --entrypoint cat %s /opt/rocm/.info/version" % q)
+
+        def _json(s):
+            s = (s or "").strip()
+            try:
+                return json.loads(s)
+            except ValueError:
+                return None
+
+        labels = _json(labs) or {}
+        repo_tags = _json(tags) or []
+        bi_obj = _json(bi) or {}
+        if rc1 or rc2 or rc3:
+            add(False, "D8 镜像身份", "docker inspect/run 失败 rc=%s/%s/%s（%s）" %
+                (rc1, rc2, rc3, (labs + tags + bi)[:70]))
+        else:
+            vok, vdet = image_verdict(repo_tags, a.image,
+                                      labels.get("strata.image.standard"),
+                                      bi_obj.get("image_tag_standard"))
+            # W1168（机主钉死 2026-11-22）：tag 尾段 = ROCm 版本码（10.1 -> 101）。
+            # 这是把「-102/-103 当构建序号」那类命名违规变成机器可拦的判据。
+            code = rocm_code(rocmv) if rc4 == 0 else None
+            mtail = re.search(r"-(\d+)$", a.image.rsplit(":", 1)[-1] if a.image else "")
+            if rc4 != 0 or code is None:
+                add(False, "D8 镜像身份", vdet + "；ROCm 码无法判：镜像 /opt/rocm/.info/version 读不到（rc=%s）" % rc4)
+            elif mtail is None:
+                add(False, "D8 镜像身份", vdet + "；tag 无数字尾段，ROCm 码无从表达（%s）" % a.image)
+            elif mtail.group(1) != code:
+                add(False, "D8 镜像身份", vdet + "；ROCm 码不符：tag 尾段 %s ≠ 镜像 ROCm %s（应写 %s）" %
+                    (mtail.group(1), rocmv.strip(), code))
+            else:
+                add(vok, "D8 镜像身份", vdet + "；ROCm 码 %s == 镜像 %s" % (mtail.group(1), rocmv.strip()))
+    else:
+        add_na("D8 镜像身份", "N/A 非镜像装机（给 --image 才检；引擎件装机不适用）")
+
     print("%-8s %-12s %s" % ("判定", "判据", "证据"))
     for st, tag, d in rows:
         print("%-8s %-12s %s" % (st, tag, d))
@@ -595,8 +701,11 @@ def main():
     # as an install permit. Fail closed on any SKIP.
     skips = [tag for st, tag, d in rows if d.startswith("SKIP")]
     all_ok = ok and not skips
+    checked = [tag for st, tag, d in rows if st in ("PASS", "REFUSE")]
+    n8 = any(t == "D8 镜像身份" for t in checked)
     if all_ok:
-        banner = "PASS — 七条判据全部有证据，可以装"
+        banner = "PASS — %d 条判据全部有证据，可以装%s" % (
+            len(checked), "（含 D8 镜像身份）" if n8 else "（D8 N/A：非镜像装机）")
     elif ok:
         banner = "INCOMPLETE — %d 条判据是 SKIP（%s），不能据此装机" % (len(skips), "、".join(skips))
     else:
