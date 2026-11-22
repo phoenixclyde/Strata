@@ -23,7 +23,6 @@ concurrency:
 
 permissions:
   contents: read
-  issues: write
 
 jobs:
   watch:
@@ -48,6 +47,8 @@ jobs:
           s = Path('.github/workflows/upstream-watch.yml').read_text()
           bad = [l.strip() for l in s.splitlines() if re.search(r"\|\s*head\b", l)]
           assert not bad, "piped head truncates git output and fails under pipefail: %s" % bad
+          assert ('issues' + ': write') not in s and ('github.rest.' + 'issues') not in s, \
+              "Issues are disabled on this repository; report in the job summary instead"
           PYCHECK
       - name: Fetch upstream
         run: |
@@ -75,70 +76,29 @@ jobs:
             echo EOF
           } >> "$GITHUB_OUTPUT"
 
-      - name: Open, update or close the reminder
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b  # v7
+      - name: Report the gap in the job summary
         env:
           BEHIND: ${{ steps.gap.outputs.behind }}
           BASE: ${{ steps.gap.outputs.base }}
           HEAD_SHA: ${{ steps.gap.outputs.head_sha }}
           HEAD_SUBJ: ${{ steps.gap.outputs.head_subject }}
           COMMITS: ${{ steps.gap.outputs.commits }}
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const open = await github.rest.issues.listForRepo({
-              owner, repo, labels: 'upstream-watch', state: 'open', per_page: 10,
-            });
-            const behind = parseInt(process.env.BEHIND, 10);
-
-            if (!behind) {
-              for (const issue of open.data) {
-                await github.rest.issues.createComment({
-                  owner, repo, issue_number: issue.number,
-                  body: 'Upstream is fully merged (0 commits behind). Closing this reminder.',
-                });
-                await github.rest.issues.update({
-                  owner, repo, issue_number: issue.number, state: 'closed',
-                });
-              }
-              core.info('up to date, nothing to report');
-              return;
-            }
-
-            const body = [
-              `**${behind} commit(s) behind** \`upstream/main\` @ \`${process.env.HEAD_SHA}\``,
-              ``,
-              `Latest upstream tag: \`${process.env.BASE}\`  `,
-              `Upstream head: ${process.env.HEAD_SUBJ}`,
-              ``,
-              '```',
-              process.env.COMMITS,
-              '```',
-              ``,
-              'Rebase, then re-verify — in this order:',
-              '```bash',
-              'cd /home/albus/strata166/pr/strata-fork',
-              'git fetch upstream && git rebase upstream/main',
-              '/home/albus/strata166/ci/strata-ci check          # static gate',
-              '/home/albus/strata166/ci/strata-ci build          # ~8-10 min',
-              '/home/albus/strata166/ci/strata-ci deploy --apply # tag first',
-              '```',
-              ``,
-              'Then walk the patch ledger: `docs/DOWNSTREAM.md` — a patch upstream absorbed',
-              'gets deleted, not replayed.',
-            ].join('\n');
-
-            if (open.data.length) {
-              await github.rest.issues.update({
-                owner, repo, issue_number: open.data[0].number, body,
-              });
-              core.info(`updated #${open.data[0].number}`);
-            } else {
-              const created = await github.rest.issues.create({
-                owner, repo,
-                title: `upstream: ${behind} new commit(s) to rebase onto`,
-                body,
-                labels: ['upstream-watch'],
-              });
-              core.info(`opened #${created.data.number}`);
-            }
+        run: |
+          set -eu
+          {
+            echo "## Upstream watch"
+            if [ "$BEHIND" = "0" ]; then
+              echo "Upstream is fully merged (0 commits behind)."
+            else
+              echo "**$BEHIND commit(s) behind** `upstream/main` @ `$HEAD_SHA`"
+              echo
+              echo "Latest upstream tag: `$BASE`"
+              echo "Upstream head: $HEAD_SUBJ"
+              echo
+              echo '```'
+              printf '%s\n' "$COMMITS"
+              echo '```'
+              echo
+              echo 'Rebase, then re-verify: static gate -> build -> A/B -> deploy.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
