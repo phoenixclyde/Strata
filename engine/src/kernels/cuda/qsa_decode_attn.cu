@@ -488,11 +488,12 @@ __device__ __forceinline__ void attn_chunk_body(const float* __restrict__ q, Qsa
         const float l = warp_sum(ea + eb, (OPT & 1) != 0);
         if (lane == 0) { part_m[slot * G + h] = m; part_l[slot * G + h] = l; }
     }
-    if constexpr (F16PV) {   // W1186: one f16 copy of the probabilities, read as pairs by the value loop
-        for (int i = t; i < G * CHUNK; i += THREADS)
-            sp16[i / CHUNK][i % CHUNK] = __float2half(sp[i / CHUNK][i % CHUNK]);
-    }
     __syncthreads();
+    if constexpr (F16PV) {   // W1189: AFTER the barrier -- the softmax above is written by 8 warps (h = warp, warp+8)
+        for (int i = t; i < G * CHUNK; i += THREADS)   // and this copy reads every head; before the barrier it was a race
+            sp16[i / CHUNK][i % CHUNK] = __float2half(sp[i / CHUNK][i % CHUNK]);
+        __syncthreads();
+    }
     // values: thread t owns dimension t for all 12 heads.
     float acc[G];
 #pragma unroll
