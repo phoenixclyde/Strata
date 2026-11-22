@@ -15,6 +15,9 @@ on:
   push:
     branches: [main, gfx906/mi50, 'ci/**']
     paths:
+      # W1175: the 0.2.16+ layout moved the engine to engine/src/.  Without this line an
+      # engine-only push never entered the workflow (the gate itself already reads engine/).
+      - 'engine/**'
       - 'src/**'
       - 'include/**'
       - 'CMakeLists.txt'
@@ -23,14 +26,19 @@ on:
       # the run its own coverage criterion asks for (D25, same class as D21).
       - 'third_party/**'
       - 'ci/**'
+      - 'terminal/**'
       - '.github/workflows/downstream-gate.yml'
   pull_request:
     branches: [main]
     paths:
+      # W1175: the 0.2.16+ layout moved the engine to engine/src/.  Without this line an
+      # engine-only push never entered the workflow (the gate itself already reads engine/).
+      - 'engine/**'
       - 'src/**'
       - 'include/**'
       - 'CMakeLists.txt'
       - 'ci/**'
+      - 'terminal/**'
   workflow_dispatch:
 
 concurrency:

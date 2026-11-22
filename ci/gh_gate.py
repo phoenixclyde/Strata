@@ -52,7 +52,8 @@ DEF_WORKFLOW = "downstream-gate.yml"
 # ancestor's run stop standing in for HEAD's.  Deliberately conservative: a
 # false "engine changed" costs one CI run, a false "engine unchanged" ships an
 # unverified binary.
-ENGINE_PATHS = ("src/", "include/", "cmake/", "third_party/", "metal/", "sycl/")
+ENGINE_PATHS = ("engine/", "src/", "include/", "cmake/", "third_party/", "metal/", "sycl/",
+                "terminal/")  # W1175: post-0.2.16 layout; current mainline still uses src/
 ENGINE_FILES = ("CMakeLists.txt", "CMakePresets.json", "setup.py", "Dockerfile")
 
 
