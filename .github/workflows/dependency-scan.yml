@@ -1,0 +1,68 @@
+name: Dependency scan
+
+# GitHub's Dependabot only knows GitHub's Advisory Database.  Measured on 2026-11-22 against the lock that
+# was in the tree before W1183: 11 in-range advisories across 5 packages, of which GitHub surfaced 4
+# (three zip + glib).  The other seven were invisible to it -- GHSA-hrj5-67jp-wqp9 (url) and
+# GHSA-jh2m-fhpj-3vr7 (rustix) return 404 from /advisories and 0 hits from /advisories?ghsa_id=, the three
+# zip SUID/symlink advisories (RUSTSEC-2026-0367/0368/0369) carry no GHSA either, and
+# RUSTSEC-2026-0382/0383 (rustls-webpki, webpki-root-certs) have none.  So "security_update_not_possible"
+# in Dependabot's log cannot be read as "no fix exists" -- that reading kept zip 4.6.1 for 25 days after
+# tauri-plugin-updater 2.14.1 had shipped zip 9.
+#
+# This job asks OSV (RustSec + GHSA + CVE aggregated) about every crates.io package pinned in a lock, and
+# fails on anything not covered by the dated allowlist in ci/OSV_ALLOW.tsv.  A weekly run matters: a new
+# advisory does not wait for someone to push code.
+#
+# Reaching OSV is a network dependency, so `exit 3` (unreachable after retries) is reported as a warning
+# and does NOT fail the job -- a scanner that pages on its own downtime gets muted, and a muted scanner is
+# worse than none.  The step still prints SKIPPED, so "no finding" and "no scan" never read the same.
+
+on:
+  schedule:
+    - cron: '0 3 * * 1'      # Mondays 03:00 UTC
+  push:
+    branches: [main, gfx906/mi50, 'ci/**']
+    paths:
+      - 'ci/osv_scan.py'
+      - 'ci/OSV_ALLOW.tsv'
+      - 'app/desktop/src-tauri/Cargo.lock'
+      - 'terminal/crates/strata-gguf-preflight/Cargo.lock'
+      - '.github/workflows/dependency-scan.yml'
+  pull_request:
+    paths:
+      - 'ci/osv_scan.py'
+      - 'ci/OSV_ALLOW.tsv'
+      - 'app/desktop/src-tauri/Cargo.lock'
+      - '.github/workflows/dependency-scan.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  osv:
+    name: OSV / cargo locks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
+      - name: Scan every tracked Cargo.lock
+        run: |
+          rc_all=0
+          for lock in app/desktop/src-tauri/Cargo.lock terminal/crates/strata-gguf-preflight/Cargo.lock; do
+            echo "--- $lock"
+            python3 ci/osv_scan.py --lock "$lock" --allow ci/OSV_ALLOW.tsv
+            rc=$?
+            if [ "$rc" -eq 3 ]; then
+              echo "::warning title=OSV unreachable::$lock was skipped, not passed"
+            elif [ "$rc" -ne 0 ]; then
+              rc_all=$rc
+            fi
+          done
+          exit $rc_all
