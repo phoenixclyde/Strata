@@ -35,7 +35,7 @@ import time
 import urllib.error
 import urllib.request
 
-API = "https://api.osv.dev/v1"
+API = os.environ.get("OSV_API", "https://api.osv.dev/v1")   # OSV_API is for rehearsing the unreachable path
 UA = "strata-osv-scan/1.0 (+https://github.com/phoenixclyde/Strata)"
 BATCH = 500
 RETRIES = 3
