@@ -53,11 +53,20 @@ jobs:
       - name: make the requested commits and tags visible
         run: |
           set -eu
+          # A and U are often upstream's: v0.2.x lives in Niko1221/Strata, not here.
+          # Fetch our own refs first (cheap), then upstream's tags only when a ref is
+          # missing -- so the common case does not depend on a second network round trip.
+          upstream="https://github.com/Niko1221/Strata.git"
           git fetch --tags --force origin
           for r in "${{ inputs.a }}" "${{ inputs.u }}" "${{ inputs.b }}"; do
+            if ! git rev-parse --verify "${r}^{commit}" >/dev/null 2>&1; then
+              echo "$r is not on origin; fetching upstream tags"
+              git fetch --tags --force "$upstream" || true
+            fi
             git rev-parse --verify "${r}^{commit}" >/dev/null || {
               echo "cannot resolve $r" >&2; exit 1; }
           done
+          echo "A=$(git rev-parse --short "${{ inputs.a }}^{commit}") U=$(git rev-parse --short "${{ inputs.u }}^{commit}") B=$(git rev-parse --short "${{ inputs.b }}^{commit}")"
       - name: rebase oracle
         run: |
           set -o pipefail
