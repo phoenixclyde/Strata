@@ -4,7 +4,7 @@
 > （`engine/src/prefill/moe_mmq.cu:401`）用的是 b12361 引入的 `ggml_cuda_mm_id_tile_spec`；生产构建一律传
 > `-DSTRATA_GGML_DIR=<llama.cpp checkout>`（2026-11-22 为 `b12567` / `bed8ec2f`）。不传该变量时
 > `strata_ggml_require_mmq_abi()` 会在配置期直接 FATAL 并给出修法，而不是在模板层炸出上百条错误。
-> 把本目录刷新到 b12361+ 是 R101；在那之前**不要**把这份 pin 当成「引擎编译所用版本」。
+> **R101/W1182 起这是一条硬约定**：本目录只服务 CPU 构建与测试（CPU 侧不需要 ggml-cuda），CUDA/HIP 构建**必须**传 `-DSTRATA_GGML_DIR`，否则 `strata_ggml_require_mmq_abi()` 在配置期 FATAL。把本目录刷新到 b12361+ 仍未做（R101 的另一半），因为默认路径已不可能静默用错树。
 
 
 Strata's engines build **ggml-base** and **ggml-cpu** (CPU expert pool, activation quantizers, start-up checks, the DeepSeek CPU lane) and,

@@ -64,6 +64,18 @@ endmacro()
 # The vendored third_party/strata-ggml is still pinned at b11062, so the default path trips
 # this on purpose -- the message names the override.
 macro(strata_ggml_require_mmq_abi)
+  # W1182/R101: the vendored tree is CPU/test-only (it is pinned at b11062, two months
+  # behind the b12567 the engine is built against).  A GPU build that forgets the
+  # override used to fall back to it and die in template errors; now it stops here with
+  # one sentence.  This is the contract the plan asks for: the default cannot be wrong,
+  # because for CUDA/HIP there is no default.
+  if(NOT STRATA_GGML_DIR)
+    message(FATAL_ERROR
+      "Strata: a CUDA/HIP build needs -DSTRATA_GGML_DIR=<llama.cpp checkout>. "
+      "third_party/strata-ggml is the CPU/test pin (b11062) and does not carry the "
+      "ggml-cuda sources the prompt kernels compile against (b12361+). "
+      "Use the tree the production image ships, e.g. -DSTRATA_GGML_DIR=/ggml.")
+  endif()
   set(_mmq "${_strata_ggml_root}/ggml/src/ggml-cuda/mmq.cuh")
   if(NOT EXISTS "${_mmq}")
     message(FATAL_ERROR
