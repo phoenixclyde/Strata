@@ -40,6 +40,15 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: No pipefail/SIGPIPE traps in this workflow
+        run: |
+          python3 - <<'PYCHECK'
+          import re
+          from pathlib import Path
+          s = Path('.github/workflows/upstream-watch.yml').read_text()
+          bad = [l.strip() for l in s.splitlines() if re.search(r"\|\s*head\b", l)]
+          assert not bad, "piped head truncates git output and fails under pipefail: %s" % bad
+          PYCHECK
       - name: Fetch upstream
         run: |
           git remote add upstream https://github.com/Niko1221/Strata.git 2>/dev/null || true
@@ -62,7 +71,7 @@ jobs:
           echo "behind=$behind (base tag $base_tag)"
           {
             echo 'commits<<EOF'
-            git log --oneline HEAD..upstream/main | head -30
+            git log --oneline -n 30 HEAD..upstream/main
             echo EOF
           } >> "$GITHUB_OUTPUT"
 
