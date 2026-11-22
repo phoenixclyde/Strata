@@ -93,6 +93,14 @@ int main() {
         CHECK(is(c.decline(eng, 0, 14600, 0, 24, 48), "a layer split (not the whole trunk)"));
         CHECK(is(c.decline(eng, 0, 14600, 0, -1, 48, true), "a prompt with pictures"));
         CHECK(is(c.decline(eng, 0, 14600, 0, -1, 48, false, true), "the DFlash2 drafter reads the late layers' hidden states"));
+        // W1172 (P899 route a): a tap window that starts inside the exact tail is allowed; one row earlier is not.
+        // n = 14600, suffix 2048 => the exact tail starts at 12552.
+        CHECK(c.decline(eng, 0, 14600, 0, -1, 48, false, true, nullptr, false, 12552) == nullptr);   // first allowed row
+        CHECK(is(c.decline(eng, 0, 14600, 0, -1, 48, false, true, nullptr, false, 12551),
+                 "the DFlash2 drafter reads the late layers' hidden states"));                       // one row into the approximated region
+        CHECK(c.decline(eng, 0, 14600, 0, -1, 48, false, true, nullptr, false, 12553) == nullptr);   // the production window (n - 2047)
+        CHECK(is(c.decline(eng, 0, 14600, 0, -1, 48, false, true, nullptr, false, -1),
+                 "the DFlash2 drafter reads the late layers' hidden states"));                       // no window given: fail closed
         // the engine rules the whole process out (batch slots, a layer split, a peer device)
         KvaEngine blocked = eng;
         blocked.blocked = "batch slots (--batch)";
