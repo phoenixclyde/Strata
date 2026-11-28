@@ -106,7 +106,8 @@ jobs:
               cmake --fresh -S /src/engine -B /out -G Ninja \
                 -DCMAKE_BUILD_TYPE=Release -DSTRATA_HIP_GFX906=ON -DSTRATA_ENABLE_CUDA=ON \
                 -DSTRATA_NATIVE_EXPERTS=ON -DSTRATA_AMD_COMMUNITY_TUNING=ON \
-                -DSTRATA_BUILD_TESTS=OFF -DSTRATA_GGML_DIR=/ggml
+                -DSTRATA_BUILD_TESTS=OFF -DSTRATA_GGML_DIR=/ggml \
+                -DSTRATA_BUILD_INKLING=OFF -DSTRATA_BUILD_INKLING2=OFF
               cmake --build /out --target strata -j 8
             '
           echo "engine binary: $(stat -c %s "$out/strata") bytes"

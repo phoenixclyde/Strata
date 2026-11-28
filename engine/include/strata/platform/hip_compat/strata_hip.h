@@ -105,6 +105,10 @@ inline hipError_t strata_device_get_attribute(int* v, hipDeviceAttribute_t a, in
 #define cudaMalloc hipMalloc
 #define cudaFree hipFree
 #define cudaMemGetInfo hipMemGetInfo
+// 0.2.23 peer experts (src/core/peer_experts.cpp): the P2P attribute query and the PCI bus id have direct HIP names
+#define cudaDeviceGetP2PAttribute hipDeviceGetP2PAttribute
+#define cudaDevP2PAttrNativeAtomicSupported hipDevP2PAttrNativeAtomicSupported
+#define cudaDeviceGetPCIBusId hipDeviceGetPCIBusId
 #define cudaMemcpy hipMemcpy
 #define cudaMemcpyAsync hipMemcpyAsync
 #define cudaMemcpyPeerAsync hipMemcpyPeerAsync
