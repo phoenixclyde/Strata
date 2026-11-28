@@ -373,7 +373,10 @@ void quantize(const float* x, const int32_t* ids, void* xq, int t, int64_t cols,
     }
 #endif
     (void) yscale;
-    quantize_mmq_q8_1_cuda(x, ids, xq, (ggml_type) t, cols, ld, rows * ld, rows * ld, pad512(cols), rows, 1, 1,
+    // W1257: llama.cpp b12830 (quantize.cuh) takes type_src1 as the second argument - the type of x, which is
+    // float here. The remaining arguments are the ones b12567 took, in the same order: type_src0 (= destination
+    // q8_1 layout) then ne00/s01/s02/s03, ne0..ne3, stream. No value changes, the kernel is the same.
+    quantize_mmq_q8_1_cuda(x, GGML_TYPE_F32, ids, xq, (ggml_type) t, cols, ld, rows * ld, rows * ld, pad512(cols), rows, 1, 1,
                            (cudaStream_t) stream);
     ck(cudaGetLastError(), "quantize");
 }
@@ -386,7 +389,8 @@ void quantize_scatter(const float* x, const int32_t* slot, const int32_t* src, v
         quantize(x, src, xq, t, cols, ld, tokens * k_used, stream);
         return;
     }
-    quantize_scatter_mmq_q8_1_cuda(x, slot, xq, (ggml_type) t, cols, ld, pad512(cols), tokens, tokens * k_used, k_used,
+    // W1257: same b12830 change as above - x is float, so type_src1 is GGML_TYPE_F32 and the rest keeps its order.
+    quantize_scatter_mmq_q8_1_cuda(x, GGML_TYPE_F32, slot, xq, (ggml_type) t, cols, ld, pad512(cols), tokens, tokens * k_used, k_used,
                                    (cudaStream_t) stream);
     ck(cudaGetLastError(), "quantize_scatter");
 }

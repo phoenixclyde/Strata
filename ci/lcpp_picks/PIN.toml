@@ -1,5 +1,5 @@
 # ci/lcpp_picks/PIN.toml -- single source of truth for the llama.cpp pins (W1073/A1).
-# The four pins below are read by recipe_k10.sh --verify; update HERE first, then CMake/VERSION.
+# The five pins below are read by recipe_k10.sh --verify; update HERE first, then CMake/VERSION.
 # status: ADOPTED=tree carries it | INERT=perf verdict only (not "unused") | DECLARED=build default
 # k10_production: true = the gfx906 production composite pin (b12180) carries it even if INERT.
 
@@ -31,10 +31,20 @@ k10_production = true
 note = "INERT is a performance verdict, not \"unused\": K10 carries it (J_best / out-of-bounds read refactor). apply.sh skips INERT; recipe_k10.sh applies it. blob-verified: mmq.cuh e008a34c / mmq-load-tiles.cuh b37d88c1 / mmq.cu 46efdfe0"
 
 [[pin]]
+role = "build_pin"
+sha = "f16e79da8921a6ad8e6499a68b27d109c5716a0a"
+alias = "b12830"
+where = "image /src/third_party/llama.cpp + engine build (STRATA_GGML_DIR), image tag tail -b12830-101"
+status = "ADOPTED"
+k10_production = true
+tree = "09e1e65cab5a0d512daa4e5f69f45c27"
+note = "W1257: build pin moved b12567 -> b12830 (263 commits, tree d93c39e7 -> 09e1e65c, 4486 -> 4815 files). Two call sites had to follow b12830's quantize.cuh: quantize_mmq_q8_1_cuda and quantize_scatter_mmq_q8_1_cuda take type_src1 as the 2nd argument (GGML_TYPE_F32 here). Nothing else changed."
+
+[[pin]]
 role = "upstream_latest_tag"
 sha = "f16e79da8921a6ad8e6499a68b27d109c5716a0a"
 alias = "b12830"
-where = "tracking only (as of 2026-11-28 20:2x CST; tags bNNNN are the version order, the vX.Y.Z releases are milestones and do not order anything)"
+where = "tracking (as of 2026-11-28 22:2x CST; tags bNNNN are the version order, the vX.Y.Z releases are milestones and do not order anything)"
 status = "TRACKED"
 k10_production = false
-note = "W1255: b12567 -> b12830 is 263 upstream commits. The build pin is still b12567 (image STRATA_GGML_DIR=/ggml); moving it is an image rebuild plus the numeric gate, not a rebase."
+note = "W1255: b12567 -> b12830 is 263 upstream commits. W1257: the build pin now equals the tracking pin (build_pin above); the next move starts from b12830."
