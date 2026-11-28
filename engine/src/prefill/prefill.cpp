@@ -323,8 +323,12 @@ constexpr int kIdxQHeads = (int) strata::core::kCompiledGeometry.idx_q_heads, kI
 inline int64_t MAXBLOB() { return (int64_t) strata::kernels::cpu::expert_layout().max_blob; }
 constexpr int STAGE = 8;           // host->device expert staging ring (chunks below stream_all_min())
 // The staged walk's ring when its MMQ groups take the staged experts too: two groups, so a slot is refilled only after
-// the group that read it was gathered (the walk stages at most STAGE_GRP - MMQ_GROUP - 1 entries ahead)
-constexpr int STAGE_GRP = 32;
+// the group that read it was gathered (the walk stages at most STAGE_GRP - MMQ_GROUP - 1 entries ahead).
+// W1252: two groups (32) left the staged walk with 16 transfers in flight against a 32-thread stager that claims up to
+// 8 blobs a thread - two reads at a time, and a group's compute (0.2 ms at a 200-token chunk) shorter than one blob's
+// read.  Four groups keep 48 in flight (six reads) inside the same borrow; the slots are one allocation, the bytes move
+// in the same order, so nothing downstream sees a different number.
+constexpr int STAGE_GRP = 64;
 constexpr int kSplitHelpRing = 48;  // layer split help: the helper stage's ring slots it streams through (at most)
 // The staged walk's batched group entry (fz_staged below): on by default in a CUDA build, opt-in (STRATA_PF_FUSED=1) in a HIP build (owner 2026-11-12, "8 yes for
 // nvidia"; staged_group_rule.hpp).  The card's own fused rule (fused::native_supported) still has to take the layer's formats.
