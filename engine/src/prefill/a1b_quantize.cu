@@ -572,9 +572,13 @@ void quantize_row_q8_1_cuda(
 }
 
 void quantize_mmq_q8_1_cuda(
-        const float * x, const int32_t * ids, void * vy, const ggml_type type_src0,
+        const void * x_any, const ggml_type type_src1, const int32_t * ids, void * vy, const ggml_type type_src0,
         const int64_t ne00, const int64_t s01, const int64_t s02, const int64_t s03,
         const int64_t ne0, const int64_t ne1, const int64_t ne2, const int64_t ne3, cudaStream_t stream) {
+    // W1257: b12830's quantize.cuh names the source type as the second argument. This port is called from
+    // prefill/moe_mmq.cu with float activations only, so the other branches of upstream's dispatch are not here.
+    GGML_ASSERT(type_src1 == GGML_TYPE_F32 && "a1b_quantize: src1 must be F32");
+    const float * x = (const float *) x_any;
     GGML_ASSERT(ne00 % 4 == 0);
     GGML_ASSERT(ne0 % QK8_1_MMQ == 0);
 
@@ -677,9 +681,11 @@ void quantize_mmq_few_q8_1_cuda(
 
 // scatter=true reuses the quant kernel: grid over tokens, ids = inverse map (token slot -> compact row)
 void quantize_scatter_mmq_q8_1_cuda(
-        const float * x, const int32_t * ids_src1_inv, void * vy, const ggml_type type_src0,
+        const void * x_any, const ggml_type type_src1, const int32_t * ids_src1_inv, void * vy, const ggml_type type_src0,
         const int64_t ne00, const int64_t stride_token, const int64_t ne0,
         const int64_t n_tokens, const int64_t nrows_dst, const int n_expert_used, cudaStream_t stream) {
+    GGML_ASSERT(type_src1 == GGML_TYPE_F32 && "a1b_quantize: src1 must be F32");
+    const float * x = (const float *) x_any;
     GGML_ASSERT(ne00 % 4 == 0);
     GGML_ASSERT(ne0 % QK8_1_MMQ == 0);
 
