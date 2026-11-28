@@ -32,9 +32,9 @@ note = "INERT is a performance verdict, not \"unused\": K10 carries it (J_best /
 
 [[pin]]
 role = "upstream_latest_tag"
-sha = "3ab385146cad1a374dadc40e042dcc50edceb046"
-alias = "b12823"
-where = "tracking only (as of 2026-11-28; tags bNNNN are the version order, the vX.Y.Z releases are milestones and do not order anything)"
+sha = "2881150433e320c3167fd54745d37b993863da2c"
+alias = "b12828"
+where = "tracking only (as of 2026-11-28 19:55 CST; tags bNNNN are the version order, the vX.Y.Z releases are milestones and do not order anything)"
 status = "TRACKED"
 k10_production = false
-note = "W1254: b12567 -> b12823 is 256 upstream commits. The build pin is still b12567 (image STRATA_GGML_DIR=/ggml); moving it is an image rebuild plus the numeric gate, not a rebase."
+note = "W1254: b12567 -> b12828 is 261 upstream commits. The build pin is still b12567 (image STRATA_GGML_DIR=/ggml); moving it is an image rebuild plus the numeric gate, not a rebase."
